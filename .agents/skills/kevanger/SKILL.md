@@ -97,6 +97,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
   - Alternatively, omit the `seo` argument when calling `create_news` so that MCP automatically computes it via `makeSeo($name, $lang)`.
 - Call `create_news` on the `amed-bulletin` (`amed-bulletin-mcp`) MCP server with:
   - `lang: "tr"`
+  - `username: "habermerkezi"` (**STRICT REQUIREMENT: Never publish or stage news or `mod_publication` records under `'admin'`; always attribute news to `'habermerkezi'`**)
   - `status: "n"` (**STRICT REQUIREMENT: Save as draft, DO NOT publish**)
   - `deck: "y"` (**STRICT REQUIREMENT: Show summary deck**)
   - Valid `summary` (90–120 characters)

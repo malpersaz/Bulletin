@@ -99,9 +99,10 @@ header.stacked-header .stacked-header-card {
    ROW 1: White Header Row
    ========================================================================== */
 header.stacked-header .stacked-header-top {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0.7rem 1.5rem;
+  padding: 0.7rem 12px;
   min-height: var(--mp-masthead-height);
   display: flex;
   align-items: center;
@@ -127,7 +128,7 @@ header.stacked-header .stacked-brand,
   min-width: 0;
   text-decoration: none;
   flex-shrink: 0;
-  padding: 4px 8px;
+  padding: 4px 0;
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
@@ -149,7 +150,7 @@ header.stacked-header .stacked-brand:focus-visible,
 /* Mode: square - Square logo only, hide site name */
 .modern-brand.logo-mode-square {
   gap: 0;
-  padding: 6px 10px;
+  padding: 6px 0;
 }
 .modern-brand.logo-mode-square .modern-brand-mark {
   width: 38px;
@@ -163,7 +164,7 @@ header.stacked-header .stacked-brand:focus-visible,
 /* Mode: rectangle - Horizontal logo only, hide site name */
 .modern-brand.logo-mode-rectangle {
   gap: 0;
-  padding: 6px 12px;
+  padding: 6px 0;
 }
 .modern-brand.logo-mode-rectangle .modern-brand-mark {
   width: auto;
@@ -191,7 +192,7 @@ header.stacked-header .stacked-brand:focus-visible,
 /* Mode: square_rectangle - Icon + Horizontal Logo */
 .modern-brand.logo-mode-square_rectangle {
   gap: 10px;
-  padding: 4px 8px;
+  padding: 4px 0;
 }
 .modern-brand.logo-mode-square_rectangle .modern-brand-mark {
   width: 38px;
@@ -659,9 +660,10 @@ header.stacked-header .stacked-header-nav {
 }
 
 header.stacked-header .stacked-nav-bar {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -778,8 +780,36 @@ header.stacked-header .dropdown-item.text-danger:hover,
 }
 
 /* ==========================================================================
-   Desktop Grid Alignment (Synced with 1200px Grid: 800px + 16px + 384px)
+   Responsive Grid Alignment (Synced with Bootstrap .container & 1224px Grid)
    ========================================================================== */
+@media (min-width: 576px) {
+  header.stacked-header .stacked-header-top,
+  header.stacked-header .stacked-nav-bar {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  header.stacked-header .stacked-header-top,
+  header.stacked-header .stacked-nav-bar {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  header.stacked-header .stacked-header-top,
+  header.stacked-header .stacked-nav-bar {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  header.stacked-header .stacked-header-top,
+  header.stacked-header .stacked-nav-bar {
+    max-width: 1140px;
+  }
+}
+
 @media (min-width: 1224px) {
   header.stacked-header .stacked-header-top,
   header.stacked-header .stacked-nav-bar {
@@ -795,7 +825,7 @@ header.stacked-header .dropdown-item.text-danger:hover,
 @media (max-width: 991.98px) {
   header.stacked-header .stacked-header-top {
     min-height: 54px;
-    padding: 0.4rem 0.9rem;
+    padding: 0.4rem 12px;
   }
 
   header.stacked-header .stacked-brand,
@@ -840,7 +870,7 @@ header.stacked-header .dropdown-item.text-danger:hover,
   }
 
   header.stacked-header .stacked-nav-bar {
-    padding: 0 0.9rem;
+    padding: 0 12px;
     min-height: 40px;
   }
 

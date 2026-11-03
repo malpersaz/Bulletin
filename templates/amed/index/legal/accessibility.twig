@@ -106,10 +106,15 @@
 
 		<article class="legal-document-sheet">
 			<header class="legal-doc-header">
-				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
-				<p class="legal-doc-lead">{{ page_meta_description }}</p>
+				<h1 class="legal-doc-title">{{ policy_page.name is defined and policy_page.name is not empty ? policy_page.name : page_meta_title }}</h1>
+				<p class="legal-doc-lead">{{ policy_page.summary is defined and policy_page.summary is not empty ? policy_page.summary : page_meta_description }}</p>
 			</header>
 
+			{% if policy_page is defined and policy_page.content is defined and policy_page.content is not empty %}
+				<div id="amed_content" class="legal-doc-body detail-body">
+					{{ policy_page.content|raw }}
+				</div>
+			{% else %}
 			<div class="policy-card-stack">
 				<!-- 1. Conformance Standards -->
 				<section class="policy-section-card" aria-labelledby="sec-a11y-conformance">
@@ -193,6 +198,7 @@
 					</div>
 				</section>
 			</div>
+			{% endif %}
 
 			<!-- Bottom Institutional Contact Bar -->
 			<footer class="policy-footer-card">

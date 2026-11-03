@@ -138,6 +138,11 @@
 			</header>
 
 			<div id="amed_content" class="legal-doc-body">
+				{% if policy_page is defined and policy_page.content is defined and policy_page.content is not empty %}
+					<div class="detail-body">
+						{{ policy_page.content|raw }}
+					</div>
+				{% endif %}
 				{% include 'partials/_legal_info.twig' with {'hide_intro_desc': true} %}
 			</div>
 		</article>

@@ -110,17 +110,21 @@ a.saveChanges {
 
 
 
-a,
-a:visited {
+ul.pictures a,
+ul.pictures a:visited,
+.resim a,
+.resim a:visited {
 	color: #0196e3;
 	text-decoration: none;
 	outline: none;
 }
 
-a:hover {
+ul.pictures a:hover,
+.resim a:hover {
 	text-decoration: underline;
 }
 
-a img {
+ul.pictures a img,
+.resim a img {
 	border: none;
 }

@@ -206,7 +206,8 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'username' => [
                             'type' => 'string',
-                            'description' => 'Optional author username (e.g. deryawelat). Defaults to acting user.',
+                            'default' => 'habermerkezi',
+                            'description' => 'Optional author username (defaults to habermerkezi; admin is prohibited as author).',
                         ],
                         'image' => [
                             'type' => 'object',
@@ -713,16 +714,45 @@ class McpNewsTools extends McpCrudToolsBase
         $model->file_id = (int) ($args['file_id'] ?? 0);
         $model->acl_id = (int) ($args['acl_id'] ?? 0);
 
+        $db = Load::lib('Database');
+        $targetUsername = trim((string) ($args['username'] ?? ''));
+        if ($targetUsername === '' && empty($args['user_id'])) {
+            $targetUsername = 'habermerkezi';
+        }
+        if (strtolower($targetUsername) === 'admin') {
+            $targetUsername = 'habermerkezi';
+        }
+
         $authorUserId = $this->actingUserId;
         if (!empty($args['user_id'])) {
-            $authorUserId = (int) $args['user_id'];
-        } elseif (!empty($args['username'])) {
-            $targetUsername = trim((string) $args['username']);
-            $db = Load::lib('Database');
+            $reqUserId = (int) $args['user_id'];
+            $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
+            if ($db->getSize() > 0) {
+                $uRow = $db->getRow();
+                if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
+                    $targetUsername = 'habermerkezi';
+                } else {
+                    $authorUserId = (int) $uRow['id'];
+                }
+            }
+        }
+        if ($targetUsername !== '') {
             $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
             if ($db->getSize() > 0) {
-                $userRow = $db->get_row();
+                $userRow = $db->getRow();
                 $authorUserId = (int) $userRow['id'];
+            }
+        } else {
+            $db->fetch_array("SELECT username FROM mod_user WHERE id = " . (int) $authorUserId . " LIMIT 1");
+            if ($db->getSize() > 0) {
+                $actRow = $db->getRow();
+                if (strtolower((string) ($actRow['username'] ?? '')) === 'admin') {
+                    $db->fetch_array("SELECT id FROM mod_user WHERE username = 'habermerkezi' AND status = 'y' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $deskRow = $db->getRow();
+                        $authorUserId = (int) $deskRow['id'];
+                    }
+                }
             }
         }
         $model->user_id = $authorUserId;
@@ -849,15 +879,30 @@ class McpNewsTools extends McpCrudToolsBase
             $model->acl_id = (int) $args['acl_id'];
         }
 
-        if (isset($args['user_id'])) {
-            $model->user_id = (int) $args['user_id'];
-        } elseif (isset($args['username'])) {
-            $targetUsername = trim((string) $args['username']);
+        if (isset($args['user_id']) || isset($args['username'])) {
             $db = Load::lib('Database');
-            $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
-            if ($db->getSize() > 0) {
-                $userRow = $db->get_row();
-                $model->user_id = (int) $userRow['id'];
+            $targetUsername = trim((string) ($args['username'] ?? ''));
+            if (strtolower($targetUsername) === 'admin') {
+                $targetUsername = 'habermerkezi';
+            }
+            if (isset($args['user_id']) && $targetUsername === '') {
+                $reqUserId = (int) $args['user_id'];
+                $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
+                if ($db->getSize() > 0) {
+                    $uRow = $db->getRow();
+                    if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
+                        $targetUsername = 'habermerkezi';
+                    } else {
+                        $model->user_id = (int) $uRow['id'];
+                    }
+                }
+            }
+            if ($targetUsername !== '') {
+                $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
+                if ($db->getSize() > 0) {
+                    $userRow = $db->getRow();
+                    $model->user_id = (int) $userRow['id'];
+                }
             }
         }
 

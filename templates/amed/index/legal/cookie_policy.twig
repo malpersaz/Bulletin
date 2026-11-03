@@ -109,7 +109,11 @@
 			<header class="legal-doc-header">
 				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
 				<p class="legal-doc-lead">{{ lang.index.cookie_policy_subtitle }}</p>
-				{% if site.cookie_policy_content is defined and site.cookie_policy_content is not empty %}
+				{% if policy_page is defined and policy_page.content is defined and policy_page.content is not empty %}
+					<div class="detail-body mt-3">
+						{{ policy_page.content|raw }}
+					</div>
+				{% elseif site.cookie_policy_content is defined and site.cookie_policy_content is not empty %}
 					<div class="cookie-custom-notice-box">
 						<div class="cookie-custom-notice-text">{{ site.cookie_policy_content|nl2br }}</div>
 					</div>

@@ -184,6 +184,7 @@
 			<!-- User Section -->
 			<div class="user-section d-flex align-items-center gap-2">
 				<!-- Desktop Language Selector -->
+				{% if site.available_languages is defined and site.available_languages|length > 1 %}
 				<div class="language-selector d-none d-lg-block">
 					<div class="dropdown">
 						<button class="btn btn-header-action dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="{{ lang.index.language }}">
@@ -197,21 +198,20 @@
 									<i class="bi bi-translate me-2" aria-hidden="true"></i>{{ lang.index.language }}
 								</h6>
 							</li>
-							{% if site.available_languages is defined %}
-								{% for l in site.available_languages %}
-									<li>
-										<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
-											<span>{{ l.name }}</span>
-											{% if site.lang == l.code %}
-												<i class="bi bi-check2 text-success ms-2" aria-hidden="true"></i>
-											{% endif %}
-										</a>
-									</li>
-								{% endfor %}
-							{% endif %}
+							{% for l in site.available_languages %}
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
+										<span>{{ l.name }}</span>
+										{% if site.lang == l.code %}
+											<i class="bi bi-check2 text-success ms-2" aria-hidden="true"></i>
+										{% endif %}
+									</a>
+								</li>
+							{% endfor %}
 						</ul>
 					</div>
 				</div>
+				{% endif %}
 
 				<!-- Desktop Dark Mode Toggle -->
 				<button class="btn btn-header-action btn-icon d-none d-lg-inline-flex" id="darkModeToggle" type="button" aria-label="{{ lang.index.dark_mode }}" title="{{ lang.index.dark_mode }}">
@@ -317,6 +317,7 @@
 				<div class="mobile-controls-row d-lg-none w-100 mt-3 pt-3 border-top">
 					<div class="d-flex align-items-center gap-2">
 						<!-- Language Selector (Flex Grow) -->
+						{% if site.available_languages is defined and site.available_languages|length > 1 %}
 						<div class="language-selector flex-grow-1">
 							<div class="dropdown">
 								<button class="btn btn-header-action w-100 d-flex align-items-center justify-content-between p-2 dropdown-toggle" type="button" id="languageDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false" title="{{ lang.index.language }}">
@@ -333,21 +334,20 @@
 											<i class="bi bi-translate me-2" aria-hidden="true"></i>{{ lang.index.language }}
 										</h6>
 									</li>
-									{% if site.available_languages is defined %}
-										{% for l in site.available_languages %}
-											<li>
-												<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
-													<span>{{ l.name }}</span>
-													{% if site.lang == l.code %}
-														<i class="bi bi-check2 text-success" aria-hidden="true"></i>
-													{% endif %}
-												</a>
-											</li>
-										{% endfor %}
-									{% endif %}
+									{% for l in site.available_languages %}
+										<li>
+											<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
+												<span>{{ l.name }}</span>
+												{% if site.lang == l.code %}
+													<i class="bi bi-check2 text-success" aria-hidden="true"></i>
+												{% endif %}
+											</a>
+										</li>
+									{% endfor %}
 								</ul>
 							</div>
 						</div>
+						{% endif %}
 
 						<!-- Dark Mode Toggle (Fixed Width) -->
 						<div class="mobile-dark-mode">

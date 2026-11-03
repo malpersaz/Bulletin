@@ -89,7 +89,7 @@ class McpPublicationTools extends McpCrudToolsBase
                         'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related attachment file ID.'],
                         'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control group ID (0 = public).'],
                         'user_id' => ['type' => 'integer', 'description' => 'Author user ID.'],
-                        'username' => ['type' => 'string', 'description' => 'Author username (e.g. deryawelat).'],
+                        'username' => ['type' => 'string', 'default' => 'habermerkezi', 'description' => 'Author username (defaults to habermerkezi; admin is prohibited as author).'],
                         'image' => ['type' => ['object', 'null'], 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
                     ],
                     'required' => ['name', 'lang', 'category_id', 'content', 'summary'],
@@ -129,7 +129,7 @@ class McpPublicationTools extends McpCrudToolsBase
                         'file_id' => ['type' => 'integer', 'description' => 'New related attachment file ID.'],
                         'acl_id' => ['type' => 'integer', 'description' => 'New access control group ID.'],
                         'user_id' => ['type' => 'integer', 'description' => 'Author user ID.'],
-                        'username' => ['type' => 'string', 'description' => 'Author username (e.g. deryawelat).'],
+                        'username' => ['type' => 'string', 'default' => 'habermerkezi', 'description' => 'Author username (defaults to habermerkezi; admin is prohibited as author).'],
                         'image' => ['type' => ['object', 'null'], 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
                     ],
                     'required' => ['id'],
@@ -409,16 +409,45 @@ class McpPublicationTools extends McpCrudToolsBase
         $model->gallery_id = (int) ($args['gallery_id'] ?? 0);
         $model->file_id = (int) ($args['file_id'] ?? 0);
         $model->acl_id = (int) ($args['acl_id'] ?? 0);
+        $db = Load::lib('Database');
+        $targetUsername = trim((string) ($args['username'] ?? ''));
+        if ($targetUsername === '' && empty($args['user_id'])) {
+            $targetUsername = 'habermerkezi';
+        }
+        if (strtolower($targetUsername) === 'admin') {
+            $targetUsername = 'habermerkezi';
+        }
+
         $authorUserId = $this->actingUserId;
         if (!empty($args['user_id'])) {
-            $authorUserId = (int) $args['user_id'];
-        } elseif (!empty($args['username'])) {
-            $targetUsername = trim((string) $args['username']);
-            $db = Load::lib('Database');
+            $reqUserId = (int) $args['user_id'];
+            $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
+            if ($db->getSize() > 0) {
+                $uRow = $db->getRow();
+                if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
+                    $targetUsername = 'habermerkezi';
+                } else {
+                    $authorUserId = (int) $uRow['id'];
+                }
+            }
+        }
+        if ($targetUsername !== '') {
             $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
             if ($db->getSize() > 0) {
-                $userRow = $db->get_row();
+                $userRow = $db->getRow();
                 $authorUserId = (int) ($userRow['id'] ?? $this->actingUserId);
+            }
+        } else {
+            $db->fetch_array("SELECT username FROM mod_user WHERE id = " . (int) $authorUserId . " LIMIT 1");
+            if ($db->getSize() > 0) {
+                $actRow = $db->getRow();
+                if (strtolower((string) ($actRow['username'] ?? '')) === 'admin') {
+                    $db->fetch_array("SELECT id FROM mod_user WHERE username = 'habermerkezi' AND status = 'y' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $deskRow = $db->getRow();
+                        $authorUserId = (int) $deskRow['id'];
+                    }
+                }
             }
         }
         $model->user_id = $authorUserId;
@@ -522,15 +551,30 @@ class McpPublicationTools extends McpCrudToolsBase
             }
         }
 
-        if (isset($args['user_id'])) {
-            $model->user_id = (int) $args['user_id'];
-        } elseif (isset($args['username'])) {
-            $targetUsername = trim((string) $args['username']);
+        if (isset($args['user_id']) || isset($args['username'])) {
             $db = Load::lib('Database');
-            $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
-            if ($db->getSize() > 0) {
-                $userRow = $db->get_row();
-                $model->user_id = (int) $userRow['id'];
+            $targetUsername = trim((string) ($args['username'] ?? ''));
+            if (strtolower($targetUsername) === 'admin') {
+                $targetUsername = 'habermerkezi';
+            }
+            if (isset($args['user_id']) && $targetUsername === '') {
+                $reqUserId = (int) $args['user_id'];
+                $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
+                if ($db->getSize() > 0) {
+                    $uRow = $db->getRow();
+                    if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
+                        $targetUsername = 'habermerkezi';
+                    } else {
+                        $model->user_id = (int) $uRow['id'];
+                    }
+                }
+            }
+            if ($targetUsername !== '') {
+                $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
+                if ($db->getSize() > 0) {
+                    $userRow = $db->getRow();
+                    $model->user_id = (int) $userRow['id'];
+                }
             }
         }
 

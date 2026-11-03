@@ -1,5 +1,26 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.22 (2026-11-03)
+- **Database-Backed Policy & Statutory Pages (`mod_page`), Hierarchical Footer Tree & Newsroom Attribution (`mod/index/helper/legal.helper.php`, `templates/amed/index/legal/`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`)**:
+  - **Dynamic `mod_page` Resolution for Statutory & Policy Routes (`mod/index/helper/legal.helper.php`, `templates/amed/index/legal/*.twig`)**:
+    - Implemented `resolvePolicyPageRecord()` in `legal.helper.php` to dynamically query active `mod_page` records (`status = 'y'`, `root = 'n'`) by localized and canonical slugs (`Yayin_Ilkeleri`, `Gizlilik_Politikasi`, `Kullanim_Kosullari`, `Erisilebilirlik`, `Guvenlik_Politikasi`, `Basin_Etigi_ve_Uyum`, `Yasal_Bilgiler`, `Cerez_Politikasi`) before falling back to static language dictionary strings.
+    - Updated `terms_of_service.twig`, `editorial_policy.twig`, `privacy_policy.twig`, `accessibility.twig`, `security_policy.twig`, `compliance.twig`, `cookie_policy.twig`, and `index.twig` to render full HTML `policy_page.content`, title, and deck summary directly from `mod_page`.
+  - **Hierarchical Institutional Page Tree & Footer Menu Integration (`mod_page`, `mod_menu`)**:
+    - Created and populated comprehensive Turkish statutory and policy pages in `mod_page` (`Yayın İlkeleri`, `Gizlilik Politikası`, `Kullanım Koşulları`, `Erişilebilirlik`, `Güvenlik Politikası`, `Basın Etiği ve Uyum`, `Yasal Bilgiler`, `Çerez Politikası`) and structured them as child pages under `Hakkımızda` (`parent_id: 18`), linked in `##Footer_Menu` (`Alt Menü`).
+    - Updated corporate masthead settings (`mod_settings`) and cookie declarations (`mod_settings_cookies`) for `Amed Bülten` (`amedbulten.com`).
+  - **Mandatory Newsroom Author Attribution (`habermerkezi`) (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`)**:
+    - Enforced default author attribution to `habermerkezi` across `create_news`, `update_news`, `create_publication`, and `update_publication`, preventing articles and publications from being attributed to the `admin` account.
+- **Responsive Container Parity, Detail Page Layout & Minified CSS Bundle Synchronization (`templates/amed/static/css/`, `templates/amed/index/mod_page/page.twig`, `tools/min_css_guard.py`)**:
+  - **Header & Container Grid Alignment (`stacked-top-menu.css`, `custom.min.css`, `homepage-all.min.css`)**:
+    - Synchronized `.stacked-header-top` and `.stacked-nav-bar` horizontal padding (`12px`) and responsive `max-width` breakpoints (`540px`, `720px`, `960px`, `1140px`, `1224px`) with Bootstrap `.container` and `main > .container`, and removed horizontal padding from `.stacked-brand` / `.modern-brand` so header, main content, and footer align flush across all viewports.
+    - Registered `templates/amed/static/css/homepage-all.min.css` in `BUNDLE_MANIFEST` within `tools/min_css_guard.py` and rebuilt all `.min.css` bundles with zero rule-block drift (`1541/1541` rules).
+  - **Detail & Legal Page Layout Hardening (`detail-foundation.css`, `legal-info.css`, `gallery.css`, `page.twig`)**:
+    - Added responsive 2-column sidebar grid (`.detail-page-layout.has-sidebar`, `.detail-page-sidebar`, `.detail-sidebar-card`, `.detail-sidebar-link`) and `[data-bs-theme="dark"]` token overrides to `detail-foundation.css`.
+    - Scoped global `a, a:visited` link selectors in `gallery.css` to `ul.pictures a, .resim a` to prevent link color overrides from leaking into the site header and footer.
+    - Added responsive container padding (`2rem 2.5rem` desktop, `1.5rem 1.25rem` mobile) for `.legal-doc-body.detail-body` in `legal-info.css` and included `legal-info.css`, `cookie-policy.css`, and `legal-info.js` in `mod_page/page.twig`.
+  - **Language Selector Visibility Guard (`templates/amed/index/mod_menu/top_menu.twig`)**:
+    - Guarded desktop and mobile language dropdown selectors so they only render when `site.available_languages|length > 1`.
+
 ## v1.0.21 (2026-11-03)
 - **Automated Web Cron Architecture, FastCGI Self-Healing & Live Data Feed Hardening (`mod/index/helper/cron_manager.helper.php`, `config/url.config.php`, `config/site.config.php`, `lib/Amed.class.php`, `lib/MarketDataService.class.php`, `lib/SportsDataService.class.php`, `.htaccess`)**:
   - **Controller-Routed Web Cron Endpoint (`/cron`, `/cron/market`, `/cron/sports`, `/cron/all`)**:

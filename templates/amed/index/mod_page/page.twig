@@ -3,11 +3,18 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
 	{% include 'partials/_detail_scripts.twig' %}
+{% endblock %}
+
+{% block js_custom %}
+	{{ parent() }}
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/legal-info.js?v={{ site.version }}" defer></script>
 {% endblock %}
 
 {% set d = ctx_get('detail') ?: ctx_get('d') %}
@@ -24,18 +31,18 @@
 
 {% set sidebar_nav_count = 0 %}
 {% if list is not empty %}
-	{% for l in list %}
-		{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
-			{% set sidebar_nav_count = sidebar_nav_count + 1 %}
-		{% endif %}
-	{% endfor %}
+{% for l in list %}
+{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
+{% set sidebar_nav_count = sidebar_nav_count + 1 %}
+{% endif %}
+{% endfor %}
 {% endif %}
 {% if parent_id_list is not empty %}
-	{% for l in parent_id_list %}
-		{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
-			{% set sidebar_nav_count = sidebar_nav_count + 1 %}
-		{% endif %}
-	{% endfor %}
+{% for l in parent_id_list %}
+{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
+{% set sidebar_nav_count = sidebar_nav_count + 1 %}
+{% endif %}
+{% endfor %}
 {% endif %}
 {% set has_sidebar = (sidebar_nav_count > 0) %}
 {% set page_meta_title = d.title is defined and d.title is not empty ? d.title : d.name %}
@@ -286,7 +293,10 @@
 
 						<div id="amed_content" class="detail-body">
 							{% if is_legal_page %}
-								{% include 'partials/_legal_info.twig' %}
+								{% if d.content is defined and d.content is not empty %}
+									<div class="mb-4">{{ d.content|raw }}</div>
+								{% endif %}
+								{% include 'partials/_legal_info.twig' with {'hide_intro_desc': (d.content is defined and d.content is not empty)} %}
 							{% elseif is_cookie_page and (d.content is not defined or d.content is empty) %}
 								{% include 'partials/_cookie_policy.twig' %}
 							{% else %}
