@@ -162,14 +162,14 @@ class McpNewsTools extends McpCrudToolsBase
                         'status' => [
                             'type' => 'string',
                             'enum' => ['y', 'n'],
-                            'default' => 'y',
-                            'description' => 'Publish status: y (published) or n (draft).',
+                            'default' => 'n',
+                            'description' => 'Publish status: n (draft) or y (published). Defaults to n.',
                         ],
                         'deck' => [
                             'type' => 'string',
                             'enum' => ['y', 'n'],
-                            'default' => 'n',
-                            'description' => 'Deck feature flag.',
+                            'default' => 'y',
+                            'description' => 'Deck feature flag: y (show) or n (hide). Defaults to y.',
                         ],
                         'slider' => [
                             'type' => 'string',
@@ -704,8 +704,8 @@ class McpNewsTools extends McpCrudToolsBase
         $model->title = $this->optionalString($args, 'title', $name, 255);
         $model->keywords = $this->optionalString($args, 'keywords', '', 255);
         $model->description = $this->optionalString($args, 'description', $summary, 255);
-        $model->status = $this->optionalEnum($args, 'status', 'y', ['y', 'n']);
-        $model->deck = $this->optionalEnum($args, 'deck', 'n', ['y', 'n']);
+        $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
+        $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
         $model->created_at = $this->optionalDateTime($args, 'created_at', date('Y-m-d H:i:s'));
         $model->updated_at = date('Y-m-d H:i:s');

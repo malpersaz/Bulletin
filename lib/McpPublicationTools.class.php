@@ -80,8 +80,8 @@ class McpPublicationTools extends McpCrudToolsBase
                         'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO title. Defaults to the name.'],
                         'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO keywords. Defaults to empty.'],
                         'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO description. Defaults to the summary.'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Publish status: y (published) or n (draft).'],
-                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show on deck: y or n.'],
+                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Publish status: n (draft) or y (published). Defaults to n.'],
+                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Show on deck: y or n. Defaults to y.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show in slider flag.'],
                         'created_at' => ['type' => 'string', 'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.'],
                         'video' => ['type' => 'string', 'description' => 'Comma-separated video references (video:ID for local videos, vid:ID for embedded).'],
@@ -400,8 +400,8 @@ class McpPublicationTools extends McpCrudToolsBase
         $model->title = $this->optionalString($args, 'title', $name, 255);
         $model->keywords = $this->optionalString($args, 'keywords', '', 255);
         $model->description = $this->optionalString($args, 'description', $summary, 255);
-        $model->status = $this->optionalEnum($args, 'status', 'y', ['y', 'n']);
-        $model->deck = $this->optionalEnum($args, 'deck', 'n', ['y', 'n']);
+        $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
+        $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
         $model->created_at = $this->optionalDateTime($args, 'created_at', date('Y-m-d H:i:s'));
         $model->updated_at = date('Y-m-d H:i:s');

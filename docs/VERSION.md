@@ -1,5 +1,15 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.25 (2026-11-04)
+- **MCP Editorial Workflow & Draft Status Hardening (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `amed_bulletin_mcp.py`)**:
+  - **Draft Status as Default for News & Publications (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:
+    - Changed default `status` for `create_news` and `create_publication` from `'y'` (published) to `'n'` (draft) across tool definitions and creation logic, ensuring new articles are never published immediately without editorial review.
+    - Set default `deck` flag from `'n'` to `'y'` so staged drafts are designated for deck review by default.
+  - **MCP Bridge Draft Enforcement (`amed_bulletin_mcp.py`)**:
+    - Enforced `status = "n"` unconditionally and defaulted `deck = "y"` in `_check_image_policy()` for `create_news` and `create_publication`, preventing automated agents from inadvertently publishing articles directly.
+  - **Live Content Audit & Draft Status Correction (`mod_news`)**:
+    - Audited live news articles uploaded via MCP and corrected recently staged articles (ID 3 and ID 4) to draft status (`status = 'n'`).
+
 ## v1.0.24 (2026-11-04)
 - **Database Single-Row Retrieval & MCP Author Attribution Hardening (`lib/Database/Database.php`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:
   - **Native `Database::getRow()` Helper (`lib/Database/Database.php`)**:
