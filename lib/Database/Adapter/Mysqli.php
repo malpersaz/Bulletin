@@ -31,6 +31,8 @@ class Adapter_Mysqli
             return false;
         }
         $this->_con->set_charset($this->_con_setting['encoding']);
+        $timezoneOffset = $this->_con->real_escape_string(date('P'));
+        $this->_con->query("SET time_zone = '{$timezoneOffset}'");
         return true;
     }
 

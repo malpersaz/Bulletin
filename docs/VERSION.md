@@ -1,5 +1,25 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.31 (2026-11-04)
+- **Timezone Synchronization & Regional Publishing Time Protocol (`init.php`, `config/site.config.php`, `config/site.config.example.php`, `lib/Database/Adapter/PDO_MYSQL.php`, `lib/Database/Adapter/Mysqli.php`, `lib/Database/Adapter/PDO_POSTGRESQL.php`, `lib/TwigTemplate.class.php`, `lib/Helper.class.php`, `docker/php/php.dev.ini`, `docker-compose.yml`, `docs/VERSION.md`)**:
+  - **Bootstrap Timezone Enforcement (`init.php`)**:
+    - Initialized default timezone `Europe/Istanbul` (UTC+3) at the very start of bootstrap before `define('NOW', ...)` is evaluated, ensuring the framework's `NOW` constant matches the actual local publishing time instead of falling back to UTC.
+  - **Site Configuration & Registry Registration (`config/site.config.php`, `config/site.config.example.php`)**:
+    - Added `$site['timezone'] = 'Europe/Istanbul'` to site configuration with local override support in `site.config.local.php`.
+    - Registered active timezone in `Registry::add('timezone', ...)` and enforced it with `date_default_timezone_set()`.
+  - **Database Connection Session Timezone Synchronization (`lib/Database/Adapter/*.php`)**:
+    - Configured `Adapter_PDO_MYSQL` and `Adapter_Mysqli` to execute `SET time_zone = '<offset>'` (e.g. `+03:00`) immediately upon establishing connection, ensuring MySQL's `NOW()`, `CURRENT_TIMESTAMP`, and `TIMESTAMP` columns align with the application's publishing time.
+    - Added corresponding session timezone synchronization to `Adapter_PDO_POSTGRESQL`.
+  - **Twig Template Timezone Alignment (`lib/TwigTemplate.class.php`)**:
+    - Explicitly set Twig's `CoreExtension` timezone to the registered site timezone, ensuring all Twig date filters (`|date(...)`) render formatted timestamps in `Europe/Istanbul`.
+  - **Relative Time Protection (`lib/Helper.class.php`)**:
+    - Aligned `DateTime` timestamp instantiation in `Helper::time_ago()` to the active timezone and safeguarded against future-dated entries returning misleading ago strings.
+  - **Container & Environment Parity (`docker/php/php.dev.ini`, `docker-compose.yml`)**:
+    - Set `date.timezone = Europe/Istanbul` in `php.dev.ini`.
+    - Set `TZ: Europe/Istanbul` across `app`, `web`, `db`, and `pma` services, and added `--default-time-zone=+03:00` to MySQL container command.
+  - **Framework Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.31` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.30 (2026-11-04)
 - **Statutory Policy Canonicalization & Multi-Language URL De-Duplication Shield (`mod/index/helper/legal.helper.php`, `mod/index/index.php`, `templates/amed/partials/_legal_nav.twig`, `templates/amed/index/footer.twig`, `templates/amed/index/legal/*.twig`, `lib/LlmsService.class.php`, `config/site.config.php`, `docs/VERSION.md`)**:
   - **Deterministic 301 Moved Permanently Canonical Redirects (`mod/index/helper/legal.helper.php`)**:

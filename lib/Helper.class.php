@@ -234,6 +234,7 @@ class Helper
                 $published_at = $datetime;
             } elseif (is_numeric($datetime)) {
                 $published_at = new DateTime('@' . $datetime);
+                $published_at->setTimezone(new DateTimeZone(date_default_timezone_get()));
             } else {
                 $published_at = new DateTime($datetime);
             }
@@ -261,6 +262,10 @@ class Helper
                 $loaded = Load::lang('index');
                 $timeLang = isset($loaded['index']['time_ago']) && is_array($loaded['index']['time_ago']) ? $loaded['index']['time_ago'] : [];
             }
+        }
+
+        if ($published_at > $now) {
+            return isset($timeLang['just_now']) ? $timeLang['just_now'] : 'Just now';
         }
 
         if ($diff->y > 0) {

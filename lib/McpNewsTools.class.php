@@ -656,9 +656,18 @@ class McpNewsTools extends McpCrudToolsBase
     /**
      * Creates a news record (mirrors the admin add validator)
      */
+    private function cleanTextEntities(?string $value): string
+    {
+        return trim(html_entity_decode(
+            html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8'
+        ));
+    }
+
     public function createNews(array $args): array
     {
-        $name = trim((string) ($args['name'] ?? ''));
+        $name = $this->cleanTextEntities($args['name'] ?? '');
         if ($name === '' || mb_strlen($name) > 255) {
             throw new McpToolException("Field 'name' is required (1-255 characters).");
         }
@@ -675,7 +684,7 @@ class McpNewsTools extends McpCrudToolsBase
             throw new McpToolException("Field 'content' is required.");
         }
 
-        $summary = trim((string) ($args['summary'] ?? ''));
+        $summary = $this->cleanTextEntities($args['summary'] ?? '');
         if ($summary === '') {
             throw new McpToolException("Field 'summary' is required.");
         }
@@ -701,9 +710,9 @@ class McpNewsTools extends McpCrudToolsBase
         $model->content = $content;
         $model->summary = $summary;
         $model->seo = $seo;
-        $model->title = $this->optionalString($args, 'title', $name, 255);
-        $model->keywords = $this->optionalString($args, 'keywords', '', 255);
-        $model->description = $this->optionalString($args, 'description', $summary, 255);
+        $model->title = $this->cleanTextEntities($this->optionalString($args, 'title', $name, 255));
+        $model->keywords = $this->cleanTextEntities($this->optionalString($args, 'keywords', '', 255));
+        $model->description = $this->cleanTextEntities($this->optionalString($args, 'description', $summary, 255));
         $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
         $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
@@ -820,7 +829,7 @@ class McpNewsTools extends McpCrudToolsBase
         }
 
         if (isset($args['name'])) {
-            $name = trim((string) $args['name']);
+            $name = $this->cleanTextEntities($args['name']);
             if ($name === '' || mb_strlen($name) > 255) {
                 throw new McpToolException("Field 'name' must be 1-255 characters.");
             }
@@ -836,7 +845,7 @@ class McpNewsTools extends McpCrudToolsBase
         }
 
         if (isset($args['summary'])) {
-            $summary = trim((string) $args['summary']);
+            $summary = $this->cleanTextEntities($args['summary']);
             $this->assertSummaryLength($summary);
             $model->summary = $summary;
         }
@@ -857,7 +866,8 @@ class McpNewsTools extends McpCrudToolsBase
 
         foreach (['title', 'keywords', 'description'] as $field) {
             if (isset($args[$field])) {
-                $model->{$field} = $this->optionalString($args, $field, (string) $model->{$field}, 255);
+                $val = $this->optionalString($args, $field, (string) $model->{$field}, 255);
+                $model->{$field} = $this->cleanTextEntities($val);
             }
         }
 

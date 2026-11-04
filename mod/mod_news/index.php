@@ -49,7 +49,6 @@ class mod_news_mod extends BaseModuleController
 
     protected $special_fields = [
         'deck' => ['type' => 'safe'],
-        'summary' => ['type' => 'html'],
         'content' => ['type' => 'html']
     ];
 
@@ -76,6 +75,44 @@ class mod_news_mod extends BaseModuleController
         return $data;
     }
 
+    protected function cleanNewsTextEntities($model)
+    {
+        // summary is plain text editorial deck (90-120 chars standard; up to 160 chars max)
+        if (Req::is_Post('summary')) {
+            $rawSummary = Req::Post('summary');
+        } elseif (isset($model->summary)) {
+            $rawSummary = $model->summary;
+        } else {
+            $rawSummary = '';
+        }
+        $model->summary = trim(strip_tags((string) $rawSummary));
+        $model->summary = html_entity_decode(
+            html_entity_decode($model->summary, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8'
+        );
+
+        $textFields = ['name', 'title', 'description', 'keywords'];
+        foreach ($textFields as $field) {
+            if (Req::is_Post($field)) {
+                $raw = Req::Post($field);
+            } elseif (isset($model->$field)) {
+                $raw = $model->$field;
+            } else {
+                continue;
+            }
+            $val = trim(strip_tags((string) $raw));
+            $val = html_entity_decode(
+                html_entity_decode($val, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                ENT_QUOTES | ENT_HTML5,
+                'UTF-8'
+            );
+            $model->$field = $val;
+        }
+
+        return $model;
+    }
+
     protected function beforeSave($model)
     {
         $model->created_at = $this->normalizeDateTime(Req::Post_Safe('created_at'));
@@ -86,7 +123,7 @@ class mod_news_mod extends BaseModuleController
 
         $model->user_id = $this->session->get('id');
 
-        return $model;
+        return $this->cleanNewsTextEntities($model);
     }
 
     protected function beforeUpdate($model, $id)
@@ -99,7 +136,7 @@ class mod_news_mod extends BaseModuleController
         // Handle serialization of video references
         $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
-        return $model;
+        return $this->cleanNewsTextEntities($model);
     }
 
     protected function getDatatableColumns()

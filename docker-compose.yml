@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: bulletin_app
     restart: unless-stopped
+    environment:
+      TZ: Europe/Istanbul
     volumes:
       - ./:/var/www/html
       - ./docker/php/php.dev.ini:/usr/local/etc/php/conf.d/local.ini
@@ -17,6 +19,8 @@ services:
     image: nginx:alpine
     container_name: bulletin_web
     restart: unless-stopped
+    environment:
+      TZ: Europe/Istanbul
     ports:
       - "${BULLETIN_WEB_PORT:-8080}:80"
     volumes:
@@ -31,8 +35,9 @@ services:
     image: mysql:8.0
     container_name: bulletin_db
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --default-time-zone=+03:00
     environment:
+      TZ: Europe/Istanbul
       MYSQL_DATABASE: bulletin
       MYSQL_USER: bulletin
       MYSQL_PASSWORD: bulletin_password
@@ -53,6 +58,7 @@ services:
     container_name: bulletin_pma
     restart: unless-stopped
     environment:
+      TZ: Europe/Istanbul
       PMA_HOST: db
       PMA_USER: bulletin
       PMA_PASSWORD: bulletin_password

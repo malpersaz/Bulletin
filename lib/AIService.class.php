@@ -188,6 +188,7 @@ class AIService
 
         $decoded = json_decode($res['text'], true);
         $deck = trim((string) ($decoded['deck'] ?? ''));
+        $deck = html_entity_decode(html_entity_decode($deck, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         // Smart calibration if slightly outside bounds
         $len = mb_strlen($deck);
@@ -261,10 +262,13 @@ class AIService
 
         $decoded = json_decode($res['text'], true);
         $headlines = is_array($decoded['headlines'] ?? null) ? $decoded['headlines'] : [];
+        $headlines = array_map(function ($hl) {
+            return trim(html_entity_decode(html_entity_decode((string) $hl, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }, $headlines);
 
         return [
             'success' => true,
-            'headlines' => array_values(array_filter(array_map('trim', $headlines))),
+            'headlines' => array_values(array_filter($headlines)),
             'model' => $res['model']
         ];
     }
@@ -313,11 +317,17 @@ class AIService
             ];
         }
 
+        $cleanSeoTitle = trim(html_entity_decode(html_entity_decode((string) ($decoded['seo_title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $cleanMetaDesc = trim(html_entity_decode(html_entity_decode((string) ($decoded['meta_description'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $keywordsList = array_map(function ($kw) {
+            return trim(html_entity_decode(html_entity_decode((string) $kw, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }, $decoded['keywords'] ?? []);
+
         return [
             'success' => true,
-            'seo_title' => $decoded['seo_title'] ?? '',
-            'meta_description' => $decoded['meta_description'] ?? '',
-            'keywords' => implode(', ', $decoded['keywords'] ?? []),
+            'seo_title' => $cleanSeoTitle,
+            'meta_description' => $cleanMetaDesc,
+            'keywords' => implode(', ', array_filter($keywordsList)),
             'model' => $res['model']
         ];
     }

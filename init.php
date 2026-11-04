@@ -22,6 +22,11 @@ if (!defined('DEBUG')) {
 }
 // Framework Loaded Flag
 define('AKM_LOADED', TRUE);
+// Default Timezone (Europe/Istanbul UTC+3)
+if (!defined('DEFAULT_TIMEZONE')) {
+    define('DEFAULT_TIMEZONE', 'Europe/Istanbul');
+}
+date_default_timezone_set(DEFAULT_TIMEZONE);
 // Current Time
 define('NOW', date("Y-m-d H:i:s", time()));
 // Directory Separator

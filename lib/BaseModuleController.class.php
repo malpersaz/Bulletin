@@ -390,7 +390,7 @@ abstract class BaseModuleController
         Run::import('management', '_index');
         $this->site['title'] = isset($this->lang[$this->module_name]['edit']) ? $this->lang[$this->module_name]['edit'] : $this->module_name;
         $this->view->set('site', $this->site);
-        $this->view->set('d', $d);
+        $this->view->set('d', $this->cleanEntityFields($d));
         $this->view->tpl($this->module_name . '/edit');
 
         // Set additional form data
@@ -398,6 +398,27 @@ abstract class BaseModuleController
         foreach ($form_data as $key => $value) {
             $this->view->set($key, $value);
         }
+    }
+
+    /**
+     * Decodes HTML entities from text fields for clean display in edit forms and headers
+     *
+     * @param array $row
+     * @return array
+     */
+    protected function cleanEntityFields(array $row): array
+    {
+        $fields = ['name', 'title', 'summary', 'description', 'keywords', 'category_name'];
+        foreach ($fields as $field) {
+            if (isset($row[$field]) && is_string($row[$field])) {
+                $row[$field] = html_entity_decode(
+                    html_entity_decode($row[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                    ENT_QUOTES | ENT_HTML5,
+                    'UTF-8'
+                );
+            }
+        }
+        return $row;
     }
 
     /**

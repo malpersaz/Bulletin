@@ -67,6 +67,10 @@ class Adapter_PDO_POSTGRESQL
             if (isset($this->_con_setting['encoding'])) {
                 $this->_con->exec("SET NAMES '" . $this->_con_setting['encoding'] . "'");
             }
+
+            // Synchronize connection timezone with PHP timezone
+            $activeTimezone = date_default_timezone_get();
+            $this->_con->exec("SET TIME ZONE '{$activeTimezone}'");
         } catch (PDOException $e) {
             throw new DatabaseException("PostgreSQL Connection Problem!\n" . $e->getMessage());
         }

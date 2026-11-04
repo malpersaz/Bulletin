@@ -53,12 +53,13 @@ if ($isLocal) {
 $site['js'] = 'templates/base_static/js/';
 $site['lang'] = 'tr';
 $site['default_lang'] = $site['lang'];
+$site['timezone'] = 'Europe/Istanbul';
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.30';
+$site['version'] = '1.0.31';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');
@@ -107,6 +108,11 @@ if (file_exists($localSiteConfig)) {
     }
 }
 
+// Enforce configured timezone across the framework
+if (!empty($site['timezone'])) {
+    date_default_timezone_set($site['timezone']);
+}
+
 // Site theme
 Registry::add('app_template', $site['app_template']);
 // Admin theme
@@ -118,6 +124,8 @@ Registry::add('app_default_function', 'index');
 // Site language
 Registry::add('lang', $site['lang']);
 Registry::add('default_lang', $site['default_lang']);
+// Site timezone
+Registry::add('timezone', $site['timezone'] ?? 'Europe/Istanbul');
 
 Registry::add('site_config', $site);
 unset($site);
