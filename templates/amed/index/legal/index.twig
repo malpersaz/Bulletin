@@ -11,7 +11,7 @@
 {% set page_logo_asset = site.iaddress ~ 'mod_settings/' ~ site_fallback_icon %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.saddress }}legal"/>
+	<link rel="canonical" href="{{ site.address }}legal"/>
 {% endblock %}
 
 {% block title %}
@@ -24,7 +24,7 @@
 
 {% block meta_tags %}
 	<meta property="og:type" content="website">
-	<meta property="og:url" content="{{ site.saddress }}legal">
+	<meta property="og:url" content="{{ site.address }}legal">
 	<meta property="og:title" content="{{ page_meta_title }}">
 	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
 	<meta property="og:site_name" content="{{ site.name }}">
@@ -43,7 +43,7 @@
 	<meta property="og:locale" content="{{ og_locale }}">
 
 	<meta name="twitter:card" content="summary">
-	<meta name="twitter:url" content="{{ site.saddress }}legal">
+	<meta name="twitter:url" content="{{ site.address }}legal">
 	<meta name="twitter:title" content="{{ page_meta_title }}">
 	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
 {% endblock %}
@@ -55,13 +55,13 @@
 		  "@graph": [
 		    {
 		      "@type": "AboutPage",
-		      "@id": {{ (site.saddress ~ 'legal#webpage')|json_encode|raw }},
-		      "url": {{ (site.saddress ~ 'legal')|json_encode|raw }},
+		      "@id": {{ (site.address ~ 'legal#webpage')|json_encode|raw }},
+		      "url": {{ (site.address ~ 'legal')|json_encode|raw }},
 		      "name": {{ page_meta_title|json_encode|raw }},
 		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
 		      "isPartOf": {
 		        "@type": "WebSite",
-		        "@id": {{ (site.saddress ~ '#website')|json_encode|raw }},
+		        "@id": {{ (site.address ~ '#website')|json_encode|raw }},
 		        "name": {{ site.name|json_encode|raw }},
 		        "url": {{ site.address|json_encode|raw }}
 		      },
@@ -72,20 +72,20 @@
 		            "@type": "ListItem",
 		            "position": 1,
 		            "name": {{ lang.index.home|json_encode|raw }},
-		            "item": {{ site.saddress|json_encode|raw }}
+		            "item": {{ site.address|json_encode|raw }}
 		          },
 		          {
 		            "@type": "ListItem",
 		            "position": 2,
 		            "name": {{ page_meta_title|json_encode|raw }},
-		            "item": {{ (site.saddress ~ 'legal')|json_encode|raw }}
+		            "item": {{ (site.address ~ 'legal')|json_encode|raw }}
 		          }
 		        ]
 		      }
 		    },
 		    {
 		      "@type": "NewsMediaOrganization",
-		      "@id": {{ (site.saddress ~ '#organization')|json_encode|raw }},
+		      "@id": {{ (site.address ~ '#organization')|json_encode|raw }},
 		      "name": {{ site.name|json_encode|raw }},
 		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
 		      {% if site.vat_number is defined and site.vat_number is not empty %}"vatID": {{ site.vat_number|json_encode|raw }},{% endif %}
@@ -93,12 +93,12 @@
 		      {% if site.central_registration_number is defined and site.central_registration_number is not empty %}"leiCode": {{ site.central_registration_number|json_encode|raw }},{% endif %}
 		      {% if site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_encode|raw }},{% endif %}
 		      {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_encode|raw }},{% endif %}
-		      "publishingPrinciples": {{ (site.saddress ~ 'editorial-policy')|json_encode|raw }},
-		      "correctionsPolicy": {{ (site.saddress ~ 'editorial-policy#corrections')|json_encode|raw }},
-		      "actionableFeedbackPolicy": {{ (site.saddress ~ 'editorial-policy')|json_encode|raw }},
-		      "ethicsPolicy": {{ (site.saddress ~ 'compliance')|json_encode|raw }},
-		      "diversityPolicy": {{ (site.saddress ~ 'compliance')|json_encode|raw }},
-		      "masthead": {{ (site.saddress ~ 'legal')|json_encode|raw }},
+		      "publishingPrinciples": {{ (site.address ~ 'editorial-policy')|json_encode|raw }},
+		      "correctionsPolicy": {{ (site.address ~ 'editorial-policy#corrections')|json_encode|raw }},
+		      "actionableFeedbackPolicy": {{ (site.address ~ 'editorial-policy')|json_encode|raw }},
+		      "ethicsPolicy": {{ (site.address ~ 'compliance')|json_encode|raw }},
+		      "diversityPolicy": {{ (site.address ~ 'compliance')|json_encode|raw }},
+		      "masthead": {{ (site.address ~ 'legal')|json_encode|raw }},
 		      "url": {{ site.address|json_encode|raw }},
 		      "logo": {{ page_logo_asset|json_encode|raw }}
 		    }
@@ -113,7 +113,7 @@
 		<nav aria-label="{{ lang.index.home }}">
 			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-					<a itemprop="item" href="{{ site.saddress }}">
+					<a itemprop="item" href="{{ site.address }}">
 						<span itemprop="name">{{ lang.index.home }}</span>
 					</a>
 					<meta itemprop="position" content="1"/>

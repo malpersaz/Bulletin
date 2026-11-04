@@ -1,5 +1,23 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.30 (2026-11-04)
+- **Statutory Policy Canonicalization & Multi-Language URL De-Duplication Shield (`mod/index/helper/legal.helper.php`, `mod/index/index.php`, `templates/amed/partials/_legal_nav.twig`, `templates/amed/index/footer.twig`, `templates/amed/index/legal/*.twig`, `lib/LlmsService.class.php`, `config/site.config.php`, `docs/VERSION.md`)**:
+  - **Deterministic 301 Moved Permanently Canonical Redirects (`mod/index/helper/legal.helper.php`)**:
+    - Enforced strict single-URL canonicalization across all statutory legal & policy routes (`security-policy`, `privacy-policy`, `terms-of-service`, `cookie-policy`, `editorial-policy`, `accessibility`, `compliance`, `legal`, `contact`).
+    - Added an immediate HTTP 301 Moved Permanently redirect whenever any policy endpoint is requested with a language subpath (e.g. `/ku/security-policy`, `/tr/privacy-policy`, `/en/terms-of-service`), permanently routing search bots (Googlebot) and crawlers to the authoritative root URL (`https://amedbulten.com/security-policy`).
+  - **Dynamic XML Sitemap Cleansing (`mod/index/index.php`)**:
+    - Restricted statutory policy `<url>` entries in `pageSitemap()` exclusively to the default root language sitemap (`pageSitemap.xml`), completely eliminating duplicate policy URL leaks across language child sitemaps (`/ku/pageSitemap.xml`, `/tr/pageSitemap.xml`, etc.).
+    - Ensured policy `<loc>` values strictly build using `$this->site['address']` without language subpaths.
+  - **Canonical Tags & Schema URL Standardization (`templates/amed/index/legal/*.twig`)**:
+    - Replaced all dynamic `{{ site.saddress }}` prefixes with immutable root `{{ site.address }}` across all 9 statutory Twig templates (`security_policy.twig`, `privacy_policy.twig`, `terms_of_service.twig`, `cookie_policy.twig`, `editorial_policy.twig`, `accessibility.twig`, `compliance.twig`, `index.twig`, `contact.twig`).
+    - Standardized `<link rel="canonical">`, `og:url`, `twitter:url`, BreadcrumbList, and Schema.org JSON-LD definitions to strictly point to root policy URLs.
+  - **Internal Navigation & Footer Link Sanitization (`templates/amed/partials/_legal_nav.twig`, `templates/amed/index/footer.twig`)**:
+    - Updated navigation pills and footer links across the site to link directly to `{{ site.address }}<slug>` instead of `site.saddress`, preventing crawlers from ever discovering or traversing language-prefixed policy URLs.
+  - **LLMS Service Discovery Standardization (`lib/LlmsService.class.php`)**:
+    - Standardized `llms.txt` and `llms-full.txt` statutory policy links to use `$this->baseUrl` directly instead of language-specific `buildUrl()`.
+  - **Framework Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.30` across `config/site.config.php` and `docs/VERSION.md`.
+
 ## v1.0.29 (2026-11-04)
 - **Super Polish US Elections Live Tracker Widget & Top Spacing Architecture (`templates/amed/index/mod_news/us_elections.twig`, `templates/amed/static/css/us-elections.css`, `lib/UsElectionDataService.class.php`, `config/site.config.php`, `docs/VERSION.md`)**:
   - **Top Spacing & Menu Separation (`templates/amed/static/css/us-elections.css`)**:

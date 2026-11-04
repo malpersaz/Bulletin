@@ -1119,7 +1119,7 @@ class index_mod extends indexBase
             }
         }
 
-        if ($page === 1) {
+        if ($page === 1 && $this->site['lang'] == Registry::get('default_lang')) {
             $policySlugs = [
                 'legal',
                 'editorial-policy',
@@ -1133,7 +1133,7 @@ class index_mod extends indexBase
             ];
             foreach ($policySlugs as $pslug) {
                 echo '<url>
-                          <loc>' . $this->site['saddress'] . $pslug . '</loc>
+                          <loc>' . rtrim((string) $this->site['address'], '/') . '/' . $pslug . '</loc>
                           <priority>0.60</priority>
                     </url>';
             }

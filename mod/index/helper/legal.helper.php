@@ -135,6 +135,24 @@ class legal_helper extends indexBase
 
         $policy = $registry[$resolvedKey];
 
+        // 301 Canonical Normalization: Ensure statutory legal & policy pages never serve under language prefixes (e.g. /ku/security-policy)
+        $isAjax = (
+            (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'))
+        );
+
+        if (PHP_SAPI !== 'cli' && !$isAjax && !headers_sent()) {
+            $activeLangs = Registry::has('active_langs') ? (array) Registry::get('active_langs') : [];
+            $rawPath0 = isset($this->url->path[0]) ? (string) $this->url->path[0] : '';
+            if (!empty($rawPath0) && in_array($rawPath0, $activeLangs, true)) {
+                $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $policy['canonical_slug'];
+                $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . $targetUrl . $queryString);
+                exit;
+            }
+        }
+
         $pageRecord = $this->resolvePolicyPageRecord($policy);
 
         $title = (!empty($pageRecord['name']))
@@ -151,7 +169,7 @@ class legal_helper extends indexBase
                     ? $this->lang['index'][$policy['desc_key']]
                     : (!empty($this->site['description']) ? $this->site['description'] : '')));
 
-        $canonicalUrl = $this->site['saddress'] . $policy['canonical_slug'];
+        $canonicalUrl = rtrim((string) $this->site['address'], '/') . '/' . $policy['canonical_slug'];
 
         if ($resolvedKey === 'cookies') {
             // Fetch dynamic cookies grouped by category from mod_settings_cookies

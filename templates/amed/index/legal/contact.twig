@@ -7,7 +7,7 @@
 
 {% set page_meta_title = policy_title is defined and policy_title is not empty ? policy_title : lang.index.contact_us %}
 {% set page_meta_description = site.description is defined and site.description is not empty ? site.description : lang.index.legal_notice_desc %}
-{% set page_canonical_url = canonical_url is defined and canonical_url is not empty ? canonical_url : (site.saddress ~ 'contact') %}
+{% set page_canonical_url = canonical_url is defined and canonical_url is not empty ? canonical_url : (site.address ~ 'contact') %}
 {% set site_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
 {% set page_logo_asset = site.iaddress ~ 'mod_settings/' ~ site_fallback_icon %}
 
@@ -48,7 +48,7 @@
 		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
 		      "isPartOf": {
 		        "@type": "WebSite",
-		        "@id": {{ (site.saddress ~ '#website')|json_encode|raw }},
+		        "@id": {{ (site.address ~ '#website')|json_encode|raw }},
 		        "name": {{ site.name|json_encode|raw }},
 		        "url": {{ site.address|json_encode|raw }}
 		      },
@@ -59,7 +59,7 @@
 		            "@type": "ListItem",
 		            "position": 1,
 		            "name": {{ lang.index.home|json_encode|raw }},
-		            "item": {{ site.saddress|json_encode|raw }}
+		            "item": {{ site.address|json_encode|raw }}
 		          },
 		          {
 		            "@type": "ListItem",
@@ -72,7 +72,7 @@
 		    },
 		    {
 		      "@type": "NewsMediaOrganization",
-		      "@id": {{ (site.saddress ~ '#organization')|json_encode|raw }},
+		      "@id": {{ (site.address ~ '#organization')|json_encode|raw }},
 		      "name": {{ site.name|json_encode|raw }},
 		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
 		      {% if site.mail is defined and site.mail is not empty %}"email": {{ site.mail|json_encode|raw }},{% elseif site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_encode|raw }},{% endif %}
@@ -111,7 +111,7 @@
 		<nav aria-label="{{ lang.index.home }}">
 			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-					<a itemprop="item" href="{{ site.saddress }}">
+					<a itemprop="item" href="{{ site.address }}">
 						<span itemprop="name">{{ lang.index.home }}</span>
 					</a>
 					<meta itemprop="position" content="1"/>
@@ -403,7 +403,7 @@
 								</div>
 							</div>
 							<div class="policy-footer-action">
-								<a href="{{ site.saddress }}legal" class="btn btn-primary btn-sm rounded-pill px-4">
+								<a href="{{ site.address }}legal" class="btn btn-primary btn-sm rounded-pill px-4">
 									<i class="bi bi-building me-1" aria-hidden="true"></i>
 									{{ lang.index.legal_nav_masthead }}
 								</a>

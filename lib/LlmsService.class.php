@@ -224,14 +224,14 @@ class LlmsService
         $md[] = "- [Master XML Sitemap](" . $this->baseUrl . "sitemap.xml): Machine-readable XML index of all articles, publications, and pages.";
         $md[] = "- [News XML Sitemap](" . $this->buildUrl($lang, 'newsSitemap.xml') . "): Dedicated Google News compatible XML feed.";
         $md[] = "- [Full Aggregated Context](" . $this->buildUrl($lang, 'llms-full.txt') . "): Complete plain-text news and publication archive for direct LLM context-window loading and RAG pipelines.";
-        $md[] = "- [Imprint & Masthead (Künye)](" . $this->buildUrl($lang, 'legal') . "): Statutory publishing credentials, corporate registry, and press masthead.";
-        $md[] = "- [Editorial Principles & Right of Reply](" . $this->buildUrl($lang, 'editorial-policy') . "): Journalistic fact-checking standards, corrections protocol, and statutory right of reply.";
-        $md[] = "- [Privacy Policy](" . $this->buildUrl($lang, 'privacy-policy') . "): GDPR and statutory personal data protection declarations and subject rights.";
-        $md[] = "- [Cookie Policy](" . $this->buildUrl($lang, 'cookie-policy') . "): Interactive cookie preferences and categorization breakdown.";
-        $md[] = "- [Terms of Service](" . $this->buildUrl($lang, 'terms-of-service') . "): Reader terms, copyright syndication, and acceptable usage rules.";
-        $md[] = "- [Accessibility Statement](" . $this->buildUrl($lang, 'accessibility') . "): WCAG 2.1 Level AA conformance and accessibility features.";
-        $md[] = "- [Security Policy](" . $this->buildUrl($lang, 'security-policy') . "): Transport encryption, application safeguards, and vulnerability disclosure.";
-        $md[] = "- [Press Ethics & Compliance](" . $this->buildUrl($lang, 'compliance') . "): Journalistic code of ethics, commercial separation, and whistleblower channels.";
+        $md[] = "- [Imprint & Masthead (Künye)](" . $this->baseUrl . "legal): Statutory publishing credentials, corporate registry, and press masthead.";
+        $md[] = "- [Editorial Principles & Right of Reply](" . $this->baseUrl . "editorial-policy): Journalistic fact-checking standards, corrections protocol, and statutory right of reply.";
+        $md[] = "- [Privacy Policy](" . $this->baseUrl . "privacy-policy): GDPR and statutory personal data protection declarations and subject rights.";
+        $md[] = "- [Cookie Policy](" . $this->baseUrl . "cookie-policy): Interactive cookie preferences and categorization breakdown.";
+        $md[] = "- [Terms of Service](" . $this->baseUrl . "terms-of-service): Reader terms, copyright syndication, and acceptable usage rules.";
+        $md[] = "- [Accessibility Statement](" . $this->baseUrl . "accessibility): WCAG 2.1 Level AA conformance and accessibility features.";
+        $md[] = "- [Security Policy](" . $this->baseUrl . "security-policy): Transport encryption, application safeguards, and vulnerability disclosure.";
+        $md[] = "- [Press Ethics & Compliance](" . $this->baseUrl . "compliance): Journalistic code of ethics, commercial separation, and whistleblower channels.";
         $md[] = "";
 
         // Append Full Text in Full Mode

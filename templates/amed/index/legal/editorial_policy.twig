@@ -9,7 +9,7 @@
 {% set page_meta_description = lang.index.editorial_policy_subtitle is defined and lang.index.editorial_policy_subtitle is not empty ? lang.index.editorial_policy_subtitle : site.description %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.saddress }}editorial-policy"/>
+	<link rel="canonical" href="{{ site.address }}editorial-policy"/>
 {% endblock %}
 
 {% block title %}
@@ -22,7 +22,7 @@
 
 {% block meta_tags %}
 	<meta property="og:type" content="website">
-	<meta property="og:url" content="{{ site.saddress }}editorial-policy">
+	<meta property="og:url" content="{{ site.address }}editorial-policy">
 	<meta property="og:title" content="{{ page_meta_title }}">
 	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
 	<meta property="og:site_name" content="{{ site.name }}">
@@ -41,7 +41,7 @@
 	<meta property="og:locale" content="{{ og_locale }}">
 
 	<meta name="twitter:card" content="summary">
-	<meta name="twitter:url" content="{{ site.saddress }}editorial-policy">
+	<meta name="twitter:url" content="{{ site.address }}editorial-policy">
 	<meta name="twitter:title" content="{{ page_meta_title }}">
 	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
 {% endblock %}
@@ -53,7 +53,7 @@
 		  "@type": "WebPage",
 		  "name": {{ page_meta_title|json_encode|raw }},
 		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
-		  "url": {{ (site.saddress ~ 'editorial-policy')|json_encode|raw }},
+		  "url": {{ (site.address ~ 'editorial-policy')|json_encode|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
 		    "name": {{ site.name|json_encode|raw }},
@@ -66,13 +66,13 @@
 			"@type": "ListItem",
 			"position": 1,
 			"name": {{ lang.index.home|json_encode|raw }},
-			"item": {{ site.saddress|json_encode|raw }}
+			"item": {{ site.address|json_encode|raw }}
 		      },
 		      {
 			"@type": "ListItem",
 			"position": 2,
 			"name": {{ page_meta_title|json_encode|raw }},
-			"item": {{ (site.saddress ~ 'editorial-policy')|json_encode|raw }}
+			"item": {{ (site.address ~ 'editorial-policy')|json_encode|raw }}
 		      }
 		    ]
 		  }
@@ -86,7 +86,7 @@
 		<nav aria-label="{{ lang.index.home }}">
 			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-					<a itemprop="item" href="{{ site.saddress }}">
+					<a itemprop="item" href="{{ site.address }}">
 						<span itemprop="name">{{ lang.index.home }}</span>
 					</a>
 					<meta itemprop="position" content="1"/>
@@ -224,7 +224,7 @@
 					</div>
 				</div>
 				<div class="policy-footer-action">
-					<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
+					<a href="{{ site.address }}contact" class="btn btn-primary rounded-pill px-4">
 						<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
 					</a>
 				</div>
