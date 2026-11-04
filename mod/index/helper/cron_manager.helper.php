@@ -110,7 +110,11 @@ class cron_manager_helper extends indexBase
             $target = strtolower(trim((string) ($_GET['job'] ?? ($_GET['target'] ?? 'all'))));
         }
 
-        if (in_array($target, ['market', 'sports', 'all'], true)) {
+        if ($target === 'us_elections' || $target === 'us-elections') {
+            $target = 'elections';
+        }
+
+        if (in_array($target, ['market', 'sports', 'elections', 'all'], true)) {
             return $target;
         }
 
@@ -156,18 +160,20 @@ class cron_manager_helper extends indexBase
             echo json_encode([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Invalid cron target. Allowed targets: market, sports, all.',
+                'message' => 'Invalid cron target. Allowed targets: market, sports, elections, all.',
                 'timestamp' => date('c'),
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             exit;
         }
 
         $forceSports = isset($_GET['force']) && ($_GET['force'] === '1' || $_GET['force'] === 'true');
+        $forceElections = isset($_GET['force']) && ($_GET['force'] === '1' || $_GET['force'] === 'true');
         $startTime = microtime(true);
         $tasks = [];
 
         require_once lib_dir . 'MarketDataService.class.php';
         require_once lib_dir . 'SportsDataService.class.php';
+        require_once lib_dir . 'UsElectionDataService.class.php';
 
         if ($target === 'market' || $target === 'all') {
             try {
@@ -199,6 +205,26 @@ class cron_manager_helper extends indexBase
                 ];
             } catch (\Throwable $e) {
                 $tasks['sports'] = [
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ];
+            }
+        }
+
+        if ($target === 'elections' || $target === 'all') {
+            try {
+                $electionsRes = UsElectionDataService::refreshData($forceElections);
+                $tasks['elections'] = [
+                    'status' => 'success',
+                    'mode' => $forceElections ? 'forced' : 'cached_or_fresh',
+                    'senate_dem' => $electionsRes['senate']['democrats'] ?? null,
+                    'senate_rep' => $electionsRes['senate']['republicans'] ?? null,
+                    'house_dem' => $electionsRes['house']['democrats'] ?? null,
+                    'house_rep' => $electionsRes['house']['republicans'] ?? null,
+                    'updated_at' => $electionsRes['updated_at'] ?? time(),
+                ];
+            } catch (\Throwable $e) {
+                $tasks['elections'] = [
                     'status' => 'error',
                     'message' => $e->getMessage(),
                 ];

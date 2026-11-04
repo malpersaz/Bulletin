@@ -40,6 +40,7 @@ BUNDLE_MANIFEST: Dict[str, List[str]] = {
         "templates/amed/static/css/latest-videos.css",
         "templates/amed/static/css/market-rates.css",
         "templates/amed/static/css/event-agenda.css",
+        "templates/amed/static/css/us-elections.css",
     ],
     "templates/amed/static/css/homepage-all.min.css": [
         "templates/amed/static/css/bootstrap.min.css",
@@ -58,6 +59,7 @@ BUNDLE_MANIFEST: Dict[str, List[str]] = {
         "templates/amed/static/css/latest-videos.css",
         "templates/amed/static/css/market-rates.css",
         "templates/amed/static/css/event-agenda.css",
+        "templates/amed/static/css/us-elections.css",
     ],
 }
 

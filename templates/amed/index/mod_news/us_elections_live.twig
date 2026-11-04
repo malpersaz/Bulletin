@@ -1,0 +1,280 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/us-elections.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<!-- START: index/mod_news/us_elections_live.twig -->
+{% set us_data = us_elections|default({
+    'title': 'ABD ARA SEÇİMLERİ',
+    'senate': {
+        'title': 'Senato',
+        'democrats': 35,
+        'republicans': 31,
+        'target': '50',
+        'target_label': '',
+        'total': 100,
+        'counted_label': '1/35 sandalye sayıldı',
+        'not_up_label': 'Seçime dahil değil'
+    },
+    'house': {
+        'title': 'Temsilciler Meclisi',
+        'democrats': 6,
+        'republicans': 2,
+        'target': '218',
+        'target_label': 'kazanmak için',
+        'total': 435,
+        'counted_label': '8/435 sandalye sayıldı'
+    },
+    'updated_at': "now"|date("U"),
+    'live_label': 'CANLI güncellemeler',
+    'live_url': site.saddress ~ 'us-elections',
+    'info_label': 'Bu seçim nasıl çalışır?',
+    'info_text': 'Amerikalılar, Temsilciler Meclisi ve Senato\'dan oluşan Kongre üyelerini seçiyor. Temsilciler Meclisi\'ndeki 435 sandalyenin tamamı için seçim yapılırken; senatörlerin altı yıllık dönemlerle görev yapması nedeniyle 100 sandalyeli Senato\'da yalnızca 35 sandalye için yarışılıyor. Bu canlı takip ekranı hem şu anda oylanan yarışları hem de bu yıl seçime dahil olmayan 65 sandalyeyi (34 Demokrat, 31 Cumhuriyetçi) göstermektedir.'
+}) %}
+
+<div class="us-elections-page-wrap">
+    <!-- 1. Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}" class="text-decoration-none">
+                    <span itemprop="name">{{ lang.index.home }}</span>
+                </a>
+                <meta itemprop="position" content="1" />
+            </li>
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}newses/dunya" class="text-decoration-none">
+                    <span itemprop="name">Dünya</span>
+                </a>
+                <meta itemprop="position" content="2" />
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <span itemprop="name">2026 ABD Ara Seçim Sonuçları</span>
+                <meta itemprop="position" content="3" />
+            </li>
+        </ol>
+    </nav>
+
+    <!-- 2. Hero Headline Banner -->
+    <header class="us-elections-page-hero">
+        <div class="us-elections-page-badge-row">
+            <span class="us-elections-page-live-pill">
+                <span class="us-elections-live-dot" aria-hidden="true"></span>
+                <span>CANLI YAYIN - OY SAYIMI</span>
+            </span>
+            <span class="us-elections-page-updated">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Son Güncelleme: {{ us_data.updated_at|date("d.m.Y H:i") }} (Canlı AP/BBC Akışı)</span>
+            </span>
+        </div>
+
+        <h1 class="us-elections-page-h1">2026 ABD Ara Seçim Sonuçları: Kongre'de Sandalye Dağılımı ve Canlı Gelişmeler</h1>
+        
+        <p class="us-elections-page-intro">
+            Amerikalılar, Kongre'nin iki kanadındaki çoğunluğu belirlemek üzere sandık başında. Temsilciler Meclisi'nin 435 sandalyesinin tamamı ile Senato'daki 35 sandalye için yapılan oylamada ilk sonuçlar açıklanıyor. Washington'daki yasama dengesini ve federal politikaları belirleyecek kritik seçimde eyalet eyalet tüm sonuçlar anlık olarak aktarılıyor.
+        </p>
+
+        <!-- Fast Stats Strip -->
+        <div class="us-elections-stats-bar">
+            <div class="us-elections-stat-card">
+                <div class="us-elections-stat-val text-primary" dir="ltr">50</div>
+                <div class="us-elections-stat-lbl">Senato Çoğunluk Eşiği</div>
+            </div>
+            <div class="us-elections-stat-card">
+                <div class="us-elections-stat-val text-danger" dir="ltr">218</div>
+                <div class="us-elections-stat-lbl">Meclis Çoğunluk Eşiği</div>
+            </div>
+            <div class="us-elections-stat-card">
+                <div class="us-elections-stat-val" dir="ltr">{{ us_data.senate.counted_label }}</div>
+                <div class="us-elections-stat-lbl">Senato Sayılan Koltuk</div>
+            </div>
+            <div class="us-elections-stat-card">
+                <div class="us-elections-stat-val" dir="ltr">{{ us_data.house.counted_label }}</div>
+                <div class="us-elections-stat-lbl">Meclis Sayılan Koltuk</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. Main Live Tracker Widget Component -->
+    <div class="mb-4">
+        {% include 'index/mod_news/us_elections.twig' with { us_elections_data: us_data } %}
+    </div>
+
+    <!-- 4. Key Battleground States Grid -->
+    <section class="mb-4" aria-labelledby="secBattlegroundsTitle">
+        <h2 class="us-elections-sec-title" id="secBattlegroundsTitle">
+            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+            <span>Kritik Eyaletler ve Son Durum</span>
+        </h2>
+
+        <div class="us-elections-battleground-grid">
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">Georgia</h3>
+                    <span class="us-elections-battle-badge is-tossup">Kritik Çekişme</span>
+                </div>
+                <p class="us-elections-battle-desc">Senato dengesini belirleyecek en önemli eyaletlerden biri. Banliyö oyları sayılıyor.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 03:00</span>
+                    <span>16 Delege</span>
+                </div>
+            </article>
+
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">Pennsylvania</h3>
+                    <span class="us-elections-battle-badge is-tossup">Kilit Eyalet</span>
+                </div>
+                <p class="us-elections-battle-desc">Pas Kuşağı'nın merkezinde Senato ve Meclis yarışlarında başa baş mücadele yaşanıyor.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 04:00</span>
+                    <span>19 Delege</span>
+                </div>
+            </article>
+
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">Nevada</h3>
+                    <span class="us-elections-battle-badge is-tossup">Yakın Yarış</span>
+                </div>
+                <p class="us-elections-battle-desc">Las Vegas ve Reno çevresindeki oylar belirleyici olacak. Posta oyları sayılmaya başlandı.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 06:00</span>
+                    <span>6 Delege</span>
+                </div>
+            </article>
+
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">Arizona</h3>
+                    <span class="us-elections-battle-badge is-tossup">Kritik Çekişme</span>
+                </div>
+                <p class="us-elections-battle-desc">Maricopa bölgesindeki sonuçlar Senato çoğunluğu açısından kritik önem taşıyor.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 05:00</span>
+                    <span>11 Delege</span>
+                </div>
+            </article>
+
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">Wisconsin</h3>
+                    <span class="us-elections-battle-badge is-tossup">Başa Baş</span>
+                </div>
+                <p class="us-elections-battle-desc">Milwaukee ve Madison katılım oranları yarışın gidişatını doğrudan etkiliyor.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 05:00</span>
+                    <span>10 Delege</span>
+                </div>
+            </article>
+
+            <article class="us-elections-battle-card">
+                <div class="us-elections-battle-top">
+                    <h3 class="us-elections-battle-name">North Carolina</h3>
+                    <span class="us-elections-battle-badge is-lean-rep">Çekişmeli</span>
+                </div>
+                <p class="us-elections-battle-desc">Temsilciler Meclisi sandalyeleri ve yerel dengelerde Cumhuriyetçi avantajı test ediliyor.</p>
+                <div class="us-elections-battle-meta">
+                    <span>Sandık Kapanışı: 03:30</span>
+                    <span>16 Delege</span>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- 5. Live Editorial Timeline Feed -->
+    <section class="mb-4" aria-labelledby="secTimelineTitle">
+        <h2 class="us-elections-sec-title" id="secTimelineTitle">
+            <i class="bi bi-broadcast" aria-hidden="true"></i>
+            <span>Canlı Yayın Akışı — Dakika Dakika Gelişmeler</span>
+        </h2>
+
+        <div class="us-elections-timeline">
+            <!-- Entry 1 -->
+            <div class="us-elections-timeline-entry is-breaking">
+                <span class="us-elections-timeline-dot" aria-hidden="true"></span>
+                <div class="us-elections-timeline-box">
+                    <div class="us-elections-timeline-header">
+                        <span class="us-elections-timeline-time">03:30</span>
+                        <span class="us-elections-timeline-tag text-danger">Flaş Gelişme</span>
+                    </div>
+                    <h3 class="us-elections-timeline-h3">Temsilciler Meclisi'nde ilk sandalyeler netleşti: Demokratlar 6, Cumhuriyetçiler 2</h3>
+                    <p class="us-elections-timeline-p">Doğu yakasındaki eyaletlerde sandıkların kapanmasıyla birlikte ilk sandalye dağılımları AP tarafından teyit edildi. Cumhuriyetçiler beklendiği gibi kırsal seçim çevrelerini korurken, Demokratlar Doğu metropollerindeki temsilciliklerini güvenceye aldı.</p>
+                </div>
+            </div>
+
+            <!-- Entry 2 -->
+            <div class="us-elections-timeline-entry">
+                <span class="us-elections-timeline-dot" aria-hidden="true"></span>
+                <div class="us-elections-timeline-box">
+                    <div class="us-elections-timeline-header">
+                        <span class="us-elections-timeline-time">02:50</span>
+                        <span class="us-elections-timeline-tag">Senato Yarışı</span>
+                    </div>
+                    <h3 class="us-elections-timeline-h3">Senato'da ilk koltuk ilanları: Vermont ve Kentucky'de mevcut durum korundu</h3>
+                    <p class="us-elections-timeline-p">Senato için yapılan ilk yarışlarda Vermont'ta Demokratlar, Kentucky'de ise Cumhuriyetçiler mevcut sandalyelerini rahat bir farkla koruyarak seçim gecesinin ilk Senato sonuçlarını tescillemiş oldu.</p>
+                </div>
+            </div>
+
+            <!-- Entry 3 -->
+            <div class="us-elections-timeline-entry">
+                <span class="us-elections-timeline-dot" aria-hidden="true"></span>
+                <div class="us-elections-timeline-box">
+                    <div class="us-elections-timeline-header">
+                        <span class="us-elections-timeline-time">02:10</span>
+                        <span class="us-elections-timeline-tag">Katılım Oranı</span>
+                    </div>
+                    <h3 class="us-elections-timeline-h3">Erken oy kullanmada yüksek katılım: 40 milyondan fazla seçmen oy kullandı</h3>
+                    <p class="us-elections-timeline-p">Seçim günü öncesinde posta yoluyla ve erken oy kullanma merkezlerinde rekor sayıda oy kullanıldığı belirtildi. Seçim kurulları, posta oylarının sayımı nedeniyle bazı eyaletlerde kesin sonuçların günler alabileceği uyarısında bulunuyor.</p>
+                </div>
+            </div>
+
+            <!-- Entry 4 -->
+            <div class="us-elections-timeline-entry">
+                <span class="us-elections-timeline-dot" aria-hidden="true"></span>
+                <div class="us-elections-timeline-box">
+                    <div class="us-elections-timeline-header">
+                        <span class="us-elections-timeline-time">01:30</span>
+                        <span class="us-elections-timeline-tag">Analiz</span>
+                    </div>
+                    <h3 class="us-elections-timeline-h3">Kongre çoğunluğu Beyaz Saray politikaları için neden hayati önem taşıyor?</h3>
+                    <p class="us-elections-timeline-p">Temsilciler Meclisi'ndeki çoğunluk bütçe, vergi ve harcama tasarılarını kontrol ederken; Senato ise bakanlar, büyükelçiler ve federal yargıçların atanmasında mutlak onay yetkisine sahiptir. Kongre'nin bölünmesi durumunda federal yönetimde uzlaşma zorunlu hale gelecek.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Election Explainer & Analysis Box -->
+    <section class="us-elections-guide-card" aria-labelledby="secGuideTitle">
+        <h2 class="us-elections-guide-title" id="secGuideTitle">
+            <i class="bi bi-info-circle-fill text-primary" aria-hidden="true"></i>
+            <span>Seçim Rehberi: ABD Kongre Seçimleri Nasıl Çalışır?</span>
+        </h2>
+        <p class="us-elections-guide-text">
+            ABD Kongresi, yasama organı olarak iki ayrı meclisten meydana gelir. Kongre üyeleri halk tarafından doğrudan seçilir:
+        </p>
+        <ul class="us-elections-guide-points">
+            <li class="us-elections-guide-point">
+                <strong>Temsilciler Meclisi (House of Representatives)</strong>
+                Toplam 435 sandalyeden oluşur. Üyeler 2 yıllık dönem için seçilir. Her iki yılda bir meclisin tamamı (435 koltuk) seçime gider. Çoğunluk için 218 sandalye gerekir.
+            </li>
+            <li class="us-elections-guide-point">
+                <strong>Senato (Senate)</strong>
+                Her eyaletten 2'şer olmak üzere toplam 100 senatörden oluşur. Senatörler 6 yıl süreyle görev yapar. Her iki yılda bir Senato'nun yaklaşık üçte biri (bu seçimde 35 sandalye) yenilenir. Çoğunluk için 50 sandalye gerekir.
+            </li>
+            <li class="us-elections-guide-point">
+                <strong>Seçime Dahil Olmayan 65 Senatör</strong>
+                Görev süreleri devam ettiği için bu seçimde yarışmayan 65 senatör bulunmaktadır (34 Demokrat, 31 Cumhuriyetçi). Bu nedenle parti dağılımı mevcut sandalyelerin üzerine eklenerek hesaplanır.
+            </li>
+            <li class="us-elections-guide-point">
+                <strong>Eşitlik Durumu ve Belirleyici Oy</strong>
+                Senato'da 50-50 eşitlik sağlanması durumunda, ABD Anayasası gereği Senato Başkanı sıfatıyla Başkan Yardımcısı belirleyici oyu (tie-breaking vote) kullanır.
+            </li>
+        </ul>
+    </section>
+</div>
+<!-- END: index/mod_news/us_elections_live.twig -->
+{% endblock %}

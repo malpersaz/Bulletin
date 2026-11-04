@@ -43,6 +43,10 @@ $url['cron'] = 'index/cron';
 $url['cron/'] = 'index/cron';
 $url['cron/(:any)'] = 'index/cron/$1';
 
+// US Midterm Elections Live Results Page
+$url['us-elections'] = 'index/us_elections';
+$url['us-elections/'] = 'index/us_elections';
+
 // Statutory Legal & Policy Routes
 $url['legal'] = 'index/legal';
 $url['legal/'] = 'index/legal';

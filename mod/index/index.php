@@ -99,6 +99,24 @@ class index_mod extends indexBase
         unset($cron);
     }
 
+    public function us_elections()
+    {
+        require_once lib_dir . 'UsElectionDataService.class.php';
+        $electionData = UsElectionDataService::getElectionData((string) ($this->site['lang'] ?? 'tr'));
+
+        $pageTitle = '2026 ABD Ara Seçim Sonuçları - Canlı Güncellemeler';
+        $d = [
+            'name' => $pageTitle,
+            'title' => $pageTitle . ' | ' . ($this->site['title'] ?? ''),
+            'keywords' => 'ABD seçimleri, 2026 ABD ara seçim sonuçları, Senato, Temsilciler Meclisi, canlı sonuçlar, US Midterm elections',
+            'description' => '2026 ABD ara seçimleri canlı sonuçları: Senato ve Temsilciler Meclisi oy sayımı, sandalye dağılımı, kritik eyaletler ve anlık gelişmeler.',
+        ];
+
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('us_elections', $electionData);
+        $this->theme->tpl('index/mod_news/us_elections_live');
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {
@@ -534,6 +552,12 @@ class index_mod extends indexBase
     {
         require_once lib_dir . 'SportsDataService.class.php';
         $t->ctx_set('super_league', SportsDataService::getSuperLeagueData((string) ($this->site['lang'] ?? 'tr')));
+    }
+
+    public function _us_elections($t)
+    {
+        require_once lib_dir . 'UsElectionDataService.class.php';
+        $t->ctx_set('us_elections', UsElectionDataService::getElectionData((string) ($this->site['lang'] ?? 'tr')));
     }
 
     public function _economy_news($t, $limit = 3)

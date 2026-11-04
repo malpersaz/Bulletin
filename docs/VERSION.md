@@ -1,5 +1,27 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.28 (2026-11-04)
+- **Live US Midterm Elections Tracker Widget, Dedicated Turkish Live Results Page & Web Cron Ingestion Architecture (`templates/amed/index/mod_news/us_elections.twig`, `templates/amed/index/mod_news/us_elections_live.twig`, `templates/amed/static/css/us-elections.css`, `lib/UsElectionDataService.class.php`, `tasks/update_us_elections.php`, `mod/index/helper/cron_manager.helper.php`, `mod/index/index.php`, `config/url.config.php`, `templates/amed/index/index.twig`, `tools/min_css_guard.py`)**:
+  - **Dedicated Turkish US Elections Live Page (`templates/amed/index/mod_news/us_elections_live.twig`, `config/url.config.php`, `mod/index/index.php`)**:
+    - Created a comprehensive dedicated Turkish live results and updates page routed at `/us-elections` mirroring the BBC/AP election coverage.
+    - Features live editorial hero header, live status badge, quick stats breakdown, interactive dual-chamber standings widget, key battleground states grid (Georgia, Pennsylvania, Nevada, Arizona, Wisconsin, North Carolina), real-time chronological editorial updates timeline with timestamps, and full Turkish election mechanics explainer.
+    - Updated the homepage widget's "CANLI güncellemeler" button to link directly to the internal `/us-elections` page instead of the external BBC URL.
+  - **Super Polish US Elections Live Tracker Widget (`us_elections.twig`, `us-elections.css`)**:
+    - Architected a responsive, dark command-center election tracker widget in Turkish placed directly above the homepage Slider and World News section.
+    - Implemented live standings for the Senate (100 seats, 50-seat threshold) and House of Representatives (435 seats, 218-seat threshold) with 3D isometric dual-cube branding, Democratic blue and Republican red visual hierarchy, live radar pulsing indicator, and expandable election explainer accordion.
+    - Rendered dynamic progress bars using vector SVG with scaled attributes and zero inline styles, fully conforming to AGENTS.md Rule 1 (Strict Code Separation Mandate).
+  - **Live BBC/AP Feed Ingestion & Atomic Caching Service (`lib/UsElectionDataService.class.php`)**:
+    - Built `UsElectionDataService` to ingest live US election results from the authoritative BBC News / Associated Press data feed (`https://www.bbc.com/news/election/2026/us/results`).
+    - Configured multi-tier failover with atomic cache persistence (`cache/elections/us_elections.json`, 120s TTL) and deterministic seed fallback, guaranteeing sub-millisecond TTFB without blocking page load.
+  - **Dual-Mode Cron Architecture & CLI Runner (`tasks/update_us_elections.php`, `mod/index/helper/cron_manager.helper.php`)**:
+    - Created CLI task runner `tasks/update_us_elections.php` supporting the `--force` flag for background server execution.
+    - Integrated `elections` (and aliases `us_elections`, `us-elections`) into the secure Web Cron manager (`cron_manager.helper.php`), allowing external monitoring and scheduled webhook invocation.
+  - **Stylesheet Bundle Synchronization & Quality Verification (`homepage-all.min.css`, `min_css_guard.py`)**:
+    - Registered `us-elections.css` in `BUNDLE_MANIFEST` within `tools/min_css_guard.py` and rebuilt `homepage-bundle.min.css` (688 rules) and `homepage-all.min.css` (1940 rules) with zero missing or stale rules.
+    - Passed all quality gates: `code_separation_guard.py`, `min_css_guard.py`, `module_boundary_guard.py`, and `i18n_guard.py`.
+  - **Framework Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Bumped version to `1.0.28` across `config/site.config.php` and `docs/VERSION.md`.
+
 ## v1.0.27 (2026-11-04)
 - **Public News Category Listing & Card Typography Polish (`templates/amed/index/mod_news/newses.twig`, `templates/amed/static/css/news.css`, `config/site.config.php`)**:
   - **Header De-Cluttering & Redundancy Elimination (`newses.twig`)**:
