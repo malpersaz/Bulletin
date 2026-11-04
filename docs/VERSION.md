@@ -1,5 +1,17 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.37 (2026-11-04)
+- **Latest News Stream Daily Filter & Unbounded Display Protocol (`templates/amed/index/mod_news/latest_news.twig`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/index.php`, `mod/index/index.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Unbounded Today's News Display (`templates/amed/index/mod_news/latest_news.twig`)**:
+    - Removed arbitrary 6-item count constraint from homepage latest news grid widget by passing `limit = 0`.
+    - Updated query execution in `_latest_news` helper: when `$limit <= 0`, omitted the SQL `LIMIT` clause to fetch and render all qualifying articles published today.
+  - **Strict Calendar Day Filtering (`mod/index/helper/mod_news.helper.php`, `mod/index/helper/index.php`, `mod/index/index.php`)**:
+    - Added `$onlyToday = true` boolean parameter to `_latest_news()` controller and helpers.
+    - When enabled, enforced `created_at >= 'YYYY-MM-DD 00:00:00'` alongside existing publication date threshold (`created_at <= NOW`), ensuring exclusively articles from the start of the current calendar day are listed, shielding prior days' archives and scheduled future articles.
+    - Preserved existing multi-lingual category exclusions (`spor`, `dünya`, `ortadoğu`, `ekonomi`) and child hierarchy resolution.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.37`.
+
 ## v1.0.36 (2026-11-04)
 - **SEO & Google Technical Health Remediation Protocol (`lib/Database/Adapter/PDO_MYSQL.php`, `lib/Database/DatabaseException.php`, `lib/GoogleIndexingService.class.php`, `lib/Helper.class.php`, `lib/McpCrudToolsBase.class.php`, `lib/McpNewsTools.class.php`, `mod/index/index.php`, `mod/mod_news/index.php`, `mod/mod_news/model/newses.model.php`, `mod/mod_publication/model/publications.model.php`, `robots.php`, `robots.txt`, `config/google.config.php`, `config/site.config.php`, `config/site.config.example.php`, `templates/amed/layouts/base.twig`, `templates/amed/index/index.twig`, `templates/amed/index/mod_news/*.twig`, `templates/amed/index/mod_publication/*.twig`, `templates/amed/index/mod_event/*.twig`, `templates/amed/index/legal/*.twig`, `docs/VERSION.md`)**:
   - **Zero-Dependency Google Indexing API Integration (`lib/GoogleIndexingService.class.php`, `config/google.config.php`)**:

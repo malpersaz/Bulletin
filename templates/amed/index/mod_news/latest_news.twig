@@ -1,4 +1,4 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": [6, "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo", ["spor", "dünya", "ortadoğu", "ekonomi"]]}) }}
+{{ run({"mod": "index", "method": "_latest_news", "extra": [0, "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo", ["spor", "dünya", "ortadoğu", "ekonomi"], true]}) }}
 {% set latest_news = ctx_get('latest_news') %}
 
 {% if latest_news is not empty %}

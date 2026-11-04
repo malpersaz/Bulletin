@@ -343,7 +343,7 @@ class mod_news_helper extends indexBase
         $this->_index();
     }
 
-    public function _latest_news($limit, $select, array $excludeCategories = [])
+    public function _latest_news($limit, $select, array $excludeCategories = [], bool $onlyToday = false)
     {
         if (!$this->isFeatureReady('news.latest')) {
             return [];
@@ -446,12 +446,20 @@ class mod_news_helper extends indexBase
         $m->addWhere("slider='n'");
         $m->addWhere($aclCondition);
         $m->addWhere($this->getPublishedDateCondition(''));
+        if ($onlyToday) {
+            $todayStart = date('Y-m-d 00:00:00');
+            $m->addWhere("created_at >= '{$todayStart}'");
+        }
         $m->addWhere("category_id IN ({$allowedCatList})");
         if (!empty($excludedCategoryIds)) {
             $excludedCatList = implode(',', $excludedCategoryIds);
             $m->addWhere("category_id NOT IN ({$excludedCatList})");
         }
-        $m->limit($limit)->order('created_at', 'DESC');
+        $limitVal = (int) $limit;
+        if ($limitVal > 0) {
+            $m->limit($limitVal);
+        }
+        $m->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
             return $this->_cleanNewsRows($m->toArray());

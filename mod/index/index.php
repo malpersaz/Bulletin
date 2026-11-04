@@ -440,7 +440,7 @@ class index_mod extends indexBase
 
 
 
-    public function _latest_news($t, $limit = 6, $select = 'id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo', $excludeCategories = null)
+    public function _latest_news($t, $limit = 6, $select = 'id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo', $excludeCategories = null, bool $onlyToday = false)
     {
         if (!$this->isFeatureReady('news.latest')) {
             $t->ctx_set('latest_news', []);
@@ -457,7 +457,7 @@ class index_mod extends indexBase
         }
 
         $helper = Load::helper('index.mod_news');
-        $result = $helper->_latest_news($limit, $select, (array) $excludeCategories);
+        $result = $helper->_latest_news($limit, $select, (array) $excludeCategories, $onlyToday);
         $t->ctx_set('latest_news', $result);
         unset($helper);
     }
