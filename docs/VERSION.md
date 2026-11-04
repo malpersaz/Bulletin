@@ -1,5 +1,19 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.32 (2026-11-04)
+- **Client-Side Admin Datepicker & Template Istanbul Timezone Synchronization (`templates/admin/assets/js/script.js`, `templates/admin/assets/js/mod_announcements_wizard.js`, `templates/admin/assets/js/mod_video_embed_edit.js`, `templates/admin/mod_video/add.twig`, `templates/admin/partials/wizard_content.twig`, `templates/admin/mod_announcements/add.twig`, `templates/admin/partials/wizard_event.twig`, `templates/admin/partials/wizard_video_embed.twig`, `templates/admin/mod_video_embed/add.twig`, `templates/admin/layout.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Client-Side Istanbul Timezone Formatter (`templates/admin/assets/js/script.js`)**:
+    - Introduced `getIstanbulDateTimeString()` utilizing `Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Istanbul' })` to guarantee that client browser datetime calculations always format against `Europe/Istanbul` (UTC+3), regardless of whether the user or hosting server is located in CET (UTC+1), UTC, or other timezones.
+    - Updated wizard Step 4 auto-fill and date listener in `script.js` to pre-populate and preserve Istanbul time.
+  - **Module Wizards Datetime Alignment (`templates/admin/assets/js/*.js`)**:
+    - Aligned default date initialization in `mod_announcements_wizard.js`, `mod_video_embed_edit.js`, and `mod_video/add.twig` to use `Europe/Istanbul` datetime formatting instead of unshifted browser local time.
+  - **Server-Side Form Prefill in Admin Templates (`templates/admin/**/*.twig`)**:
+    - Added server-rendered `value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}"` prefill across `wizard_content.twig`, `mod_announcements/add.twig`, `wizard_event.twig`, `wizard_video_embed.twig`, and `mod_video_embed/add.twig`, providing deterministic backend pre-population before client scripts execute.
+  - **Asset Cache Busting (`templates/admin/**/*.twig`)**:
+    - Bumped script asset query strings (`script.js?v=2.02`, `mod_announcements_wizard.js?v=6.1`, `mod_video_embed_edit.js?v=2.6`) to prevent client browsers from executing stale cached scripts.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.32`.
+
 ## v1.0.31 (2026-11-04)
 - **Timezone Synchronization & Regional Publishing Time Protocol (`init.php`, `config/site.config.php`, `config/site.config.example.php`, `lib/Database/Adapter/PDO_MYSQL.php`, `lib/Database/Adapter/Mysqli.php`, `lib/Database/Adapter/PDO_POSTGRESQL.php`, `lib/TwigTemplate.class.php`, `lib/Helper.class.php`, `docker/php/php.dev.ini`, `docker-compose.yml`, `docs/VERSION.md`)**:
   - **Bootstrap Timezone Enforcement (`init.php`)**:

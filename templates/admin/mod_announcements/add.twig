@@ -91,7 +91,7 @@
                 <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.date }}</p>
 
                 <div class="wizard-input-wrapper">
-                    <input type="datetime-local" class="wizard-input-lg" name="created_at" id="wizardDateInput">
+                    <input type="datetime-local" class="wizard-input-lg" name="created_at" id="wizardDateInput" value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}">
                 </div>
             </div>
 
@@ -334,5 +334,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/templates/admin/assets/js/mod_announcements_wizard.js?v=6.0"></script>
+<script src="/templates/admin/assets/js/mod_announcements_wizard.js?v=6.1"></script>
 {% endblock %}

@@ -645,6 +645,31 @@ function handleContextAction(action) {
 // Close Context Menu when clicking overlay (handled by HTML onclick, but added here for safety)
 // document.addEventListener('click', ...) logic handles specific containers, but overlays usually cover all.
 
+/**
+ * Format current datetime strictly in Europe/Istanbul timezone (UTC+3)
+ * Suitable for datetime-local input fields in ISO local format.
+ * @param {Date} [targetDate=new Date()]
+ * @returns {string} Formatted string
+ */
+function getIstanbulDateTimeString(targetDate = new Date()) {
+    try {
+        const formatter = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: 'Europe/Istanbul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+        return formatter.format(targetDate).replace(' ', 'T');
+    } catch (e) {
+        const localDate = new Date(targetDate.getTime() - (targetDate.getTimezoneOffset() * 60000));
+        return localDate.toISOString().slice(0, 16);
+    }
+}
+window.getIstanbulDateTimeString = getIstanbulDateTimeString;
+
 // WIZARD LOGIC
 let wizardCurrentStep = 1;
 const wizardTotalSteps = 8;
@@ -1067,17 +1092,16 @@ function nextWizardStep() {
         wizardCurrentStep++;
 
         // Auto-fill Date logic
-        if (wizardCurrentStep === 4 && !wizardData.date) {
-            try {
-                const now = new Date();
-                const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-                const formattedDate = localDate.toISOString().slice(0, 16);
-
-                wizardData.date = formattedDate;
-                const dateInput = document.getElementById('wizardDateInput');
-                if (dateInput) dateInput.value = formattedDate;
-            } catch (e) {
-                console.warn('Auto-fill date error:', e);
+        if (wizardCurrentStep === 4) {
+            const dateInput = document.getElementById('wizardDateInput');
+            if (!wizardData.date || (dateInput && !dateInput.value)) {
+                try {
+                    const formattedDate = (dateInput && dateInput.value) ? dateInput.value : getIstanbulDateTimeString();
+                    wizardData.date = formattedDate;
+                    if (dateInput) dateInput.value = formattedDate;
+                } catch (e) {
+                    console.warn('Auto-fill date error:', e);
+                }
             }
         }
 
@@ -3172,8 +3196,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Date Input Listener
     const dateInput = document.getElementById('wizardDateInput');
     if (dateInput) {
+        if (!dateInput.value) {
+            dateInput.value = getIstanbulDateTimeString();
+        }
         // Sync initial value if any
-        if (dateInput.value) wizardData.date = dateInput.value;
+        if (dateInput.value && !wizardData.date) {
+            wizardData.date = dateInput.value;
+        }
 
         const dateSync = function () {
             wizardData.date = this.value;

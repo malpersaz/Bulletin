@@ -89,7 +89,7 @@
             </div>
 
             <div class="input-wrapper-lg" style="margin-top: 16px;">
-                <input type="datetime-local" class="m3-input-lg" name="created_at" id="videoDateInput" required>
+                <input type="datetime-local" class="m3-input-lg" name="created_at" id="videoDateInput" value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}" required>
             </div>
             
             <div class="form-group" style="margin-top: 16px;">

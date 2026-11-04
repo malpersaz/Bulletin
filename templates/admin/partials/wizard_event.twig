@@ -89,7 +89,7 @@
             <p class="step-subhead">{{ wizard_lang.wizard.step_subtitles.step3 }}</p>
 
             <div class="input-wrapper-lg">
-                <input type="datetime-local" class="m3-input-lg" name="start_date" id="wizardStartDateInput" required>
+                <input type="datetime-local" class="m3-input-lg" name="start_date" id="wizardStartDateInput" value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}" required>
                 <label class="m3-floating-label">{{ wizard_lang.admin.columns.start_date }}</label>
             </div>
 
@@ -230,7 +230,7 @@
 
             <div class="form-row-spacing">
                 <div class="m3-input-wrapper">
-                    <input type="datetime-local" class="m3-input-lg" name="created_at" id="wizardDateInput">
+                    <input type="datetime-local" class="m3-input-lg" name="created_at" id="wizardDateInput" value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}">
                     <label class="m3-floating-label">{{ wizard_lang.admin.columns.created_at }}</label>
                 </div>
             </div>

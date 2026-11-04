@@ -138,12 +138,21 @@
         initDefaultDate() {
             if (this.inputDate && !this.inputDate.value) {
                 try {
-                    const now = new Date();
-                    const localISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                    this.inputDate.value = localISO;
-                    this.wizardData.created_at = localISO;
+                    const formatted = (typeof getIstanbulDateTimeString === 'function')
+                        ? getIstanbulDateTimeString()
+                        : (new Intl.DateTimeFormat('sv-SE', {
+                            timeZone: 'Europe/Istanbul',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        }).format(new Date()).replace(' ', 'T'));
+                    this.inputDate.value = formatted;
+                    this.wizardData.created_at = formatted;
                 } catch (e) {
-                    console.warn('Failed to set default local datetime:', e);
+                    console.warn('Failed to set default Istanbul datetime:', e);
                 }
             }
         }

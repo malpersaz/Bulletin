@@ -213,7 +213,7 @@
                 <input type="hidden" name="image" value="{{ image|default('') }}" id="image">
                 <input type="hidden" name="duration" value="{{ duration|default('') }}" id="duration">
                 <input type="hidden" name="video_original" value="{{ video_original|default('') }}" id="video_original">
-                <input type="hidden" name="created_at" id="tarihInput" value="{{ created_at|default('')|replace({' ': 'T'}) }}">
+                <input type="hidden" name="created_at" id="tarihInput" value="{{ created_at|default('now'|date('Y-m-d') ~ 'T' ~ 'now'|date('H:i'))|replace({' ': 'T'}) }}">
             </p>
         </div>
 
@@ -251,9 +251,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('tarihInput');
 
     if (dateInput && !dateInput.value) {
-        const now = new Date();
-        const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        dateInput.value = local.toISOString().slice(0, 16);
+        try {
+            const formatted = (typeof getIstanbulDateTimeString === 'function')
+                ? getIstanbulDateTimeString()
+                : (new Intl.DateTimeFormat('sv-SE', {
+                    timeZone: 'Europe/Istanbul',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(new Date()).replace(' ', 'T'));
+            dateInput.value = formatted;
+        } catch (e) {
+            console.warn('Failed to set default Istanbul datetime:', e);
+        }
     }
 
     // Restore state if validation failed and page reloaded

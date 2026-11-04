@@ -49,9 +49,22 @@ function initVideoEmbedForm() {
     }
 
     if (dateInput && !dateInput.value) {
-        const now = new Date();
-        const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        dateInput.value = local.toISOString().slice(0, 16);
+        try {
+            const formatted = (typeof getIstanbulDateTimeString === 'function')
+                ? getIstanbulDateTimeString()
+                : (new Intl.DateTimeFormat('sv-SE', {
+                    timeZone: 'Europe/Istanbul',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(new Date()).replace(' ', 'T'));
+            dateInput.value = formatted;
+        } catch (e) {
+            console.warn('Failed to set default Istanbul datetime:', e);
+        }
     }
 
     // Localized strings from form data attributes
