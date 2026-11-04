@@ -131,6 +131,11 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_news", "_latest_news", [$limit, $select, $excludeCategories, $onlyToday]);
     }
 
+    public function _featured_news($limit, $select, array $excludeCategories = ['spor'])
+    {
+        return $this->_loadHelper("index.mod_news", "_featured_news", [$limit, $select, $excludeCategories]);
+    }
+
     public function _latest_publications($limit, $select)
     {
         return $this->_loadHelper("index.mod_publication", "_latest_publications", [$limit, $select]);

@@ -9,6 +9,7 @@ class newses_model extends ORM
     public $updated_at;
     public $status;
     public $slider;
+    public $show_on_homepage;
     public $content;
     public $summary;
     public $seo;
@@ -44,7 +45,7 @@ class newses_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasUpdatedAtColumn()) {
+        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasUpdatedAtColumn() && $this->hasShowOnHomepageColumn()) {
             return;
         }
 
@@ -57,6 +58,7 @@ class newses_model extends ORM
     mod_news.updated_at,
     mod_news.status,
     mod_news.slider,
+    mod_news.show_on_homepage,
     mod_news.content,
     mod_news.summary,
     mod_news.seo,
@@ -114,6 +116,11 @@ class newses_model extends ORM
     private function hasUpdatedAtColumn()
     {
         return $this->hasViewColumn('updated_at');
+    }
+
+    private function hasShowOnHomepageColumn()
+    {
+        return $this->hasViewColumn('show_on_homepage');
     }
 
     private function hasViewColumn($columnName)

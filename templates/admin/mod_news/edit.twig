@@ -302,6 +302,7 @@
 			{# Card 4: Publishing Decision #}
 			<div class="edit-card">
 				<input type="hidden" name="status" value="{{ d.status }}" id="publishHidden">
+				<input type="hidden" name="show_on_homepage" value="{{ d.show_on_homepage|default('y') }}" id="homepageHidden">
 
 				<div class="selection-grid">
 					<div class="selection-card {% if d.status == 'y' %}active{% endif %}" data-action="select-status" data-value="y">
@@ -313,6 +314,22 @@
 						<i class="bi bi-pencil-square selection-icon"></i>
 						<div class="selection-label">{{ lang.mod_news.context_menu.unpublish }}</div>
 						<i class="bi bi-check-circle-fill check-icon"></i>
+					</div>
+				</div>
+
+				<div class="form-row mt-3">
+					<label class="field-section-label">{{ lang.mod_news.admin.columns.show_on_homepage }}</label>
+					<div class="selection-grid">
+						<div class="selection-card {% if d.show_on_homepage|default('y') == 'y' %}active{% endif %}" data-action="select-homepage" data-value="y">
+							<i class="bi bi-eye-fill selection-icon"></i>
+							<div class="selection-label">{{ lang.mod_news.admin.radio.show_on_homepage_yes }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
+						<div class="selection-card {% if d.show_on_homepage|default('y') != 'y' %}active{% endif %}" data-action="select-homepage" data-value="n">
+							<i class="bi bi-eye-slash selection-icon"></i>
+							<div class="selection-label">{{ lang.mod_news.admin.radio.show_on_homepage_no }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
 					</div>
 				</div>
 			</div>

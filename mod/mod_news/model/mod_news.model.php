@@ -10,6 +10,7 @@ class mod_news_model extends ORM
     public $category_id;
     public $status;
     public $slider;
+    public $show_on_homepage;
     public $created_at;
     public $updated_at;
     public $deck;
@@ -37,6 +38,7 @@ class mod_news_model extends ORM
         return [
             'status' => 'y',
             'slider' => 'n',
+            'show_on_homepage' => 'y',
             'deck' => 'n',
             'gallery_id' => 0,
             'file_id' => 0,

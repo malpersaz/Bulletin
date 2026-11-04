@@ -5,6 +5,7 @@ CREATE TABLE `mod_news` (
   `category_id` int(11) NOT NULL,
   `status` enum('y','n') NOT NULL DEFAULT 'y',
   `slider` enum('y','n') NOT NULL DEFAULT 'n',
+  `show_on_homepage` enum('y','n') NOT NULL DEFAULT 'y',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
   `deck` enum('y','n') NOT NULL DEFAULT 'n',

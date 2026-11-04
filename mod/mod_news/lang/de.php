@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Auf der Startseite anzeigen',
+'id' => 'ID',
             'language' => 'Sprache',
             'name' => 'Titel',
             'category_id' => 'Kategorie',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Suchen Sie nach dem Namen des Videos, das in der Nachricht erscheinen soll',
         ],
         'radio' => [
-            'publish_yes' => 'Veröffentlicht',
+                        'show_on_homepage_yes' => 'Auf der Startseite anzeigen',
+            'show_on_homepage_no' => 'Nicht anzeigen',
+'publish_yes' => 'Veröffentlicht',
             'publish_no' => 'Nur speichern',
             'deck_yes' => 'Hervorgehoben',
             'deck_no' => 'Nicht hervorgehoben',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Video hinzufügen',
         'add_file' => 'Datei hinzufügen',
     ],
+
+        'show_on_homepage' => 'Auf der Startseite anzeigen',
+    'homepage_added' => 'Nachricht zur Startseite hinzugefügt.',
+    'homepage_removed' => 'Nachricht von der Startseite entfernt.',
+    'homepage_error' => 'Startseitenstatus konnte nicht aktualisiert werden.',
+    'homepage_badge' => 'Startseite',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'An Slider senden',

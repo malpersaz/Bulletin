@@ -177,7 +177,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Pelaser de bımocne',
+'id' => 'ID',
             'language' => 'Ziman',
             'name' => 'Sernav',
             'category_id' => 'Kategorî',
@@ -200,7 +201,9 @@ $lang['mod_news'] = [
             'video_help' => 'Navê vîdeoya ku tu dixwazî di nûçeyê de diyar bibe bibîne',
         ],
         'radio' => [
-            'publish_yes' => 'Hate Weşandin',
+                        'show_on_homepage_yes' => 'Pelaser de bımocne',
+            'show_on_homepage_no' => 'Mımocne',
+'publish_yes' => 'Hate Weşandin',
             'publish_no' => 'Nehat Weşandin',
             'deck_yes' => 'Destpêkê Veneşêre',
             'deck_no' => 'Destpêkê Veşêre',
@@ -397,7 +400,12 @@ $lang['mod_news'] = [
         'add_file' => 'Dosya Eke',
     ],
 
-    // === Hero Slider ===
+        'show_on_homepage' => 'Pelaser de bımocne',
+    'homepage_added' => 'Xeber pelaser rê dekerdiya.',
+    'homepage_removed' => 'Xeber pelaser ra wedariya.',
+    'homepage_error' => 'Xebere pelaser sero newe nibiye.',
+    'homepage_badge' => 'Pelaser',
+
     'hero_slider_add' => 'Slayderî rê Bişaw',
     'hero_slider_remove' => 'Slayderî ra Wedare',
     'hero_slider_added' => 'Nûçe ke Slayderî rê ameye dekerdene.',

@@ -80,6 +80,13 @@ function getNewsLang() {
         deck_removed: mod.deck_removed || 'Removed from featured',
         deck_error: mod.deck_error || 'Failed to update featured state',
         deck_badge: mod.deck_badge || mod.admin?.columns?.deck || 'Featured',
+        show_on_homepage: mod.show_on_homepage || mod.admin?.columns?.show_on_homepage || 'Show on Homepage',
+        show_on_homepage_yes: mod.admin?.radio?.show_on_homepage_yes || mod.show_on_homepage || 'Show on Homepage',
+        show_on_homepage_no: mod.admin?.radio?.show_on_homepage_no || 'Do Not Show',
+        homepage_added: mod.homepage_added || 'News added to homepage display.',
+        homepage_removed: mod.homepage_removed || 'News removed from homepage display.',
+        homepage_error: mod.homepage_error || 'Failed to update homepage visibility.',
+        homepage_badge: mod.homepage_badge || 'Homepage',
         publish: ctx.publish || al.context_menu?.publish || 'Publish',
         unpublish: ctx.unpublish || al.context_menu?.unpublish || 'Unpublish',
         published_msg: ctx.published_msg || al.context_menu?.published_msg || 'Published',
@@ -116,6 +123,7 @@ class NewsManager {
         this.selectedContentId = null;
         this.selectedInHeroSlider = false;
         this.selectedInDeck = false;
+        this.selectedInHomepage = true;
         this.imageUploadContentId = null;
         this.imageUploader = null;
         this.imageUploaderBound = false;
@@ -159,6 +167,8 @@ class NewsManager {
                 this.toggleHeroSlider();
             } else if (action === 'toggle-deck') {
                 this.toggleDeck();
+            } else if (action === 'toggle-homepage') {
+                this.toggleHomepage();
             } else if (action === 'open-video') {
                 window.videoSelected?.();
             } else if (action === 'open-gallery') {
@@ -235,6 +245,7 @@ class NewsManager {
             this.selectedContentId = null;
             this.selectedInHeroSlider = false;
             this.selectedInDeck = false;
+            this.selectedInHomepage = true;
             this.updateToolbar(false);
             this.updateFabState(false);
             if (this.emptyState) this.emptyState.classList.add('is-hidden');
@@ -322,6 +333,7 @@ class NewsManager {
             const statusRaw = item[8] || 'n';
             const inHeroSlider = String(item[10] || '0') === '1';
             const inDeck = String(item[11] || '0') === '1';
+            const inHomepage = !item[12] || String(item[12]) === '1' || String(item[12]) === 'y';
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = titleHtml;
@@ -339,6 +351,7 @@ class NewsManager {
             card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : (titleText || '');
             card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
             card.dataset.inDeck = inDeck ? '1' : '0';
+            card.dataset.inHomepage = inHomepage ? '1' : '0';
             card.addEventListener('click', () => window.newsManager.selectContent(id, card));
 
             let categoryName = getNewsLang().general;
@@ -361,6 +374,7 @@ class NewsManager {
             const statusTitle = this.escapeHtml(isPublished ? getNewsLang().active : getNewsLang().draft);
             const deckTitle = this.escapeHtml(inDeck ? getNewsLang().deck_badge : getNewsLang().deck_add);
             const sliderTitle = this.escapeHtml(inHeroSlider ? getNewsLang().hero_slider_badge : getNewsLang().hero_slider_add);
+            const homepageTitle = this.escapeHtml(inHomepage ? (getNewsLang().homepage_badge || 'Homepage') : (getNewsLang().show_on_homepage_no || 'Do Not Show'));
 
             card.innerHTML = `
                 <div class="card-content-layout">
@@ -393,6 +407,9 @@ class NewsManager {
                          </span>
                          <span class="card-state-pill state-slider ${inHeroSlider ? 'is-active' : 'is-passive'}" title="${sliderTitle}">
                              <i class="bi bi-stars"></i>
+                         </span>
+                         <span class="card-state-pill state-homepage ${inHomepage ? 'is-active' : 'is-passive'}" title="${homepageTitle}">
+                             <i class="bi ${inHomepage ? 'bi-house-check' : 'bi-house-x'}"></i>
                          </span>
                      </div>
                 </div>
@@ -841,6 +858,7 @@ class NewsManager {
         this.selectedContentId = id;
         this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
         this.selectedInDeck = cardElement.dataset.inDeck === '1';
+        this.selectedInHomepage = cardElement.dataset.inHomepage !== '0';
         this.updateToolbar(true);
         this.updateFabState(true);
         if (window.navigator.vibrate) window.navigator.vibrate(10);
@@ -863,6 +881,7 @@ class NewsManager {
         this.selectedContentId = null;
         this.selectedInHeroSlider = false;
         this.selectedInDeck = false;
+        this.selectedInHomepage = true;
         this.updateToolbar(false);
         this.updateFabState(false);
         if (window.navigator.vibrate) window.navigator.vibrate(8);
@@ -883,7 +902,7 @@ class NewsManager {
         document.body.classList.toggle('has-selection', Boolean(active));
 
         const ids = [
-            'toolbarStatus', 'toolbarDeck', 'toolbarSlider',
+            'toolbarStatus', 'toolbarDeck', 'toolbarSlider', 'toolbarHomepage',
             'toolbarVideo', 'toolbarGallery', 'toolbarFiles',
             'toolbarFaq', 'toolbarEdit', 'toolbarDelete'
         ];
@@ -943,6 +962,21 @@ class NewsManager {
             sliderBtn.title = sliderLabel;
             sliderBtn.setAttribute('aria-label', sliderLabel);
         }
+
+        const homepageBtn = document.getElementById('toolbarHomepage');
+        if (homepageBtn) {
+            const inHomepage = Boolean(active && this.selectedInHomepage);
+            const homepageLabel = inHomepage
+                ? (getNewsLang().show_on_homepage_no || 'Do Not Show on Homepage')
+                : (getNewsLang().show_on_homepage_yes || 'Show on Homepage');
+            const homepageIcon = homepageBtn.querySelector('i');
+            homepageBtn.classList.toggle('is-selected', inHomepage);
+            if (homepageIcon) {
+                homepageIcon.className = inHomepage ? 'bi bi-house-door-fill' : 'bi bi-house-door';
+            }
+            homepageBtn.title = homepageLabel;
+            homepageBtn.setAttribute('aria-label', homepageLabel);
+        }
     }
 
     syncSliderToolbarState(active) {
@@ -1000,6 +1034,22 @@ class NewsManager {
             const deckIcon = deckPill.querySelector('i');
             if (deckIcon) {
                 deckIcon.className = inDeck ? 'bi bi-bookmark-star-fill' : 'bi bi-bookmark-star';
+            }
+        }
+    }
+
+    applyHomepageState(card, inHomepage) {
+        if (!card) return;
+
+        card.dataset.inHomepage = inHomepage ? '1' : '0';
+        const homepagePill = card.querySelector('.card-state-pill.state-homepage');
+        if (homepagePill) {
+            homepagePill.classList.toggle('is-active', Boolean(inHomepage));
+            homepagePill.classList.toggle('is-passive', !inHomepage);
+            homepagePill.title = inHomepage ? (getNewsLang().homepage_badge || 'Homepage') : (getNewsLang().show_on_homepage_no || 'Do Not Show');
+            const homepageIcon = homepagePill.querySelector('i');
+            if (homepageIcon) {
+                homepageIcon.className = inHomepage ? 'bi bi-house-check' : 'bi bi-house-x';
             }
         }
     }
@@ -1162,6 +1212,46 @@ class NewsManager {
             this.syncCardToolbarState(Boolean(this.selectedContentId));
         }
     }
+
+    async toggleHomepage() {
+        if (!this.selectedContentId) return;
+
+        const homepageBtn = document.getElementById('toolbarHomepage');
+        const homepageIcon = homepageBtn ? homepageBtn.querySelector('i') : null;
+        if (homepageBtn) homepageBtn.classList.add('is-loading');
+        if (homepageIcon) homepageIcon.className = 'bi bi-arrow-repeat';
+
+        const formData = new URLSearchParams();
+        formData.append('id', this.selectedContentId);
+
+        try {
+            const response = await fetch(`${getNewsModuleUrl()}toggle_homepage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || (getNewsLang().homepage_error || 'Failed to update homepage status'), 'error');
+                return;
+            }
+
+            this.selectedInHomepage = Boolean(result.in_homepage);
+            this.applyHomepageState(this.getSelectedCard(), this.selectedInHomepage);
+            if (window.navigator.vibrate) window.navigator.vibrate(12);
+            showSnackbar(
+                result.message || (this.selectedInHomepage ? (getNewsLang().homepage_added || 'News added to homepage.') : (getNewsLang().homepage_removed || 'News removed from homepage.')),
+                'success'
+            );
+        } catch (error) {
+            console.error('Homepage toggle error:', error);
+            showSnackbar(getNewsLang().homepage_error || 'Failed to update homepage status', 'error');
+        } finally {
+            if (homepageBtn) homepageBtn.classList.remove('is-loading');
+            this.syncCardToolbarState(Boolean(this.selectedContentId));
+        }
+    }
 }
 
 // Global actions for list view
@@ -1225,6 +1315,13 @@ window.deckSelected = function () {
     const mgr = window.newsManager || window.contentManager;
     if (mgr && mgr.selectedContentId) {
         mgr.toggleDeck();
+    }
+};
+
+window.homepageSelected = function () {
+    const mgr = window.newsManager || window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        mgr.toggleHomepage();
     }
 };
 
@@ -1800,6 +1897,17 @@ class NewsEditManager {
                 const val = card.dataset.value;
                 if (publishHidden) publishHidden.value = val;
                 statusCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+
+        const homepageHidden = document.getElementById('homepageHidden');
+        const homepageCards = document.querySelectorAll('[data-action="select-homepage"]');
+        homepageCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const val = card.dataset.value;
+                if (homepageHidden) homepageHidden.value = val;
+                homepageCards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
             });
         });

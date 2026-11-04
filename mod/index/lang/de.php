@@ -515,6 +515,10 @@ $lang['index'] = [
             'no_items_found' => 'Bisher sind keine veröffentlichten Nachrichten verfügbar.',
             'last_24_hours' => 'Letzte 24 Stunden',
         ],
+        'featured_news' => [
+            'title' => 'Aktuell',
+            'all_items' => 'Alle anzeigen',
+        ],
         'sports_news' => [
             'title' => 'Sport',
             'all_items' => 'Alle anzeigen',

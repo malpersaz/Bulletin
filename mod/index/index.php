@@ -462,6 +462,19 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _featured_news($t, $limit = 6, $select = 'id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo')
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            $t->ctx_set('featured_news', []);
+            return;
+        }
+
+        $helper = Load::helper('index.mod_news');
+        $result = $helper->_featured_news((int) $limit, $select);
+        $t->ctx_set('featured_news', $result);
+        unset($helper);
+    }
+
     public function _sports_news($t, $limit = 2)
     {
         if (!$this->isFeatureReady('news.latest')) {

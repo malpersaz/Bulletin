@@ -82,7 +82,7 @@ class mod_hero_slider_helper extends indexBase
             'username',
             'lang',
         ]);
-        $news_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
+        $news_model->addWhere("status='y' AND slider='y' AND show_on_homepage='y' AND LOWER(lang)='" . $currentLang . "'");
         $news_model->addWhere($aclCondition);
         $news_model->addWhere($publishCondition);
         $news_model->addWhere("category_id IN ({$allowedCatList})");

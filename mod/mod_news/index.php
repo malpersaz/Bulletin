@@ -49,6 +49,7 @@ class mod_news_mod extends BaseModuleController
 
     protected $special_fields = [
         'deck' => ['type' => 'safe'],
+        'show_on_homepage' => ['type' => 'safe'],
         'content' => ['type' => 'html']
     ];
 
@@ -122,6 +123,9 @@ class mod_news_mod extends BaseModuleController
         $updatedAt = Req::Post_Safe('updated_at');
         $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : null;
 
+        $showOnHomepage = Req::Post_Safe('show_on_homepage');
+        $model->show_on_homepage = in_array($showOnHomepage, ['y', 'n'], true) ? $showOnHomepage : 'y';
+
         // Handle serialization of video references
         $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
@@ -136,6 +140,11 @@ class mod_news_mod extends BaseModuleController
         $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : null;
         if (isset($model->created_at)) {
             $model->created_at = $this->normalizeDateTime($model->created_at);
+        }
+
+        if (Req::is_Post('show_on_homepage')) {
+            $showOnHomepage = Req::Post_Safe('show_on_homepage');
+            $model->show_on_homepage = in_array($showOnHomepage, ['y', 'n'], true) ? $showOnHomepage : 'y';
         }
 
         // Handle serialization of video references
@@ -166,14 +175,14 @@ class mod_news_mod extends BaseModuleController
         }
 
         $i = Load::model('mod_news');
-        $i->select('id, name, image, lang, status, created_at, category_id, user_id, slider, deck');
+        $i->select('id, name, image, lang, status, created_at, category_id, user_id, slider, deck, show_on_homepage');
         
         $limit = 10;
         $offset = 0;
         $order = 'id';
         $sort = 'desc';
 
-        $columns = ['id', 'name', 'image', 'lang', 'status', 'created_at', 'category_id', 'user_id', 'slider', 'deck'];
+        $columns = ['id', 'name', 'image', 'lang', 'status', 'created_at', 'category_id', 'user_id', 'slider', 'deck', 'show_on_homepage'];
 
         if (Req::is_Post('order')) {
             $o = Req::Post_Safe('order');
@@ -310,7 +319,8 @@ class mod_news_mod extends BaseModuleController
                     $content['status'],
                     $author_name,
                     isset($content['slider']) && $content['slider'] === 'y' ? 1 : 0,
-                    isset($content['deck']) && $content['deck'] === 'y' ? 1 : 0
+                    isset($content['deck']) && $content['deck'] === 'y' ? 1 : 0,
+                    !isset($content['show_on_homepage']) || $content['show_on_homepage'] === 'y' ? 1 : 0
                 ];
             }
         }
@@ -661,6 +671,12 @@ class mod_news_mod extends BaseModuleController
                 $response['message'] = $newVal === 'y'
                     ? $this->lang['mod_news']['context_menu']['published_msg']
                     : $this->lang['mod_news']['context_menu']['unpublished_msg'];
+            } elseif ($column === 'show_on_homepage') {
+                $response['show_on_homepage'] = $newVal;
+                $response['in_homepage'] = ($newVal === 'y');
+                $response['message'] = $newVal === 'y'
+                    ? ($this->lang['mod_news']['homepage_added'] ?? 'Shown on homepage.')
+                    : ($this->lang['mod_news']['homepage_removed'] ?? 'Removed from homepage.');
             } else {
                 $response[$column] = $newVal;
             }
@@ -676,6 +692,8 @@ class mod_news_mod extends BaseModuleController
         } elseif ($column === 'status') {
             $errorMessage = $this->lang['mod_news']['message']['error']['status']
                 ?? ($this->lang['mod_news']['error_occurred'] ?? 'Failed to update status');
+        } elseif ($column === 'show_on_homepage') {
+            $errorMessage = $this->lang['mod_news']['homepage_error'] ?? 'Failed to update homepage visibility.';
         }
 
         $this->jsonResponse([
@@ -687,6 +705,11 @@ class mod_news_mod extends BaseModuleController
     public function toggle_hero_slider()
     {
         $this->toggleFlag('slider');
+    }
+
+    public function toggle_homepage()
+    {
+        $this->toggleFlag('show_on_homepage');
     }
 
     public function toggle_deck()

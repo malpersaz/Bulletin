@@ -682,6 +682,7 @@ const wizardData = {
     content: '',
     image: null,
     published: true,
+    show_on_homepage: 'y',
     seo: {
         title: '',
         keywords: '',
@@ -720,6 +721,7 @@ function saveWizardState() {
                 intro: wizardData.intro,
                 content: wizardData.content,
                 published: wizardData.published,
+                show_on_homepage: wizardData.show_on_homepage,
                 seo: wizardData.seo
             },
             timestamp: Date.now()
@@ -761,6 +763,7 @@ function loadWizardState() {
             wizardData.intro = state.data.intro || '';
             wizardData.content = state.data.content || '';
             wizardData.published = state.data.published !== undefined ? state.data.published : true;
+            wizardData.show_on_homepage = state.data.show_on_homepage === 'n' ? 'n' : 'y';
             wizardData.seo = state.data.seo || wizardData.seo;
         }
 
@@ -881,6 +884,23 @@ function restoreWizardUI() {
     if (pubSwitch) {
         pubSwitch.checked = wizardData.published;
     }
+    const pubHidden = document.getElementById('wizardPublishHidden');
+    if (pubHidden) {
+        pubHidden.value = wizardData.published ? 'y' : 'n';
+    }
+    document.querySelectorAll('[data-action="select-wizard-publish-status"]').forEach(card => {
+        card.classList.toggle('active', card.dataset.status === (wizardData.published ? 'y' : 'n'));
+    });
+
+    // Restore show_on_homepage selection
+    const homepageVal = wizardData.show_on_homepage === 'n' ? 'n' : 'y';
+    const homepageHidden = document.getElementById('wizardHomepageHidden');
+    if (homepageHidden) {
+        homepageHidden.value = homepageVal;
+    }
+    document.querySelectorAll('[data-action="select-wizard-homepage-status"]').forEach(card => {
+        card.classList.toggle('active', card.dataset.homepage === homepageVal);
+    });
 
     // Trigger auto-fill after restore to ensure synced values
     if (typeof updateWizardSEOAutoFill === 'function') {
@@ -1928,7 +1948,7 @@ function selectWizardPublishStatus(el, val) {
     // Remove active from all cards in wizardStep8's selection-grid only
     const step8 = document.getElementById('wizardStep8');
     if (step8) {
-        step8.querySelectorAll('.selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+        step8.querySelectorAll('[data-action="select-wizard-publish-status"]').forEach(c => c.classList.remove('active'));
     }
     el.classList.add('active');
 
@@ -1939,6 +1959,22 @@ function selectWizardPublishStatus(el, val) {
     // Update wizardData
     wizardData.published = (val === 'y');
     saveWizardState();
+}
+
+function selectWizardHomepageStatus(el, val) {
+    const step8 = document.getElementById('wizardStep8');
+    if (step8) {
+        step8.querySelectorAll('[data-action="select-wizard-homepage-status"]').forEach(c => c.classList.remove('active'));
+    }
+    el.classList.add('active');
+
+    const hidden = document.getElementById('wizardHomepageHidden');
+    if (hidden) hidden.value = val;
+
+    if (typeof wizardData !== 'undefined') {
+        wizardData.show_on_homepage = val;
+        saveWizardState();
+    }
 }
 
 // Step 7: Image Preview
@@ -2446,6 +2482,14 @@ document.addEventListener('click', (event) => {
     if (selectPublishCard) {
         if (typeof selectWizardPublishStatus === 'function') {
             selectWizardPublishStatus(selectPublishCard, selectPublishCard.dataset.status || 'y');
+        }
+        return;
+    }
+
+    const selectHomepageCard = event.target.closest('[data-action="select-wizard-homepage-status"]');
+    if (selectHomepageCard) {
+        if (typeof selectWizardHomepageStatus === 'function') {
+            selectWizardHomepageStatus(selectHomepageCard, selectHomepageCard.dataset.homepage || 'y');
         }
         return;
     }

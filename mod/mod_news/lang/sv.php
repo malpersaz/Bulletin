@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Visa på startsidan',
+'id' => 'ID',
             'language' => 'Språk',
             'name' => 'Titel',
             'category_id' => 'Kategori',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Sök efter namnet på videon du vill ska visas i nyheten',
         ],
         'radio' => [
-            'publish_yes' => 'Publicerad',
+                        'show_on_homepage_yes' => 'Visa på startsidan',
+            'show_on_homepage_no' => 'Visa inte',
+'publish_yes' => 'Publicerad',
             'publish_no' => 'Spara Endast',
             'deck_yes' => 'Utvald',
             'deck_no' => 'Ej Utvald',
@@ -390,7 +393,12 @@ $lang['mod_news'] = [
         'add_file' => 'Lägg till fil',
     ],
 
-    // === Hero Slider ===
+        'show_on_homepage' => 'Visa på startsidan',
+    'homepage_added' => 'Nyhet har lagts till på startsidan.',
+    'homepage_removed' => 'Nyhet har tagits bort från startsidan.',
+    'homepage_error' => 'Kunde inte uppdatera synlighet på startsidan.',
+    'homepage_badge' => 'Startsida',
+
     'hero_slider_add' => 'Lägg till i bildspel',
     'hero_slider_remove' => 'Ta bort från bildspel',
     'hero_slider_added' => 'Nyheten har lagts till i bildspelet.',

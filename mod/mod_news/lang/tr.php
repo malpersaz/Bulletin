@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Anasayfada Göster',
+'id' => 'ID',
             'language' => 'Dil',
             'name' => 'Başlık',
             'category_id' => 'Kategori',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Haberde görünmesini istediğiniz videonun adını arayın',
         ],
         'radio' => [
-            'publish_yes' => 'Yayınla',
+                        'show_on_homepage_yes' => 'Anasayfada Göster',
+            'show_on_homepage_no' => 'Gösterme',
+'publish_yes' => 'Yayınla',
             'publish_no' => 'Sadece Kaydet',
             'deck_yes' => 'Giriş Olsun',
             'deck_no' => 'Giriş Olmasın',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Video Ekle',
         'add_file' => 'Dosya Ekle',
     ],
+
+        'show_on_homepage' => 'Anasayfada Göster',
+    'homepage_added' => 'Haber anasayfa görünümüne eklendi.',
+    'homepage_removed' => 'Haber anasayfa görünümünden kaldırıldı.',
+    'homepage_error' => 'Anasayfa görünürlüğü güncellenemedi.',
+    'homepage_badge' => 'Anasayfa',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Slider\'a Gönder',

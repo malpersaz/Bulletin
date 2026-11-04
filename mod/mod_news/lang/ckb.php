@@ -181,7 +181,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'نیشاندان لە پەڕەی سەرەکیدا',
+'id' => 'ID',
             'language' => 'Ziman',
             'name' => 'Sernav',
             'category_id' => 'Kategorî',
@@ -204,7 +205,9 @@ $lang['mod_news'] = [
             'video_help' => 'Navê vîdeoya ku tu dixwazî di nûçeyê de diyar bibe bibîne',
         ],
         'radio' => [
-            'publish_yes' => 'Hate Weşandin',
+                        'show_on_homepage_yes' => 'نیشاندان لە پەڕەی سەرەکیدا',
+            'show_on_homepage_no' => 'نیشان مەدە',
+'publish_yes' => 'Hate Weşandin',
             'publish_no' => 'Nehat Weşandin',
             'deck_yes' => 'Destpêkê Veneşêre',
             'deck_no' => 'Destpêkê Veşêre',
@@ -401,7 +404,12 @@ $lang['mod_news'] = [
         'add_file' => 'Pelan Lêke',
     ],
 
-    // === Hero Slider ===
+        'show_on_homepage' => 'نیشاندان لە پەڕەی سەرەکیدا',
+    'homepage_added' => 'هەواڵ بۆ پەڕەی سەرەکی زیادکرا.',
+    'homepage_removed' => 'هەواڵ لە پەڕەی سەرەکی لابرا.',
+    'homepage_error' => 'نوێکردنەوەی پەڕەی سەرەکی سەرکەوتوو نەبوو.',
+    'homepage_badge' => 'پەڕەی سەرەکی',
+
     'hero_slider_add' => 'Bişîne Sliderê',
     'hero_slider_remove' => 'Ji Sliderê Rake',
     'hero_slider_added' => 'Nûçe bi serkeftî bo Slider hate şandin.',

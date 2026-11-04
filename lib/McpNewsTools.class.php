@@ -47,6 +47,11 @@ class McpNewsTools extends McpCrudToolsBase
                             'enum' => ['y', 'n'],
                             'description' => 'Filter by publish status: y (published) or n (draft).',
                         ],
+                        'show_on_homepage' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Filter by homepage visibility: y (show) or n (hide).',
+                        ],
                         'seo' => [
                             'type' => 'string',
                             'description' => 'Filter by exact SEO slug.',
@@ -177,6 +182,12 @@ class McpNewsTools extends McpCrudToolsBase
                             'default' => 'n',
                             'description' => 'Slider feature flag.',
                         ],
+                        'show_on_homepage' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'default' => 'y',
+                            'description' => 'Homepage visibility flag: y (show) or n (hide). Defaults to y.',
+                        ],
                         'created_at' => [
                             'type' => 'string',
                             'description' => 'Publication datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
@@ -292,6 +303,10 @@ class McpNewsTools extends McpCrudToolsBase
                             'enum' => ['y', 'n'],
                         ],
                         'slider' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                        ],
+                        'show_on_homepage' => [
                             'type' => 'string',
                             'enum' => ['y', 'n'],
                         ],
@@ -616,7 +631,7 @@ class McpNewsTools extends McpCrudToolsBase
         $offset = $this->normalizeOffset($args);
 
         $model = $this->freshModel('mod_news');
-        $model->select('id, lang, name, category_id, status, deck, slider, seo, created_at, updated_at');
+        $model->select('id, lang, name, category_id, status, deck, slider, show_on_homepage, seo, created_at, updated_at');
         $this->applyNewsFilters($model, $args);
         $model->order('id', 'DESC')->limit($limit, $offset)->getResult(true, true);
         $items = $model->toArray();
@@ -717,6 +732,7 @@ class McpNewsTools extends McpCrudToolsBase
         $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
         $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
+        $model->show_on_homepage = $this->optionalEnum($args, 'show_on_homepage', 'y', ['y', 'n']);
         $model->created_at = $this->optionalDateTime($args, 'created_at', date('Y-m-d H:i:s'));
         $model->updated_at = date('Y-m-d H:i:s');
         $model->video = $this->serializeVideoRefs($args['video'] ?? '');
@@ -880,7 +896,7 @@ class McpNewsTools extends McpCrudToolsBase
             }
         }
 
-        foreach (['status', 'deck', 'slider'] as $field) {
+        foreach (['status', 'deck', 'slider', 'show_on_homepage'] as $field) {
             if (isset($args[$field])) {
                 $model->{$field} = $this->optionalEnum($args, $field, (string) $model->{$field}, ['y', 'n']);
             }
@@ -1219,6 +1235,9 @@ class McpNewsTools extends McpCrudToolsBase
         }
         if (isset($args['status']) && in_array($args['status'], ['y', 'n'], true)) {
             $model->where_status($args['status']);
+        }
+        if (isset($args['show_on_homepage']) && in_array($args['show_on_homepage'], ['y', 'n'], true)) {
+            $model->where_show_on_homepage($args['show_on_homepage']);
         }
         if (isset($args['seo']) && trim((string) $args['seo']) !== '') {
             $model->where_seo(trim((string) $args['seo']));

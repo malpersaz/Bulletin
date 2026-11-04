@@ -515,6 +515,10 @@ $lang['index'] = [
             'no_items_found' => 'Inga publicerade nyheter är tillgängliga än.',
             'last_24_hours' => 'Senaste 24 timmarna',
         ],
+        'featured_news' => [
+            'title' => 'Aktuellt',
+            'all_items' => 'Visa alla',
+        ],
         'sports_news' => [
             'title' => 'Sport',
             'all_items' => 'Visa alla',

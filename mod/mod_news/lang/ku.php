@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Li Serûpelê Nîşan Bide',
+'id' => 'ID',
             'language' => 'Ziman',
             'name' => 'Sernav',
             'category_id' => 'Kategorî',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Navê vîdeoya ku tu dixwazî di nûçeyê de diyar bibe bibîne',
         ],
         'radio' => [
-            'publish_yes' => 'Hate Weşandin',
+                        'show_on_homepage_yes' => 'Li Serûpelê Nîşan Bide',
+            'show_on_homepage_no' => 'Nîşan Nede',
+'publish_yes' => 'Hate Weşandin',
             'publish_no' => 'Nehat Weşandin',
             'deck_yes' => 'Destpêkê Veneşêre',
             'deck_no' => 'Destpêkê Veşêre',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Vîdeo Lêke',
         'add_file' => 'Pelan Lêke',
     ],
+
+        'show_on_homepage' => 'Li Serûpelê Nîşan Bide',
+    'homepage_added' => 'Nûçe li xuyabûna serûpelê hat zêdekirin.',
+    'homepage_removed' => 'Nûçe ji xuyabûna serûpelê hat derxistin.',
+    'homepage_error' => 'Nûjenkirina xuyabûna serûpelê bi ser neket.',
+    'homepage_badge' => 'Serûpel',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Bişîne Sliderê',

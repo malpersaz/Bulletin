@@ -33,7 +33,6 @@
         <!-- Hidden Defaults -->
         <input type="hidden" name="deck" value="n">
         <input type="hidden" name="highlighted" value="n">
-        <input type="hidden" name="show_on_homepage" value="y">
         <input type="hidden" name="gallery_id" value="0">
         <input type="hidden" name="file_id" value="0">
         <input type="hidden" name="acl_id" value="0">
@@ -176,6 +175,7 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.finish }}</p>
 
             <input type="hidden" name="status" value="y" id="wizardPublishHidden">
+            <input type="hidden" name="show_on_homepage" value="y" id="wizardHomepageHidden">
             
             <div class="selection-grid">
                 <div class="selection-card active" data-action="select-wizard-publish-status" data-status="y">
@@ -189,6 +189,24 @@
                     <i class="bi bi-check-circle-fill check-icon"></i>
                 </div>
             </div>
+
+            {% if wizard_lang_key == 'mod_news' %}
+            <div class="form-row mt-3">
+                <label class="field-section-label">{{ wizard_lang.admin.columns.show_on_homepage }}</label>
+                <div class="selection-grid">
+                    <div class="selection-card active" data-action="select-wizard-homepage-status" data-homepage="y">
+                        <i class="bi bi-eye-fill selection-icon"></i>
+                        <div class="selection-label">{{ wizard_lang.admin.radio.show_on_homepage_yes }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    <div class="selection-card" data-action="select-wizard-homepage-status" data-homepage="n">
+                        <i class="bi bi-eye-slash selection-icon"></i>
+                        <div class="selection-label">{{ wizard_lang.admin.radio.show_on_homepage_no }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <div class="wizard-summary">
                 <h3>{{ wizard_lang.wizard.summary.title }}</h3>

@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'Show on Homepage',
+'id' => 'ID',
             'language' => 'Language',
             'name' => 'Title',
             'category_id' => 'Category',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Search for the name of the video you want to appear in the news',
         ],
         'radio' => [
-            'publish_yes' => 'Published',
+                        'show_on_homepage_yes' => 'Show on Homepage',
+            'show_on_homepage_no' => 'Do Not Show',
+'publish_yes' => 'Published',
             'publish_no' => 'Just Save',
             'deck_yes' => 'Featured',
             'deck_no' => 'Not Featured',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Add Video',
         'add_file' => 'Add File',
     ],
+
+        'show_on_homepage' => 'Show on Homepage',
+    'homepage_added' => 'News added to homepage display.',
+    'homepage_removed' => 'News removed from homepage display.',
+    'homepage_error' => 'Failed to update homepage visibility.',
+    'homepage_badge' => 'Homepage',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Send to Slider',

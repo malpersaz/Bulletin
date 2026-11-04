@@ -515,6 +515,10 @@ $lang['index'] = [
             'no_items_found' => 'لا توجد أخبار منشورة متاحة حالياً.',
             'last_24_hours' => 'آخر 24 ساعة',
         ],
+        'featured_news' => [
+            'title' => 'الأحدث',
+            'all_items' => 'عرض الكل',
+        ],
         'sports_news' => [
             'title' => 'رياضة',
             'all_items' => 'عرض الكل',

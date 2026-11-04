@@ -1,5 +1,23 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.39 (2026-11-04)
+- **Homepage Visibility Control & Featured News Grid Protocol (`mod_news`, `mod_index`, `templates/admin/`, `templates/amed/`, `docs/VERSION.md`)**:
+  - **Granular Homepage Visibility (`show_on_homepage` in `mod_news`)**:
+    - Added `show_on_homepage enum('y','n') NOT NULL DEFAULT 'y'` to `mod_news` database table and installation scripts (`mod/mod_news/mod_news.sql`, `installer/mod_news/mod_news.sql`).
+    - Extended `mod_news_model` and `newses_model` with `show_on_homepage`, ensuring automatic SQL View regeneration across MySQL and SQLite environments.
+    - Added `toggle_homepage()` AJAX endpoint in `mod/mod_news/index.php` and integrated `show_on_homepage` handling into `beforeSave` and `beforeUpdate` lifecycle routines.
+    - Updated `McpNewsTools` with `show_on_homepage` parameter across schema definitions (`list_news`, `create_news`, `update_news`) and filter methods.
+  - **Mobile-First Admin UI Enhancements (`templates/admin/`)**:
+    - **News List (`list.twig`, `mod_news.js`, `mod_news.css`)**: Added `#toolbarHomepage` action button in the bottom floating toolbar and dynamic `state-homepage` indicator pills on news cards reflecting homepage visibility status in real time.
+    - **News Edit (`edit.twig`, `mod_news.js`)**: Added Material 3 selection cards for `show_on_homepage` (`y` / `n`) within the publishing decision card.
+    - **Content Wizard (`wizard_content.twig`, `script.js`)**: Integrated Material 3 homepage visibility selection cards into Step 8 (Publishing) with state persistence across browser reload.
+    - **Localization Parity (`mod/mod_news/lang/`)**: Added descriptive language keys (`show_on_homepage`, `show_on_homepage_yes`, `show_on_homepage_no`, `homepage_added`, `homepage_removed`, `homepage_error`, `homepage_badge`) across all 11 supported languages.
+  - **Homepage Section Filtering & Featured News Widget (`mod/index/`, `templates/amed/`)**:
+    - Enforced `show_on_homepage='y'` condition across all homepage news sections: Hero Slider (`mod_hero_slider.helper.php`), Latest News (`_latest_news`), Featured News (`_featured_news`), Category News rows (`_category_news`), and Homepage News Categories (`_homepage_categories`).
+    - Added dedicated `_featured_news` helper and introduced `featured_news.twig` widget rendering featured slider articles on the homepage with category exclusion filters (`spor` and its multilingual aliases excluded).
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.39`.
+
 ## v1.0.38 (2026-11-04)
 - **24-Hour News Sidebar Total Article Count Parity Protocol (`mod/index/helper/mod_news.helper.php`, `templates/amed/index/mod_news/news.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Accurate 24-Hour Article Count Resolution (`mod/index/helper/mod_news.helper.php`)**:

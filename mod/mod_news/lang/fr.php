@@ -174,6 +174,7 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
+            'show_on_homepage' => 'Afficher sur la page d\'accueil',
             'id' => 'ID',
             'language' => 'Language',
             'name' => 'Title',
@@ -197,6 +198,8 @@ $lang['mod_news'] = [
             'video_help' => 'Search for the name of the video you want to appear in the news',
         ],
         'radio' => [
+            'show_on_homepage_yes' => 'Afficher sur la page d\'accueil',
+            'show_on_homepage_no' => 'Ne pas afficher',
             'publish_yes' => 'Published',
             'publish_no' => 'Just Save',
             'deck_yes' => 'Featured',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Add Video',
         'add_file' => 'Add File',
     ],
+
+        'show_on_homepage' => 'Afficher sur la page d\'accueil',
+    'homepage_added' => 'Article ajouté à la page d\'accueil.',
+    'homepage_removed' => 'Article retiré de la page d\'accueil.',
+    'homepage_error' => 'Échec de la mise à jour de la visibilité sur la page d\'accueil.',
+    'homepage_badge' => 'Accueil',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Envoyer au carrousel',

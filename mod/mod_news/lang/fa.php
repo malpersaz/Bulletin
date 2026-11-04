@@ -174,7 +174,8 @@ $lang['mod_news'] = [
     // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
-            'id' => 'ID',
+                        'show_on_homepage' => 'نمایش در صفحه اصلی',
+'id' => 'ID',
             'language' => 'Language',
             'name' => 'Title',
             'category_id' => 'Category',
@@ -197,7 +198,9 @@ $lang['mod_news'] = [
             'video_help' => 'Search for the name of the video you want to appear in the news',
         ],
         'radio' => [
-            'publish_yes' => 'Published',
+                        'show_on_homepage_yes' => 'نمایش در صفحه اصلی',
+            'show_on_homepage_no' => 'نمایش داده نشود',
+'publish_yes' => 'Published',
             'publish_no' => 'Just Save',
             'deck_yes' => 'Featured',
             'deck_no' => 'Not Featured',
@@ -389,6 +392,12 @@ $lang['mod_news'] = [
         'add_video' => 'Add Video',
         'add_file' => 'Add File',
     ],
+
+        'show_on_homepage' => 'نمایش در صفحه اصلی',
+    'homepage_added' => 'خبر به صفحه اصلی اضافه شد.',
+    'homepage_removed' => 'خبر از صفحه اصلی حذف شد.',
+    'homepage_error' => 'خطا در به روز رسانی صفحه اصلی.',
+    'homepage_badge' => 'صفحه اصلی',
 
     // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'ارسال به اسلایدر',

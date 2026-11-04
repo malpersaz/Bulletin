@@ -515,6 +515,10 @@ $lang['index'] = [
             'no_items_found' => 'Henüz yayınlanmış bir haber bulunmuyor.',
             'last_24_hours' => 'Son 24 Saat',
         ],
+        'featured_news' => [
+            'title' => 'Güncel',
+            'all_items' => 'Tümünü Gör',
+        ],
         'sports_news' => [
             'title' => 'Spor',
             'all_items' => 'Tümünü Gör',

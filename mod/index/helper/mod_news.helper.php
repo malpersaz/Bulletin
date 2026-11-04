@@ -396,6 +396,119 @@ class mod_news_helper extends indexBase
             ];
 
             $candidateLookup = [];
+            if (!empty($excludeCategories)) {
+                foreach ($excludeCategories as $categoryCandidate) {
+                    $cLower = mb_strtolower(trim((string) $categoryCandidate));
+                    if ($cLower === '') {
+                        continue;
+                    }
+                    $candidateLookup[] = $cLower;
+                    $cNormalized = str_replace(['_', '-'], ' ', $cLower);
+                    $candidateLookup[] = $cNormalized;
+                    $candidateLookup[] = str_replace(' ', '_', $cNormalized);
+                    $candidateLookup[] = str_replace(' ', '-', $cNormalized);
+                    if (isset($catAliases[$cLower])) {
+                        foreach ($catAliases[$cLower] as $alias) {
+                            $aLower = mb_strtolower(trim((string) $alias));
+                            $candidateLookup[] = $aLower;
+                            $aNorm = str_replace(['_', '-'], ' ', $aLower);
+                            $candidateLookup[] = $aNorm;
+                            $candidateLookup[] = str_replace(' ', '_', $aNorm);
+                            $candidateLookup[] = str_replace(' ', '-', $aNorm);
+                        }
+                    }
+                }
+                $candidateLookup = array_values(array_unique($candidateLookup));
+            }
+
+            $catModel = Load::model('mod_news_category');
+            $catModel->flush();
+            $catModel->where_lang($lang);
+            $catModel->addWhere("id IN ({$allowedCatList})");
+            $catModel->gR();
+
+            if ($catModel->getSize() > 0) {
+                $categories = $catModel->toArray();
+                foreach ($categories as $cat) {
+                    $cName = mb_strtolower(trim((string) ($cat['name'] ?? '')));
+                    $cSeo = mb_strtolower(trim((string) ($cat['seo'] ?? '')));
+                    $cNameNorm = str_replace(['_', '-'], ' ', $cName);
+                    $cSeoNorm = str_replace(['_', '-'], ' ', $cSeo);
+
+                    if (
+                        in_array($cName, $candidateLookup, true) ||
+                        in_array($cSeo, $candidateLookup, true) ||
+                        in_array($cNameNorm, $candidateLookup, true) ||
+                        in_array($cSeoNorm, $candidateLookup, true)
+                    ) {
+                        $excludedCategoryIds[] = (int) $cat['id'];
+                    }
+                }
+            }
+
+            if (!empty($excludedCategoryIds)) {
+                $targetExcludedIds = $excludedCategoryIds;
+                foreach ($excludedCategoryIds as $exCatId) {
+                    $descendants = $this->getCategoryDescendantIds($exCatId, $lang, 'mod_news_category');
+                    if (!empty($descendants)) {
+                        $targetExcludedIds = array_merge($targetExcludedIds, $descendants);
+                    }
+                }
+                $excludedCategoryIds = array_values(array_unique(array_map('intval', $targetExcludedIds)));
+            }
+        }
+
+        $m = Load::model('mod_news.newses');
+        $m->flush();
+        $m->select($select)->where_lang_and_status($lang, 'y');
+        $m->addWhere("slider='n'");
+        $m->addWhere("show_on_homepage='y'");
+        $m->addWhere($aclCondition);
+        $m->addWhere($this->getPublishedDateCondition(''));
+        if ($onlyToday) {
+            $todayStart = date('Y-m-d 00:00:00');
+            $m->addWhere("created_at >= '{$todayStart}'");
+        }
+        $m->addWhere("category_id IN ({$allowedCatList})");
+        if (!empty($excludedCategoryIds)) {
+            $excludedCatList = implode(',', $excludedCategoryIds);
+            $m->addWhere("category_id NOT IN ({$excludedCatList})");
+        }
+        $limitVal = (int) $limit;
+        if ($limitVal > 0) {
+            $m->limit($limitVal);
+        }
+        $m->order('created_at', 'DESC');
+        $m->gR();
+        if ($m->getSize() !== 0) {
+            return $this->_cleanNewsRows($m->toArray());
+        }
+
+        return [];
+    }
+
+    public function _featured_news(int $limit = 6, string $select = 'id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo', array $excludeCategories = ['spor']): array
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            return [];
+        }
+
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
+
+        $excludedCategoryIds = [];
+        if (!empty($excludeCategories) && !empty($allowedCatIds)) {
+            $catAliases = [
+                'spor' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'werzîş' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'werzis' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'sports' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'sport' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+            ];
+
+            $candidateLookup = [];
             foreach ($excludeCategories as $categoryCandidate) {
                 $cLower = mb_strtolower(trim((string) $categoryCandidate));
                 if ($cLower === '') {
@@ -459,13 +572,10 @@ class mod_news_helper extends indexBase
         $m = Load::model('mod_news.newses');
         $m->flush();
         $m->select($select)->where_lang_and_status($lang, 'y');
-        $m->addWhere("slider='n'");
+        $m->addWhere("slider='y'");
+        $m->addWhere("show_on_homepage='y'");
         $m->addWhere($aclCondition);
         $m->addWhere($this->getPublishedDateCondition(''));
-        if ($onlyToday) {
-            $todayStart = date('Y-m-d 00:00:00');
-            $m->addWhere("created_at >= '{$todayStart}'");
-        }
         $m->addWhere("category_id IN ({$allowedCatList})");
         if (!empty($excludedCategoryIds)) {
             $excludedCatList = implode(',', $excludedCategoryIds);
@@ -567,6 +677,7 @@ class mod_news_helper extends indexBase
         if ($excludeSlider) {
             $m->addWhere("slider='n'");
         }
+        $m->addWhere("show_on_homepage='y'");
         $cleanExcludeIds = array_values(array_unique(array_filter(array_map('intval', $excludeIds), function ($id) {
             return $id > 0;
         })));
@@ -671,6 +782,7 @@ class mod_news_helper extends indexBase
             $news_model->flush();
             $news_model->where_category_seo_and_status_and_lang($categoryItem['seo'], 'y', $lang);
             $news_model->addWhere("slider='n'");
+            $news_model->addWhere("show_on_homepage='y'");
             $news_model->addWhere($aclCondition);
             $news_model->addWhere($publishCondition);
             $news_model->select($select)->order('created_at', 'DESC')->limit($limit);

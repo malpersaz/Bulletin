@@ -541,6 +541,10 @@ $lang['index']['mod_news'] = [
         'no_items_found' => 'Опубликованных новостей пока нет.',
         'last_24_hours' => 'За последние 24 часа',
     ],
+    'featured_news' => [
+        'title' => 'Актуальное',
+        'all_items' => 'Смотреть все',
+    ],
     'sports_news' => [
         'title' => 'Спорт',
         'all_items' => 'Все новости',

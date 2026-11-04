@@ -1,0 +1,121 @@
+{{ run({"mod": "index", "method": "_featured_news", "extra": [6, "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo", ["spor"]]}) }}
+{% set featured_news = ctx_get('featured_news') %}
+
+{% if featured_news is not empty %}
+    <section class="latest-news-section featured-news-section news-box-grow" aria-labelledby="featured-news-heading">
+        <header class="latest-news-header">
+            <div class="latest-news-heading-wrap">
+                <h2 id="featured-news-heading" class="latest-news-title">
+                    <a href="{{ site.saddress }}newses" class="latest-news-title-link">
+                        <i class="bi bi-star-fill text-warning" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_news.featured_news.title }}</span>
+                    </a>
+                </h2>
+            </div>
+            <a href="{{ site.saddress }}newses" class="latest-news-view-all" aria-label="{{ lang.index.mod_news.featured_news.title }} - {{ lang.index.mod_news.featured_news.all_items }}">
+                <span>{{ lang.index.mod_news.featured_news.all_items }}</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </header>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 latest-news-grid">
+            {% for news in featured_news %}
+                <article class="col latest-news-col" itemscope itemtype="https://schema.org/NewsArticle">
+                    <div class="latest-news-card">
+                        <a href="{{ site.saddress }}news/{{ news.seo }}"
+                           class="latest-news-media"
+                           title="{{ news.name }}"
+                           itemprop="url">
+                            {% if news.image is not empty %}
+                                <img src="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }}"
+                                     srcset="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }} 256w, {{ site.address }}r/w-384/h-216/c-1/f/mod_news/thumb/{{ news.image }} 384w, {{ site.address }}r/w-480/h-270/c-1/f/mod_news/thumb/{{ news.image }} 480w"
+                                     sizes="(max-width: 767px) 360px, 248px"
+                                     class="latest-news-img"
+                                     alt="{{ news.name }}"
+                                     width="248"
+                                     height="140"
+                                     loading="lazy"
+                                     fetchpriority="low"
+                                     decoding="async"
+                                     itemprop="image">
+                            {% else %}
+                                <div class="latest-news-placeholder">
+                                    <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+
+                            {% if news.category_name is defined and news.category_name is not empty %}
+                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                    {{ news.category_name }}
+                                </span>
+                            {% elseif news.categoryname is defined and news.categoryname is not empty %}
+                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                    {{ news.categoryname }}
+                                </span>
+                            {% endif %}
+
+                            {% if news.has_video or news.has_gallery %}
+                                <div class="latest-news-type-badges">
+                                    {% if news.has_video %}
+                                        <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.title }}" aria-label="{{ lang.index.mod_video_embed.title }}">
+                                            <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+                                        </span>
+                                    {% endif %}
+                                    {% if news.has_gallery %}
+                                        <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.mod_pictures.title }}" aria-label="{{ lang.index.mod_pictures.title }}">
+                                            <i class="bi bi-images" aria-hidden="true"></i>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </a>
+
+                        <div class="latest-news-body">
+                            <div class="latest-news-meta">
+                                {% if news.published_ago is defined and news.published_ago is not empty %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                        <time datetime="{{ news.created_at|default('') }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                    </span>
+                                    <span class="latest-news-meta-sep" aria-hidden="true">·</span>
+                                {% elseif news.created_at is defined and news.created_at is not empty %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                        <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                    </span>
+                                    <span class="latest-news-meta-sep" aria-hidden="true">·</span>
+                                {% endif %}
+
+                                {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
+                                {% set words = clean_summary|split(' ')|length %}
+                                {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
+                                {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                                <span class="latest-news-meta-item">
+                                    <i class="bi bi-book" aria-hidden="true"></i>
+                                    <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
+                                </span>
+                            </div>
+
+                            <h3 class="latest-news-article-title" itemprop="headline">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                                    {{ news.name|raw }}
+                                </a>
+                            </h3>
+
+                            <p class="latest-news-summary" itemprop="description">
+                                {{ clean_summary }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <footer class="latest-news-mobile-footer text-center d-md-none">
+            <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100" aria-label="{{ lang.index.mod_news.featured_news.title }} - {{ lang.index.mod_news.featured_news.all_items }}">
+                <span>{{ lang.index.mod_news.featured_news.all_items }}</span>
+                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
+        </footer>
+    </section>
+{% endif %}
