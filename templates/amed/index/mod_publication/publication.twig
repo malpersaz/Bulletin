@@ -46,6 +46,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site.saddress }}publication/{{ d.seo }}">
     <meta property="og:title" content="{{ d.title|default(d.name) }}">
@@ -74,8 +75,8 @@
     {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
     <meta property="og:locale" content="{{ og_locale }}">
-    <meta property="article:published_time" content="{{ d.created_at|date('c') }}">
-    <meta property="article:modified_time" content="{{ d.updated_at|default(d.created_at)|date('c') }}">
+    <meta property="article:published_time" content="{{ (d.created_at ?: "now")|date('c') }}">
+    <meta property="article:modified_time" content="{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}">
     {% if d.category_name is defined and d.category_name is not empty %}
         <meta property="article:section" content="{{ d.category_name }}">
     {% endif %}
@@ -109,8 +110,8 @@
               "url": {{ publication_logo_asset|default(site.iaddress ~ 'mod_settings/logo.png')|json_encode|raw }}
             }
           },
-          "datePublished": "{{ d.created_at ? d.created_at|date('Y-m-d') : "now"|date('Y-m-d') }}",
-          "dateModified": "{{ (d.updated_at ?: d.created_at)|date('Y-m-d') }}",
+          "datePublished": "{{ (d.created_at ?: "now")|date('c') }}",
+          "dateModified": "{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}",
           "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_encode|raw }}
         }
     </script>
@@ -154,30 +155,20 @@
             <article class="detail-card">
                 <div class="detail-breadcrumb-wrap">
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0" itemscope itemtype="https://schema.org/BreadcrumbList">
-                            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                                <a itemprop="item" href="{{ site.saddress }}">
-                                    <span itemprop="name">{{ lang.index.home }}</span>
-                                </a>
-                                <meta itemprop="position" content="1"/>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
                             </li>
-                            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                                <a itemprop="item" href="{{ site.saddress }}publications">
-                                    <span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span>
-                                </a>
-                                <meta itemprop="position" content="2"/>
+                            <li class="breadcrumb-item">
+                                <a href="{{ site.saddress }}publications">{{ lang.index.mod_publication.all_publications }}</a>
                             </li>
                             {% if d.category_name is defined and d.category_name is not empty %}
-                                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                                    <a itemprop="item" href="{{ site.saddress }}publications/{{ d.category_seo }}">
-                                        <span itemprop="name">{{ d.category_name }}</span>
-                                    </a>
-                                    <meta itemprop="position" content="3"/>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ site.saddress }}publications/{{ d.category_seo }}">{{ d.category_name }}</a>
                                 </li>
                             {% endif %}
-                            <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                                <span itemprop="name">{{ d.name }}</span>
-                                <meta itemprop="position" content="{% if d.category_name is defined and d.category_name is not empty %}4{% else %}3{% endif %}"/>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <span>{{ d.name }}</span>
                             </li>
                         </ol>
                     </nav>
@@ -292,7 +283,7 @@
                         </div>
                     {% endif %}
 
-                    <div itemprop="articleBody" class="detail-body content-body">
+                    <div class="detail-body content-body">
                         {{ d.content|raw }}
                     </div>
 

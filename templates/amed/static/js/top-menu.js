@@ -323,4 +323,18 @@ document.addEventListener('DOMContentLoaded', function () {
             handleFallback();
         }
     });
+
+    // --- Google Analytics (GA4) Auto-Init ---
+    const gaScript = document.querySelector('script[data-ga-id]');
+    if (gaScript) {
+        const gaId = gaScript.getAttribute('data-ga-id');
+        if (gaId) {
+            window.dataLayer = window.dataLayer || [];
+            const pushAnalyticsCommand = function () {
+                window.dataLayer.push(arguments);
+            };
+            pushAnalyticsCommand('js', new Date());
+            pushAnalyticsCommand('config', gaId);
+        }
+    }
 });

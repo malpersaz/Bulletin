@@ -171,7 +171,9 @@ class Helper
 
     static function legacy_seo($s)
     {
-        $s = preg_replace('/[^\p{L}\p{N}"\' ]/u', " ", $s);
+        // Remove apostrophes, quotation marks, and punctuation (:;,!? etc.)
+        $s = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}:;,!?()\[\]{}]/u', '', (string) $s);
+        $s = preg_replace('/[^\p{L}\p{N} ]/u', " ", $s);
         $s = trim($s);
         $s = preg_replace('/\s+/', '_', $s);
         for ($i = 0; $i <= 5; $i++) {
@@ -389,5 +391,22 @@ class Helper
 
         $purifier = new HTMLPurifier($config);
         return $purifier->purify($html);
+    }
+
+    /**
+     * Truncates text at word boundaries up to maxChars for clean SEO meta descriptions.
+     */
+    public static function truncateWords(string $text, int $maxChars = 160): string
+    {
+        $clean = trim(preg_replace('/\s+/', ' ', strip_tags($text)));
+        if (mb_strlen($clean) <= $maxChars) {
+            return $clean;
+        }
+        $sub = mb_substr($clean, 0, $maxChars);
+        $lastSpace = mb_strrpos($sub, ' ');
+        if ($lastSpace !== false && $lastSpace > ($maxChars / 2)) {
+            $sub = mb_substr($sub, 0, $lastSpace);
+        }
+        return rtrim($sub, " \t\n\r\0\x0B.,:;!?") . '...';
     }
 }

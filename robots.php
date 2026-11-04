@@ -24,7 +24,14 @@ echo "Disallow: /installer/\n\n";
 if ($baseUrl !== '') {
     echo "# Master Sitemap Index\n";
     echo "Sitemap: " . $baseUrl . "sitemap.xml\n";
-    echo "Sitemap: " . $baseUrl . "newsSitemap.xml\n\n";
-    echo "# AI / LLM Index\n";
+    $active_langs = Registry::get('active_langs');
+    if (is_array($active_langs) && !empty($active_langs)) {
+        foreach ($active_langs as $lang) {
+            echo "Sitemap: " . $baseUrl . $lang . "/newsSitemap.xml\n";
+        }
+    } else {
+        echo "Sitemap: " . $baseUrl . "newsSitemap.xml\n";
+    }
+    echo "\n# AI / LLM Index\n";
     echo "# LLMS-Txt: " . $baseUrl . "llms.txt\n";
 }

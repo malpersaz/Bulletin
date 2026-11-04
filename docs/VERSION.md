@@ -1,5 +1,33 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.36 (2026-11-04)
+- **SEO & Google Technical Health Remediation Protocol (`lib/Database/Adapter/PDO_MYSQL.php`, `lib/Database/DatabaseException.php`, `lib/GoogleIndexingService.class.php`, `lib/Helper.class.php`, `lib/McpCrudToolsBase.class.php`, `lib/McpNewsTools.class.php`, `mod/index/index.php`, `mod/mod_news/index.php`, `mod/mod_news/model/newses.model.php`, `mod/mod_publication/model/publications.model.php`, `robots.php`, `robots.txt`, `config/google.config.php`, `config/site.config.php`, `config/site.config.example.php`, `templates/amed/layouts/base.twig`, `templates/amed/index/index.twig`, `templates/amed/index/mod_news/*.twig`, `templates/amed/index/mod_publication/*.twig`, `templates/amed/index/mod_event/*.twig`, `templates/amed/index/legal/*.twig`, `docs/VERSION.md`)**:
+  - **Zero-Dependency Google Indexing API Integration (`lib/GoogleIndexingService.class.php`, `config/google.config.php`)**:
+    - Re-implemented `GoogleIndexingService` with native PHP OpenSSL RS256 JWT assertion generation and `HttpClient::postJson`, fully eliminating third-party Composer `google/apiclient` runtime crashes.
+    - Added resilient multi-path candidate credential resolution supporting `data/credentials.json`, `data/google_search_console_api.json`, and environment variables.
+    - Hooked real-time indexing notifications (`URL_UPDATED`, `URL_DELETED`) on news create, update, publish status toggling, and deletion in `lib/McpNewsTools.class.php`.
+  - **Structured Data & Schema Standard Optimization (`templates/amed/`)**:
+    - Cleaned and consolidated all microdata and JSON-LD schema definitions across the front-end theme.
+    - Resolved Google Search Console "Unnamed item" warnings by removing orphaned microdata attributes (`itemscope`, `itemprop="itemListElement"`, `itemprop="item"`, `itemprop="name"`, `meta itemprop="position"`) from breadcrumb bars across all 9 legal templates, `archive.twig`, `authors.twig`, `author.twig`, and `us_elections_live.twig`.
+    - Added clean JSON-LD `BreadcrumbList` blocks in listing templates (`newses.twig`, `publications.twig`, `events.twig`).
+    - Added root schema graph (`WebSite` + `NewsMediaOrganization`) with `SearchAction` deep linking on the homepage (`index.twig`).
+    - Standardized ISO 8601 UTC timestamps (`date('c')`) in NewsArticle and CreativeWork schema graphs (`news.twig`, `publication.twig`), eliminating timezone drift between HTML meta tags and JSON-LD payloads.
+  - **XML Sitemap & Robots Indexing Enhancements (`mod/index/index.php`, `.htaccess`, `robots.php`, `robots.txt`)**:
+    - Enhanced `sitemapIndex` to dynamically check published public content existence before listing submodule sitemaps (`eventSitemap.xml`, `announcementSitemap.xml`, `videoSitemap.xml`, `publicationSitemap.xml`), avoiding empty sitemap 404/no-content crawl issues.
+    - Added `<lastmod>` timestamps to all XML sitemap entries using article `updated_at` or `created_at` dates.
+    - Added Google News Sitemap extension namespace (`xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"`) with `<news:news>` payload for articles published within the last 48 hours.
+    - Synchronized multilingual `newsSitemap.xml` directives across `robots.php` and static `robots.txt`.
+    - Aligned URL rewrite rules in `.htaccess` to properly route all submodule sitemaps (`event`, `announcement`, `video`, `gallery`, `publication`, `news`, `page`, `category`).
+  - **Resilient Database Error Handling & Outage Shielding (`lib/Database/Adapter/PDO_MYSQL.php`, `lib/Database/DatabaseException.php`, `index.php`)**:
+    - Added automatic 150ms connection retry logic in `Adapter_PDO_MYSQL::connect()` to transparently absorb transient MySQL restart or connection drop spikes.
+    - Overhauled `DatabaseException::show()` and global exception handler in `index.php`: genuine connection failures issue HTTP 503 Service Unavailable with `Retry-After: 3600` headers and clean HTML/JSON notices, preventing search engine crawlers from indexing transient 500 error pages as thin content.
+    - Prevented query error logging from halting runtime execution or dumping raw stack traces in production environments.
+  - **URL Slug Quality & Meta Description Word-Boundary Truncation (`lib/Helper.class.php`, `lib/McpCrudToolsBase.class.php`, `lib/McpNewsTools.class.php`, `mod/mod_news/index.php`)**:
+    - Added `Helper::truncateWords(string $text, int $maxChars = 160): string` to prevent broken words or mid-sentence ellipses in SEO meta descriptions across admin news controller and MCP CRUD tools.
+    - Enhanced slug generation in `Helper::legacy_seo()` and `McpCrudToolsBase::generateSlug()` to strip extraneous punctuation (`:;,!?()[]{}`) while strictly preserving UTF-8 regional alphabets in Wikipedia style.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.36`.
+
 ## v1.0.35 (2026-11-04)
 - **US Elections Dedicated Live Page Context & Real-Time Sync Alignment (`templates/amed/index/mod_news/us_elections_live.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Dynamic Context Binding for Live Results Banner (`templates/amed/index/mod_news/us_elections_live.twig`)**:

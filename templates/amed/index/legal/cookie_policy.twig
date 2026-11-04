@@ -85,16 +85,14 @@
 <div class="legal-dossier-shell cookie-policy-shell" id="mod_cookie_policy">
 	<div class="legal-breadcrumb-bar">
 		<nav aria-label="{{ lang.index.home }}">
-			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-					<a itemprop="item" href="{{ site.address }}">
-						<span itemprop="name">{{ lang.index.home }}</span>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a href="{{ site.address }}">
+						<span>{{ lang.index.home }}</span>
 					</a>
-					<meta itemprop="position" content="1"/>
 				</li>
-				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-					<span itemprop="name">{{ page_meta_title }}</span>
-					<meta itemprop="position" content="2"/>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span>{{ page_meta_title }}</span>
 				</li>
 			</ol>
 		</nav>

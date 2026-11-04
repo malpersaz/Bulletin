@@ -37,32 +37,63 @@
     <meta name="twitter:image" content="{{ share_image_asset }}">
 {% endblock %}
 
+{% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_encode|raw }},
+          "item": {{ site.saddress|json_encode|raw }}
+        }{% if is_filtered_category %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_publication.all_publications|json_encode|raw }},
+          "item": {{ (site.saddress ~ 'publications')|json_encode|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ categoryname|json_encode|raw }}
+        }
+        {% else %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_publication.all_publications|json_encode|raw }}
+        }
+        {% endif %}
+      ]
+    }
+    </script>
+{% endblock %}
+
 {% block css_custom %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
-<main class="publications-page" itemscope itemtype="https://schema.org/CollectionPage">
+<main class="publications-page">
     <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
-                <meta itemprop="position" content="1">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
             </li>
             {% if is_filtered_category %}
-                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}publications"><span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span></a>
-                    <meta itemprop="position" content="2">
+                <li class="breadcrumb-item">
+                    <a href="{{ site.saddress }}publications">{{ lang.index.mod_publication.all_publications }}</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ categoryname }}</span>
-                    <meta itemprop="position" content="3">
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span>{{ categoryname }}</span>
                 </li>
             {% else %}
-                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span>
-                    <meta itemprop="position" content="2">
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span>{{ lang.index.mod_publication.all_publications }}</span>
                 </li>
             {% endif %}
         </ol>
@@ -70,7 +101,7 @@
 
     <header class="publications-header">
         <div class="publications-header-lead">
-            <h1 class="publications-page-title" itemprop="name">
+            <h1 class="publications-page-title">
                 <i class="bi bi-journal-richtext" aria-hidden="true"></i>
                 <span>{{ current_page_title }}</span>
             </h1>

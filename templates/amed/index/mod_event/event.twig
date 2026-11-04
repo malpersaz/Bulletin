@@ -42,6 +42,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site.saddress }}event/{{ d.seo }}">
     <meta property="og:title" content="{{ d.name }}">
@@ -57,7 +58,7 @@
     <meta name="twitter:image" content="{{ event_share_image }}">
 {% endblock %}
 
-{% block head %}
+{% block schema %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

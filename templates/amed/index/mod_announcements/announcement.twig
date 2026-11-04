@@ -39,6 +39,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+	<meta name="robots" content="index, follow, max-image-preview:large">
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{ announcement_url }}">
@@ -144,22 +145,15 @@
 			<article class="detail-card">
 				<div class="detail-breadcrumb-wrap">
 					<nav aria-label="breadcrumb">
-						<ol class="breadcrumb mb-0" itemscope itemtype="https://schema.org/BreadcrumbList">
-							<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<a itemprop="item" href="{{ site.saddress }}">
-									<span itemprop="name">{{ lang.index.home }}</span>
-								</a>
-								<meta itemprop="position" content="1"/>
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item">
+								<a href="{{ site.saddress }}">{{ lang.index.home }}</a>
 							</li>
-							<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<a itemprop="item" href="{{ site.saddress }}announcements">
-									<span itemprop="name">{{ lang.index.mod_announcements.title }}</span>
-								</a>
-								<meta itemprop="position" content="2"/>
+							<li class="breadcrumb-item">
+								<a href="{{ site.saddress }}announcements">{{ lang.index.mod_announcements.title }}</a>
 							</li>
-							<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<span itemprop="name">{{ d.name }}</span>
-								<meta itemprop="position" content="3"/>
+							<li class="breadcrumb-item active" aria-current="page">
+								<span>{{ d.name }}</span>
 							</li>
 						</ol>
 					</nav>

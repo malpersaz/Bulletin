@@ -58,7 +58,15 @@ class Adapter_PDO_MYSQL
             $timezoneOffset = date('P');
             $this->_con->exec("SET time_zone = '{$timezoneOffset}'");
         } catch (PDOException $e) {
-            throw new DatabaseException("Connection Problem!\nPls Check Database Username,Pass And Host Config!\n" . $e->getMessage());
+            // Resilient retry: wait 150ms and try connecting once more before failing
+            usleep(150000);
+            try {
+                $this->_con = new PDO($dsn, $this->_con_setting['user'], $this->_con_setting['pass'], $options);
+                $timezoneOffset = date('P');
+                $this->_con->exec("SET time_zone = '{$timezoneOffset}'");
+            } catch (PDOException $retryE) {
+                throw new DatabaseException("Connection Problem!\nPls Check Database Username,Pass And Host Config!\n" . $retryE->getMessage());
+            }
         }
         return true;
     }

@@ -656,8 +656,8 @@ abstract class McpCrudToolsBase
         $locale = strtolower(trim($locale));
         $isKurdish = in_array($locale, self::KURDISH_LOCALES, true);
 
-        // Remove apostrophes and quotation marks
-        $value = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}]/u', '', $text) ?? '';
+        // Remove apostrophes, quotation marks, and punctuation (:;,!? etc.)
+        $value = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}:;,!?()\[\]{}]/u', '', $text) ?? '';
         // Whitespace and dashes become underscores
         $value = preg_replace('/[\s-]+/u', '_', $value) ?? '';
         // Wikipedia-style parity: preserve original casing, do not force lowercase
@@ -682,5 +682,56 @@ abstract class McpCrudToolsBase
         }
 
         return $value;
+    }
+
+    /**
+     * Dispatch notification to Google Indexing API for published/deleted URLs
+     */
+    protected function notifyGoogleIndexing(string $path, string $action = 'update'): void
+    {
+        try {
+            $siteConfig = Registry::get('site_config');
+            $baseUrl = rtrim((string) ($siteConfig['address'] ?? ''), '/') . '/';
+            if ($baseUrl === '/') {
+                return;
+            }
+            $fullUrl = $baseUrl . ltrim($path, '/');
+            if (!class_exists('GoogleIndexingService')) {
+                $servicePath = (defined('lib_dir') ? lib_dir : dirname(__DIR__) . '/lib/') . 'GoogleIndexingService.class.php';
+                if (file_exists($servicePath)) {
+                    require_once $servicePath;
+                }
+            }
+            if (class_exists('GoogleIndexingService')) {
+                $indexing = new GoogleIndexingService();
+                if ($action === 'delete') {
+                    $indexing->notifyDelete($fullUrl);
+                } else {
+                    $indexing->notifyUpdate($fullUrl);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore indexing dispatch failures
+        }
+    }
+
+    /**
+     * Truncates text at word boundaries up to maxChars for clean SEO meta descriptions.
+     */
+    public static function truncateWords(string $text, int $maxChars = 160): string
+    {
+        if (class_exists('Helper') && method_exists('Helper', 'truncateWords')) {
+            return Helper::truncateWords($text, $maxChars);
+        }
+        $clean = trim(preg_replace('/\s+/', ' ', strip_tags($text)));
+        if (mb_strlen($clean) <= $maxChars) {
+            return $clean;
+        }
+        $sub = mb_substr($clean, 0, $maxChars);
+        $lastSpace = mb_strrpos($sub, ' ');
+        if ($lastSpace !== false && $lastSpace > ($maxChars / 2)) {
+            $sub = mb_substr($sub, 0, $lastSpace);
+        }
+        return rtrim($sub, " \t\n\r\0\x0B.,:;!?") . '...';
     }
 }

@@ -7,11 +7,8 @@ Disallow: /*/tools/
 Disallow: /cache/
 Disallow: /installer/
 
-# Master Sitemap Index for AKM Bulletin CMS
+# Master Sitemap Index
 Sitemap: https://amedbulten.com/sitemap.xml
-Sitemap: https://amedbulten.com/newsSitemap.xml
-
-# Specific Language fallbacks
 Sitemap: https://amedbulten.com/tr/newsSitemap.xml
 
 # AI / LLM Index

@@ -6,6 +6,7 @@ class newses_model extends ORM
     public $id;
     public $name;
     public $created_at;
+    public $updated_at;
     public $status;
     public $slider;
     public $content;
@@ -43,7 +44,7 @@ class newses_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn()) {
+        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasUpdatedAtColumn()) {
             return;
         }
 
@@ -53,6 +54,7 @@ class newses_model extends ORM
   mod_news.id,
     mod_news.name,
     mod_news.created_at,
+    mod_news.updated_at,
     mod_news.status,
     mod_news.slider,
     mod_news.content,
@@ -107,6 +109,11 @@ class newses_model extends ORM
     private function hasCategoryAclIdColumn()
     {
         return $this->hasViewColumn('category_acl_id');
+    }
+
+    private function hasUpdatedAtColumn()
+    {
+        return $this->hasViewColumn('updated_at');
     }
 
     private function hasViewColumn($columnName)

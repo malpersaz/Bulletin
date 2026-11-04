@@ -48,6 +48,9 @@
 {% endblock %}
 
 {% block meta_tags %}
+	<!-- Standard Robots & Search Directives -->
+	<meta name="robots" content="index, follow, max-image-preview:large">
+
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{ site.saddress }}news/{{ d.seo }}">
@@ -77,8 +80,8 @@
     {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
 	<meta property="og:locale" content="{{ og_locale }}">
-	<meta property="article:published_time" content="{{ d.created_at|date('c') }}">
-	<meta property="article:modified_time" content="{{ d.updated_at|date('c') }}">
+	<meta property="article:published_time" content="{{ (d.created_at ?: "now")|date('c') }}">
+	<meta property="article:modified_time" content="{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}">
 	{% if has_news_category %}
 		<meta property="article:section" content="{{ d.categoryname }}">
 	{% endif %}
@@ -120,8 +123,8 @@
 		      "url": {{ news_logo_asset|json_encode|raw }}
 		    }
 		  },
-		  "datePublished": "{{ d.created_at ? d.created_at|date('Y-m-d') : "now"|date('Y-m-d') }}",
-		  "dateModified": "{{ (d.updated_at ?: d.created_at)|date('Y-m-d') }}",
+		  "datePublished": "{{ (d.created_at ?: "now")|date('c') }}",
+		  "dateModified": "{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}",
 		  "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_encode|raw }}
 		}
 	</script>
@@ -181,30 +184,20 @@
 			<article class="detail-card news-detail-card">
 				<div class="detail-breadcrumb-wrap">
 					<nav aria-label="breadcrumb">
-						<ol class="breadcrumb mb-0" itemscope itemtype="https://schema.org/BreadcrumbList">
-							<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<a itemprop="item" href="{{ site.saddress }}">
-									<span itemprop="name">{{ lang.index.home }}</span>
-								</a>
-								<meta itemprop="position" content="1"/>
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item">
+								<a href="{{ site.saddress }}">{{ lang.index.home }}</a>
 							</li>
-							<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<a itemprop="item" href="{{ site.saddress }}newses">
-									<span itemprop="name">{{ news_all_label }}</span>
-								</a>
-								<meta itemprop="position" content="2"/>
+							<li class="breadcrumb-item">
+								<a href="{{ site.saddress }}newses">{{ news_all_label }}</a>
 							</li>
 							{% if has_news_category %}
-								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<a itemprop="item" href="{{ site.saddress }}newses/{{ d.category_seo }}">
-										<span itemprop="name">{{ d.categoryname }}</span>
-									</a>
-									<meta itemprop="position" content="3"/>
+								<li class="breadcrumb-item">
+									<a href="{{ site.saddress }}newses/{{ d.category_seo }}">{{ d.categoryname }}</a>
 								</li>
 							{% endif %}
-							<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-								<span itemprop="name">{{ d.name }}</span>
-								<meta itemprop="position" content="{{ has_news_category ? 4 : 3 }}"/>
+							<li class="breadcrumb-item active" aria-current="page">
+								<span>{{ d.name }}</span>
 							</li>
 						</ol>
 					</nav>
@@ -319,7 +312,7 @@
 							'show_share_text': false
 						} %}
 
-						<div itemprop="articleBody" class="detail-body news-body">
+						<div class="detail-body news-body">
 							{{ d.content|raw }}
 						</div>
 

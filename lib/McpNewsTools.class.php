@@ -712,7 +712,8 @@ class McpNewsTools extends McpCrudToolsBase
         $model->seo = $seo;
         $model->title = $this->cleanTextEntities($this->optionalString($args, 'title', $name, 255));
         $model->keywords = $this->cleanTextEntities($this->optionalString($args, 'keywords', '', 255));
-        $model->description = $this->cleanTextEntities($this->optionalString($args, 'description', $summary, 255));
+        $rawDescription = $this->cleanTextEntities($this->optionalString($args, 'description', $summary, 255));
+        $model->description = self::truncateWords($rawDescription, 255);
         $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
         $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
@@ -800,6 +801,10 @@ class McpNewsTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the news record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -867,7 +872,11 @@ class McpNewsTools extends McpCrudToolsBase
         foreach (['title', 'keywords', 'description'] as $field) {
             if (isset($args[$field])) {
                 $val = $this->optionalString($args, $field, (string) $model->{$field}, 255);
-                $model->{$field} = $this->cleanTextEntities($val);
+                if ($field === 'description') {
+                    $model->description = self::truncateWords($this->cleanTextEntities($val), 255);
+                } else {
+                    $model->{$field} = $this->cleanTextEntities($val);
+                }
             }
         }
 
@@ -974,6 +983,12 @@ class McpNewsTools extends McpCrudToolsBase
 
         $this->registerSlugRedirectIfChanged($oldLang, $oldSeo, (string) $model->lang, (string) $model->seo, 'news');
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'update');
+        } elseif ($model->status === 'n') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -1000,6 +1015,8 @@ class McpNewsTools extends McpCrudToolsBase
         if ((string) $model->image !== '') {
             $this->deleteImageFiles('mod_news', (string) $model->image, self::NEWS_IMAGE_SIZES);
         }
+
+        $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'delete');
 
         $model->delete();
 

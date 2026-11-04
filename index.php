@@ -124,8 +124,14 @@ set_exception_handler(function($e) use ($isAjaxRequest, $isLocal, $ajax_logger) 
         exit;
     }
 
+    $isDbFault = ($e instanceof DatabaseException || $e instanceof \PDOException || ($e->getPrevious() && ($e->getPrevious() instanceof DatabaseException || $e->getPrevious() instanceof \PDOException)));
+
     if (!headers_sent()) {
-        http_response_code(500);
+        http_response_code($isDbFault ? 503 : 500);
+        if ($isDbFault) {
+            header('Retry-After: 3600');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+        }
     }
 
     if ($isLocal) {
@@ -137,7 +143,11 @@ set_exception_handler(function($e) use ($isAjaxRequest, $isLocal, $ajax_logger) 
             echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
         }
     } else {
-        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>500 Internal Server Error</title><meta name="robots" content="noindex, nofollow"></head><body><h1>Internal Server Error</h1><p>An unexpected error occurred. Please try again later.</p></body></html>';
+        if ($isDbFault) {
+            echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>503 Service Unavailable</title></head><body><main><h1>Service Unavailable</h1><p>The server is temporarily unable to service your request. Please try again shortly.</p></main></body></html>';
+        } else {
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>500 Internal Server Error</title><meta name="robots" content="noindex, nofollow"></head><body><h1>Internal Server Error</h1><p>An unexpected error occurred. Please try again later.</p></body></html>';
+        }
     }
     exit;
 });

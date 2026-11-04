@@ -21,35 +21,53 @@
 		{% block meta_tags %}
 			<!-- Standard Meta -->
 			<meta name="author" content="{{ site.title }}">
-			<meta name="robots" content="index, follow">
-			<meta
-			name="theme-color" content="#ffffff">
+			<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+			<meta name="theme-color" content="#ffffff">
 
 			<!-- Open Graph / Facebook -->
 			<meta property="og:type" content="website">
-			<meta property="og:url" content="{{ site.address }}">
+			<meta property="og:url" content="{{ site.saddress|default(site.address) }}">
 			<meta property="og:title" content="{{ site.title }}">
 			<meta property="og:description" content="{{ site.description }}">
 			{% set meta_logo = (site.logo_path is defined and site.logo_path is not empty) ? site.logo_path : 'logo.png' %}
 			<meta property="og:image" content="{{ site.iaddress }}mod_settings/{{ meta_logo }}">
 			<meta property="og:site_name" content="{{ site.title }}">
-			{% set og_locale = site.lang ~ '_SE' %}
+			{% set og_locale = site.lang %}
 			{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
 			{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
 			{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+			{% elseif site.lang == 'fr' %}{% set og_locale = 'fr_FR' %}
+			{% elseif site.lang == 'sv' %}{% set og_locale = 'sv_SE' %}
+			{% elseif site.lang == 'ru' %}{% set og_locale = 'ru_RU' %}
+			{% elseif site.lang == 'ar' %}{% set og_locale = 'ar_AR' %}
+			{% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
+			{% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
+			{% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
 			{% endif %}
 			<meta property="og:locale" content="{{ og_locale }}">
 
 			<!-- Twitter -->
 			<meta name="twitter:card" content="summary_large_image">
-			<meta name="twitter:url" content="{{ site.address }}">
+			<meta name="twitter:url" content="{{ site.saddress|default(site.address) }}">
 			<meta name="twitter:title" content="{{ site.title }}">
 			<meta name="twitter:description" content="{{ site.description }}">
 			<meta name="twitter:image" content="{{ site.iaddress }}mod_settings/{{ meta_logo }}">
 		{% endblock %}
 
-		<base
-		href="{{ site.address }}">
+		{% block schema %}{% endblock %}
+
+		{% if site.google_search_console is defined and site.google_search_console is not empty %}
+			{% if '<meta' in site.google_search_console %}
+				{{ site.google_search_console|raw }}
+			{% else %}
+				<meta name="google-site-verification" content="{{ site.google_search_console|trim }}">
+			{% endif %}
+		{% endif %}
+		{% if site.meta_tags is defined and site.meta_tags is not empty %}
+			{{ site.meta_tags|raw }}
+		{% endif %}
+
+		<base href="{{ site.address }}">
 
 		{% set settings_asset_base = site.iaddress ~ 'mod_settings/' %}
 		{% set logo_asset = site.logo_path is defined and site.logo_path is not empty ? settings_asset_base ~ site.logo_path : '' %}
@@ -81,9 +99,10 @@
 		{% endblock %}
 		{% block stylesheets %}{% endblock %}
 
-		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
+		{% set ga_id = site.google_analytics|default(site.google_analytics_id|default(''))|trim %}
+		{% if ga_id is not empty %}
 			<!-- Google tag (gtag.js) -->
-			<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics_id }}"></script>
+			<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id|url_encode }}" data-ga-id="{{ ga_id }}"></script>
 		{% endif %}
 
 		{% block css_custom %}{% endblock %}

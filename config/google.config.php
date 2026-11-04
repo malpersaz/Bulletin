@@ -10,6 +10,9 @@
 
 $dataDir = dirname(__DIR__) . DS . 'data' . DS;
 $credentialsPath = $dataDir . 'credentials.json';
+if (!file_exists($credentialsPath) && file_exists($dataDir . 'google_search_console_api.json')) {
+    $credentialsPath = $dataDir . 'google_search_console_api.json';
+}
 $settingsPath = $dataDir . 'google_settings.json';
 
 $bucketName = '';

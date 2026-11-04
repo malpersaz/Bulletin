@@ -69,24 +69,21 @@
 {% block content %}
 <section id="publication-author-page">
     <div class="container author-shell">
-        <ol class="author-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
-                <meta itemprop="position" content="1" />
+        <ol class="author-breadcrumb">
+            <li>
+                <a href="{{ site.saddress }}"><span>{{ lang.index.home }}</span></a>
             </li>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.saddress }}authors"><span itemprop="name">{{ lang.index.mod_publication.authors }}</span></a>
-                <meta itemprop="position" content="2" />
+            <li>
+                <a href="{{ site.saddress }}authors"><span>{{ lang.index.mod_publication.authors }}</span></a>
             </li>
-            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <span itemprop="name">{{ author_name }}</span>
-                <meta itemprop="position" content="3" />
+            <li>
+                <span>{{ author_name }}</span>
             </li>
         </ol>
 
         <div class="author-layout">
             <main class="author-main">
-                <section class="author-identity western-modern" itemscope itemtype="https://schema.org/Person">
+                <section class="author-identity western-modern">
                     <div class="author-identity-inner">
                         <div class="author-avatar">
                             {% if author.user_image is defined and author.user_image is not empty %}
@@ -96,7 +93,7 @@
                             {% endif %}
                         </div>
                         <div class="author-copy">
-                            <h1 class="author-title" itemprop="name">{{ author_name }}</h1>
+                            <h1 class="author-title">{{ author_name }}</h1>
                             {% if author.about is defined and author.about is not empty %}
                             <div class="author-bio">
                                 {{ author.about|raw }}

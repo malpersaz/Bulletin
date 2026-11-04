@@ -107,6 +107,9 @@ class mod_news_mod extends BaseModuleController
                 ENT_QUOTES | ENT_HTML5,
                 'UTF-8'
             );
+            if ($field === 'description') {
+                $val = Helper::truncateWords($val, 255);
+            }
             $model->$field = $val;
         }
 

@@ -67,14 +67,12 @@
 <section id="publication-authors-page">
     <div class="container authors-shell">
         <div class="authors-header">
-            <ol class="authors-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
-                    <meta itemprop="position" content="1" />
+            <ol class="authors-breadcrumb">
+                <li>
+                    <a href="{{ site.saddress }}"><span>{{ lang.index.home }}</span></a>
                 </li>
-                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ lang.index.mod_publication.authors }}</span>
-                    <meta itemprop="position" content="2" />
+                <li>
+                    <span>{{ lang.index.mod_publication.authors }}</span>
                 </li>
             </ol>
 
@@ -85,7 +83,7 @@
                 {% for author in authors %}
                     {% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
                     {% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
-                    <article class="author-card" itemscope itemtype="https://schema.org/Person">
+                    <article class="author-card">
                         <div class="author-head">
                             <div class="author-avatar">
                                 {% if author.user_image is defined and author.user_image is not empty %}
@@ -95,7 +93,7 @@
                                 {% endif %}
                             </div>
                             <div class="author-ident">
-                                <h2 class="author-name" itemprop="name">
+                                <h2 class="author-name">
                                     <a href="{{ site.saddress }}author/{{ author.username }}">{{ author_name }}</a>
                                 </h2>
                                 <div class="author-handle">@{{ author.username }}</div>

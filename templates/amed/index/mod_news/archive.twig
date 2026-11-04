@@ -20,22 +20,19 @@
 <div class="row g-4" id="mod_news_list">
     <div class="col-12">
         <nav aria-label="breadcrumb" class="mb-3">
-            <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}" class="text-decoration-none">
-                        <span itemprop="name">{{ lang.index.home }}</span>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ site.saddress }}" class="text-decoration-none">
+                        <span>{{ lang.index.home }}</span>
                     </a>
-                    <meta itemprop="position" content="1" />
                 </li>
-                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}newses" class="text-decoration-none">
-                        <span itemprop="name">{{ lang.index.mod_news.all_news }}</span>
+                <li class="breadcrumb-item">
+                    <a href="{{ site.saddress }}newses" class="text-decoration-none">
+                        <span>{{ lang.index.mod_news.all_news }}</span>
                     </a>
-                    <meta itemprop="position" content="2" />
                 </li>
-                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ lang.index.mod_news.archive_title }}</span>
-                    <meta itemprop="position" content="3" />
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span>{{ lang.index.mod_news.archive_title }}</span>
                 </li>
             </ol>
         </nav>

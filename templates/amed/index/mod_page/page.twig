@@ -69,6 +69,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+	<meta name="robots" content="index, follow, max-image-preview:large">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ site.saddress }}page/{{ d.seo }}">
 	<meta property="og:title" content="{{ page_meta_title }}">
@@ -193,16 +194,12 @@
 				<article class="detail-card">
 					<div class="detail-breadcrumb-wrap">
 						<nav aria-label="{{ lang.index.home }}">
-							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<a itemprop="item" href="{{ site.saddress }}">
-										<span itemprop="name">{{ lang.index.home }}</span>
-									</a>
-									<meta itemprop="position" content="1"/>
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">
+									<a href="{{ site.saddress }}">{{ lang.index.home }}</a>
 								</li>
-								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<span itemprop="name">{{ d.name }}</span>
-									<meta itemprop="position" content="2"/>
+								<li class="breadcrumb-item active" aria-current="page">
+									<span>{{ d.name }}</span>
 								</li>
 							</ol>
 						</nav>

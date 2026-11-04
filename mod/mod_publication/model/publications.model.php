@@ -6,6 +6,7 @@ class publications_model extends ORM
     public $id;
     public $name;
     public $created_at;
+    public $updated_at;
     public $status;
     public $slider;
     public $content;
@@ -41,15 +42,18 @@ class publications_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('publications')) {
+        if ($this->viewExists('publications') && $this->hasUpdatedAtColumn()) {
             return;
         }
+
+        $this->dropViewIfExists('publications');
 
         $sql = "CREATE VIEW publications AS
 SELECT
   mod_publication.id,
   mod_publication.name,
   mod_publication.created_at,
+  mod_publication.updated_at,
   mod_publication.status,
   mod_publication.slider,
   mod_publication.content,
@@ -75,7 +79,7 @@ SELECT
   mod_user.image AS user_image,
   mod_user_group.name AS group_name,
   (
-    SELECT count(mod_gallery.id) AS count
+    SELECT count(mod_gallery.id)
     FROM mod_gallery
     WHERE mod_publication.id = mod_gallery.vid
       AND mod_gallery.mod_name='mod_publication'
@@ -86,6 +90,34 @@ LEFT JOIN mod_user_group ON mod_user.group_id = mod_user_group.group_id
 LEFT JOIN mod_publication_category ON mod_publication.category_id = mod_publication_category.id";
 
         $this->query($sql);
+    }
+
+    private function dropViewIfExists($viewName)
+    {
+        $safeView = addslashes($viewName);
+        $this->query("DROP VIEW IF EXISTS " . $safeView);
+    }
+
+    private function hasUpdatedAtColumn()
+    {
+        try {
+            if ($this->getAdapterType() && strpos($this->getAdapterType(), 'PDO_SQLITE') !== false) {
+                $this->fetch_array("PRAGMA table_info('publications')");
+                if (is_array($this->_result)) {
+                    foreach ($this->_result as $col) {
+                        if (isset($col['name']) && $col['name'] === 'updated_at') {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            $this->fetch_array("SHOW COLUMNS FROM publications LIKE 'updated_at'");
+            return $this->getSize() !== 0;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function viewExists($viewName)

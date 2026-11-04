@@ -734,7 +734,7 @@ class index_mod extends indexBase
 
     public function sitemapIndex()
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         echo '<?xml version="1.0" encoding="UTF-8"?>';
         echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         
@@ -750,22 +750,71 @@ class index_mod extends indexBase
                       </sitemap>';
             }
             if ($this->isFeatureReady('publication.latest')) {
-                echo '<sitemap>
-                        <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
-                      </sitemap>';
+                $allowedPubCats = $this->getAllowedCategoryIds('mod_publication_category', (string) $l, true);
+                $allowedPubCatList = !empty($allowedPubCats) ? implode(',', array_map('intval', $allowedPubCats)) : '0';
+                $pubCheck = Load::model('mod_publication');
+                $pubCheck->flush();
+                $pubCheck->where_status_and_lang('y', $l);
+                $pubCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+                $pubCheck->addWhere("category_id IN ({$allowedPubCatList})");
+                $pubCheck->limit(1)->gR();
+                if ($pubCheck->getSize() > 0) {
+                    echo '<sitemap>
+                            <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
+                          </sitemap>';
+                }
             }
             if ($this->isFeatureReady('event.front')) {
+                $allowedEventCats = $this->getAllowedCategoryIds('mod_event_category', (string) $l, true);
+                $allowedEventCatList = !empty($allowedEventCats) ? implode(',', array_map('intval', $allowedEventCats)) : '0';
+                $eventCheck = Load::model('mod_event');
+                $eventCheck->flush();
+                $eventCheck->where_status_and_lang('y', $l);
+                $eventCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+                $eventCheck->addWhere("category_id IN ({$allowedEventCatList})");
+                $eventCheck->limit(1)->gR();
+                if ($eventCheck->getSize() > 0) {
+                    echo '<sitemap>
+                            <loc>' . $this->site['address'] . $l . '/eventSitemap.xml</loc>
+                          </sitemap>';
+                }
+            }
+
+            $annCheck = Load::model('mod_announcements');
+            $annCheck->flush();
+            $annCheck->where_status_and_lang('y', $l);
+            $annCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+            $annCheck->limit(1)->gR();
+            if ($annCheck->getSize() > 0) {
                 echo '<sitemap>
-                        <loc>' . $this->site['address'] . $l . '/eventSitemap.xml</loc>
+                        <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
                       </sitemap>';
             }
 
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/videoSitemap.xml</loc>
-                  </sitemap>';
+            $hasVideo = false;
+            $vidCheck = Load::model('mod_video');
+            $vidCheck->flush();
+            $vidCheck->where_status_and_lang('y', $l);
+            $vidCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+            $vidCheck->limit(1)->gR();
+            if ($vidCheck->getSize() > 0) {
+                $hasVideo = true;
+            } elseif ($this->isFeatureReady('video_embed.latest')) {
+                $vidEmbedCheck = Load::model('mod_video_embed');
+                $vidEmbedCheck->flush();
+                $vidEmbedCheck->where_status_and_lang('y', $l);
+                $vidEmbedCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+                $vidEmbedCheck->limit(1)->gR();
+                if ($vidEmbedCheck->getSize() > 0) {
+                    $hasVideo = true;
+                }
+            }
+            if ($hasVideo) {
+                echo '<sitemap>
+                        <loc>' . $this->site['address'] . $l . '/videoSitemap.xml</loc>
+                      </sitemap>';
+            }
+
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/gallerySitemap.xml</loc>
                   </sitemap>';
@@ -787,7 +836,7 @@ class index_mod extends indexBase
             return;
         }
 
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -801,16 +850,40 @@ class index_mod extends indexBase
         $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
-        $news->select(['seo', 'lang']);
+        $news->select(['name', 'seo', 'lang', 'created_at', 'updated_at']);
         $news->limit($page_limit, $offset);
         $news->gR();
+
+        $siteTitle = htmlspecialchars(html_entity_decode((string) ($this->site['title'] ?? 'Amed Bülten'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $langCode = htmlspecialchars((string) ($this->site['lang'] ?? 'tr'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $nowTime = time();
+        $recentNewsCutoff = $nowTime - (48 * 3600);
         
         echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">';
         if ($news->getSize() != 0) {
             foreach ($news->toArray() as $o) {
+                $createdTime = !empty($o['created_at']) ? strtotime($o['created_at']) : $nowTime;
+                $updatedTime = !empty($o['updated_at']) ? strtotime($o['updated_at']) : $createdTime;
+                $lastmod = date('c', $updatedTime ?: $createdTime);
+                $cleanTitle = htmlspecialchars(html_entity_decode(strip_tags((string) $o['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+                $pubDate = date('c', $createdTime);
+
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/news/' . $o['seo'] . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>';
+                if ($createdTime >= $recentNewsCutoff) {
+                    echo '
+                          <news:news>
+                            <news:publication>
+                              <news:name>' . $siteTitle . '</news:name>
+                              <news:language>' . $langCode . '</news:language>
+                            </news:publication>
+                            <news:publication_date>' . $pubDate . '</news:publication_date>
+                            <news:title>' . $cleanTitle . '</news:title>
+                          </news:news>';
+                }
+                echo '
                           <priority>0.80</priority>
                     </url>';
             }
@@ -825,7 +898,7 @@ class index_mod extends indexBase
             return;
         }
 
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -838,7 +911,7 @@ class index_mod extends indexBase
         $pub->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $pub->addWhere("category_id IN ({$allowedCatList})");
         $pub->order('created_at', 'DESC');
-        $pub->select(['seo', 'lang']);
+        $pub->select(['seo', 'lang', 'created_at', 'updated_at']);
         $pub->limit($page_limit, $offset);
         $pub->gR();
         
@@ -846,8 +919,10 @@ class index_mod extends indexBase
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         if ($pub->getSize() != 0) {
             foreach ($pub->toArray() as $o) {
+                $lastmod = date('c', strtotime($o['updated_at'] ?: $o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/publication/' . $o['seo'] . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.80</priority>
                     </url>';
             }
@@ -862,7 +937,7 @@ class index_mod extends indexBase
             return;
         }
 
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -875,7 +950,7 @@ class index_mod extends indexBase
         $event->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $event->addWhere("category_id IN ({$allowedCatList})");
         $event->order('start_date', 'DESC');
-        $event->select(['seo', 'lang']);
+        $event->select(['seo', 'lang', 'created_at', 'updated_at']);
         $event->limit($page_limit, $offset);
         $event->gR();
 
@@ -883,8 +958,10 @@ class index_mod extends indexBase
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         if ($event->getSize() != 0) {
             foreach ($event->toArray() as $o) {
+                $lastmod = date('c', strtotime($o['updated_at'] ?: $o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/event/' . $o['seo'] . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.80</priority>
                     </url>';
             }
@@ -895,7 +972,7 @@ class index_mod extends indexBase
 
     public function announcementSitemap($page = 1)
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -904,7 +981,7 @@ class index_mod extends indexBase
         $model->where_status_and_lang('y', $this->site['lang']);
         $model->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $model->order('created_at', 'DESC');
-        $model->select(['id', 'name', 'lang']);
+        $model->select(['id', 'name', 'lang', 'created_at']);
         $model->limit($page_limit, $offset);
         $model->gR();
         
@@ -913,8 +990,10 @@ class index_mod extends indexBase
         if ($model->getSize() != 0) {
             foreach ($model->toArray() as $o) {
                 $slug = Helper::sefurl($o['name']);
+                $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/announcement/' . $o['id'] . '-' . $slug . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.70</priority>
                     </url>';
             }
@@ -925,7 +1004,7 @@ class index_mod extends indexBase
 
     public function videoSitemap($page = 1)
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 25000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -938,14 +1017,16 @@ class index_mod extends indexBase
         $model_local->where_status_and_lang('y', $this->site['lang']);
         $model_local->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $model_local->order('created_at', 'DESC');
-        $model_local->select(['id', 'name', 'lang']);
+        $model_local->select(['id', 'name', 'lang', 'created_at']);
         $model_local->limit($page_limit, $offset);
         $model_local->gR();
         if ($model_local->getSize() != 0) {
             foreach ($model_local->toArray() as $o) {
                 $slug = Helper::sefurl($o['name']);
+                $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.65</priority>
                     </url>';
             }
@@ -957,14 +1038,16 @@ class index_mod extends indexBase
             $model_embed->where_status_and_lang('y', $this->site['lang']);
             $model_embed->addWhere('(acl_id = 0 OR acl_id IS NULL)');
             $model_embed->order('created_at', 'DESC');
-            $model_embed->select(['id', 'name', 'lang']);
+            $model_embed->select(['id', 'name', 'lang', 'created_at']);
             $model_embed->limit($page_limit, $offset);
             $model_embed->gR();
             if ($model_embed->getSize() != 0) {
                 foreach ($model_embed->toArray() as $o) {
                     $slug = Helper::sefurl($o['name']);
+                    $lastmod = date('c', strtotime($o['created_at']));
                     echo '<url>
                               <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                              <lastmod>' . $lastmod . '</lastmod>
                               <priority>0.65</priority>
                         </url>';
                 }
@@ -977,7 +1060,7 @@ class index_mod extends indexBase
 
     public function gallerySitemap($page = 1)
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
@@ -1012,7 +1095,7 @@ class index_mod extends indexBase
 
     public function categorySitemap($page = 1)
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -1090,13 +1173,15 @@ class index_mod extends indexBase
 
     public function pageSitemap($page = 1)
     {
-        header("content-type: text/xml");
+        header("content-type: text/xml; charset=utf-8");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
         
         $pages = Load::model('mod_page');
+        $pages->flush();
         $pages->where_status_and_lang('y', $this->site['lang']);
+        $pages->addWhere("root != 'y'");
         $pages->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $pages->select(['seo', 'lang']);
         $pages->limit($page_limit, $offset);
@@ -1107,7 +1192,7 @@ class index_mod extends indexBase
 
         if ($this->site['lang'] == Registry::get('default_lang')) {
             echo '<url>
-                      <loc>' . $this->site['address'] . '</loc>
+                      <loc>' . $this->site['saddress'] . '</loc>
                       <priority>1.0</priority>
                 </url>';
         }
