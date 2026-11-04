@@ -1,5 +1,19 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.34 (2026-11-04)
+- **Scheduled News Publication & Future Datetime Visibility Protocol (`lib/Traits/PublicHelperTrait.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/mod_hero_slider.helper.php`, `mod/index/helper/search.helper.php`, `mod/index/index.php`, `mod/index/indexBase.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Shared Publication Date SQL Condition (`lib/Traits/PublicHelperTrait.php`)**:
+    - Added `getPublishedDateCondition(string $tablePrefix = '', string $columnName = 'created_at'): string` producing `created_at <= 'NOW'` in shared `PublicHelperTrait`.
+    - Enhanced `findItemBySeoOrIdStrict()` to support `$enforcePublishDate = true` parameter.
+  - **Front-end News Visibility Enforcement (`mod/index/helper/mod_news.helper.php`, `mod/index/helper/mod_hero_slider.helper.php`, `mod/index/indexBase.php`, `mod/index/index.php`)**:
+    - Guarded individual news detail page `news($seo)` with `created_at <= NOW()`, preventing unreleased scheduled news items from being visited or viewed before their publication timestamp.
+    - Added published date checks across category news listings (`newses`), latest news streams (`_latest_news`), category boxes (`_category_news`), homepage category blocks (`_homepage_categories`), category counts (`_categories`), and 24-hour sidebar news (`news_24h`).
+    - Enforced future datetime shielding on hero sliders (`mod_hero_slider_helper`), RSS feed generation (`index_mod::rss`), XML sitemaps (`index_mod::sitemap`), and category news loaders (`indexBase::_get_category_news`).
+  - **Search & Author Profile Alignment (`mod/index/helper/search.helper.php`)**:
+    - Filtered out unreleased scheduled articles from public search results and author profile latest article listings/counts.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.34`.
+
 ## v1.0.33 (2026-11-04)
 - **News Module Form Granularity & Edit Datetime Persistence Protocol (`templates/admin/mod_news/edit.twig`, `mod/mod_news/index.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Second-Precision Datetime-Local Validation (`templates/admin/mod_news/edit.twig`)**:

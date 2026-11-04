@@ -62,6 +62,7 @@ class mod_hero_slider_helper extends indexBase
         $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $currentLang);
         $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
         $aclCondition = $this->getAllowedAclCondition('');
+        $publishCondition = $this->getPublishedDateCondition('');
 
         $news_model = Load::model('mod_news.newses');
         $news_model->flush();
@@ -83,6 +84,7 @@ class mod_hero_slider_helper extends indexBase
         ]);
         $news_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
         $news_model->addWhere($aclCondition);
+        $news_model->addWhere($publishCondition);
         $news_model->addWhere("category_id IN ({$allowedCatList})");
         $news_model->order('created_at', 'DESC');
         $news_model->limit($limit);

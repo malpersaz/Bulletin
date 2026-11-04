@@ -109,7 +109,8 @@ class mod_news_helper extends indexBase
         $db = Load::lib('Database');
         $safeLang = addslashes($lang);
         $aclCondition = $this->getAllowedAclCondition('');
-        $db->fetch_array("SELECT `category_id`, COUNT(*) FROM `mod_news` WHERE `status` = 'y' AND `lang` = '{$safeLang}' AND {$aclCondition} AND `category_id` IN ({$allowedCatList}) GROUP BY `category_id`");
+        $publishCondition = $this->getPublishedDateCondition('');
+        $db->fetch_array("SELECT `category_id`, COUNT(*) FROM `mod_news` WHERE `status` = 'y' AND `lang` = '{$safeLang}' AND {$aclCondition} AND {$publishCondition} AND `category_id` IN ({$allowedCatList}) GROUP BY `category_id`");
         $countRows = $db->toArray();
         if (is_array($countRows)) {
             foreach ($countRows as $cRow) {
@@ -142,6 +143,7 @@ class mod_news_helper extends indexBase
         $news = Load::model('mod_news.newses');
         $news->flush();
         $news->where_seo_and_status_and_lang($seo, 'y', $this->site['lang']);
+        $news->addWhere($this->getPublishedDateCondition(''));
         $news->limit(1);
         $news->gRo();
         if ($news->getSize() !== 0) {
@@ -186,6 +188,7 @@ class mod_news_helper extends indexBase
                 $news_24h_model->addWhere("id != '" . (int) $news->id . "'");
             }
             $news_24h_model->addWhere($aclCondition);
+            $news_24h_model->addWhere($this->getPublishedDateCondition(''));
             $news_24h_model->addWhere("category_id IN ({$allowedCatList})");
             $yesterday = date('Y-m-d H:i:s', time() - 86400);
             $news_24h_model->addWhere("created_at >= '" . $yesterday . "'");
@@ -231,6 +234,7 @@ class mod_news_helper extends indexBase
         $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
         $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
         $aclCondition = $this->getAllowedAclCondition('');
+        $publishCondition = $this->getPublishedDateCondition('');
 
         $news = Load::model('mod_news.newses');
         $news->flush();
@@ -242,6 +246,7 @@ class mod_news_helper extends indexBase
         if ($category === null || $category === '' || $category === 'all') {
             $news->where_status_and_lang('y', $lang);
             $news->addWhere($aclCondition);
+            $news->addWhere($publishCondition);
             $news->addWhere("category_id IN ({$allowedCatList})");
             $news->all();
             $total_item = $news->getSize();
@@ -249,6 +254,7 @@ class mod_news_helper extends indexBase
             $news->flush();
             $news->where_status_and_lang('y', $lang);
             $news->addWhere($aclCondition);
+            $news->addWhere($publishCondition);
             $news->addWhere("category_id IN ({$allowedCatList})");
             $news->limit($page_limit, $offset)->order('created_at', 'DESC')->gR();
 
@@ -282,6 +288,7 @@ class mod_news_helper extends indexBase
 
             $news->where_status_and_lang('y', $lang);
             $news->addWhere($aclCondition);
+            $news->addWhere($publishCondition);
             $news->addWhere("category_id IN ({$idList})");
             $news->order('created_at', 'DESC')->gR();
             $total_item = $news->getSize();
@@ -438,6 +445,7 @@ class mod_news_helper extends indexBase
         $m->select($select)->where_lang_and_status($lang, 'y');
         $m->addWhere("slider='n'");
         $m->addWhere($aclCondition);
+        $m->addWhere($this->getPublishedDateCondition(''));
         $m->addWhere("category_id IN ({$allowedCatList})");
         if (!empty($excludedCategoryIds)) {
             $excludedCatList = implode(',', $excludedCategoryIds);
@@ -527,6 +535,7 @@ class mod_news_helper extends indexBase
 
         $targetCatList = implode(',', array_map('intval', $targetCategoryIds));
         $aclCondition = $this->getAllowedAclCondition('');
+        $publishCondition = $this->getPublishedDateCondition('');
 
         $m = Load::model('mod_news.newses');
         $m->flush();
@@ -541,6 +550,7 @@ class mod_news_helper extends indexBase
             $m->addWhere("id NOT IN (" . implode(',', $cleanExcludeIds) . ")");
         }
         $m->addWhere($aclCondition);
+        $m->addWhere($publishCondition);
         $m->addWhere("category_id IN ({$targetCatList})");
         $m->limit($limit)->order('created_at', 'DESC');
         $m->gR();
@@ -570,6 +580,7 @@ class mod_news_helper extends indexBase
                 $m->addWhere("id NOT IN (" . implode(',', $allExcludes) . ")");
             }
             $m->addWhere($aclCondition);
+            $m->addWhere($publishCondition);
             $m->addWhere("category_id IN ({$targetCatList})");
             $m->limit($remainingLimit)->order('created_at', 'DESC');
             $m->gR();
@@ -606,6 +617,7 @@ class mod_news_helper extends indexBase
 
         $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
         $aclCondition = $this->getAllowedAclCondition('');
+        $publishCondition = $this->getPublishedDateCondition('');
 
         $cat_model = Load::model('mod_news_category');
         $cat_model->flush();
@@ -636,6 +648,7 @@ class mod_news_helper extends indexBase
             $news_model->where_category_seo_and_status_and_lang($categoryItem['seo'], 'y', $lang);
             $news_model->addWhere("slider='n'");
             $news_model->addWhere($aclCondition);
+            $news_model->addWhere($publishCondition);
             $news_model->select($select)->order('created_at', 'DESC')->limit($limit);
             $news_model->gR();
 
@@ -666,7 +679,8 @@ class mod_news_helper extends indexBase
 
         $news = Load::model('mod_news');
         $news->flush();
-        $sql = "SELECT MAX(created_at), MIN(created_at) FROM `mod_news` WHERE 1";
+        $publishCondition = $this->getPublishedDateCondition('');
+        $sql = "SELECT MAX(created_at), MIN(created_at) FROM `mod_news` WHERE {$publishCondition}";
         $news->fetch_array($sql);
         $row = $news->getResultOne();
         $row_data = is_object($row) ? $row->toArray() : (array) $row;
@@ -716,6 +730,7 @@ class mod_news_helper extends indexBase
             $categoryId = ($rawCategoryId === '*' || $rawCategoryId === '') ? '*' : intval($rawCategoryId);
 
             $safeLang = addslashes($lang);
+            $publishCondition = $this->getPublishedDateCondition('');
             if ($categoryId === '*') {
                 $categoryWhere = " AND category_id IN ({$allowedCatList})";
             } elseif (in_array((int) $categoryId, $allowedCatIds, true)) {
@@ -730,18 +745,18 @@ class mod_news_helper extends indexBase
             $news->select('seo,name,created_at,summary');
             if ($year !== null && $month !== null) {
                 $news->where(
-                    "YEAR(created_at)='" . $year . "' AND MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
+                    "YEAR(created_at)='" . $year . "' AND MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . " AND " . $publishCondition . $categoryWhere
                 );
             } elseif ($year !== null) {
                 $news->where(
-                    "YEAR(created_at)='" . $year . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
+                    "YEAR(created_at)='" . $year . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . " AND " . $publishCondition . $categoryWhere
                 );
             } elseif ($month !== null) {
                 $news->where(
-                    "MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
+                    "MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . " AND " . $publishCondition . $categoryWhere
                 );
             } else {
-                $news->where("status = 'y' AND lang='" . $safeLang . "' AND " . $aclCondition . $categoryWhere);
+                $news->where("status = 'y' AND lang='" . $safeLang . "' AND " . $aclCondition . " AND " . $publishCondition . $categoryWhere);
             }
 
             $news->gR();

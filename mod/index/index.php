@@ -685,6 +685,7 @@ class index_mod extends indexBase
         $news = Load::model('mod_news.newses');
         $news->where_status_and_lang('y', $this->site['lang']);
         $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
         $news->select(['title', 'summary', 'created_at', 'seo', 'lang', 'image']);
@@ -797,6 +798,7 @@ class index_mod extends indexBase
         $news = Load::model('mod_news.newses');
         $news->where_status_and_lang('y', $this->site['lang']);
         $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
         $news->select(['seo', 'lang']);

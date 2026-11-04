@@ -405,6 +405,7 @@ abstract class indexBase
     {
         $news = Load::model('mod_news.newses');
         $news->where_category_seo_and_status_and_lang($category_seo, 'y', $this->site['lang']);
+        $news->addWhere($this->getPublishedDateCondition(''));
         $news->order('created_at', 'DESC');
         $news->limit($limit);
         $news->gR();

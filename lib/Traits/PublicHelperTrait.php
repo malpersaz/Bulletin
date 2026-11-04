@@ -107,6 +107,20 @@ trait PublicHelperTrait
     }
 
     /**
+     * Generates a SQL condition ensuring records are only visible if their publish date has passed.
+     *
+     * @param string $tablePrefix Optional table prefix or alias (e.g. 'mod_news' or '')
+     * @param string $columnName Name of the datetime column (default 'created_at')
+     * @return string
+     */
+    public function getPublishedDateCondition(string $tablePrefix = '', string $columnName = 'created_at'): string
+    {
+        $prefix = $tablePrefix !== '' ? $tablePrefix . '.' : '';
+        $now = date('Y-m-d H:i:s');
+        return "{$prefix}{$columnName} <= '{$now}'";
+    }
+
+    /**
      * Retrieves all allowed category IDs taking full ancestor ACL hierarchy into account.
      *
      * @param string $categoryModelName
@@ -208,7 +222,7 @@ trait PublicHelperTrait
      * @param string $status
      * @return object|null Loaded model instance or null if not found
      */
-    public function findItemBySeoOrIdStrict(string $modelName, string $rawSeo, string $lang, string $status = 'y')
+    public function findItemBySeoOrIdStrict(string $modelName, string $rawSeo, string $lang, string $status = 'y', bool $enforcePublishDate = false)
     {
         $rawSeo = trim(html_entity_decode($rawSeo, ENT_QUOTES, 'UTF-8'));
         $rawSeo = ltrim($rawSeo, '/');
@@ -235,10 +249,15 @@ trait PublicHelperTrait
 
         $candidates = array_values(array_unique(array_filter($candidates)));
         $model = Load::model($modelName);
+        $publishCondition = $enforcePublishDate ? $this->getPublishedDateCondition('', 'created_at') : null;
 
         foreach ($candidates as $candidate) {
             $model->flush();
-            $model->where_seo_and_status_and_lang($candidate, $status, $lang)->limit(1)->gRo();
+            $model->where_seo_and_status_and_lang($candidate, $status, $lang);
+            if ($publishCondition !== null) {
+                $model->addWhere($publishCondition);
+            }
+            $model->limit(1)->gRo();
             if ($model->getSize() > 0) {
                 return $model;
             }
@@ -246,7 +265,11 @@ trait PublicHelperTrait
 
         if ($idCandidate !== null && $idCandidate > 0) {
             $model->flush();
-            $model->where_id_and_status_and_lang($idCandidate, $status, $lang)->limit(1)->gRo();
+            $model->where_id_and_status_and_lang($idCandidate, $status, $lang);
+            if ($publishCondition !== null) {
+                $model->addWhere($publishCondition);
+            }
+            $model->limit(1)->gRo();
             if ($model->getSize() > 0) {
                 return $model;
             }

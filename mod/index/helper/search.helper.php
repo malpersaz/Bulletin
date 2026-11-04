@@ -95,6 +95,7 @@ class search_helper extends indexBase
             $news = Load::model('mod_news');
             $news->select('summary,name,seo');
             $news->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
+            $news->addWhere($this->getPublishedDateCondition(''));
             $news->gR();
             if ($news->getSize() !== 0) {
                 $this->theme->set('news', $news->toArray());
@@ -222,10 +223,11 @@ class search_helper extends indexBase
 
         $whereClause = implode(' OR ', $whereConditions);
 
+        $now = date('Y-m-d H:i:s');
         $sql = "SELECT u.id, u.group_id, u.name, u.last_name, u.username, u.image, u.city, u.blog_name, u.about,
                        g.name AS group_name,
                        (SELECT COUNT(*) FROM mod_publication WHERE user_id = u.id AND status = 'y' AND lang = '{$this->site['lang']}') AS total_publications,
-                       (SELECT COUNT(*) FROM mod_news WHERE user_id = u.id AND status = 'y' AND lang = '{$this->site['lang']}') AS total_news
+                       (SELECT COUNT(*) FROM mod_news WHERE user_id = u.id AND status = 'y' AND lang = '{$this->site['lang']}' AND created_at <= '{$now}') AS total_news
                 FROM mod_user u
                 LEFT JOIN mod_user_group g ON u.group_id = g.group_id
                 WHERE u.status = 'y'
@@ -233,7 +235,7 @@ class search_helper extends indexBase
                   AND (
                     u.group_id IN (1, 2, 4, 5)
                     OR EXISTS (SELECT 1 FROM mod_publication WHERE user_id = u.id AND status = 'y')
-                    OR EXISTS (SELECT 1 FROM mod_news WHERE user_id = u.id AND status = 'y')
+                    OR EXISTS (SELECT 1 FROM mod_news WHERE user_id = u.id AND status = 'y' AND created_at <= '{$now}')
                   )
                 ORDER BY (total_publications + total_news) DESC, u.id ASC
                 LIMIT 6";
@@ -323,11 +325,13 @@ class search_helper extends indexBase
                 }
             } elseif ((int) $row['total_news'] > 0) {
                 $newsModel->flush();
+                $now = date('Y-m-d H:i:s');
                 $newsSql = "SELECT name, seo, created_at
                             FROM mod_news
                             WHERE user_id = {$userId}
                               AND status = 'y'
                               AND lang = '{$this->site['lang']}'
+                              AND created_at <= '{$now}'
                             ORDER BY created_at DESC
                             LIMIT 1";
                 $newsModel->fetch_array($newsSql);
@@ -507,11 +511,13 @@ class search_helper extends indexBase
 
         // Query mod_news
         $newsModel = Load::model('mod_news');
+        $now = date('Y-m-d H:i:s');
         $newsSql = "SELECT id, name, seo, image 
                     FROM mod_news 
                     WHERE status = 'y' 
                       AND lang = '{$this->site['lang']}' 
                       AND image != '' 
+                      AND created_at <= '{$now}'
                       AND ({$newsWhere}) 
                     ORDER BY id DESC 
                     LIMIT 12";
