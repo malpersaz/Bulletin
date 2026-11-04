@@ -106,14 +106,14 @@
 
 				<div class="form-row">
 					<div class="m3-input-wrapper">
-						<input type="datetime-local" class="m3-input-lg" name="created_at" id="editDateInput" value="{{ d.created_at ? d.created_at|replace({' ': 'T'}) : '' }}" placeholder=" ">
+						<input type="datetime-local" step="1" class="m3-input-lg" name="created_at" id="editDateInput" value="{{ d.created_at ? d.created_at|replace({' ': 'T'}) : '' }}" placeholder=" ">
 						<label class="m3-floating-label">{{ lang.mod_news.wizard.step.date }}</label>
 					</div>
 				</div>
 
 				<div class="form-row">
 					<div class="m3-input-wrapper">
-						<input type="datetime-local" class="m3-input-lg" name="updated_at" id="editUpdatedAtInput" value="{{ d.updated_at ? d.updated_at|replace({' ': 'T'}) : '' }}" placeholder=" ">
+						<input type="datetime-local" step="1" class="m3-input-lg" name="updated_at" id="editUpdatedAtInput" value="{{ d.updated_at ? d.updated_at|replace({' ': 'T'}) : '' }}" placeholder=" ">
 						<label class="m3-floating-label">{{ lang.mod_news.admin.columns.updated_at }}</label>
 					</div>
 				</div>

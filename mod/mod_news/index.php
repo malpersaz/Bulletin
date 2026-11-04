@@ -116,7 +116,8 @@ class mod_news_mod extends BaseModuleController
     protected function beforeSave($model)
     {
         $model->created_at = $this->normalizeDateTime(Req::Post_Safe('created_at'));
-        $model->updated_at = date('Y-m-d H:i:s');
+        $updatedAt = Req::Post_Safe('updated_at');
+        $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : null;
 
         // Handle serialization of video references
         $model->video = $this->serializeVideos(Req::Post_Safe('video'));
@@ -128,7 +129,8 @@ class mod_news_mod extends BaseModuleController
 
     protected function beforeUpdate($model, $id)
     {
-        $model->updated_at = date('Y-m-d H:i:s');
+        $updatedAt = Req::Post_Safe('updated_at');
+        $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : null;
         if (isset($model->created_at)) {
             $model->created_at = $this->normalizeDateTime($model->created_at);
         }

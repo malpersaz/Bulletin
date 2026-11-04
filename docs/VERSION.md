@@ -1,5 +1,14 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.33 (2026-11-04)
+- **News Module Form Granularity & Edit Datetime Persistence Protocol (`templates/admin/mod_news/edit.twig`, `mod/mod_news/index.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Second-Precision Datetime-Local Validation (`templates/admin/mod_news/edit.twig`)**:
+    - Added `step="1"` attribute to both `created_at` (`#editDateInput`) and `updated_at` (`#editUpdatedAtInput`) inputs in `mod_news/edit.twig`. This resolves HTML5 browser form validation errors ("Lütfen geçerli bir değer girin") caused by default 60-second step intervals rejecting arbitrary second offsets.
+  - **Nullable Updated-At Handling (`mod/mod_news/index.php`)**:
+    - Updated `beforeSave()` and `beforeUpdate()` in `mod_news_mod` to inspect `Req::Post_Safe('updated_at')`. When empty or untouched by the user, `updated_at` remains `null` rather than automatically stamping the current server timestamp, preventing unintended modification badges or dates from surfacing on newly scheduled or edited articles.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.33`.
+
 ## v1.0.32 (2026-11-04)
 - **Client-Side Admin Datepicker & Template Istanbul Timezone Synchronization (`templates/admin/assets/js/script.js`, `templates/admin/assets/js/mod_announcements_wizard.js`, `templates/admin/assets/js/mod_video_embed_edit.js`, `templates/admin/mod_video/add.twig`, `templates/admin/partials/wizard_content.twig`, `templates/admin/mod_announcements/add.twig`, `templates/admin/partials/wizard_event.twig`, `templates/admin/partials/wizard_video_embed.twig`, `templates/admin/mod_video_embed/add.twig`, `templates/admin/layout.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Client-Side Istanbul Timezone Formatter (`templates/admin/assets/js/script.js`)**:
