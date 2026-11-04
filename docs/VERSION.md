@@ -1,5 +1,27 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.29 (2026-11-04)
+- **Super Polish US Elections Live Tracker Widget & Top Spacing Architecture (`templates/amed/index/mod_news/us_elections.twig`, `templates/amed/static/css/us-elections.css`, `lib/UsElectionDataService.class.php`, `config/site.config.php`, `docs/VERSION.md`)**:
+  - **Top Spacing & Menu Separation (`templates/amed/static/css/us-elections.css`)**:
+    - Resolved header collision by adding clean `margin-top: 1.25rem` (desktop) and `margin-top: 0.75rem` (mobile) to `.us-elections-widget`, ensuring a balanced breathing gap between the stacked category navigation bar and the live tracker card.
+  - **Super Polish Editorial Styling & Palette Elevation (`us_elections.twig`, `us-elections.css`)**:
+    - Replaced legacy purple gradient styling with an authoritative midnight navy/slate palette (`#0b1120` to `#1e293b`) featuring a dual-partisan gradient top accent (`linear-gradient(90deg, #0284c7 0%, #38bdf8 38%, rgba(148, 163, 184, 0.35) 50%, #f87171 62%, #dc2626 100%)`).
+    - Added crisp 3D isometric cube branding with drop shadow and sleek `2026 KONGRE DENGESİ` live badge chip.
+    - Added subtle vertical column divider between the Senate and House chambers on desktop viewports.
+  - **Chamber Alignment & Tabular Typography (`us_elections.twig`, `UsElectionDataService.class.php`)**:
+    - Balanced both chambers with consistent `çoğunluk için` target threshold labels (`50 çoğunluk için` for Senate, `218 çoğunluk için` for House), achieving identical baseline vertical alignment across the card.
+    - Applied tabular numeral typography (`tabular-nums`, `font-feature-settings: "tnum"`) to live vote counts with luminous contrast glows (`#38bdf8` for Democrats, `#f87171` for Republicans).
+  - **Progress Bar Zero-Artifact Remediation (`us_elections.twig`)**:
+    - Eliminated false 5px bar rendering when chambers have 0 seats won; progress bars now strictly render at 0 width until initial seats are declared.
+    - Integrated multi-stop SVG gradients (`#demGradSen`, `#repGradSen`, `#demGradHse`, `#repGradHse`) with rounded caps and luminous needle marks.
+  - **Informative Status & Legend Parity (`us_elections.twig`, `UsElectionDataService.class.php`)**:
+    - Updated Senate metadata to explicitly clarify continuing seats: `65 sandalye devreden (seçim dışı)` alongside counted seats (`0/35 sandalye sayıldı`).
+    - Updated House metadata to reflect complete chamber renewal: `435 sandalyenin tümü yarışta` alongside counted seats (`0/435 sandalye sayıldı`).
+  - **Stylesheet Bundle Synchronization (`homepage-all.min.css`, `homepage-bundle.min.css`, `min_css_guard.py`)**:
+    - Rebuilt `homepage-bundle.min.css` (697 rules) and `homepage-all.min.css` (1949 rules) with 100% rule-block parity and zero stale or missing rules.
+  - **Framework Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.29` across `config/site.config.php` and `docs/VERSION.md`.
+
 ## v1.0.28 (2026-11-04)
 - **Live US Midterm Elections Tracker Widget, Dedicated Turkish Live Results Page & Web Cron Ingestion Architecture (`templates/amed/index/mod_news/us_elections.twig`, `templates/amed/index/mod_news/us_elections_live.twig`, `templates/amed/static/css/us-elections.css`, `lib/UsElectionDataService.class.php`, `tasks/update_us_elections.php`, `mod/index/helper/cron_manager.helper.php`, `mod/index/index.php`, `config/url.config.php`, `templates/amed/index/index.twig`, `tools/min_css_guard.py`)**:
   - **Dedicated Turkish US Elections Live Page (`templates/amed/index/mod_news/us_elections_live.twig`, `config/url.config.php`, `mod/index/index.php`)**:

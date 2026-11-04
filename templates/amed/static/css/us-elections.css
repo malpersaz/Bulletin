@@ -10,64 +10,122 @@
    1. US Elections Live Tracker Widget (Homepage)
    -------------------------------------------------------------------------- */
 .us-elections-widget {
-    background: radial-gradient(circle at 18% 10%, #2c0054 0%, #160030 65%, #0d001b 100%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 12px;
-    box-shadow: 0 10px 28px -6px rgba(13, 0, 27, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    padding: 18px 22px 14px 22px;
-    color: #ffffff;
-    margin-bottom: 20px;
     position: relative;
+    background: radial-gradient(ellipse 90% 60% at 50% -10%, #1e293b 0%, #0b1120 70%, #070a12 100%), #0b1120;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 14px 36px -6px rgba(2, 6, 23, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    padding: 20px 24px 16px 24px;
+    color: #ffffff;
+    margin-top: 1.25rem;
+    margin-bottom: 20px;
     overflow: hidden;
+}
+
+.us-elections-widget::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0284c7 0%, #38bdf8 38%, rgba(148, 163, 184, 0.35) 50%, #f87171 62%, #dc2626 100%);
+    opacity: 0.95;
 }
 
 .us-elections-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .us-elections-title-wrap {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+.us-elections-cube-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
 .us-elections-title {
-    font-size: 1.18rem;
+    font-size: 1.15rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #f8fafc;
     margin: 0;
     line-height: 1.2;
 }
 
-.us-elections-badge-icon {
-    flex-shrink: 0;
-    display: inline-block;
-    vertical-align: middle;
+.us-elections-badge-chip {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    padding: 2px 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .us-elections-chambers {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: 36px;
+    column-gap: 40px;
     row-gap: 20px;
 }
 
 .us-elections-chamber {
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+@media (min-width: 992px) {
+    .us-elections-chamber:first-child::after {
+        content: "";
+        position: absolute;
+        right: -20px;
+        top: 6px;
+        bottom: 6px;
+        width: 1px;
+        background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08) 20%, rgba(255, 255, 255, 0.08) 80%, transparent);
+    }
+}
+
+.us-elections-chamber-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
 }
 
 .us-elections-chamber-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.96rem;
+    font-weight: 700;
     color: #f1f5f9;
-    margin: 0 0 4px 0;
+    margin: 0;
     line-height: 1.2;
+    letter-spacing: 0.01em;
+}
+
+.us-elections-total-seats {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 1px 7px;
+    border-radius: 4px;
 }
 
 .us-elections-scores {
@@ -75,23 +133,26 @@
     align-items: flex-end;
     justify-content: space-between;
     position: relative;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .us-elections-count {
-    font-size: 1.85rem;
+    font-size: 2.15rem;
     font-weight: 800;
-    line-height: 1;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.02em;
 }
 
 .us-elections-count-dem {
-    color: #0084ff;
-    text-shadow: 0 0 12px rgba(0, 132, 255, 0.45);
+    color: #38bdf8;
+    text-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
 }
 
 .us-elections-count-rep {
-    color: #ff2b56;
-    text-shadow: 0 0 12px rgba(255, 43, 86, 0.45);
+    color: #f87171;
+    text-shadow: 0 0 16px rgba(248, 113, 113, 0.35);
 }
 
 .us-elections-target {
@@ -106,12 +167,14 @@
     text-align: center;
     line-height: 1.1;
     color: #94a3b8;
+    pointer-events: none;
 }
 
 .us-elections-target-num {
-    font-size: 0.74rem;
-    font-weight: 700;
-    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    font-variant-numeric: tabular-nums;
 }
 
 .us-elections-target-label {
@@ -119,62 +182,79 @@
     font-weight: 500;
     color: #94a3b8;
     white-space: nowrap;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
 }
 
 .us-elections-target-notch {
-    width: 1px;
-    height: 6px;
+    width: 2px;
+    height: 7px;
     background: #94a3b8;
-    margin-top: 2px;
+    margin-top: 3px;
+    border-radius: 1px;
 }
 
 .us-elections-track-svg {
     width: 100%;
-    height: 9px;
+    height: 10px;
     display: block;
     border-radius: 999px;
     overflow: hidden;
-    margin: 2px 0 6px 0;
+    margin: 2px 0 8px 0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .us-elections-svg-bg {
-    fill: rgba(255, 255, 255, 0.12);
+    fill: rgba(255, 255, 255, 0.08);
 }
 
 .us-elections-svg-dem {
-    fill: #007aff;
-}
-
-.us-elections-svg-tip {
-    fill: #00d2ff;
+    fill: #38bdf8;
 }
 
 .us-elections-svg-rep {
-    fill: #e63946;
+    fill: #f87171;
 }
 
 .us-elections-svg-needle {
-    stroke: #cbd5e1;
+    stroke: #ffffff;
     stroke-width: 1.5;
     stroke-linecap: round;
+    opacity: 0.85;
 }
 
 .us-elections-parties {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: #e2e8f0;
-    margin-bottom: 4px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
 }
 
-.us-elections-party-dem {
-    text-align: left;
-}
-
+.us-elections-party-dem,
 .us-elections-party-rep {
-    text-align: right;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.us-elections-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.us-elections-dot-dem {
+    background: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+.us-elections-dot-rep {
+    background: #f87171;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.6);
 }
 
 .us-elections-meta {
@@ -184,32 +264,41 @@
     font-size: 0.72rem;
     color: #94a3b8;
     min-height: 18px;
+    gap: 8px;
 }
 
 .us-elections-legend {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    color: #94a3b8;
 }
 
 .us-elections-legend-box {
-    width: 9px;
-    height: 9px;
-    background: #007aff;
-    border-radius: 1px;
+    width: 8px;
+    height: 8px;
+    background: #38bdf8;
+    border-radius: 2px;
     display: inline-block;
+    opacity: 0.85;
+}
+
+.us-elections-legend-box.is-house {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .us-elections-status {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     margin-left: auto;
     white-space: nowrap;
+    color: #94a3b8;
 }
 
 .us-elections-status-icon {
     font-size: 0.76rem;
+    color: #64748b;
 }
 
 .us-elections-footer {
@@ -217,27 +306,37 @@
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    margin-top: 14px;
-    padding-top: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
     font-size: 0.82rem;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
 }
 
 .us-elections-live-btn {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    color: #00f59b;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 5px 12px;
+    border-radius: 999px;
+    color: #34d399;
     text-decoration: none;
     font-weight: 700;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
 }
 
 .us-elections-live-btn:hover {
-    color: #55ffb8;
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
     text-decoration: none;
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
 .us-elections-live-ring {
@@ -252,16 +351,17 @@
 .us-elections-live-dot {
     width: 6px;
     height: 6px;
-    background: #00f59b;
+    background: #10b981;
     border-radius: 50%;
     display: inline-block;
+    box-shadow: 0 0 6px #10b981;
 }
 
 .us-elections-live-ripple {
     position: absolute;
     width: 14px;
     height: 14px;
-    border: 1.5px solid #00f59b;
+    border: 1.5px solid #10b981;
     border-radius: 50%;
     animation: usElectionsPulse 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
 }
@@ -272,14 +372,13 @@
         opacity: 0.9;
     }
     100% {
-        transform: scale(1.4);
+        transform: scale(1.5);
         opacity: 0;
     }
 }
 
 .us-elections-live-chevron {
-    font-size: 0.74rem;
-    font-weight: 700;
+    font-size: 0.72rem;
     transition: transform 0.2s ease;
 }
 
@@ -296,12 +395,14 @@
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    color: #cbd5e1;
-    font-size: 0.8rem;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 0.78rem;
     font-weight: 500;
     user-select: none;
     transition: color 0.15s ease;
+    padding: 4px 8px;
+    border-radius: 6px;
 }
 
 .us-elections-info-summary::-webkit-details-marker {
@@ -309,11 +410,12 @@
 }
 
 .us-elections-info-summary:hover {
-    color: #ffffff;
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .us-elections-info-summary .bi-chevron-down {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     transition: transform 0.2s ease;
 }
 
@@ -324,21 +426,35 @@
 .us-elections-info-box {
     position: absolute;
     right: 0;
-    bottom: calc(100% + 8px);
-    width: 320px;
+    bottom: calc(100% + 10px);
+    width: 340px;
     max-width: 90vw;
-    background: #1e0939;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    padding: 12px 14px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
     z-index: 20;
+    backdrop-filter: blur(12px);
+}
+
+.us-elections-info-box::after {
+    content: "";
+    position: absolute;
+    right: 18px;
+    bottom: -6px;
+    width: 12px;
+    height: 12px;
+    background: #0f172a;
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    transform: rotate(45deg);
 }
 
 .us-elections-info-text {
-    font-size: 0.78rem;
-    line-height: 1.45;
-    color: #e2e8f0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #cbd5e1;
     margin: 0;
 }
 
@@ -350,13 +466,26 @@
 }
 
 .us-elections-page-hero {
-    background: radial-gradient(circle at 20% 10%, #2a0050 0%, #15002b 70%, #0d001a 100%);
+    position: relative;
+    background: radial-gradient(ellipse 90% 60% at 50% -10%, #1e293b 0%, #0b1120 70%, #070a12 100%), #0b1120;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
-    padding: 24px 28px 22px 28px;
+    padding: 26px 30px 24px 30px;
     color: #ffffff;
-    box-shadow: 0 12px 32px -8px rgba(13, 0, 27, 0.7);
+    box-shadow: 0 14px 36px -8px rgba(2, 6, 23, 0.5);
     margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.us-elections-page-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0284c7 0%, #38bdf8 38%, rgba(148, 163, 184, 0.35) 50%, #f87171 62%, #dc2626 100%);
+    opacity: 0.95;
 }
 
 .us-elections-page-badge-row {
@@ -684,6 +813,7 @@
     .us-elections-widget {
         padding: 14px 14px 12px 14px;
         border-radius: 10px;
+        margin-top: 0.75rem;
         margin-bottom: 14px;
     }
 

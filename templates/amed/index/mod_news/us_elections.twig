@@ -8,22 +8,22 @@
     'title': 'ABD ARA SEÇİMLERİ',
     'senate': {
         'title': 'Senato',
-        'democrats': 35,
+        'democrats': 34,
         'republicans': 31,
         'target': '50',
-        'target_label': '',
+        'target_label': 'çoğunluk için',
         'total': 100,
-        'counted_label': '1/35 sandalye sayıldı',
-        'not_up_label': 'Seçime dahil değil'
+        'counted_label': '0/35 sandalye sayıldı',
+        'not_up_label': '65 sandalye devreden (seçim dışı)'
     },
     'house': {
         'title': 'Temsilciler Meclisi',
-        'democrats': 6,
-        'republicans': 2,
+        'democrats': 0,
+        'republicans': 0,
         'target': '218',
-        'target_label': 'kazanmak için',
+        'target_label': 'çoğunluk için',
         'total': 435,
-        'counted_label': '8/435 sandalye sayıldı'
+        'counted_label': '0/435 sandalye sayıldı'
     },
     'live_label': 'CANLI güncellemeler',
     'live_url': site.saddress ~ 'us-elections',
@@ -31,32 +31,34 @@
     'info_text': 'Amerikalılar, Temsilciler Meclisi ve Senato\'dan oluşan Kongre üyelerini seçiyor. Temsilciler Meclisi\'ndeki 435 sandalyenin tamamı için seçim yapılırken; senatörlerin altı yıllık dönemlerle görev yapması nedeniyle 100 sandalyeli Senato\'da yalnızca 35 sandalye için yarışılıyor. Bu canlı takip ekranı hem şu anda oylanan yarışları hem de bu yıl seçime dahil olmayan 65 sandalyeyi (34 Demokrat, 31 Cumhuriyetçi) göstermektedir.'
 }) %}
 
-{% set sen_dem_w = us_data.senate.democrats|default(35) %}
-{% set sen_rep_w = us_data.senate.republicans|default(31) %}
+{% set sen_dem_val = us_data.senate.democrats|default(0) %}
+{% set sen_rep_val = us_data.senate.republicans|default(0) %}
+{% set sen_dem_w = (sen_dem_val > 0) ? ((sen_dem_val > 3) ? sen_dem_val : 3) : 0 %}
+{% set sen_rep_w = (sen_rep_val > 0) ? ((sen_rep_val > 3) ? sen_rep_val : 3) : 0 %}
 {% set sen_rep_x = 100 - sen_rep_w %}
-{% set sen_tip_x = (sen_dem_w > 2) ? (sen_dem_w - 2) : 0 %}
 
-{% set hse_dem_val = us_data.house.democrats|default(6) %}
-{% set hse_rep_val = us_data.house.republicans|default(2) %}
-{% set hse_dem_w = (hse_dem_val > 5) ? hse_dem_val : 5 %}
-{% set hse_rep_w = (hse_rep_val > 5) ? hse_rep_val : 5 %}
+{% set hse_dem_val = us_data.house.democrats|default(0) %}
+{% set hse_rep_val = us_data.house.republicans|default(0) %}
+{% set hse_dem_w = (hse_dem_val > 0) ? ((hse_dem_val > 6) ? hse_dem_val : 6) : 0 %}
+{% set hse_rep_w = (hse_rep_val > 0) ? ((hse_rep_val > 6) ? hse_rep_val : 6) : 0 %}
 {% set hse_rep_x = 435 - hse_rep_w %}
 
 <section class="us-elections-widget" aria-label="{{ us_data.title }}">
-    <!-- 1. Header with Isometric Logo -->
+    <!-- 1. Header with Isometric Logo & Chip -->
     <header class="us-elections-header">
         <div class="us-elections-title-wrap">
+            <span class="us-elections-cube-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 5L14 8.5L8 12L2 8.5L8 5Z" fill="#38bdf8"/>
+                    <path d="M2 8.5L8 12V18.5L2 15V8.5Z" fill="#0284c7"/>
+                    <path d="M14 8.5L8 12V18.5L14 15V8.5Z" fill="#0369a1"/>
+                    <path d="M19 9.5L25 13L19 16.5L13 13L19 9.5Z" fill="#f87171"/>
+                    <path d="M13 13L19 16.5V23L13 19.5V13Z" fill="#dc2626"/>
+                    <path d="M25 13L19 16.5V23L25 19.5V13Z" fill="#b91c1c"/>
+                </svg>
+            </span>
             <h2 class="us-elections-title">{{ us_data.title }}</h2>
-            <svg class="us-elections-badge-icon" width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                <!-- Cyan/Blue Isometric Cube -->
-                <path d="M9 4L15 7.5L9 11L3 7.5L9 4Z" fill="#38bdf8"/>
-                <path d="M3 7.5L9 11V18L3 14.5V7.5Z" fill="#0284c7"/>
-                <path d="M15 7.5L9 11V18L15 14.5V7.5Z" fill="#0369a1"/>
-                <!-- Red Isometric Cube -->
-                <path d="M19 10L25 13.5L19 17L13 13.5L19 10Z" fill="#f87171"/>
-                <path d="M13 13.5L19 17V24L13 20.5V13.5Z" fill="#dc2626"/>
-                <path d="M25 13.5L19 17V24L25 20.5V13.5Z" fill="#b91c1c"/>
-            </svg>
+            <span class="us-elections-badge-chip">2026 KONGRE DENGESİ</span>
         </div>
     </header>
 
@@ -64,38 +66,58 @@
     <div class="us-elections-chambers">
         <!-- Chamber 1: Senate -->
         <article class="us-elections-chamber">
-            <h3 class="us-elections-chamber-title">{{ us_data.senate.title }}</h3>
-            
+            <div class="us-elections-chamber-head">
+                <h3 class="us-elections-chamber-title">{{ us_data.senate.title }}</h3>
+                <span class="us-elections-total-seats">100 Sandalye</span>
+            </div>
+
             <div class="us-elections-scores">
-                <span class="us-elections-count us-elections-count-dem" dir="ltr">{{ us_data.senate.democrats }}</span>
+                <span class="us-elections-count us-elections-count-dem" dir="ltr">{{ sen_dem_val }}</span>
                 <div class="us-elections-target">
                     <span class="us-elections-target-num" dir="ltr">{{ us_data.senate.target }}</span>
-                    {% if us_data.senate.target_label is not empty %}
-                        <span class="us-elections-target-label">{{ us_data.senate.target_label }}</span>
-                    {% endif %}
+                    <span class="us-elections-target-label">{{ us_data.senate.target_label|default('çoğunluk için') }}</span>
                     <span class="us-elections-target-notch" aria-hidden="true"></span>
                 </div>
-                <span class="us-elections-count us-elections-count-rep" dir="ltr">{{ us_data.senate.republicans }}</span>
+                <span class="us-elections-count us-elections-count-rep" dir="ltr">{{ sen_rep_val }}</span>
             </div>
 
             <!-- Dynamic SVG Progress Bar (Senate: 100 Seats) -->
-            <svg class="us-elections-track-svg" viewBox="0 0 100 8" preserveAspectRatio="none" role="progressbar" aria-label="{{ us_data.senate.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ us_data.senate.democrats }}">
-                <rect class="us-elections-svg-bg" x="0" y="0" width="100" height="8" rx="4"></rect>
-                <rect class="us-elections-svg-dem" x="0" y="0" width="{{ sen_dem_w }}" height="8" rx="4"></rect>
-                <rect class="us-elections-svg-tip" x="{{ sen_tip_x }}" y="0" width="2" height="8"></rect>
-                <rect class="us-elections-svg-rep" x="{{ sen_rep_x }}" y="0" width="{{ sen_rep_w }}" height="8" rx="4"></rect>
-                <line class="us-elections-svg-needle" x1="50" y1="0" x2="50" y2="8"></line>
+            <svg class="us-elections-track-svg" viewBox="0 0 100 10" preserveAspectRatio="none" role="progressbar" aria-label="{{ us_data.senate.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sen_dem_val }}">
+                <defs>
+                    <linearGradient id="demGradSen" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0284c7"/>
+                        <stop offset="100%" stop-color="#38bdf8"/>
+                    </linearGradient>
+                    <linearGradient id="repGradSen" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#f87171"/>
+                        <stop offset="100%" stop-color="#dc2626"/>
+                    </linearGradient>
+                </defs>
+                <rect class="us-elections-svg-bg" x="0" y="0" width="100" height="10" rx="5"></rect>
+                {% if sen_dem_w > 0 %}
+                    <rect fill="url(#demGradSen)" x="0" y="0" width="{{ sen_dem_w }}" height="10" rx="5"></rect>
+                {% endif %}
+                {% if sen_rep_w > 0 %}
+                    <rect fill="url(#repGradSen)" x="{{ sen_rep_x }}" y="0" width="{{ sen_rep_w }}" height="10" rx="5"></rect>
+                {% endif %}
+                <line class="us-elections-svg-needle" x1="50" y1="0" x2="50" y2="10"></line>
             </svg>
 
             <div class="us-elections-parties">
-                <span class="us-elections-party-dem">Demokratlar</span>
-                <span class="us-elections-party-rep">Cumhuriyetçiler</span>
+                <span class="us-elections-party-dem">
+                    <span class="us-elections-dot us-elections-dot-dem" aria-hidden="true"></span>
+                    <span>Demokratlar</span>
+                </span>
+                <span class="us-elections-party-rep">
+                    <span>Cumhuriyetçiler</span>
+                    <span class="us-elections-dot us-elections-dot-rep" aria-hidden="true"></span>
+                </span>
             </div>
 
             <div class="us-elections-meta">
                 <span class="us-elections-legend">
                     <span class="us-elections-legend-box" aria-hidden="true"></span>
-                    <span>{{ us_data.senate.not_up_label }}</span>
+                    <span>{{ us_data.senate.not_up_label|default('65 sandalye devreden (seçim dışı)') }}</span>
                 </span>
                 <span class="us-elections-status">
                     <i class="bi bi-clock-history us-elections-status-icon" aria-hidden="true"></i>
@@ -106,34 +128,59 @@
 
         <!-- Chamber 2: House of Representatives -->
         <article class="us-elections-chamber">
-            <h3 class="us-elections-chamber-title">{{ us_data.house.title }}</h3>
+            <div class="us-elections-chamber-head">
+                <h3 class="us-elections-chamber-title">{{ us_data.house.title }}</h3>
+                <span class="us-elections-total-seats">435 Sandalye</span>
+            </div>
 
             <div class="us-elections-scores">
-                <span class="us-elections-count us-elections-count-dem" dir="ltr">{{ us_data.house.democrats }}</span>
+                <span class="us-elections-count us-elections-count-dem" dir="ltr">{{ hse_dem_val }}</span>
                 <div class="us-elections-target">
                     <span class="us-elections-target-num" dir="ltr">{{ us_data.house.target }}</span>
-                    {% if us_data.house.target_label is not empty %}
-                        <span class="us-elections-target-label">{{ us_data.house.target_label }}</span>
-                    {% endif %}
+                    <span class="us-elections-target-label">{{ us_data.house.target_label|default('çoğunluk için') }}</span>
                     <span class="us-elections-target-notch" aria-hidden="true"></span>
                 </div>
-                <span class="us-elections-count us-elections-count-rep" dir="ltr">{{ us_data.house.republicans }}</span>
+                <span class="us-elections-count us-elections-count-rep" dir="ltr">{{ hse_rep_val }}</span>
             </div>
 
             <!-- Dynamic SVG Progress Bar (House: 435 Seats) -->
-            <svg class="us-elections-track-svg" viewBox="0 0 435 8" preserveAspectRatio="none" role="progressbar" aria-label="{{ us_data.house.title }}" aria-valuemin="0" aria-valuemax="435" aria-valuenow="{{ us_data.house.democrats }}">
-                <rect class="us-elections-svg-bg" x="0" y="0" width="435" height="8" rx="4"></rect>
-                <rect class="us-elections-svg-dem" x="0" y="0" width="{{ hse_dem_w }}" height="8" rx="4"></rect>
-                <rect class="us-elections-svg-rep" x="{{ hse_rep_x }}" y="0" width="{{ hse_rep_w }}" height="8" rx="4"></rect>
-                <line class="us-elections-svg-needle" x1="217.5" y1="0" x2="217.5" y2="8"></line>
+            <svg class="us-elections-track-svg" viewBox="0 0 435 10" preserveAspectRatio="none" role="progressbar" aria-label="{{ us_data.house.title }}" aria-valuemin="0" aria-valuemax="435" aria-valuenow="{{ hse_dem_val }}">
+                <defs>
+                    <linearGradient id="demGradHse" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0284c7"/>
+                        <stop offset="100%" stop-color="#38bdf8"/>
+                    </linearGradient>
+                    <linearGradient id="repGradHse" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#f87171"/>
+                        <stop offset="100%" stop-color="#dc2626"/>
+                    </linearGradient>
+                </defs>
+                <rect class="us-elections-svg-bg" x="0" y="0" width="435" height="10" rx="5"></rect>
+                {% if hse_dem_w > 0 %}
+                    <rect fill="url(#demGradHse)" x="0" y="0" width="{{ hse_dem_w }}" height="10" rx="5"></rect>
+                {% endif %}
+                {% if hse_rep_w > 0 %}
+                    <rect fill="url(#repGradHse)" x="{{ hse_rep_x }}" y="0" width="{{ hse_rep_w }}" height="10" rx="5"></rect>
+                {% endif %}
+                <line class="us-elections-svg-needle" x1="217.5" y1="0" x2="217.5" y2="10"></line>
             </svg>
 
             <div class="us-elections-parties">
-                <span class="us-elections-party-dem">Demokratlar</span>
-                <span class="us-elections-party-rep">Cumhuriyetçiler</span>
+                <span class="us-elections-party-dem">
+                    <span class="us-elections-dot us-elections-dot-dem" aria-hidden="true"></span>
+                    <span>Demokratlar</span>
+                </span>
+                <span class="us-elections-party-rep">
+                    <span>Cumhuriyetçiler</span>
+                    <span class="us-elections-dot us-elections-dot-rep" aria-hidden="true"></span>
+                </span>
             </div>
 
             <div class="us-elections-meta">
+                <span class="us-elections-legend">
+                    <span class="us-elections-legend-box is-house" aria-hidden="true"></span>
+                    <span>435 sandalyenin tümü yarışta</span>
+                </span>
                 <span class="us-elections-status">
                     <i class="bi bi-clock-history us-elections-status-icon" aria-hidden="true"></i>
                     <span>{{ us_data.house.counted_label }}</span>
@@ -149,7 +196,7 @@
                 <span class="us-elections-live-dot"></span>
                 <span class="us-elections-live-ripple"></span>
             </span>
-            <span>{{ us_data.live_label }}</span>
+            <span class="us-elections-live-text">{{ us_data.live_label }}</span>
             <i class="bi bi-chevron-right us-elections-live-chevron" aria-hidden="true"></i>
         </a>
 
