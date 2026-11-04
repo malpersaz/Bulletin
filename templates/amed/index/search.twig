@@ -204,6 +204,17 @@
                                title="{{ item.name }}">
                                 <div>
                                     <span class="fw-medium">{{ item.name }}</span>
+                                    {% if item.created_at is defined and item.created_at is not empty %}
+                                        <div class="search-item-time text-muted small mt-1">
+                                            {% if item.is_last_24h %}
+                                                <i class="bi bi-clock-history me-1"></i>{{ item.published_ago }}
+                                            {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                                <i class="bi bi-calendar3 me-1"></i>{{ item.formatted_datetime }}
+                                            {% else %}
+                                                <i class="bi bi-calendar3 me-1"></i>{{ item.created_at|date('d.m.Y') }}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
                                     {% if item.summary is defined and item.summary is not empty %}
                                         <small class="d-block text-muted mt-1 text-truncate search-item-summary">
                                             {{ item.summary|striptags }}
@@ -234,6 +245,17 @@
                                title="{{ item.name }}">
                                 <div>
                                     <span class="fw-medium">{{ item.name }}</span>
+                                    {% if item.created_at is defined and item.created_at is not empty %}
+                                        <div class="search-item-time text-muted small mt-1">
+                                            {% if item.is_last_24h %}
+                                                <i class="bi bi-clock-history me-1"></i>{{ item.published_ago }}
+                                            {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                                <i class="bi bi-calendar3 me-1"></i>{{ item.formatted_datetime }}
+                                            {% else %}
+                                                <i class="bi bi-calendar3 me-1"></i>{{ item.created_at|date('d.m.Y') }}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
                                     {% if item.summary is defined and item.summary is not empty %}
                                         <small class="d-block text-muted mt-1 text-truncate search-item-summary">
                                             {{ item.summary|striptags }}

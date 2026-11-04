@@ -411,7 +411,7 @@ abstract class indexBase
         $news->gR();
         
         if ($news->getSize() !== 0) {
-            $items = $news->toArray();
+            $items = $this->enrichTimestampRows($news->toArray());
             foreach ($items as &$item) {
                 $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                 $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
@@ -541,5 +541,70 @@ abstract class indexBase
         }
         
         return false;
+    }
+
+    public function enrichTimestampFields(array $row): array
+    {
+        $rawCreatedAt = (string) ($row['created_at'] ?? '');
+        $ts = !empty($rawCreatedAt) ? strtotime($rawCreatedAt) : false;
+
+        $timeLabel = '';
+        if (isset($this->lang['index']['time_label']) && is_string($this->lang['index']['time_label'])) {
+            $timeLabel = trim($this->lang['index']['time_label']);
+        } elseif (isset($this->lang['index']['mod_event']['time']) && is_string($this->lang['index']['mod_event']['time'])) {
+            $timeLabel = trim($this->lang['index']['mod_event']['time']);
+        }
+
+        if ($ts !== false && $ts > 0) {
+            $diffSeconds = time() - $ts;
+            if ($diffSeconds < 0 && $diffSeconds >= -300) {
+                $diffSeconds = 0;
+            }
+
+            $isLast24h = ($diffSeconds >= 0 && $diffSeconds < 86400);
+            $row['is_last_24h'] = $isLast24h;
+            $row['published_ago'] = $isLast24h ? Helper::time_ago($rawCreatedAt, $this->lang['index'] ?? null) : '';
+
+            $clockPart = date('H:i', $ts);
+            $datePart = date('d.m.Y', $ts);
+            $row['formatted_datetime'] = ($timeLabel !== '')
+                ? ($datePart . ' ' . $timeLabel . ': ' . $clockPart)
+                : ($datePart . ' ' . $clockPart);
+            $row['display_time'] = $isLast24h ? $row['published_ago'] : $row['formatted_datetime'];
+        } else {
+            $row['is_last_24h'] = false;
+            $row['published_ago'] = '';
+            $row['formatted_datetime'] = '';
+            $row['display_time'] = '';
+        }
+
+        $rawUpdatedAt = (string) ($row['updated_at'] ?? '');
+        if (!empty($rawUpdatedAt) && $rawUpdatedAt !== $rawCreatedAt) {
+            $uts = strtotime($rawUpdatedAt);
+            if ($uts !== false && $uts > 0) {
+                $updateClockPart = date('H:i', $uts);
+                $updateDatePart = date('d.m.Y', $uts);
+                $row['formatted_updated_datetime'] = ($timeLabel !== '')
+                    ? ($updateDatePart . ' ' . $timeLabel . ': ' . $updateClockPart)
+                    : ($updateDatePart . ' ' . $updateClockPart);
+            } else {
+                $row['formatted_updated_datetime'] = '';
+            }
+        } else {
+            $row['formatted_updated_datetime'] = '';
+        }
+
+        return $row;
+    }
+
+    public function enrichTimestampRows(array $rows): array
+    {
+        foreach ($rows as &$row) {
+            if (is_array($row)) {
+                $row = $this->enrichTimestampFields($row);
+            }
+        }
+        unset($row);
+        return $rows;
     }
 }

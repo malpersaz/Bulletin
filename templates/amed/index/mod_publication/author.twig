@@ -153,7 +153,13 @@
                                             <article class="publication-row">
                                                 <div class="publication-topline">
                                                     <span class="publication-date">
-                                                        <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                                        {% if publication.is_last_24h %}
+                                                            <i class="bi bi-clock-history"></i>{{ publication.published_ago }}
+                                                        {% elseif publication.formatted_datetime is defined and publication.formatted_datetime is not empty %}
+                                                            <i class="bi bi-calendar3"></i>{{ publication.formatted_datetime }}
+                                                        {% else %}
+                                                            <i class="bi bi-calendar3"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                                        {% endif %}
                                                     </span>
                                                     {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
                                                         <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
@@ -180,7 +186,13 @@
                                             <article class="publication-row news-row">
                                                 <div class="publication-topline">
                                                     <span class="publication-date">
-                                                        <i class="bi bi-clock-history"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                                        {% if item.is_last_24h %}
+                                                            <i class="bi bi-clock-history"></i>{{ item.published_ago }}
+                                                        {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                                            <i class="bi bi-calendar3"></i>{{ item.formatted_datetime }}
+                                                        {% else %}
+                                                            <i class="bi bi-calendar3"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                                        {% endif %}
                                                     </span>
                                                     {% if item.category_seo is defined and item.category_name is defined and item.category_name is not empty and item.category_seo != '#' %}
                                                         <a class="publication-category news-category" href="{{ site.saddress }}newses/{{ item.category_seo }}">{{ item.category_name }}</a>
@@ -215,7 +227,13 @@
                                 <article class="publication-row news-row">
                                     <div class="publication-topline">
                                         <span class="publication-date">
-                                            <i class="bi bi-clock-history"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                            {% if item.is_last_24h %}
+                                                <i class="bi bi-clock-history"></i>{{ item.published_ago }}
+                                            {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                                <i class="bi bi-calendar3"></i>{{ item.formatted_datetime }}
+                                            {% else %}
+                                                <i class="bi bi-calendar3"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                            {% endif %}
                                         </span>
                                         {% if item.category_seo is defined and item.category_name is defined and item.category_name is not empty and item.category_seo != '#' %}
                                             <a class="publication-category news-category" href="{{ site.saddress }}newses/{{ item.category_seo }}">{{ item.category_name }}</a>
@@ -243,7 +261,13 @@
                                 <article class="publication-row">
                                     <div class="publication-topline">
                                         <span class="publication-date">
-                                            <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                            {% if publication.is_last_24h %}
+                                                <i class="bi bi-clock-history"></i>{{ publication.published_ago }}
+                                            {% elseif publication.formatted_datetime is defined and publication.formatted_datetime is not empty %}
+                                                <i class="bi bi-calendar3"></i>{{ publication.formatted_datetime }}
+                                            {% else %}
+                                                <i class="bi bi-calendar3"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                            {% endif %}
                                         </span>
                                         {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
                                             <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>

@@ -667,6 +667,7 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'نامە بنێرە',
     ],
+    'time_label' => 'کات',
     'time_ago' => [
         'just_now' => 'کەمێک لەمەوبەر',
         'second' => 'پێش %d چرکە',

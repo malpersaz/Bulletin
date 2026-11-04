@@ -34,9 +34,7 @@ class mod_news_helper extends indexBase
         $row['has_gallery'] = (isset($row['gallery_id']) && (int) $row['gallery_id'] !== 0);
         $row['has_file'] = (isset($row['file_id']) && (int) $row['file_id'] !== 0);
         $row['has_deck'] = (isset($row['deck']) && $row['deck'] === 'y');
-        if (isset($row['created_at'])) {
-            $row['published_ago'] = $this->formatRelativeTime($row['created_at']);
-        }
+        $row = $this->enrichTimestampFields($row);
         return $row;
     }
 
@@ -795,11 +793,6 @@ class mod_news_helper extends indexBase
         }
 
         return $categories;
-    }
-
-    private function formatRelativeTime($datetime)
-    {
-        return Helper::time_ago($datetime, $this->lang['index'] ?? null);
     }
 
     public function archive()

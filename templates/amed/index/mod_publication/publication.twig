@@ -224,10 +224,11 @@
                                 {% endif %}
                                 <div>
                                     <i class="bi bi-calendar3 me-1"></i>
-                                    <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time>
+                                    <time datetime="{{ d.created_at|date('c') }}">{{ d.formatted_datetime is defined and d.formatted_datetime is not empty ? d.formatted_datetime : d.created_at|date('d.m.Y') }}</time>
                                     {% if d.updated_at is not empty and d.updated_at != d.created_at %}
                                         <span class="ms-2">
-                                            <i class="bi bi-pencil-square me-1"></i>{{ d.updated_at|date('d.m.Y') }}
+                                            <i class="bi bi-pencil-square me-1"></i>
+                                            <time datetime="{{ d.updated_at|date('c') }}">{{ d.formatted_updated_datetime is defined and d.formatted_updated_datetime is not empty ? d.formatted_updated_datetime : d.updated_at|date('d.m.Y') }}</time>
                                         </span>
                                     {% endif %}
                                 </div>

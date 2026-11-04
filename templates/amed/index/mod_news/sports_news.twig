@@ -49,8 +49,16 @@
                     <div class="sports-news-meta">
                         {% if item.created_at is defined and item.created_at is not empty %}
                             <span class="sports-news-meta-item">
-                                <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                {% if item.is_last_24h %}
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
+                                {% else %}
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                {% endif %}
                             </span>
                             <span class="sports-news-meta-sep" aria-hidden="true">·</span>
                         {% endif %}

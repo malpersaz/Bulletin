@@ -667,6 +667,7 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Envoyer un message',
     ],
+    'time_label' => 'Heure',
     'time_ago' => [
         'just_now' => "À l'instant",
         'second' => 'Il y a %d seconde',

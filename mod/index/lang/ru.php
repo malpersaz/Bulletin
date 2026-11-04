@@ -701,6 +701,8 @@ $lang['index']['mod_user_pm'] = [
     'send_message' => 'Отправить сообщение',
 ];
 
+$lang['index']['time_label'] = 'Время';
+
 $lang['index']['time_ago'] = [
     'just_now' => 'Только что',
     'second' => '%d секунду назад',

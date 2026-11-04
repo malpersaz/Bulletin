@@ -53,10 +53,16 @@
                     </div>
                     <div class="economy-lead-content">
                         <div class="economy-lead-meta">
-                            {% if item.published_ago is defined and item.published_ago is not empty %}
+                            {% if item.is_last_24h %}
                                 <span class="economy-meta-item">
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
                                     <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                </span>
+                                <span class="economy-meta-sep" aria-hidden="true">·</span>
+                            {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                <span class="economy-meta-item">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
                                 </span>
                                 <span class="economy-meta-sep" aria-hidden="true">·</span>
                             {% elseif item.created_at is defined and item.created_at is not empty %}
@@ -113,10 +119,15 @@
                         <div class="economy-sub-meta">
                             <span class="economy-sub-index" aria-hidden="true">0{{ loop.index }}</span>
                             <span class="economy-meta-sep" aria-hidden="true">·</span>
-                            {% if item.published_ago is defined and item.published_ago is not empty %}
+                            {% if item.is_last_24h %}
                                 <span class="economy-sub-time">
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
                                     <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                </span>
+                            {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                                <span class="economy-sub-time">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
                                 </span>
                             {% elseif item.created_at is defined and item.created_at is not empty %}
                                 <span class="economy-sub-time">

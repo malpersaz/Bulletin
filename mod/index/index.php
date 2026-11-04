@@ -635,7 +635,7 @@ class index_mod extends indexBase
         unset($helper);
     }
 
-    public function _latest_publications($t, $limit, $select)
+    public function _latest_publications($t, $limit, $select = 'seo,name,image,created_at')
     {
         if (!$this->isFeatureReady('publication.latest')) {
             $t->ctx_set('latest_publications', []);

@@ -83,7 +83,7 @@ class mod_publication_helper extends indexBase
             $this->_mod_attachment('mod_publication', $publication->id);
         }
 
-        $pub_data = $publication->toArray();
+        $pub_data = $this->enrichTimestampFields($publication->toArray());
         $this->theme->ctx_set('d', $pub_data);
         $this->theme->ctx_set('detail', $pub_data);
         $this->theme->tpl('index/mod_publication/publication');
@@ -118,7 +118,7 @@ class mod_publication_helper extends indexBase
             $publication->limit($page_limit, $offset)->order('created_at', 'DESC')->gR();
 
             if ($publication->getSize() != 0) {
-                $this->theme->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $this->enrichTimestampRows($publication->toArray()));
             }
 
             $category_seo = 'all';
@@ -132,7 +132,7 @@ class mod_publication_helper extends indexBase
             $publication->getLimit($page_limit, $offset);
 
             if ($publication->getSize() !== 0) {
-                $this->theme->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $this->enrichTimestampRows($publication->toArray()));
             }
 
             $category_model->where_seo($category);
@@ -184,7 +184,7 @@ class mod_publication_helper extends indexBase
         $this->_index();
     }
 
-    public function _latest_publications($limit, $select)
+    public function _latest_publications($limit, $select = 'seo,name,image,created_at')
     {
         if (!$this->isFeatureReady('publication.latest')) {
             return [];
@@ -198,7 +198,7 @@ class mod_publication_helper extends indexBase
         $publication->gR();
 
         if ($publication->getSize() !== 0) {
-            return $publication->toArray();
+            return $this->enrichTimestampRows($publication->toArray());
         }
 
         return [];
@@ -231,22 +231,10 @@ class mod_publication_helper extends indexBase
         $publication->fetch_array($sql);
 
         if ($publication->getSize() !== 0) {
-            $items = $publication->toArray();
-            if (is_array($items)) {
-                foreach ($items as &$item) {
-                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                }
-                unset($item);
-            }
-            return $items;
+            return $this->enrichTimestampRows($publication->toArray());
         }
 
         return [];
-    }
-
-    private function formatRelativeTime($datetime)
-    {
-        return Helper::time_ago($datetime, $this->lang['index'] ?? null);
     }
 
     public function authors($page = 1, $page_limit = 12)
@@ -308,7 +296,7 @@ class mod_publication_helper extends indexBase
         $authors->fetch_array($sql);
 
         if ($authors->getSize() !== 0) {
-            $this->theme->ctx_set('authors', $authors->toArray());
+            $this->theme->ctx_set('authors', $this->enrichTimestampRows($authors->toArray()));
         }
 
         $pager = Load::lib('Pager');
@@ -500,9 +488,9 @@ class mod_publication_helper extends indexBase
             }
         }
 
-        $this->theme->ctx_set('publications', $publications);
+        $this->theme->ctx_set('publications', $this->enrichTimestampRows($publications));
         $this->theme->ctx_set('total_publications', $totalPublications);
-        $this->theme->ctx_set('author_news', $authorNews);
+        $this->theme->ctx_set('author_news', $this->enrichTimestampRows($authorNews));
         $this->theme->ctx_set('total_news', $totalNews);
 
         $pager = Load::lib('Pager');
@@ -670,7 +658,7 @@ class mod_publication_helper extends indexBase
 
             $publication->gR();
             if ($publication->getSize() !== 0) {
-                $this->theme->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $this->enrichTimestampRows($publication->toArray()));
             } else {
                 $this->theme->ctx_set('bulunamadi', TRUE);
                 $this->theme->ctx_set('not_found', TRUE);

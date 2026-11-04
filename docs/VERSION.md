@@ -1,5 +1,25 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.40 (2026-11-05)
+- **News & Publication Timestamp Standardization Protocol (`mod/index/indexBase.php`, `mod/index/index.php`, `mod/index/helper/*.php`, `mod/index/lang/*.php`, `templates/amed/index/mod_news/*.twig`, `templates/amed/index/mod_publication/*.twig`, `templates/amed/index/hero_slider.twig`, `templates/amed/index/search.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **24-Hour Adaptive Timestamp Architecture (`mod/index/indexBase.php`)**:
+    - Introduced `enrichTimestampFields(array $row): array` and `enrichTimestampRows(array $rows): array` in `indexBase.php` protecting the shared-core boundary without introducing drift to `lib/Traits/PublicHelperTrait.php`.
+    - Content under 24 hours (`0 <= diff < 86400s`) dynamically computes localized relative time (`published_ago`) via `Helper::time_ago()`, including clock-skew tolerance.
+    - Content older than 24 hours (`diff >= 86400s`) explicitly formats full calendar date and clock time (`formatted_datetime`) with localized time label (`dd.mm.YYYY <time_label>: HH:MM`, e.g., `04.11.2026 Saat: 03:35` in Turkish, `04.11.2026 Dem: 03:35` in Kurdish, `04.11.2026 Time: 03:35` in English).
+    - Preserved full date and clock time for `formatted_updated_datetime` when an editorial update timestamp is present.
+  - **Full Controller & Helper Pipeline Normalization (`mod/index/helper/`)**:
+    - **`mod_news.helper.php`**: Routed all news rows across `news()`, `newses()`, `_latest_news()`, `_featured_news()`, `_economy_news()`, `_sports_news()`, `_world_news()`, `_category_news()`, and `archive()` through `enrichTimestampFields()`.
+    - **`mod_publication.helper.php`**: Normalized publication models across `publication()`, `publications()`, `_latest_publications()`, `_latest_authors()`, `authors()`, `author()`, and `archive()`. Added `created_at` to default `_latest_publications()` select list.
+    - **`mod_hero_slider.helper.php`**: Integrated timestamp enrichment for slider cards across both news and publication sources.
+    - **`search.helper.php`**: Added `created_at` to search query `SELECT` statements for `mod_news` and `mod_publication`, ensuring real-time timestamp calculation for author latest publications and search result items.
+  - **10-Language Dictionary Parity (`mod/index/lang/`)**:
+    - Added descriptive `'time_label'` key across all 10 language dictionaries in lockstep: `en` ('Time'), `tr` ('Saat'), `ku` ('Dem'), `ckb` ('کات'), `zza` ('Wext'), `de` ('Uhrzeit'), `fr` ('Heure'), `ar` ('الوقت'), `ru` ('Время'), `sv` ('Tid').
+  - **Public Theme Templates Standardization (`templates/amed/index/`)**:
+    - **Listing, Slider, Grid & Stream Views**: Updated `newses.twig`, `publications.twig`, `latest_news.twig`, `featured_news.twig`, `economy_news.twig`, `sports_news.twig`, `category_news_row.twig`, `authors.twig`, `author.twig`, `hero_slider.twig`, `search.twig`, and archive views to render `published_ago` with `bi-clock-history` when `< 24h` and `formatted_datetime` with `bi-calendar3` when `>= 24h`.
+    - **Detail Views (`news.twig`, `publication.twig`)**: Always display exact day and clock time (`formatted_datetime` / `formatted_updated_datetime`) in the article header byline even when published within the last 24 hours.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.40`.
+
 ## v1.0.39 (2026-11-04)
 - **Homepage Visibility Control & Featured News Grid Protocol (`mod_news`, `mod_index`, `templates/admin/`, `templates/amed/`, `docs/VERSION.md`)**:
   - **Granular Homepage Visibility (`show_on_homepage` in `mod_news`)**:

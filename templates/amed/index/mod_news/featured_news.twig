@@ -72,10 +72,16 @@
 
                         <div class="latest-news-body">
                             <div class="latest-news-meta">
-                                {% if news.published_ago is defined and news.published_ago is not empty %}
+                                {% if news.is_last_24h %}
                                     <span class="latest-news-meta-item">
                                         <i class="bi bi-clock-history" aria-hidden="true"></i>
                                         <time datetime="{{ news.created_at|default('') }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                    </span>
+                                    <span class="latest-news-meta-sep" aria-hidden="true">·</span>
+                                {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                        <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.formatted_datetime }}</time>
                                     </span>
                                     <span class="latest-news-meta-sep" aria-hidden="true">·</span>
                                 {% elseif news.created_at is defined and news.created_at is not empty %}

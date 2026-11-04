@@ -119,8 +119,16 @@
                         </div>
 
                         <span class="author-date">
-                            <i class="bi bi-clock-history"></i>
-                            {{ author.created_at|date('d.m.Y H:i') }}
+                            {% if author.is_last_24h %}
+                                <i class="bi bi-clock-history"></i>
+                                {{ author.published_ago }}
+                            {% elseif author.formatted_datetime is defined and author.formatted_datetime is not empty %}
+                                <i class="bi bi-calendar3"></i>
+                                {{ author.formatted_datetime }}
+                            {% else %}
+                                <i class="bi bi-calendar3"></i>
+                                {{ author.created_at|date('d.m.Y H:i') }}
+                            {% endif %}
                         </span>
                     </article>
                 {% endfor %}

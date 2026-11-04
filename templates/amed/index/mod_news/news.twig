@@ -258,12 +258,12 @@
 									<div class="news-byline-dates">
 										<span class="news-byline-date-item">
 											<i class="bi bi-calendar3"></i>
-											<span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time></span>
+											<span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('c') }}">{{ d.formatted_datetime is defined and d.formatted_datetime is not empty ? d.formatted_datetime : d.created_at|date('d.m.Y') }}</time></span>
 										</span>
 										{% if d.updated_at is not empty and d.updated_at != d.created_at %}
 											<span class="news-byline-date-item">
 												<i class="bi bi-pencil-square"></i>
-												<span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('Y-m-d') }}">{{ d.updated_at|date('d.m.Y') }}</time></span>
+												<span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('c') }}">{{ d.formatted_updated_datetime is defined and d.formatted_updated_datetime is not empty ? d.formatted_updated_datetime : d.updated_at|date('d.m.Y') }}</time></span>
 											</span>
 										{% endif %}
 									</div>
@@ -444,7 +444,18 @@
 										<h6 class="detail-related-title">
 											<a href="{{ site.saddress }}news/{{ news.seo }}" class="text-dark text-decoration-none">{{ news.name }}</a>
 										</h6>
-										<p class="detail-related-summary">{{ news.summary|striptags|slice(0, 80) }}...</p>
+										{% if news.created_at is defined and news.created_at is not empty %}
+											<div class="detail-related-time text-muted small mb-1">
+												{% if news.is_last_24h %}
+													<i class="bi bi-clock-history me-1"></i>{{ news.published_ago }}
+												{% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
+													<i class="bi bi-calendar3 me-1"></i>{{ news.formatted_datetime }}
+												{% else %}
+													<i class="bi bi-calendar3 me-1"></i>{{ news.created_at|date('d.m.Y') }}
+												{% endif %}
+											</div>
+										{% endif %}
+										<p class="detail-related-summary mb-0">{{ news.summary|striptags|slice(0, 80) }}...</p>
 									</div>
 								</div>
 							</div>

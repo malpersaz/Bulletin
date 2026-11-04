@@ -312,7 +312,7 @@ class mod_hero_slider_helper extends indexBase
         $desktop_resize = ($source_mod === 'mod_event') ? 'r/w-450/h-600/c-1/q-68/f/' : 'r/w-800/h-450/c-1/q-68/f/';
         $mobile_resize  = ($source_mod === 'mod_event') ? 'r/w-300/h-400/c-1/q-68/f/' : 'r/w-420/h-236/c-1/q-68/f/';
 
-        return [
+        $normalizedItem = [
             'source_mod' => $source_mod,
             'source_id' => $source_id,
             'name' => $name,
@@ -320,7 +320,6 @@ class mod_hero_slider_helper extends indexBase
             'summary' => $summary,
             'lang' => isset($record['lang']) ? (string) $record['lang'] : $this->site['lang'],
             'created_at' => $created_at,
-            'published_ago' => $this->formatRelativeTime($created_at),
             'category_name' => $category_name,
             'category_seo' => $category_seo,
             'category_url' => $category_seo !== '' ? $this->site['saddress'] . $category_path . $category_seo : '',
@@ -335,11 +334,7 @@ class mod_hero_slider_helper extends indexBase
             'author_image_url' => $user_image !== '' ? $this->site['address'] . 'r/w-28/h-28/c-1/f/mod_user/thumb/' . $user_image : '',
             'author_image_2x_url' => $user_image !== '' ? $this->site['address'] . 'r/w-56/h-56/c-1/f/mod_user/thumb/' . $user_image : '',
         ];
-    }
-
-    private function formatRelativeTime($datetime)
-    {
-        return Helper::time_ago($datetime, $this->lang['index'] ?? null);
+        return $this->enrichTimestampFields($normalizedItem);
     }
 
     private function buildAuthorInitials($author_name)

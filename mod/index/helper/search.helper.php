@@ -89,34 +89,38 @@ class search_helper extends indexBase
         if (Cache::exists($keyword . "-search-mod_news")) {
             $cached_data = Cache::get($keyword . "-search-mod_news");
             if ($cached_data !== FALSE) {
-                $this->theme->set('news', $cached_data);
+                $this->theme->set('news', $this->enrichTimestampRows($cached_data));
             }
         } else {
             $news = Load::model('mod_news');
-            $news->select('summary,name,seo');
+            $news->select('summary,name,seo,created_at');
             $news->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
             $news->addWhere($this->getPublishedDateCondition(''));
             $news->gR();
+            $newsRows = [];
             if ($news->getSize() !== 0) {
-                $this->theme->set('news', $news->toArray());
+                $newsRows = $news->toArray();
+                $this->theme->set('news', $this->enrichTimestampRows($newsRows));
             }
-            Cache::set($news->toArray(), $keyword . "-search-mod_news");
+            Cache::set($newsRows, $keyword . "-search-mod_news");
         }
 
         if (Cache::exists($keyword . "-search-mod_publication")) {
             $cached_data = Cache::get($keyword . "-search-mod_publication");
             if ($cached_data !== FALSE) {
-                $this->theme->set('publications', $cached_data);
+                $this->theme->set('publications', $this->enrichTimestampRows($cached_data));
             }
         } else {
             $publication = Load::model('mod_publication');
-            $publication->select('summary,name,seo');
+            $publication->select('summary,name,seo,created_at');
             $publication->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
             $publication->gR();
+            $pubRows = [];
             if ($publication->getSize() !== 0) {
-                $this->theme->set('publications', $publication->toArray());
+                $pubRows = $publication->toArray();
+                $this->theme->set('publications', $this->enrichTimestampRows($pubRows));
             }
-            Cache::set($publication->toArray(), $keyword . "-search-mod_publication");
+            Cache::set($pubRows, $keyword . "-search-mod_publication");
         }
 
         if (Cache::exists($keyword . "-search-mod_event")) {
@@ -315,12 +319,16 @@ class search_helper extends indexBase
                            LIMIT 1";
                 $pubModel->fetch_array($pubSql);
                 if ($pubModel->getSize() !== 0) {
-                    $pubData = $pubModel->toArray()[0];
+                    $pubData = $this->enrichTimestampFields($pubModel->toArray()[0]);
                     $latestPub = [
                         'name' => $pubData['name'],
                         'seo' => $pubData['seo'],
                         'is_news' => false,
-                        'timeago' => Helper::time_ago($pubData['created_at'] ?? '', $this->lang['index'] ?? null),
+                        'timeago' => $pubData['display_time'],
+                        'display_time' => $pubData['display_time'],
+                        'is_last_24h' => $pubData['is_last_24h'],
+                        'published_ago' => $pubData['published_ago'],
+                        'formatted_datetime' => $pubData['formatted_datetime'],
                     ];
                 }
             } elseif ((int) $row['total_news'] > 0) {
@@ -336,12 +344,16 @@ class search_helper extends indexBase
                             LIMIT 1";
                 $newsModel->fetch_array($newsSql);
                 if ($newsModel->getSize() !== 0) {
-                    $newsData = $newsModel->toArray()[0];
+                    $newsData = $this->enrichTimestampFields($newsModel->toArray()[0]);
                     $latestPub = [
                         'name' => $newsData['name'],
                         'seo' => $newsData['seo'],
                         'is_news' => true,
-                        'timeago' => Helper::time_ago($newsData['created_at'] ?? '', $this->lang['index'] ?? null),
+                        'timeago' => $newsData['display_time'],
+                        'display_time' => $newsData['display_time'],
+                        'is_last_24h' => $newsData['is_last_24h'],
+                        'published_ago' => $newsData['published_ago'],
+                        'formatted_datetime' => $newsData['formatted_datetime'],
                     ];
                 }
             }

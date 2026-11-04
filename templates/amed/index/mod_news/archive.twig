@@ -119,8 +119,16 @@
                                     </a>
                                 </h2>
                                 <span class="badge bg-light text-muted border small text-nowrap">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    {{ news.created_at|date("d.m.Y") }}
+                                    {% if news.is_last_24h %}
+                                        <i class="bi bi-clock-history me-1"></i>
+                                        {{ news.published_ago }}
+                                    {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        {{ news.formatted_datetime }}
+                                    {% else %}
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        {{ news.created_at|date("d.m.Y") }}
+                                    {% endif %}
                                 </span>
                             </div>
                             {% if news.summary is defined and news.summary is not empty %}

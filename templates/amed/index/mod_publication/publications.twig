@@ -214,8 +214,16 @@
                                     <div class="publication-meta">
                                         {% if publication.created_at is defined and publication.created_at is not empty %}
                                             <span class="publication-meta-item">
-                                                <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.created_at|date('d.m.Y') }}</time>
+                                                {% if publication.is_last_24h %}
+                                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.published_ago }}</time>
+                                                {% elseif publication.formatted_datetime is defined and publication.formatted_datetime is not empty %}
+                                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.formatted_datetime }}</time>
+                                                {% else %}
+                                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.created_at|date('d.m.Y') }}</time>
+                                                {% endif %}
                                             </span>
                                         {% endif %}
 

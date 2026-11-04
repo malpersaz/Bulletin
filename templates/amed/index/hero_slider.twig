@@ -73,7 +73,17 @@
                             </a>
                         {% endif %}
 
-                        {% if item.published_ago is not empty %}
+                        {% if item.is_last_24h %}
+                            <span class="hero-slide__timestamp">
+                                <i class="bi bi-clock"></i>
+                                {{ item.published_ago }}
+                            </span>
+                        {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+                            <span class="hero-slide__timestamp">
+                                <i class="bi bi-calendar3"></i>
+                                {{ item.formatted_datetime }}
+                            </span>
+                        {% elseif item.published_ago is not empty %}
                             <span class="hero-slide__timestamp">
                                 <i class="bi bi-clock"></i>
                                 {{ item.published_ago }}

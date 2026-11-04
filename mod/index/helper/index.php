@@ -136,7 +136,7 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_news", "_featured_news", [$limit, $select, $excludeCategories]);
     }
 
-    public function _latest_publications($limit, $select)
+    public function _latest_publications($limit, $select = 'seo,name,image,created_at')
     {
         return $this->_loadHelper("index.mod_publication", "_latest_publications", [$limit, $select]);
     }

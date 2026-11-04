@@ -704,6 +704,8 @@ $lang['index']['mod_user_pm'] = [
     'send_message' => 'Send Message',
 ];
 
+$lang['index']['time_label'] = 'Time';
+
 $lang['index']['time_ago'] = [
     'just_now' => 'Just now',
     'second' => '%d second ago',

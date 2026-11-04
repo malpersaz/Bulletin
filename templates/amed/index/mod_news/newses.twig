@@ -161,8 +161,16 @@
                                     <div class="news-card-meta">
                                         {% if news.created_at is defined and news.created_at is not empty %}
                                             <span class="news-card-meta-item">
-                                                <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                                {% if news.is_last_24h %}
+                                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                                {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
+                                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.formatted_datetime }}</time>
+                                                {% else %}
+                                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                                {% endif %}
                                             </span>
                                         {% endif %}
 
