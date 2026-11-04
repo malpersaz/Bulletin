@@ -80,7 +80,7 @@ class McpPublicationTools extends McpCrudToolsBase
                         'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO title. Defaults to the name.'],
                         'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO keywords. Defaults to empty.'],
                         'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO description. Defaults to the summary.'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Publish status: n (draft) or y (published). Defaults to n.'],
+                        'status' => ['type' => 'string', 'enum' => ['n'], 'default' => 'n', 'description' => 'Draft status: strictly n (draft). AI cannot publish publications directly.'],
                         'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Show on deck: y or n. Defaults to y.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show in slider flag.'],
                         'created_at' => ['type' => 'string', 'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.'],
@@ -120,7 +120,7 @@ class McpPublicationTools extends McpCrudToolsBase
                         'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO title.'],
                         'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO keywords.'],
                         'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO description.'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New publish status.'],
+                        'status' => ['type' => 'string', 'enum' => ['n'], 'description' => 'Draft status: strictly n (draft). AI cannot publish publications.'],
                         'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New deck flag.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New slider flag.'],
                         'created_at' => ['type' => 'string', 'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).'],
@@ -400,7 +400,8 @@ class McpPublicationTools extends McpCrudToolsBase
         $model->title = $this->optionalString($args, 'title', $name, 255);
         $model->keywords = $this->optionalString($args, 'keywords', '', 255);
         $model->description = $this->optionalString($args, 'description', $summary, 255);
-        $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
+        // AI / MCP can never publish directly on creation; strictly enforce draft ('n')
+        $model->status = 'n';
         $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
         $model->created_at = $this->optionalDateTime($args, 'created_at', date('Y-m-d H:i:s'));
@@ -539,7 +540,12 @@ class McpPublicationTools extends McpCrudToolsBase
         $this->synchronizeSummaryAndDescription($model, $args);
         $this->assertContentMatchesLang($lang, (string) $model->name, (string) $model->summary, (string) $model->content);
 
-        foreach (['status', 'deck', 'slider'] as $field) {
+        // AI / MCP cannot publish publications; only allow setting draft status ('n') if explicitly requested
+        if (isset($args['status']) && $args['status'] === 'n') {
+            $model->status = 'n';
+        }
+
+        foreach (['deck', 'slider'] as $field) {
             if (isset($args[$field])) {
                 $model->{$field} = $this->optionalEnum($args, $field, (string) $model->{$field}, ['y', 'n']);
             }

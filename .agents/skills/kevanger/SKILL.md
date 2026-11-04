@@ -7,8 +7,10 @@ description: Curate, draft, structure, and stage Turkish-language news articles 
 
 ## Operating Rule
 
-Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeline strictly:
-`kevkolin` (Research) -> `kevrast` (Stage 1) -> `kevanger` (Drafting in Turkish) -> `kevseo` (SEO & Semantic HTML) -> `kevrast` (Stage 2) -> Staging.
+- **STRICT NO-PUBLISH MANDATE**: AI is strictly prohibited from publishing news articles (`status: "y"`). Every new or updated article MUST be staged exclusively as a draft (`status: "n"`) for human editorial review and approval.
+- **NO MCP BRIDGE BYPASS**: Always invoke MCP tools through `call_mcp_tool` (`amed-bulletin`). NEVER extract API keys from local bridge scripts or bypass the local MCP bridge with direct `curl`/`urllib` requests to `mcp.php`.
+- Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeline strictly:
+  `kevkolin` (Research) -> `kevrast` (Stage 1) -> `kevanger` (Drafting in Turkish) -> `kevseo` (SEO & Semantic HTML) -> `kevrast` (Stage 2) -> Staging.
 
 In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusively in **Turkish (`tr`)**.
 
@@ -62,14 +64,14 @@ Whenever `kevanger` brings or drafts a news article from any source:
     - Kurdish format: `<p><strong>Wêne: Temsîlî</strong></p>`.
     - Turkish format: `<p><strong>Fotoğraf: Temsili</strong></p>`.
 - **Automated Processing Helper**:
-  - Use `.agents/skills/kevanger/scripts/process_news_image.py` to prepare images deterministically:
+  - Use `.agents/skills/kevanger/scripts/process_news_image.py` with `--out /tmp/news_img.webp` to prepare images deterministically:
     ```bash
     # For source image:
-    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/img.jpg --source "$Source"
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/img.jpg --source "$Source" --out /tmp/news_img.webp
     # For representative image:
-    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/generated.png --representative
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/generated.png --representative --out /tmp/news_img.webp
     ```
-  - The script outputs the exact WebP base64 payload and formatted `<p><strong>...</strong></p>` credit lines.
+  - Pass `image: {"file_path": "/tmp/news_img.webp", "mime": "image/webp"}` (or full un-truncated `data_base64`) to `create_news` / `update_news` via `call_mcp_tool`. Never copy truncated `<truncated ...>` base64 output from terminal logs.
 
 ### 5. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
 - Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.

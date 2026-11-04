@@ -166,9 +166,9 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'status' => [
                             'type' => 'string',
-                            'enum' => ['y', 'n'],
+                            'enum' => ['n'],
                             'default' => 'n',
-                            'description' => 'Publish status: n (draft) or y (published). Defaults to n.',
+                            'description' => 'Draft status: strictly n (draft). AI cannot publish news articles directly.',
                         ],
                         'deck' => [
                             'type' => 'string',
@@ -296,7 +296,8 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'status' => [
                             'type' => 'string',
-                            'enum' => ['y', 'n'],
+                            'enum' => ['n'],
+                            'description' => 'Draft status: strictly n (draft). AI cannot publish news articles.',
                         ],
                         'deck' => [
                             'type' => 'string',
@@ -729,7 +730,8 @@ class McpNewsTools extends McpCrudToolsBase
         $model->keywords = $this->cleanTextEntities($this->optionalString($args, 'keywords', '', 255));
         $rawDescription = $this->cleanTextEntities($this->optionalString($args, 'description', $summary, 255));
         $model->description = self::truncateWords($rawDescription, 255);
-        $model->status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
+        // AI / MCP can never publish directly on creation; strictly enforce draft ('n')
+        $model->status = 'n';
         $model->deck = $this->optionalEnum($args, 'deck', 'y', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
         $model->show_on_homepage = $this->optionalEnum($args, 'show_on_homepage', 'y', ['y', 'n']);
@@ -896,7 +898,12 @@ class McpNewsTools extends McpCrudToolsBase
             }
         }
 
-        foreach (['status', 'deck', 'slider', 'show_on_homepage'] as $field) {
+        // AI / MCP cannot publish news articles; only allow setting draft status ('n') if explicitly requested
+        if (isset($args['status']) && $args['status'] === 'n') {
+            $model->status = 'n';
+        }
+
+        foreach (['deck', 'slider', 'show_on_homepage'] as $field) {
             if (isset($args[$field])) {
                 $model->{$field} = $this->optionalEnum($args, $field, (string) $model->{$field}, ['y', 'n']);
             }

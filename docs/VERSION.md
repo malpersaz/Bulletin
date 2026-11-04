@@ -1,5 +1,21 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.42 (2026-11-05)
+- **MCP Editorial Safety Protocol & Hard Draft Enforcement (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Backend Hard Draft Enforcement (`createNews`, `createPublication`)**:
+    - Strictly enforced `status = 'n'` (draft) within `McpNewsTools::createNews()` and `McpPublicationTools::createPublication()`.
+    - Disallowed external or autonomous overrides of publish status upon record creation, guaranteeing that all AI-staged content enters the CMS exclusively as a draft.
+  - **Publish Status Protection on Update (`updateNews`, `updatePublication`)**:
+    - Disallowed flipping `status` to `'y'` (published) via MCP update methods.
+    - Restricted MCP status modifications strictly to `'n'`, ensuring human editors retain exclusive publishing authority.
+  - **Schema Definition Lockdown**:
+    - Updated internal MCP tool definitions across `mod_news` and `mod_publication` to constrain `status` strictly to `enum: ['n']`, preventing AI agents from declaring or targeting published status in parameter schemas.
+  - **Editorial Pipeline & Asset Transfer Protocol (`.agents/skills/kevanger/SKILL.md`)**:
+    - Embedded prominent top-level operating mandates prohibiting autonomous direct publishing and forbidding MCP bridge bypass.
+    - Documented deterministic file-based WebP transfer protocols (`--out` / `file_path`) to prevent terminal base64 truncation and eliminate network workarounds.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.42`.
+
 ## v1.0.41 (2026-11-05)
 - **Timestamp Formatting Refinement (`mod/index/indexBase.php`, `mod/index/lang/*.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Clean Clock Time Formatting**:
