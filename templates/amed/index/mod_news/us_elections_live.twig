@@ -7,26 +7,35 @@
 
 {% block content %}
 <!-- START: index/mod_news/us_elections_live.twig -->
+{% if us_elections is not defined or us_elections.senate is not defined %}
+    {% set us_elections = ctx_get('us_elections') %}
+{% endif %}
+
+{% if us_elections is not defined or us_elections.senate is not defined %}
+    {{ run({"mod": "index", "method": "_us_elections"}) }}
+    {% set us_elections = ctx_get('us_elections') %}
+{% endif %}
+
 {% set us_data = us_elections|default({
     'title': 'ABD ARA SEÇİMLERİ',
     'senate': {
         'title': 'Senato',
-        'democrats': 35,
+        'democrats': 34,
         'republicans': 31,
         'target': '50',
-        'target_label': '',
+        'target_label': 'çoğunluk için',
         'total': 100,
-        'counted_label': '1/35 sandalye sayıldı',
-        'not_up_label': 'Seçime dahil değil'
+        'counted_label': '0/35 sandalye sayıldı',
+        'not_up_label': '65 sandalye devreden (seçim dışı)'
     },
     'house': {
         'title': 'Temsilciler Meclisi',
-        'democrats': 6,
-        'republicans': 2,
+        'democrats': 0,
+        'republicans': 0,
         'target': '218',
-        'target_label': 'kazanmak için',
+        'target_label': 'çoğunluk için',
         'total': 435,
-        'counted_label': '8/435 sandalye sayıldı'
+        'counted_label': '0/435 sandalye sayıldı'
     },
     'updated_at': "now"|date("U"),
     'live_label': 'CANLI güncellemeler',

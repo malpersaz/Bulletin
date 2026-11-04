@@ -1,5 +1,13 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.35 (2026-11-04)
+- **US Elections Dedicated Live Page Context & Real-Time Sync Alignment (`templates/amed/index/mod_news/us_elections_live.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Dynamic Context Binding for Live Results Banner (`templates/amed/index/mod_news/us_elections_live.twig`)**:
+    - Resolved data discrepancy between page hero statistics bar and live tracker widget on `/us-elections` by ensuring `us_elections` is extracted directly from template context via `ctx_get('us_elections')` or dynamically loaded via `_us_elections` controller helper if not previously defined.
+    - Updated fallback defaults to neutral counts (`0/35`, `0/435`) matching canonical seed architecture, guaranteeing real-time parity across both upper stats bar and lower tracker chamber component.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.35`.
+
 ## v1.0.34 (2026-11-04)
 - **Scheduled News Publication & Future Datetime Visibility Protocol (`lib/Traits/PublicHelperTrait.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/mod_hero_slider.helper.php`, `mod/index/helper/search.helper.php`, `mod/index/index.php`, `mod/index/indexBase.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Shared Publication Date SQL Condition (`lib/Traits/PublicHelperTrait.php`)**:
