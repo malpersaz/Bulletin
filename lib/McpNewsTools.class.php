@@ -223,11 +223,15 @@ class McpNewsTools extends McpCrudToolsBase
                         'image' => [
                             'type' => 'object',
                             'nullable' => false,
-                            'description' => 'Featured image upload object (required; news articles cannot be created without an image).',
+                            'description' => 'Featured image upload object (required; provide data_base64 + mime, or local file_path + mime).',
                             'properties' => [
                                 'data_base64' => [
                                     'type' => 'string',
                                     'description' => 'Base64 encoded image binary data.',
+                                ],
+                                'file_path' => [
+                                    'type' => 'string',
+                                    'description' => 'Absolute local path to the processed image file (supported when server or local MCP bridge shares the filesystem).',
                                 ],
                                 'mime' => [
                                     'type' => 'string',
@@ -235,7 +239,7 @@ class McpNewsTools extends McpCrudToolsBase
                                     'description' => 'Image MIME type (image/jpeg, image/png, image/gif, image/webp).',
                                 ],
                             ],
-                            'required' => ['data_base64', 'mime'],
+                            'required' => ['mime'],
                         ],
                     ],
                     'required' => ['name', 'lang', 'category_id', 'content', 'summary', 'image'],
@@ -337,11 +341,15 @@ class McpNewsTools extends McpCrudToolsBase
                         'image' => [
                             'type' => 'object',
                             'nullable' => false,
-                            'description' => 'Featured image upload object (cannot be null; removing the featured image is not allowed).',
+                            'description' => 'Featured image upload object (cannot be null; provide data_base64 + mime, or local file_path + mime).',
                             'properties' => [
                                 'data_base64' => [
                                     'type' => 'string',
                                     'description' => 'Base64 encoded image binary data.',
+                                ],
+                                'file_path' => [
+                                    'type' => 'string',
+                                    'description' => 'Absolute local path to the processed image file (supported when server or local MCP bridge shares the filesystem).',
                                 ],
                                 'mime' => [
                                     'type' => 'string',
@@ -349,7 +357,7 @@ class McpNewsTools extends McpCrudToolsBase
                                     'description' => 'Image MIME type (image/jpeg, image/png, image/gif, image/webp).',
                                 ],
                             ],
-                            'required' => ['data_base64', 'mime'],
+                            'required' => ['mime'],
                         ],
                     ],
                     'required' => ['id'],
@@ -794,12 +802,13 @@ class McpNewsTools extends McpCrudToolsBase
         $model->user_id = $authorUserId;
 
         if (!isset($args['image']) || !is_array($args['image'])) {
-            throw new McpToolException("Field 'image' (with 'data_base64' and 'mime') is required when creating a news article. News articles cannot be created without an image.");
+            throw new McpToolException("Field 'image' (with 'data_base64' or 'file_path', and 'mime') is required when creating a news article. News articles cannot be created without an image.");
         }
         $imgData = trim((string) ($args['image']['data_base64'] ?? ''));
+        $imgFilePath = trim((string) ($args['image']['file_path'] ?? ''));
         $imgMime = trim((string) ($args['image']['mime'] ?? ''));
-        if ($imgData === '' || $imgMime === '') {
-            throw new McpToolException("Field 'image' must contain non-empty 'data_base64' and 'mime'.");
+        if (($imgData === '' && $imgFilePath === '') || $imgMime === '') {
+            throw new McpToolException("Field 'image' must contain non-empty 'data_base64' (or 'file_path') and 'mime'.");
         }
         $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!in_array(strtolower($imgMime), $allowedMimes, true)) {
@@ -980,12 +989,13 @@ class McpNewsTools extends McpCrudToolsBase
                 throw new McpToolException("Removing the featured image is not allowed; a news article must always have an image.");
             }
             if (!is_array($args['image'])) {
-                throw new McpToolException("Field 'image' must be an object containing 'data_base64' and 'mime'.");
+                throw new McpToolException("Field 'image' must be an object containing 'data_base64' (or 'file_path') and 'mime'.");
             }
             $imgData = trim((string) ($args['image']['data_base64'] ?? ''));
+            $imgFilePath = trim((string) ($args['image']['file_path'] ?? ''));
             $imgMime = trim((string) ($args['image']['mime'] ?? ''));
-            if ($imgData === '' || $imgMime === '') {
-                throw new McpToolException("Image upload must contain non-empty 'data_base64' and 'mime'.");
+            if (($imgData === '' && $imgFilePath === '') || $imgMime === '') {
+                throw new McpToolException("Image upload must contain non-empty 'data_base64' (or 'file_path') and 'mime'.");
             }
             $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!in_array(strtolower($imgMime), $allowedMimes, true)) {

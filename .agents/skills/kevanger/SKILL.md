@@ -64,14 +64,16 @@ Whenever `kevanger` brings or drafts a news article from any source:
     - Kurdish format: `<p><strong>Wêne: Temsîlî</strong></p>`.
     - Turkish format: `<p><strong>Fotoğraf: Temsili</strong></p>`.
 - **Automated Processing Helper**:
-  - Use `.agents/skills/kevanger/scripts/process_news_image.py` with `--out /tmp/news_img.webp` to prepare images deterministically:
+  - Use `.agents/skills/kevanger/scripts/process_news_image.py` to prepare images deterministically:
     ```bash
     # For source image:
-    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/img.jpg --source "$Source" --out /tmp/news_img.webp
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/img.jpg --source "$Source" --out /tmp/news_img.webp > /tmp/img_payload.json
     # For representative image:
-    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/generated.png --representative --out /tmp/news_img.webp
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/generated.png --representative --out /tmp/news_img.webp > /tmp/img_payload.json
     ```
-  - Pass `image: {"file_path": "/tmp/news_img.webp", "mime": "image/webp"}` (or full un-truncated `data_base64`) to `create_news` / `update_news` via `call_mcp_tool`. Never copy truncated `<truncated ...>` base64 output from terminal logs.
+  - **Programmatic & File-Based Transfer**:
+    - In environments with programmatic tool invocation (e.g., OMP `tool.<name>(args)`), parse `/tmp/img_payload.json` programmatically in code and pass `image: {"data_base64": payload["data_base64"], "mime": "image/webp"}` directly so the base64 string is never truncated by terminal output limits.
+    - In local MCP bridge environments (or same-filesystem local servers), you may also pass `image: {"file_path": "/tmp/news_img.webp", "mime": "image/webp"}`. Never copy-paste `<truncated ...>` base64 strings from terminal logs.
 
 ### 5. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
 - Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.

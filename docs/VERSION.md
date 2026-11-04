@@ -1,5 +1,18 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.43 (2026-11-05)
+- **Repository-Native MCP `file_path` Image Intake & Programmatic Base64 Protocol (`lib/McpCrudToolsBase.class.php`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Core `storeUploadedImage` Enhancement (`lib/McpCrudToolsBase.class.php`)**:
+    - Implemented native `image.file_path` ingestion alongside `image.data_base64` in `McpCrudToolsBase::storeUploadedImage()`.
+    - Added automatic MIME resolution from file extensions (`.webp`, `.jpg`, `.jpeg`, `.png`, `.gif`) when `file_path` is provided and `mime` is omitted, while strictly enforcing the 10 MB decoded size limit and allowed MIME whitelist.
+  - **MCP Schema & Validator Parity (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:
+    - Updated `create_news`, `update_news`, `create_publication`, `update_publication`, `create_publication_category`, and `update_publication_category` tool schemas to declare `file_path` alongside `data_base64` with `required: ['mime']`.
+    - Updated `McpNewsTools::createNews()` and `McpNewsTools::updateNews()` pre-flight validators to accept either non-empty `data_base64` or `file_path`.
+  - **Dual-Mode Asset Transfer Documentation (`.agents/skills/kevanger/SKILL.md`)**:
+    - Documented both programmatic JSON payload transfer (`tool.<name>(args)` reading `data_base64` directly from `/tmp/img_payload.json` for remote MCP targets) and local `file_path` transfer (`--out /tmp/news_img.webp` for local bridge or same-filesystem servers).
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.43`.
+
 ## v1.0.42 (2026-11-05)
 - **MCP Editorial Safety Protocol & Hard Draft Enforcement (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Backend Hard Draft Enforcement (`createNews`, `createPublication`)**:

@@ -549,27 +549,56 @@ abstract class McpCrudToolsBase
     }
 
     /**
-     * Decodes a base64 image upload and stores it through the image module
-     * pipeline (resize + thumbnails) by simulating the multipart upload array.
+     * Decodes a base64 image upload (or reads a local file_path) and stores it
+     * through the image module pipeline (resize + thumbnails) by simulating the
+     * multipart upload array.
      */
     protected function storeUploadedImage(string $module, $image, array $sizes): string
     {
-        if (!is_array($image) || !isset($image['data_base64'], $image['mime'])) {
-            throw new McpToolException("Field 'image' must be an object with 'data_base64' and 'mime', or null to remove the image.");
+        if (!is_array($image) || (!isset($image['data_base64']) && !isset($image['file_path']))) {
+            throw new McpToolException("Field 'image' must be an object with 'data_base64' (or local 'file_path') and 'mime', or null to remove the image.");
         }
 
-        $mime = strtolower(trim((string) $image['mime']));
+        $filePath = trim((string) ($image['file_path'] ?? ''));
+        $rawDataBase64 = trim((string) ($image['data_base64'] ?? ''));
+
+        $mime = strtolower(trim((string) ($image['mime'] ?? '')));
+        if ($mime === '' && $filePath !== '') {
+            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+            $extMimeMap = [
+                'webp' => 'image/webp',
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+            ];
+            $mime = $extMimeMap[$ext] ?? 'image/webp';
+        }
+
         if (!isset(self::ALLOWED_IMAGE_MIMES[$mime])) {
             throw new McpToolException("Field 'image.mime' must be one of: " . implode(', ', array_keys(self::ALLOWED_IMAGE_MIMES)) . '.');
         }
 
-        $cleanBase64 = preg_replace('/\s+/', '', (string) $image['data_base64']);
-        $data = base64_decode((string) $cleanBase64, true);
-        if ($data === false || $data === '') {
-            throw new McpToolException("Field 'image.data_base64' is not valid base64 data.");
+        if ($rawDataBase64 !== '') {
+            $cleanBase64 = preg_replace('/\s+/', '', $rawDataBase64);
+            $data = base64_decode((string) $cleanBase64, true);
+            if ($data === false || $data === '') {
+                throw new McpToolException("Field 'image.data_base64' is not valid base64 data.");
+            }
+        } elseif ($filePath !== '') {
+            if (!is_file($filePath) || !is_readable($filePath)) {
+                throw new McpToolException("Field 'image.file_path' does not exist or is not readable on the server filesystem: '{$filePath}'.");
+            }
+            $data = @file_get_contents($filePath);
+            if ($data === false || $data === '') {
+                throw new McpToolException("Field 'image.file_path' could not be read or is empty.");
+            }
+        } else {
+            throw new McpToolException("Field 'image' must contain non-empty 'data_base64' or a readable local 'file_path'.");
         }
+
         if (strlen($data) > self::MAX_IMAGE_BYTES) {
-            throw new McpToolException("Field 'image.data_base64' exceeds the 10 MB decoded size limit.");
+            throw new McpToolException("Field 'image' exceeds the 10 MB decoded size limit.");
         }
 
         $extension = self::ALLOWED_IMAGE_MIMES[$mime];
