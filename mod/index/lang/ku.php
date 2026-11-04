@@ -667,7 +667,6 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Peyam Bişîne',
     ],
-    'time_label' => 'Dem',
     'time_ago' => [
         'just_now' => 'Niha',
         'second' => 'Berî %d saniyeyê',

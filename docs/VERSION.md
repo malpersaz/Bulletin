@@ -1,5 +1,15 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.41 (2026-11-05)
+- **Timestamp Formatting Refinement (`mod/index/indexBase.php`, `mod/index/lang/*.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Clean Clock Time Formatting**:
+    - Removed literal `'Saat'` / `'Time'` string label prefix from `formatted_datetime` and `formatted_updated_datetime` in `indexBase.php`.
+    - Formatted items older than 24 hours strictly as clean date and clock time: `dd.mm.YYYY HH:MM` (e.g. `04.11.2026 00:06`), preventing redundant label text and resolving layout line wrapping on article cards.
+    - Preserved relative time calculation (`... saat önce` / `... dakika önce` / `Az önce`) for all content within the last 24 hours.
+    - Cleaned up unneeded `'time_label'` key across all 10 language dictionaries in `mod/index/lang/`.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.41`.
+
 ## v1.0.40 (2026-11-05)
 - **News & Publication Timestamp Standardization Protocol (`mod/index/indexBase.php`, `mod/index/index.php`, `mod/index/helper/*.php`, `mod/index/lang/*.php`, `templates/amed/index/mod_news/*.twig`, `templates/amed/index/mod_publication/*.twig`, `templates/amed/index/hero_slider.twig`, `templates/amed/index/search.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **24-Hour Adaptive Timestamp Architecture (`mod/index/indexBase.php`)**:

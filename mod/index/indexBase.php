@@ -548,13 +548,6 @@ abstract class indexBase
         $rawCreatedAt = (string) ($row['created_at'] ?? '');
         $ts = !empty($rawCreatedAt) ? strtotime($rawCreatedAt) : false;
 
-        $timeLabel = '';
-        if (isset($this->lang['index']['time_label']) && is_string($this->lang['index']['time_label'])) {
-            $timeLabel = trim($this->lang['index']['time_label']);
-        } elseif (isset($this->lang['index']['mod_event']['time']) && is_string($this->lang['index']['mod_event']['time'])) {
-            $timeLabel = trim($this->lang['index']['mod_event']['time']);
-        }
-
         if ($ts !== false && $ts > 0) {
             $diffSeconds = time() - $ts;
             if ($diffSeconds < 0 && $diffSeconds >= -300) {
@@ -567,9 +560,7 @@ abstract class indexBase
 
             $clockPart = date('H:i', $ts);
             $datePart = date('d.m.Y', $ts);
-            $row['formatted_datetime'] = ($timeLabel !== '')
-                ? ($datePart . ' ' . $timeLabel . ': ' . $clockPart)
-                : ($datePart . ' ' . $clockPart);
+            $row['formatted_datetime'] = $datePart . ' ' . $clockPart;
             $row['display_time'] = $isLast24h ? $row['published_ago'] : $row['formatted_datetime'];
         } else {
             $row['is_last_24h'] = false;
@@ -584,9 +575,7 @@ abstract class indexBase
             if ($uts !== false && $uts > 0) {
                 $updateClockPart = date('H:i', $uts);
                 $updateDatePart = date('d.m.Y', $uts);
-                $row['formatted_updated_datetime'] = ($timeLabel !== '')
-                    ? ($updateDatePart . ' ' . $timeLabel . ': ' . $updateClockPart)
-                    : ($updateDatePart . ' ' . $updateClockPart);
+                $row['formatted_updated_datetime'] = $updateDatePart . ' ' . $updateClockPart;
             } else {
                 $row['formatted_updated_datetime'] = '';
             }

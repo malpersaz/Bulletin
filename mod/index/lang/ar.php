@@ -667,7 +667,6 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'إرسال رسالة',
     ],
-    'time_label' => 'الوقت',
     'time_ago' => [
         'just_now' => 'الآن',
         'second' => 'منذ ثانية واحدة',

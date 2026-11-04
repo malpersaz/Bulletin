@@ -667,7 +667,6 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Nachricht senden',
     ],
-    'time_label' => 'Uhrzeit',
     'time_ago' => [
         'just_now' => 'Gerade eben',
         'second' => 'Vor %d Sekunde',
