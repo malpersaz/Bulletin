@@ -1,5 +1,16 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.38 (2026-11-04)
+- **24-Hour News Sidebar Total Article Count Parity Protocol (`mod/index/helper/mod_news.helper.php`, `templates/amed/index/mod_news/news.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Accurate 24-Hour Article Count Resolution (`mod/index/helper/mod_news.helper.php`)**:
+    - Decoupled the sidebar header badge counter from the display list `limit(8)` constraint on article detail pages (`news($seo)`).
+    - Introduced a dedicated count query (`news_24h_count`) calculating the exact aggregate number of published, ACL-permitted articles released across all allowed categories in the past 24 hours (`created_at >= NOW() - 24 hours`).
+    - Propagated `news_24h_count` into template context via `$this->theme->ctx_set('news_24h_count', $news_24h_count)`.
+  - **Sidebar Badge Counter Template Binding (`templates/amed/index/mod_news/news.twig`)**:
+    - Bound `.news-24h-badge` to `news_24h_count` with fallback to `news_24h|length`, ensuring the badge truthfully reflects total articles published today while keeping the visual sidebar feed performant and limited to the 8 most recent entries.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.38`.
+
 ## v1.0.37 (2026-11-04)
 - **Latest News Stream Daily Filter & Unbounded Display Protocol (`templates/amed/index/mod_news/latest_news.twig`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/index.php`, `mod/index/index.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Unbounded Today's News Display (`templates/amed/index/mod_news/latest_news.twig`)**:

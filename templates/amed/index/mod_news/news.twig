@@ -21,6 +21,7 @@
 {% set faqs = ctx_get('faqs') ?: ctx_get('faq') %}
 {% set faq_lang = ctx_get('faq_lang') %}
 {% set news_24h = ctx_get('news_24h') %}
+{% set news_24h_count = ctx_get('news_24h_count') ?? (news_24h ? news_24h|length : 0) %}
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
 {% set news_all_label = lang.index.mod_news.all_news %}
 {% set author_full_name = (d.u_name is defined and d.u_name is not empty) ? (d.u_name ~ ' ' ~ (d.u_last_name ?? ''))|trim : site.title %}
@@ -481,7 +482,7 @@
 								<span>{{ lang.index.mod_news.latest_news.last_24_hours }}</span>
 							</h3>
 						</div>
-						<span class="news-24h-badge">{{ news_24h|length }}</span>
+						<span class="news-24h-badge">{{ news_24h_count }}</span>
 					</header>
 
 					<div class="news-24h-list">

@@ -198,7 +198,23 @@ class mod_news_helper extends indexBase
             if ($news_24h_model->getSize() !== 0) {
                 $news_24h = $this->_cleanNewsRows($news_24h_model->toArray());
             }
+
+            $news_24h_count_model = Load::model('mod_news');
+            $news_24h_count_model->flush();
+            $news_24h_count_model->select('id')
+                ->where_lang_and_status($this->site['lang'], 'y');
+            if (!empty($news->id)) {
+                $news_24h_count_model->addWhere("id != '" . (int) $news->id . "'");
+            }
+            $news_24h_count_model->addWhere($aclCondition);
+            $news_24h_count_model->addWhere($this->getPublishedDateCondition(''));
+            $news_24h_count_model->addWhere("category_id IN ({$allowedCatList})");
+            $news_24h_count_model->addWhere("created_at >= '" . $yesterday . "'");
+            $news_24h_count_model->getResult(true, true);
+            $news_24h_count = (int) $news_24h_count_model->getSize();
+
             $this->theme->ctx_set('news_24h', $news_24h);
+            $this->theme->ctx_set('news_24h_count', $news_24h_count);
         } else {
             return $this->_404();
         }
