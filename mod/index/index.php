@@ -708,9 +708,9 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
         <channel>
-            <title>' . htmlspecialchars($this->site['title']) . '</title>
-            <link>' . $this->site['address'] . $this->site['lang'] . '</link>
-            <description>' . htmlspecialchars($this->site['description']) . '</description>
+            <title>' . htmlspecialchars((string) $this->site['title']) . '</title>
+            <link>' . $this->site['address'] . $this->site['lang'] . '/</link>
+            <description>' . htmlspecialchars((string) $this->site['description']) . '</description>
             <language>' . $this->site['lang'] . '</language>
             <lastBuildDate>' . date(DATE_RSS) . '</lastBuildDate>
             <atom:link href="' . $this->site['address'] . $this->site['lang'] . '/rss.xml" rel="self" type="application/rss+xml" />';
@@ -719,21 +719,32 @@ class index_mod extends indexBase
             foreach ($news->toArray() as $o) {
                 $link = $this->site['address'] . $o['lang'] . '/news/' . $o['seo'];
                 $imageUrl = "";
+                $thumbUrl = "";
+                $imageMime = "image/jpeg";
                 if (!empty($o['image'])) {
-                    $imageUrl = $this->site['iaddress'] . 'mod_news/thumb/' . $o['image'];
+                    $imageUrl = $this->site['iaddress'] . 'mod_news/' . $o['image'];
+                    $thumbUrl = $this->site['iaddress'] . 'mod_news/thumb/' . $o['image'];
+                    $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
+                    if ($ext === 'webp') {
+                        $imageMime = 'image/webp';
+                    } elseif ($ext === 'png') {
+                        $imageMime = 'image/png';
+                    } elseif ($ext === 'gif') {
+                        $imageMime = 'image/gif';
+                    }
                 }
                 
                 echo '
             <item>
-                <title>' . htmlspecialchars($o['title']) . '</title>
+                <title>' . htmlspecialchars((string) $o['title']) . '</title>
                 <link>' . $link . '</link>
-                <description><![CDATA[' . ($imageUrl ? '<img src="' . $imageUrl . '" align="left" hspace="10" vspace="10" />' : '') . mb_substr(strip_tags($o['summary']), 0, 500) . '...]]></description>
-                <pubDate>' . date(DATE_RSS, strtotime($o['created_at'])) . '</pubDate>
+                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . mb_substr(strip_tags((string) $o['summary']), 0, 500) . '...]]></description>
+                <pubDate>' . date(DATE_RSS, strtotime((string) $o['created_at'])) . '</pubDate>
                 <guid isPermaLink="true">' . $link . '</guid>';
                 if ($imageUrl) {
                     echo '
-                <media:content url="' . $imageUrl . '" medium="image" />
-                <enclosure url="' . $imageUrl . '" type="image/jpeg" />';
+                <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="1280" height="720" />
+                <enclosure url="' . $imageUrl . '" type="' . $imageMime . '" />';
                 }
                 echo '
             </item>';
@@ -757,9 +768,31 @@ class index_mod extends indexBase
         }
 
         foreach ($active_langs as $l) {
+            $latestLangTime = time();
             if ($this->isFeatureReady('news.latest')) {
+                $allowedNewsCats = $this->getAllowedCategoryIds('mod_news_category', (string) $l, true);
+                $allowedNewsCatList = !empty($allowedNewsCats) ? implode(',', array_map('intval', $allowedNewsCats)) : '0';
+                $newsCheck = Load::model('mod_news.newses');
+                $newsCheck->flush();
+                $newsCheck->where_status_and_lang('y', $l);
+                $newsCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+                $newsCheck->addWhere($this->getPublishedDateCondition(''));
+                $newsCheck->addWhere("category_id IN ({$allowedNewsCatList})");
+                $newsCheck->order('created_at', 'DESC');
+                $newsCheck->select(['created_at', 'updated_at']);
+                $newsCheck->limit(1)->gR();
+                $newsLastmod = date('c', $latestLangTime);
+                if ($newsCheck->getSize() > 0) {
+                    $newsRow = $newsCheck->toArray()[0];
+                    $newsTs = strtotime((string) (!empty($newsRow['updated_at']) ? $newsRow['updated_at'] : $newsRow['created_at']));
+                    if ($newsTs) {
+                        $latestLangTime = $newsTs;
+                        $newsLastmod = date('c', $newsTs);
+                    }
+                }
                 echo '<sitemap>
                         <loc>' . $this->site['address'] . $l . '/newsSitemap.xml</loc>
+                        <lastmod>' . $newsLastmod . '</lastmod>
                       </sitemap>';
             }
             if ($this->isFeatureReady('publication.latest')) {
@@ -770,10 +803,15 @@ class index_mod extends indexBase
                 $pubCheck->where_status_and_lang('y', $l);
                 $pubCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
                 $pubCheck->addWhere("category_id IN ({$allowedPubCatList})");
+                $pubCheck->order('created_at', 'DESC');
+                $pubCheck->select(['created_at', 'updated_at']);
                 $pubCheck->limit(1)->gR();
                 if ($pubCheck->getSize() > 0) {
+                    $pubRow = $pubCheck->toArray()[0];
+                    $pubTs = strtotime((string) (!empty($pubRow['updated_at']) ? $pubRow['updated_at'] : $pubRow['created_at'])) ?: $latestLangTime;
                     echo '<sitemap>
                             <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
+                            <lastmod>' . date('c', $pubTs) . '</lastmod>
                           </sitemap>';
                 }
             }
@@ -785,10 +823,15 @@ class index_mod extends indexBase
                 $eventCheck->where_status_and_lang('y', $l);
                 $eventCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
                 $eventCheck->addWhere("category_id IN ({$allowedEventCatList})");
+                $eventCheck->order('created_at', 'DESC');
+                $eventCheck->select(['created_at', 'updated_at']);
                 $eventCheck->limit(1)->gR();
                 if ($eventCheck->getSize() > 0) {
+                    $eventRow = $eventCheck->toArray()[0];
+                    $eventTs = strtotime((string) (!empty($eventRow['updated_at']) ? $eventRow['updated_at'] : $eventRow['created_at'])) ?: $latestLangTime;
                     echo '<sitemap>
                             <loc>' . $this->site['address'] . $l . '/eventSitemap.xml</loc>
+                            <lastmod>' . date('c', $eventTs) . '</lastmod>
                           </sitemap>';
                 }
             }
@@ -797,10 +840,15 @@ class index_mod extends indexBase
             $annCheck->flush();
             $annCheck->where_status_and_lang('y', $l);
             $annCheck->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+            $annCheck->order('created_at', 'DESC');
+            $annCheck->select(['created_at']);
             $annCheck->limit(1)->gR();
             if ($annCheck->getSize() > 0) {
+                $annRow = $annCheck->toArray()[0];
+                $annTs = strtotime((string) $annRow['created_at']) ?: $latestLangTime;
                 echo '<sitemap>
                         <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
+                        <lastmod>' . date('c', $annTs) . '</lastmod>
                       </sitemap>';
             }
 
@@ -825,17 +873,21 @@ class index_mod extends indexBase
             if ($hasVideo) {
                 echo '<sitemap>
                         <loc>' . $this->site['address'] . $l . '/videoSitemap.xml</loc>
+                        <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                       </sitemap>';
             }
 
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/gallerySitemap.xml</loc>
+                    <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/categorySitemap.xml</loc>
+                    <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/pageSitemap.xml</loc>
+                    <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
         }
         
@@ -1002,7 +1054,7 @@ class index_mod extends indexBase
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         if ($model->getSize() != 0) {
             foreach ($model->toArray() as $o) {
-                $slug = Helper::sefurl($o['name']);
+                $slug = Helper::legacy_seo($o['name']);
                 $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/announcement/' . $o['id'] . '-' . $slug . '</loc>
@@ -1035,7 +1087,7 @@ class index_mod extends indexBase
         $model_local->gR();
         if ($model_local->getSize() != 0) {
             foreach ($model_local->toArray() as $o) {
-                $slug = Helper::sefurl($o['name']);
+                $slug = Helper::legacy_seo($o['name']);
                 $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
@@ -1056,7 +1108,7 @@ class index_mod extends indexBase
             $model_embed->gR();
             if ($model_embed->getSize() != 0) {
                 foreach ($model_embed->toArray() as $o) {
-                    $slug = Helper::sefurl($o['name']);
+                    $slug = Helper::legacy_seo($o['name']);
                     $lastmod = date('c', strtotime($o['created_at']));
                     echo '<url>
                               <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
@@ -1203,9 +1255,29 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
+        $homeLastmod = date('c');
+        if ($this->isFeatureReady('news.latest')) {
+            $latestNewsModel = Load::model('mod_news.newses');
+            $latestNewsModel->flush();
+            $latestNewsModel->where_status_and_lang('y', $this->site['lang']);
+            $latestNewsModel->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+            $latestNewsModel->addWhere($this->getPublishedDateCondition(''));
+            $latestNewsModel->order('created_at', 'DESC');
+            $latestNewsModel->select(['created_at', 'updated_at']);
+            $latestNewsModel->limit(1)->gR();
+            if ($latestNewsModel->getSize() > 0) {
+                $latestNewsRow = $latestNewsModel->toArray()[0];
+                $latestNewsTs = strtotime((string) (!empty($latestNewsRow['updated_at']) ? $latestNewsRow['updated_at'] : $latestNewsRow['created_at']));
+                if ($latestNewsTs) {
+                    $homeLastmod = date('c', $latestNewsTs);
+                }
+            }
+        }
+
         if ($this->site['lang'] == Registry::get('default_lang')) {
             echo '<url>
                       <loc>' . $this->site['saddress'] . '</loc>
+                      <lastmod>' . $homeLastmod . '</lastmod>
                       <priority>1.0</priority>
                 </url>';
         }
@@ -1231,9 +1303,10 @@ class index_mod extends indexBase
                 'compliance',
                 'contact',
             ];
+            $baseAddress = rtrim((string) $this->site['address'], '/') . '/';
             foreach ($policySlugs as $pslug) {
                 echo '<url>
-                          <loc>' . rtrim((string) $this->site['address'], '/') . '/' . $pslug . '</loc>
+                          <loc>' . $baseAddress . $pslug . '</loc>
                           <priority>0.60</priority>
                     </url>';
             }

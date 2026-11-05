@@ -129,6 +129,9 @@
                 var isoStart = item.getAttribute('data-iso-start') || '';
                 var isoEnd = item.getAttribute('data-iso-end') || '';
                 var eventUrl = item.getAttribute('data-url') || window.location.href;
+                try {
+                    eventUrl = decodeURI(eventUrl);
+                } catch (err) {}
 
                 // Build standard RFC 5545 iCalendar data
                 var cleanSummary = summary.replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
@@ -181,6 +184,9 @@
                 if (!item) return;
 
                 var eventUrl = item.getAttribute('data-url') || window.location.href;
+                try {
+                    eventUrl = decodeURI(eventUrl);
+                } catch (err) {}
                 var copyLabel = btn.querySelector('.copy-text');
                 var copiedText = btn.getAttribute('data-copied-text') || 'Copied!';
                 var originalText = copyLabel ? copyLabel.textContent : '';

@@ -14,6 +14,7 @@
           "@id": "{{ site.saddress }}#website",
           "url": "{{ site.saddress }}",
           "name": {{ site.title|json_encode|raw }},
+          "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
           "description": {{ site.description|json_encode|raw }},
           "inLanguage": "{{ site.lang }}",
           "potentialAction": {
@@ -29,6 +30,7 @@
           "@type": "NewsMediaOrganization",
           "@id": "{{ site.address }}#organization",
           "name": {{ site.title|json_encode|raw }},
+          "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
           "url": "{{ site.address }}",
           "logo": {
             "@type": "ImageObject",

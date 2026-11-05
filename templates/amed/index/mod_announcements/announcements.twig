@@ -72,7 +72,7 @@
                         {% for announcement in announcements %}
                             <p>
                                 {{ announcement.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
-    href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}"
+    href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|legacy_seo }}"
     title="{% if announcement.summary != '' %}{{ announcement.summary }}{% else %}{{ announcement.name }}{% endif %}">{{ announcement.name }}</a>
                             </p>
                         {% endfor %}

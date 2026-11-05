@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+    function toCleanReadableUrl(rawUrl) {
+        if (!rawUrl) {
+            return '';
+        }
+        try {
+            return decodeURI(rawUrl);
+        } catch (err) {
+            return rawUrl;
+        }
+    }
+
     // Print Action Handler
     document.querySelectorAll('[data-action="print"]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -13,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
 
             var title = btn.getAttribute('data-share-title') || document.title;
-            var url = btn.getAttribute('data-share-url') || window.location.href;
+            var url = toCleanReadableUrl(btn.getAttribute('data-share-url') || window.location.href);
             var copiedText = btn.getAttribute('data-copied-text') || 'Copied!';
 
             if (navigator.share) {
@@ -45,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-copy-link, .btn-copy, [data-copy-url]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            var copyUrl = btn.getAttribute('data-copy-url') || window.location.href;
+            var copyUrl = toCleanReadableUrl(btn.getAttribute('data-copy-url') || window.location.href);
             var copiedText = btn.getAttribute('data-copied-text') || 'Copied!';
             var originalText = btn.getAttribute('data-original-text') || btn.getAttribute('title') || 'Copy Link';
 
@@ -82,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 var shareTitle = btn.getAttribute('data-share-title') || document.title;
-                var shareUrl = btn.getAttribute('data-share-url') || window.location.href;
+                var shareUrl = toCleanReadableUrl(btn.getAttribute('data-share-url') || window.location.href);
                 navigator.share({
                     title: shareTitle,
                     url: shareUrl

@@ -418,6 +418,10 @@ class McpEventTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the event record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/event/' . (string) $model->seo, 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -516,6 +520,12 @@ class McpEventTools extends McpCrudToolsBase
             throw new McpToolException("Failed to update event record #{$id}.");
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/event/' . (string) $model->seo, 'update');
+        } elseif ($model->status === 'n') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/event/' . (string) $model->seo, 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -534,9 +544,12 @@ class McpEventTools extends McpCrudToolsBase
         $model->sync();
 
         $image = (string) $model->image;
+        $eventPath = (string) $model->lang . '/event/' . (string) $model->seo;
         if (!$model->delete()) {
             throw new McpToolException("Failed to delete event record #{$id}.");
         }
+
+        $this->notifyGoogleIndexing($eventPath, 'delete');
 
         if ($image !== '') {
             $this->deleteImageFiles('mod_event', $image, self::EVENT_IMAGE_SIZES);

@@ -16,6 +16,7 @@ class mod_announcements_mod extends BaseModuleController
 
     protected $has_gallery = true;
     protected $has_files = true;
+    protected $menu_url_pattern = '{lang}/announcement/{id}-{name|legacy_seo}';
 
     // Image fields configuration (3:4 portrait ratio matching latest_announcements.twig sidebar card)
     protected $image_fields = [

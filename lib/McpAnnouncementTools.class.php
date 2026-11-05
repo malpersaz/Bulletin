@@ -243,6 +243,10 @@ class McpAnnouncementTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the announcement record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/announcement/' . (int) $model->id . '-' . Helper::legacy_seo((string) $model->name), 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -318,6 +322,12 @@ class McpAnnouncementTools extends McpCrudToolsBase
             throw new McpToolException('Failed to update the announcement record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/announcement/' . $id . '-' . Helper::legacy_seo((string) $model->name), 'update');
+        } elseif ($model->status === 'n') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/announcement/' . $id . '-' . Helper::legacy_seo((string) $model->name), 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -340,6 +350,8 @@ class McpAnnouncementTools extends McpCrudToolsBase
         if ((string) $model->image !== '') {
             $this->deleteImageFiles('mod_announcements', (string) $model->image, self::ANNOUNCEMENT_IMAGE_SIZES);
         }
+
+        $this->notifyGoogleIndexing((string) $model->lang . '/announcement/' . $id . '-' . Helper::legacy_seo((string) $model->name), 'delete');
 
         $model->delete();
 

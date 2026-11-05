@@ -106,6 +106,9 @@ document.addEventListener('DOMContentLoaded', function () {
     sBtn.addEventListener('click', function (e) {
       e.preventDefault();
       var pageUrl = window.location.href;
+      try {
+        pageUrl = decodeURI(pageUrl);
+      } catch (err) {}
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(pageUrl).then(function () {
           var copiedText = sBtn.getAttribute('data-copied-label') || 'Copied!';

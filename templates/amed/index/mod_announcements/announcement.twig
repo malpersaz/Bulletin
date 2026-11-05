@@ -214,6 +214,7 @@
                         {% include 'partials/share.twig' with {
                             'share_wrap_class': 'd-block d-lg-none mb-4 detail-share-quiet',
                             'share_container_class': 'justify-content-start',
+                            'share_url': announcement_url,
                             'share_url_path': 'announcement',
                             'show_share_text': false
                         } %}
@@ -223,6 +224,7 @@
 						</div>
 
                         {% include 'partials/share_toolbar.twig' with {
+                            'share_url': announcement_url,
                             'share_url_path': 'announcement',
                             'mod_name': 'mod_announcements',
                             'item_id': d.id,

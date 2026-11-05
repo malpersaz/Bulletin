@@ -474,6 +474,10 @@ class McpPublicationTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the publication record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/publication/' . (string) $model->seo, 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -618,6 +622,12 @@ class McpPublicationTools extends McpCrudToolsBase
 
         $this->registerSlugRedirectIfChanged($oldLang, $oldSeo, (string) $model->lang, (string) $model->seo, 'publication');
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/publication/' . (string) $model->seo, 'update');
+        } elseif ($model->status === 'n') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/publication/' . (string) $model->seo, 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -640,6 +650,8 @@ class McpPublicationTools extends McpCrudToolsBase
         if ((string) $model->image !== '') {
             $this->deleteImageFiles('mod_publication', (string) $model->image, self::PUBLICATION_IMAGE_SIZES);
         }
+
+        $this->notifyGoogleIndexing((string) $model->lang . '/publication/' . (string) $model->seo, 'delete');
 
         $model->delete();
 

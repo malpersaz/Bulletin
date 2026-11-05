@@ -666,6 +666,17 @@ class mod_news_mod extends BaseModuleController
                     ? $this->lang['mod_news']['deck_added']
                     : $this->lang['mod_news']['deck_removed'];
             } elseif ($column === 'status') {
+                $site_config = Registry::get('site_config');
+                $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                if (!empty($baseUrl) && !empty($record['lang']) && !empty($record['seo'])) {
+                    $absoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($record['lang'] . '/news/' . $record['seo'], '/');
+                    $indexingService = new GoogleIndexingService();
+                    if ($newVal === 'y') {
+                        $indexingService->notifyUpdate($absoluteUrl);
+                    } else {
+                        $indexingService->notifyDelete($absoluteUrl);
+                    }
+                }
                 $response['new_status'] = $newVal;
                 $response['is_published'] = ($newVal === 'y');
                 $response['message'] = $newVal === 'y'

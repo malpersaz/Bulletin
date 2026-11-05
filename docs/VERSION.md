@@ -1,5 +1,33 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.44 (2026-11-05)
+- **Google Search Console & Indexing Hardening, Canonical URL & Sitemap Synchronization, and Human-Readable Sharing Protocol (`lib/GoogleIndexingService.class.php`, `lib/BaseModuleController.class.php`, `lib/Mcp*Tools.class.php`, `mod/index/index.php`, `mod/mod_news/index.php`, `mod/mod_announcements/index.php`, `mod/mod_seo/index.php`, `robots.php`, `templates/amed/**`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Automated Multi-Scope Google Indexing & Search Console Ping Service (`lib/GoogleIndexingService.class.php`)**:
+    - Added multi-scope token handling covering both `indexing` (`indexing.googleapis.com`) and `webmasters` (`www.googleapis.com/auth/webmasters`) scopes.
+    - Implemented `pingSitemaps(?string $baseOrigin, ?string $lang)` delivering automated `PUT` updates for root `sitemap.xml` and language news sitemaps (`{lang}/newsSitemap.xml`) to Google Search Console API.
+    - Integrated `dispatchCompanionNotifications(string $url)` automatically triggering language homepage (`https://amedbulten.com/{lang}/`) indexing pings and sitemap refresh whenever inner content items are published, modified, or removed.
+  - **Full Module Indexing Dispatch & Lifecycle Parity (MCP & Admin Controllers)**:
+    - Wired `notifyGoogleIndexing` calls across create, update, and delete actions in `lib/McpPublicationTools.class.php`, `lib/McpPageTools.class.php`, `lib/McpEventTools.class.php`, `lib/McpAnnouncementTools.class.php`, and `lib/McpVideoTools.class.php` (local videos and video embeds).
+    - Enforced `legacy_seo` canonical URL slug formatting for announcements and videos across MCP tools and sitemaps matching public view templates.
+    - Added dynamic `{name|legacy_seo}` token support to `BaseModuleController::replaceDynamicPlaceholders()` and wired `$menu_url_pattern = '{lang}/announcement/{id}-{name|legacy_seo}'` in `mod_announcements`.
+    - Added real-time Google Indexing dispatch on quick status toggles (`BaseModuleController::updateSingleColumn` and `mod_news::toggleFlag`) and automatic `notifyDelete` notifications for superseded URLs upon slug or language edits.
+  - **Sitemap Indexing, Redirect Prevention & Robots Hardening (`robots.php`, `mod/index/index.php`)**:
+    - Fixed `robots.php` news sitemap auto-discovery for active languages with safe PDO fallback.
+    - Enriched `sitemapIndex()` with precise `<lastmod>` timestamps across all child sitemaps based on latest database updates.
+    - Fixed `pageSitemap()` to output canonical root legal/policy URLs (`https://amedbulten.com/legal`, `privacy-policy`, etc.) matching `legal.helper.php` 301 redirection rules, completely preventing Search Console redirect loop errors.
+  - **Admin SEO Dashboard URL Parity (`mod/mod_seo/index.php`)**:
+    - Expanded `getSiteUrls()` to include language homepages, news categories, publication categories, events, and announcements so Google Search Console metrics reflect complete site coverage.
+  - **Human-Readable UTF-8 URL Sharing & Clipboard Integrity**:
+    - Updated `templates/amed/partials/share.twig` and `templates/amed/partials/share_toolbar.twig` to preserve clean unencoded UTF-8 characters (`ş, ı, ç, ö, ü, ğ, î, û, ê`) across native share, copy button, X/Twitter, WhatsApp, and LinkedIn actions.
+    - Enhanced `templates/amed/static/js/share.js`, `legal-info.js`, and `event-agenda.js` with client-side `decodeURI()` protection ensuring clipboard links remain human-readable.
+    - Fixed announcement share links by passing canonical `share_url: announcement_url` to both share partials.
+  - **Structured Data & RSS Discovery Signals**:
+    - Injected RSS auto-discovery `<link rel="alternate" type="application/rss+xml">` in `templates/amed/layouts/base.twig`.
+    - Added `"alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"]` to `WebSite` and `NewsMediaOrganization` JSON-LD schemas in `index.twig` for exact brand matching.
+    - Added `"mainEntityOfPage"` and `"articleSection"` structured properties to `NewsArticle` JSON-LD in `news.twig`.
+  - **Framework Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Bumped framework version to `1.0.44`.
+
 ## v1.0.43 (2026-11-05)
 - **Repository-Native MCP `file_path` Image Intake & Programmatic Base64 Protocol (`lib/McpCrudToolsBase.class.php`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Core `storeUploadedImage` Enhancement (`lib/McpCrudToolsBase.class.php`)**:

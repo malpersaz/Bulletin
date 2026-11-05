@@ -43,12 +43,12 @@
                 </a>
 
                 {# X (Twitter) #}
-                <a href="https://twitter.com/intent/tweet?text={{ target_title|url_encode }}&url={{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)">
+                <a href="https://twitter.com/intent/tweet?text={{ target_title|url_encode }}&url={{ target_url }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)">
                     <i class="bi bi-twitter-x"></i>
                 </a>
 
                 {# WhatsApp #}
-                <a href="https://api.whatsapp.com/send?text={{ target_title|url_encode }}%0A{{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp">
+                <a href="https://api.whatsapp.com/send?text={{ target_title|url_encode }}%0A{{ target_url }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp">
                     <i class="bi bi-whatsapp"></i>
                 </a>
 
@@ -58,12 +58,12 @@
                 </button>
 
                 {# LinkedIn #}
-                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ target_url|url_encode }}&title={{ target_title|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn">
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ target_url }}&title={{ target_title|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn">
                     <i class="bi bi-linkedin"></i>
                 </a>
 
                 {# Email #}
-                <a href="mailto:?subject={{ target_title|url_encode }}&body={{ target_url|url_encode }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email">
+                <a href="mailto:?subject={{ target_title|url_encode }}&body={{ target_url }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email">
                     <i class="bi bi-envelope"></i>
                 </a>
 

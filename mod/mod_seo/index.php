@@ -323,9 +323,17 @@ class mod_seo_mod extends indexMain
     {
         $db = Load::lib('Database');
         $urls = [];
+        $safeLang = addslashes($langCode);
+
+        // 0. Language Homepage
+        $urls[] = [
+            'type' => 'Page',
+            'name' => strtoupper($langCode) . ' Homepage',
+            'path' => $langCode
+        ];
 
         // 1. Pages (mod_page)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_page` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_page` WHERE status='y' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
@@ -336,8 +344,19 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 2. News (mod_news)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_news` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        // 2. News & News Categories (mod_news, mod_news_category)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_news_category` WHERE lang='" . $safeLang . "'");
+        if ($db->getSize() > 0) {
+            foreach ($db->toArray() as $r) {
+                $urls[] = [
+                    'type' => 'News',
+                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
+                    'path' => $r['lang'] . '/newses/' . $r['seo']
+                ];
+            }
+        }
+
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_news` WHERE status='y' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
@@ -348,14 +367,49 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 3. Publications (mod_publication)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        // 3. Publications & Categories (mod_publication, mod_publication_category)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication_category` WHERE lang='" . $safeLang . "'");
+        if ($db->getSize() > 0) {
+            foreach ($db->toArray() as $r) {
+                $urls[] = [
+                    'type' => 'Publication',
+                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
+                    'path' => $r['lang'] . '/publications/' . $r['seo']
+                ];
+            }
+        }
+
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication` WHERE status='y' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
                     'type' => 'Publication',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
                     'path' => $r['lang'] . '/publication/' . $r['seo']
+                ];
+            }
+        }
+
+        // 4. Events (mod_event)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_event` WHERE status='y' AND lang='" . $safeLang . "'");
+        if ($db->getSize() > 0) {
+            foreach ($db->toArray() as $r) {
+                $urls[] = [
+                    'type' => 'Page',
+                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
+                    'path' => $r['lang'] . '/event/' . $r['seo']
+                ];
+            }
+        }
+
+        // 5. Announcements (mod_announcements)
+        $db->fetch_array("SELECT id, name, lang FROM `mod_announcements` WHERE status='y' AND lang='" . $safeLang . "'");
+        if ($db->getSize() > 0) {
+            foreach ($db->toArray() as $r) {
+                $urls[] = [
+                    'type' => 'Page',
+                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
+                    'path' => $r['lang'] . '/announcement/' . $r['id'] . '-' . Helper::legacy_seo($r['name'])
                 ];
             }
         }

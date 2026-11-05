@@ -102,7 +102,12 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": "NewsArticle",
+		  "mainEntityOfPage": {
+		    "@type": "WebPage",
+		    "@id": {{ (site.saddress ~ 'news/' ~ d.seo)|json_encode|raw }}
+		  },
 		  "headline": {{ d.name|json_encode|raw }},
+		  {% if has_news_category %}"articleSection": {{ d.categoryname|json_encode|raw }},{% endif %}
 		  "image": {% if d.image is not empty %}{{ (site.iaddress ~ 'mod_news/' ~ d.image)|json_encode|raw }}{% else %}{{ news_logo_asset|json_encode|raw }}{% endif %},
 		  "author": {% if d.u_name is defined and d.u_name is not empty %}{
 		    "@type": "Person",

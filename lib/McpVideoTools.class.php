@@ -1108,6 +1108,10 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the video record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing($model->lang . '/videos/' . (int) $model->id . '-' . Helper::legacy_seo($model->name), 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -1124,6 +1128,9 @@ class McpVideoTools extends McpCrudToolsBase
         $model = $this->loadVideoById($id);
 
         $this->assertModerateEdit('mod_video', (int) $model->user_id);
+
+        $previousStatus = (string) $model->status;
+        $previousRelUrl = $model->lang . '/videos/' . $id . '-' . Helper::legacy_seo((string) $model->name);
 
         if (isset($args['lang'])) {
             $model->lang = $this->requireActiveLang($args);
@@ -1177,6 +1184,16 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException('Failed to update the video record.');
         }
 
+        $newRelUrl = $model->lang . '/videos/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+        if ((string) $model->status === 'y') {
+            if ($previousStatus === 'y' && $previousRelUrl !== $newRelUrl) {
+                $this->notifyGoogleIndexing($previousRelUrl, 'delete');
+            }
+            $this->notifyGoogleIndexing($newRelUrl, 'update');
+        } elseif ($previousStatus === 'y') {
+            $this->notifyGoogleIndexing($previousRelUrl, 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -1194,6 +1211,9 @@ class McpVideoTools extends McpCrudToolsBase
 
         $this->assertModerateDelete('mod_video', (int) $model->user_id);
 
+        $wasPublished = ((string) $model->status === 'y');
+        $relUrl = $model->lang . '/videos/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+
         $this->removeBridgeRelations('mod_video', $id);
 
         if ((string) ($model->original ?? '') !== '') {
@@ -1207,6 +1227,10 @@ class McpVideoTools extends McpCrudToolsBase
         }
 
         $model->delete();
+
+        if ($wasPublished) {
+            $this->notifyGoogleIndexing($relUrl, 'delete');
+        }
 
         return ['deleted' => true, 'id' => $id];
     }
@@ -1342,6 +1366,10 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the video embed record.');
         }
 
+        if ($model->status === 'y') {
+            $this->notifyGoogleIndexing($model->lang . '/videos/embed/' . (int) $model->id . '-' . Helper::legacy_seo($model->name), 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -1358,6 +1386,9 @@ class McpVideoTools extends McpCrudToolsBase
         $model = $this->loadVideoEmbedById($id);
 
         $this->assertModerateEdit('mod_video_embed', (int) $model->user_id);
+
+        $previousStatus = (string) $model->status;
+        $previousRelUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
 
         $lang = isset($args['lang']) ? $this->requireActiveLang($args) : (string) $model->lang;
         $categoryId = isset($args['category_id']) ? (int) $args['category_id'] : (int) $model->category_id;
@@ -1445,6 +1476,16 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException('Failed to update the video embed record.');
         }
 
+        $newRelUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+        if ((string) $model->status === 'y') {
+            if ($previousStatus === 'y' && $previousRelUrl !== $newRelUrl) {
+                $this->notifyGoogleIndexing($previousRelUrl, 'delete');
+            }
+            $this->notifyGoogleIndexing($newRelUrl, 'update');
+        } elseif ($previousStatus === 'y') {
+            $this->notifyGoogleIndexing($previousRelUrl, 'delete');
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -1462,6 +1503,9 @@ class McpVideoTools extends McpCrudToolsBase
 
         $this->assertModerateDelete('mod_video_embed', (int) $model->user_id);
 
+        $wasPublished = ((string) $model->status === 'y');
+        $relUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+
         $this->removeBridgeRelations('mod_video_embed', $id);
 
         if ((string) ($model->image ?? '') !== '') {
@@ -1470,6 +1514,10 @@ class McpVideoTools extends McpCrudToolsBase
         }
 
         $model->delete();
+
+        if ($wasPublished) {
+            $this->notifyGoogleIndexing($relUrl, 'delete');
+        }
 
         return ['deleted' => true, 'id' => $id];
     }

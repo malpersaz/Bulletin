@@ -16,6 +16,7 @@
 		{% endblock %}
 		{% block canonical %}<link rel="canonical" href="{{ site.saddress|default(site.address) }}"/>
 		{% endblock %}
+		<link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.saddress|default(site.address) }}rss.xml">
 		{% block head_preload %}{% endblock %}
 
 		{% block meta_tags %}

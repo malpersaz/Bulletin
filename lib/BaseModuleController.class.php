@@ -1753,10 +1753,32 @@ abstract class BaseModuleController
         }
 
         if (is_array($ids)) {
+            $site_config = Registry::get('site_config');
+            $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+            $indexingService = ($column === 'status' && $this->menu_url_pattern && !empty($baseUrl))
+                ? new GoogleIndexingService()
+                : null;
+
             foreach ($ids as $id) {
                 $model->id = $id;
                 $model->$column = $value;
                 if ($model->update('id')) {
+                    if ($indexingService !== null) {
+                        $rowModel = Load::model($this->model_name);
+                        $rowModel->where_id($id)->gRo();
+                        if ($rowModel->getSize() > 0) {
+                            $rowModel->sync();
+                            $relativeUrl = $this->generateMenuUrl($rowModel, false);
+                            if (!empty($relativeUrl)) {
+                                $absoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativeUrl, '/');
+                                if ($value === 'y') {
+                                    $indexingService->notifyUpdate($absoluteUrl);
+                                } elseif ($value === 'n') {
+                                    $indexingService->notifyDelete($absoluteUrl);
+                                }
+                            }
+                        }
+                    }
                     continue;
                 }
                 return false;
@@ -1977,9 +1999,16 @@ abstract class BaseModuleController
                 $indexingService = new GoogleIndexingService();
                 
                 if (isset($model->status) && $model->status === 'y') {
+                    if (!empty($old_url) && $old_url !== $relativeUrl) {
+                        $oldAbsoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($old_url, '/');
+                        $indexingService->notifyDelete($oldAbsoluteUrl);
+                    }
                     $indexingService->notifyUpdate($absoluteUrl);
                 } elseif (isset($model->status) && $model->status === 'n') {
-                    $indexingService->notifyDelete($absoluteUrl);
+                    $targetDelUrl = !empty($old_url)
+                        ? (rtrim($baseUrl, '/') . '/' . ltrim($old_url, '/'))
+                        : $absoluteUrl;
+                    $indexingService->notifyDelete($targetDelUrl);
                 }
             }
         }
@@ -2128,7 +2157,7 @@ abstract class BaseModuleController
     protected function replaceDynamicPlaceholders($url, $model, $preferPost = true)
     {
         // Match patterns like {field_name} or {field_name|transformation}
-        $pattern = '/\{([a-zA-Z_]+)(\|([a-zA-Z]+))?\}/';
+        $pattern = '/\{([a-zA-Z_]+)(\|([a-zA-Z_]+))?\}/';
 
         return preg_replace_callback($pattern, function ($matches) use ($model, $preferPost) {
             $field_name = $matches[1];
@@ -2152,6 +2181,8 @@ abstract class BaseModuleController
                 switch ($transformation) {
                     case 'sefurl':
                         return Helper::sefurl($field_value);
+                    case 'legacy_seo':
+                        return Helper::legacy_seo($field_value);
                     case 'upper':
                         return strtoupper($field_value);
                     case 'lower':

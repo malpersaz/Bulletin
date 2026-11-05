@@ -554,6 +554,10 @@ class McpPageTools extends McpCrudToolsBase
             throw new McpToolException('Failed to create the page record.');
         }
 
+        if ($model->status === 'y' && (string) $model->root !== 'y') {
+            $this->notifyGoogleIndexing((string) $model->lang . '/page/' . (string) $model->seo, 'update');
+        }
+
         return [
             'created' => true,
             'id' => (int) $model->id,
@@ -676,6 +680,14 @@ class McpPageTools extends McpCrudToolsBase
         $this->syncPageMenuOnUpdate($previousMenuUrl, $updatedPage);
         $this->registerSlugRedirectIfChanged($oldLang, $oldSeo, (string) $updatedPage->lang, (string) $updatedPage->seo, 'page');
 
+        if ((string) $updatedPage->root !== 'y') {
+            if ($updatedPage->status === 'y') {
+                $this->notifyGoogleIndexing((string) $updatedPage->lang . '/page/' . (string) $updatedPage->seo, 'update');
+            } elseif ($updatedPage->status === 'n') {
+                $this->notifyGoogleIndexing((string) $updatedPage->lang . '/page/' . (string) $updatedPage->seo, 'delete');
+            }
+        }
+
         return [
             'updated' => true,
             'id' => $id,
@@ -729,6 +741,8 @@ class McpPageTools extends McpCrudToolsBase
         if ($menuModel->exists_url($menuUrl)) {
             $menuModel->getResultOne(true, true)->delete();
         }
+
+        $this->notifyGoogleIndexing($menuUrl, 'delete');
 
         $model->delete();
     }
