@@ -37,6 +37,14 @@
 {% endblock %}
 
 {% block schema %}
+	{% set social_same_as = [] %}
+	{% if site.social_links is defined and site.social_links is iterable %}
+		{% for sl in site.social_links %}
+			{% if sl.url is defined and sl.url|trim is not empty %}
+				{% set social_same_as = social_same_as|merge([sl.url|trim]) %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
@@ -49,9 +57,9 @@
 		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_ld|raw }},
 		      "isPartOf": {
 		        "@type": "WebSite",
-		        "@id": {{ (site.address ~ '#website')|json_ld|raw }},
-		        "name": {{ site.name|json_ld|raw }},
-		        "url": {{ site.address|json_ld|raw }}
+		        "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
+		        "name": {{ site.title|json_ld|raw }},
+		        "url": {{ site.saddress|json_ld|raw }}
 		      },
 		      "breadcrumb": {
 		        "@type": "BreadcrumbList",
@@ -60,7 +68,7 @@
 		            "@type": "ListItem",
 		            "position": 1,
 		            "name": {{ lang.index.home|json_ld|raw }},
-		            "item": {{ site.address|json_ld|raw }}
+		            "item": {{ site.saddress|json_ld|raw }}
 		          },
 		          {
 		            "@type": "ListItem",
@@ -73,13 +81,15 @@
 		    },
 		    {
 		      "@type": "NewsMediaOrganization",
-		      "@id": {{ (site.address ~ '#organization')|json_ld|raw }},
-		      "name": {{ site.name|json_ld|raw }},
+		      "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
+		      "name": {{ site.title|json_ld|raw }},
+		      "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni", "Amed Bülten Haber"],
 		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
 		      {% if site.mail is defined and site.mail is not empty %}"email": {{ site.mail|json_ld|raw }},{% elseif site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_ld|raw }},{% endif %}
 		      {% if site.phone is defined and site.phone is not empty %}"telephone": {{ site.phone|json_ld|raw }},{% elseif site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_ld|raw }},{% endif %}
-		      "url": {{ site.address|json_ld|raw }},
-		      "logo": {{ page_logo_asset|json_ld|raw }}
+		      "url": {{ site.saddress|json_ld|raw }},
+		      "logo": {{ page_logo_asset|json_ld|raw }}{% if social_same_as is not empty %},
+		      "sameAs": {{ social_same_as|json_ld|raw }}{% endif %}
 		    }
 		  ]
 		}

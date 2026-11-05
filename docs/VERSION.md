@@ -1,5 +1,17 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.46 (2026-11-05)
+- **Entity Knowledge Graph Reconciliation (`sameAs`), Canonical Brand Alignment & Diacritic-Agnostic SERP Matching (`templates/amed/index/index.twig`, `templates/amed/index/legal/*.twig`, `templates/amed/index/mod_news/news.twig`, `templates/amed/index/mod_publication/publication.twig`, `templates/amed/index/mod_publication/author.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Knowledge Graph `sameAs` Social Entity Binding**:
+    - Injected dynamic `"sameAs"` arrays populated from active `site.social_links` (`https://youtube.com/@AmedBulten`, `https://twitter.com/amedbulten`, `https://instagram.com/amedbulten`, Facebook) into `NewsMediaOrganization` JSON-LD schemas across `index.twig`, `legal/index.twig`, and `legal/contact.twig`, explicitly binding external social channels (such as YouTube) to the official website domain in Google's Knowledge Graph.
+  - **Canonical Publisher & `WebSite` `@id` Unification (`site.saddress`)**:
+    - Unified `NewsMediaOrganization` `@id` (`https://amedbulten.com/tr/#organization`) and `url` (`https://amedbulten.com/tr/`), as well as `WebSite` `@id` (`https://amedbulten.com/tr/#website`), across homepage, news detail, publication detail, author profile, and all statutory legal/policy templates so structured data never points to the 301-redirected bare root (`https://amedbulten.com/`).
+    - Linked `WebSite.publisher` directly to `{"@id": "{{ site.saddress }}#organization"}` and included `"legalName"` on the homepage `NewsMediaOrganization` node.
+  - **Diacritic-Agnostic Brand & SERP Matching (`Amed Bülten` / `Amed Bulten`)**:
+    - Expanded `alternateName` arrays, homepage `<title>`, `<meta name="description">`, `<meta name="keywords">`, and semantic `<h1>` plus live Turkish `mod_settings` metadata so both Turkish diacritic (`Amed Bülten`) and ASCII (`Amed Bulten`, `amedbulten.com`) brand queries match the canonical homepage with top relevance.
+  - **Framework Version Parity**:
+    - Bumped framework version to `1.0.46` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.45 (2026-11-05)
 - **Wikipedia-Style UTF-8 URL Parity, Pure Multi-Language Slug Remediation & SERP SEO Hardening (`lib/Helper.class.php`, `lib/Amed.class.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/legal.helper.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amed/index/search.twig`, `lib/Session.class.php`, `lib/TwigLibs.class.php`, `mod/mod_news/index.php`, `lib/GoogleIndexingService.class.php`, `templates/amed/**`, `.htaccess`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Wikipedia-Style Native UTF-8 URL Parity & `$transMap` Removal (Primary Rule 9 Enforcement)**:

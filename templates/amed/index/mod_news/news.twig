@@ -145,9 +145,11 @@
 		  }{% endif %},
 		  "publisher": {
 		    "@type": "NewsMediaOrganization",
+		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
 		    "name": {{ site.title|json_ld|raw }},
+		    "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
 		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
-		    "url": {{ site.address|json_ld|raw }},
+		    "url": {{ site.saddress|json_ld|raw }},
 		    "logo": {
 		      "@type": "ImageObject",
 		      "url": {{ news_logo_asset|json_ld|raw }}

@@ -134,8 +134,10 @@
           },
           "publisher": {
             "@type": "NewsMediaOrganization",
+            "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
             "name": {{ site.title|json_ld|raw }},
-            "url": {{ site.address|json_ld|raw }},
+            "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
+            "url": {{ site.saddress|json_ld|raw }},
             "logo": {
               "@type": "ImageObject",
               "url": {{ publication_logo_asset|default(site.iaddress ~ 'mod_settings/logo.png')|json_ld|raw }}

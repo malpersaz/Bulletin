@@ -57,8 +57,9 @@
 		  "url": {{ (site.address ~ 'security-policy')|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
-		    "name": {{ site.name|json_ld|raw }},
-		    "url": {{ site.address|json_ld|raw }}
+		    "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
+		    "name": {{ site.title|json_ld|raw }},
+		    "url": {{ site.saddress|json_ld|raw }}
 		  },
 		  "breadcrumb": {
 		    "@type": "BreadcrumbList",
@@ -67,7 +68,7 @@
 			"@type": "ListItem",
 			"position": 1,
 			"name": {{ lang.index.home|json_ld|raw }},
-			"item": {{ site.address|json_ld|raw }}
+			"item": {{ site.saddress|json_ld|raw }}
 		      },
 		      {
 			"@type": "ListItem",
