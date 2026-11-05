@@ -73,11 +73,48 @@ class mod_seo_mod extends indexMain
 
         // Get site URLs
         $rawUrls = $this->getSiteUrls($this->site['lang']);
+        $canonicalByAsciiKey = [];
+        $exactCanonicalSet = [];
+        foreach ($rawUrls as $item) {
+            $pathKey = trim($item['path'], '/');
+            $exactCanonicalSet[$pathKey] = true;
+            $asciiKey = Helper::ascii_slug_key($pathKey);
+            if ($asciiKey !== '' && !isset($canonicalByAsciiKey[$asciiKey])) {
+                $canonicalByAsciiKey[$asciiKey] = $pathKey;
+            }
+        }
+
+        // Roll up any GSC entry whose ASCII/punctuation-stripped key matches a canonical path
+        foreach (array_keys($gscData) as $gscPathKey) {
+            if (!isset($exactCanonicalSet[$gscPathKey])) {
+                $asciiKey = Helper::ascii_slug_key((string)$gscPathKey);
+                if ($asciiKey !== '' && isset($canonicalByAsciiKey[$asciiKey])) {
+                    $canonTarget = $canonicalByAsciiKey[$asciiKey];
+                    $srcMetrics = $gscData[$gscPathKey];
+                    unset($gscData[$gscPathKey]);
+                    if (!isset($gscData[$canonTarget])) {
+                        $gscData[$canonTarget] = $srcMetrics;
+                    } else {
+                        $gscData[$canonTarget]['clicks'] += $srcMetrics['clicks'];
+                        $gscData[$canonTarget]['impressions'] += $srcMetrics['impressions'];
+                        $gscData[$canonTarget]['weighted_pos'] = ($gscData[$canonTarget]['weighted_pos'] ?? ($gscData[$canonTarget]['position'] * $gscData[$canonTarget]['impressions']))
+                            + ($srcMetrics['weighted_pos'] ?? ($srcMetrics['position'] * $srcMetrics['impressions']));
+                        $totImp = $gscData[$canonTarget]['impressions'];
+                        $totCli = $gscData[$canonTarget]['clicks'];
+                        $gscData[$canonTarget]['ctr'] = $totImp > 0 ? round(($totCli / $totImp) * 100, 2) : 0;
+                        $gscData[$canonTarget]['position'] = $totImp > 0 ? round($gscData[$canonTarget]['weighted_pos'] / $totImp, 1) : $gscData[$canonTarget]['position'];
+                    }
+                }
+            }
+        }
+
+        $matchedCanonicalPaths = [];
         $matchedUrls = [];
 
         foreach ($rawUrls as $item) {
             $fullUrl = rtrim($this->site['address'], '/') . '/' . ltrim($item['path'], '/');
             $pathKey = trim($item['path'], '/');
+            $matchedCanonicalPaths[$pathKey] = true;
             $metrics = $gscData[$pathKey] ?? null;
 
             $matchedUrls[] = [
@@ -90,6 +127,23 @@ class mod_seo_mod extends indexMain
                 'ctr' => $metrics ? $metrics['ctr'] : ($hasCredentials ? 0 : '—'),
                 'position' => $metrics ? $metrics['position'] : ($hasCredentials ? '-' : '—')
             ];
+        }
+
+        // Append any residual GSC rows that were not explicitly matched (e.g. historical URLs)
+        $addressBase = rtrim($this->site['address'], '/') . '/';
+        foreach ($gscData as $pathKey => $metrics) {
+            if (empty($matchedCanonicalPaths[$pathKey]) && ($metrics['clicks'] > 0 || $metrics['impressions'] > 0)) {
+                $matchedUrls[] = [
+                    'type' => 'Page',
+                    'name' => '/' . $pathKey,
+                    'path' => $pathKey,
+                    'full_url' => $addressBase . $pathKey,
+                    'clicks' => $metrics['clicks'],
+                    'impressions' => $metrics['impressions'],
+                    'ctr' => $metrics['ctr'],
+                    'position' => $metrics['position']
+                ];
+            }
         }
 
         // Sort by impressions DESC, then clicks DESC if credentials exist
@@ -109,30 +163,22 @@ class mod_seo_mod extends indexMain
         // Summary metrics calculations
         $totalClicks = 0;
         $totalImpressions = 0;
-        $sumCtr = 0;
-        $sumPos = 0;
-        $matchedCount = 0;
+        $sumImpWeightedPos = 0;
 
         foreach ($matchedUrls as $item) {
-            if (is_numeric($item['clicks'])) {
-                $totalClicks += (int)$item['clicks'];
-            }
-            if (is_numeric($item['impressions'])) {
-                $totalImpressions += (int)$item['impressions'];
-            }
-            if ((is_numeric($item['clicks']) && $item['clicks'] > 0) || (is_numeric($item['impressions']) && $item['impressions'] > 0)) {
-                if (is_numeric($item['ctr'])) {
-                    $sumCtr += (float)$item['ctr'];
-                }
-                if (is_numeric($item['position'])) {
-                    $sumPos += (float)$item['position'];
-                    $matchedCount++;
-                }
+            $c = is_numeric($item['clicks']) ? (int)$item['clicks'] : 0;
+            $imp = is_numeric($item['impressions']) ? (int)$item['impressions'] : 0;
+            $pos = is_numeric($item['position']) ? (float)$item['position'] : 0;
+
+            $totalClicks += $c;
+            $totalImpressions += $imp;
+            if ($imp > 0 && $pos > 0) {
+                $sumImpWeightedPos += ($pos * $imp);
             }
         }
 
-        $avgCtr = $matchedCount > 0 ? round($sumCtr / $matchedCount, 2) : 0;
-        $avgPos = $matchedCount > 0 ? round($sumPos / $matchedCount, 1) : '-';
+        $avgCtr = $totalImpressions > 0 ? round(($totalClicks / $totalImpressions) * 100, 2) : 0;
+        $avgPos = $totalImpressions > 0 && $sumImpWeightedPos > 0 ? round($sumImpWeightedPos / $totalImpressions, 1) : '-';
 
         $this->site['title'] = $this->lang['mod_seo']['list'];
         $this->theme->set('site', $this->site);
@@ -277,8 +323,9 @@ class mod_seo_mod extends indexMain
 
         $payload = [
             'startDate' => date('Y-m-d', strtotime('-30 days')),
-            'endDate' => date('Y-m-d', strtotime('-1 day')),
+            'endDate' => date('Y-m-d'),
             'dimensions' => ['page'],
+            'dataState' => 'all',
             'rowLimit' => 5000
         ];
 
@@ -302,18 +349,58 @@ class mod_seo_mod extends indexMain
         $data = $httpResult['json'] ?? [];
         $rows = $data['rows'] ?? [];
 
+        $activeLang = !empty($this->site['lang']) ? (string)$this->site['lang'] : 'tr';
         $results = [];
         foreach ($rows as $row) {
             $urlKey = $row['keys'][0] ?? '';
             if ($urlKey !== '') {
                 $decodedUrl = urldecode($urlKey);
-                $path = trim(parse_url($decodedUrl, PHP_URL_PATH), '/');
-                $results[$path] = [
-                    'clicks' => $row['clicks'] ?? 0,
-                    'impressions' => $row['impressions'] ?? 0,
-                    'ctr' => isset($row['ctr']) ? round($row['ctr'] * 100, 2) : 0,
-                    'position' => isset($row['position']) ? round($row['position'], 1) : 0
-                ];
+                $rawPath = trim((string)parse_url($decodedUrl, PHP_URL_PATH), '/');
+
+                // Normalize incoming GSC paths:
+                // 1. Bare root ('' / 'tr' / 'ku' / 'en' / etc.) maps to default language homepage
+                if ($rawPath === '' || preg_match('#^(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)$#', $rawPath)) {
+                    $targetPath = $activeLang;
+                } elseif (preg_match('#^(?:(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)/)?page/(.+)$#u', $rawPath, $m)) {
+                    $stat = Helper::resolve_statutory_slug($m[1]);
+                    $targetPath = $stat !== null ? $stat : ($activeLang . '/page/' . $m[1]);
+                } else {
+                    $stat = Helper::resolve_statutory_slug($rawPath);
+                    if ($stat !== null) {
+                        $targetPath = $stat;
+                    } elseif (preg_match('#^(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)/(.+)$#u', $rawPath, $langInnerMatch)) {
+                        $innerStat = Helper::resolve_statutory_slug($langInnerMatch[1]);
+                        if ($innerStat !== null) {
+                            $targetPath = $innerStat;
+                        } else {
+                            $targetPath = $activeLang . '/' . $langInnerMatch[1];
+                        }
+                    } else {
+                        $targetPath = $rawPath;
+                    }
+                }
+
+                $clicks = (int)($row['clicks'] ?? 0);
+                $impressions = (int)($row['impressions'] ?? 0);
+                $rawPos = isset($row['position']) ? (float)$row['position'] : 0.0;
+
+                if (!isset($results[$targetPath])) {
+                    $results[$targetPath] = [
+                        'clicks' => $clicks,
+                        'impressions' => $impressions,
+                        'weighted_pos' => ($rawPos * $impressions),
+                        'ctr' => isset($row['ctr']) ? round($row['ctr'] * 100, 2) : 0,
+                        'position' => round($rawPos, 1)
+                    ];
+                } else {
+                    $results[$targetPath]['clicks'] += $clicks;
+                    $results[$targetPath]['impressions'] += $impressions;
+                    $results[$targetPath]['weighted_pos'] += ($rawPos * $impressions);
+                    $totImp = $results[$targetPath]['impressions'];
+                    $totCli = $results[$targetPath]['clicks'];
+                    $results[$targetPath]['ctr'] = $totImp > 0 ? round(($totCli / $totImp) * 100, 2) : 0;
+                    $results[$targetPath]['position'] = $totImp > 0 ? round($results[$targetPath]['weighted_pos'] / $totImp, 1) : round($rawPos, 1);
+                }
             }
         }
         return ['data' => $results];
@@ -324,18 +411,55 @@ class mod_seo_mod extends indexMain
         $db = Load::lib('Database');
         $urls = [];
         $safeLang = addslashes($langCode);
+        $routeLabels = $this->lang['mod_seo']['admin']['routes'] ?? [];
 
         // 0. Language Homepage
         $urls[] = [
             'type' => 'Page',
-            'name' => strtoupper($langCode) . ' Homepage',
+            'name' => ($routeLabels['homepage'] ?? 'Homepage') . ' (' . strtoupper($langCode) . ')',
             'path' => $langCode
         ];
 
-        // 1. Pages (mod_page)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_page` WHERE status='y' AND lang='" . $safeLang . "'");
+        // 1. Root Statutory Pages (legal, privacy, etc.)
+        $statutorySlugs = [
+            'legal' => $routeLabels['legal'] ?? 'Legal Information',
+            'editorial-policy' => $routeLabels['editorial_policy'] ?? 'Editorial Policy',
+            'privacy-policy' => $routeLabels['privacy_policy'] ?? 'Privacy Policy',
+            'cookie-policy' => $routeLabels['cookie_policy'] ?? 'Cookie Policy',
+            'terms-of-service' => $routeLabels['terms_of_service'] ?? 'Terms of Service',
+            'accessibility' => $routeLabels['accessibility'] ?? 'Accessibility',
+            'security-policy' => $routeLabels['security_policy'] ?? 'Security Policy',
+            'compliance' => $routeLabels['compliance'] ?? 'Press Ethics & Compliance',
+            'contact' => $routeLabels['contact'] ?? 'Contact'
+        ];
+        foreach ($statutorySlugs as $sSlug => $sName) {
+            $urls[] = [
+                'type' => 'Page',
+                'name' => $sName,
+                'path' => $sSlug
+            ];
+        }
+
+        // Section Index Routes
+        $sectionIndexes = [
+            ['type' => 'News', 'name' => $routeLabels['all_news'] ?? 'All News', 'path' => $langCode . '/newses'],
+            ['type' => 'Publication', 'name' => $routeLabels['all_publications'] ?? 'All Publications', 'path' => $langCode . '/publications'],
+            ['type' => 'Page', 'name' => $routeLabels['all_events'] ?? 'Events Calendar', 'path' => $langCode . '/events'],
+            ['type' => 'Page', 'name' => $routeLabels['all_videos'] ?? 'Videos', 'path' => $langCode . '/videos'],
+            ['type' => 'Page', 'name' => $routeLabels['all_galleries'] ?? 'Photo Gallery', 'path' => $langCode . '/gallery'],
+            ['type' => 'Page', 'name' => $routeLabels['all_announcements'] ?? 'Announcements', 'path' => $langCode . '/announcements'],
+        ];
+        foreach ($sectionIndexes as $sIdx) {
+            $urls[] = $sIdx;
+        }
+
+        // 2. Regular Pages (mod_page) excluding structural roots and statutory redirects
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_page` WHERE status='y' AND root='n' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
+                if (Helper::resolve_statutory_slug((string)$r['seo']) !== null) {
+                    continue;
+                }
                 $urls[] = [
                     'type' => 'Page',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
@@ -344,8 +468,8 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 2. News & News Categories (mod_news, mod_news_category)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_news_category` WHERE lang='" . $safeLang . "'");
+        // 3. News & News Categories (mod_news, mod_news_category) excluding placeholder '#'
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_news_category` WHERE root='n' AND seo != '#' AND seo != '' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
@@ -367,8 +491,8 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 3. Publications & Categories (mod_publication, mod_publication_category)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication_category` WHERE lang='" . $safeLang . "'");
+        // 4. Publications & Categories (mod_publication, mod_publication_category)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication_category` WHERE root='n' AND seo != '#' AND seo != '' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
@@ -390,7 +514,7 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 4. Events (mod_event)
+        // 5. Events (mod_event)
         $db->fetch_array("SELECT name, seo, lang FROM `mod_event` WHERE status='y' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
@@ -402,7 +526,7 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 5. Announcements (mod_announcements)
+        // 6. Announcements (mod_announcements)
         $db->fetch_array("SELECT id, name, lang FROM `mod_announcements` WHERE status='y' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {

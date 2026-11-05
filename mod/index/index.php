@@ -709,21 +709,21 @@ class index_mod extends indexBase
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
         <channel>
             <title>' . htmlspecialchars((string) $this->site['title']) . '</title>
-            <link>' . $this->site['address'] . $this->site['lang'] . '/</link>
+            <link>' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/') . '</link>
             <description>' . htmlspecialchars((string) $this->site['description']) . '</description>
             <language>' . $this->site['lang'] . '</language>
             <lastBuildDate>' . date(DATE_RSS) . '</lastBuildDate>
-            <atom:link href="' . $this->site['address'] . $this->site['lang'] . '/rss.xml" rel="self" type="application/rss+xml" />';
+            <atom:link href="' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss.xml') . '" rel="self" type="application/rss+xml" />';
 
         if ($news->getSize() != 0) {
             foreach ($news->toArray() as $o) {
-                $link = $this->site['address'] . $o['lang'] . '/news/' . $o['seo'];
+                $link = Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']);
                 $imageUrl = "";
                 $thumbUrl = "";
                 $imageMime = "image/jpeg";
                 if (!empty($o['image'])) {
-                    $imageUrl = $this->site['iaddress'] . 'mod_news/' . $o['image'];
-                    $thumbUrl = $this->site['iaddress'] . 'mod_news/thumb/' . $o['image'];
+                    $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
+                    $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
                     $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
                     if ($ext === 'webp') {
                         $imageMime = 'image/webp';
@@ -791,7 +791,7 @@ class index_mod extends indexBase
                     }
                 }
                 echo '<sitemap>
-                        <loc>' . $this->site['address'] . $l . '/newsSitemap.xml</loc>
+                        <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/newsSitemap.xml') . '</loc>
                         <lastmod>' . $newsLastmod . '</lastmod>
                       </sitemap>';
             }
@@ -810,7 +810,7 @@ class index_mod extends indexBase
                     $pubRow = $pubCheck->toArray()[0];
                     $pubTs = strtotime((string) (!empty($pubRow['updated_at']) ? $pubRow['updated_at'] : $pubRow['created_at'])) ?: $latestLangTime;
                     echo '<sitemap>
-                            <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
+                            <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/publicationSitemap.xml') . '</loc>
                             <lastmod>' . date('c', $pubTs) . '</lastmod>
                           </sitemap>';
                 }
@@ -830,7 +830,7 @@ class index_mod extends indexBase
                     $eventRow = $eventCheck->toArray()[0];
                     $eventTs = strtotime((string) (!empty($eventRow['updated_at']) ? $eventRow['updated_at'] : $eventRow['created_at'])) ?: $latestLangTime;
                     echo '<sitemap>
-                            <loc>' . $this->site['address'] . $l . '/eventSitemap.xml</loc>
+                            <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/eventSitemap.xml') . '</loc>
                             <lastmod>' . date('c', $eventTs) . '</lastmod>
                           </sitemap>';
                 }
@@ -847,7 +847,7 @@ class index_mod extends indexBase
                 $annRow = $annCheck->toArray()[0];
                 $annTs = strtotime((string) $annRow['created_at']) ?: $latestLangTime;
                 echo '<sitemap>
-                        <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
+                        <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/announcementSitemap.xml') . '</loc>
                         <lastmod>' . date('c', $annTs) . '</lastmod>
                       </sitemap>';
             }
@@ -872,21 +872,21 @@ class index_mod extends indexBase
             }
             if ($hasVideo) {
                 echo '<sitemap>
-                        <loc>' . $this->site['address'] . $l . '/videoSitemap.xml</loc>
+                        <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/videoSitemap.xml') . '</loc>
                         <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                       </sitemap>';
             }
 
             echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/gallerySitemap.xml</loc>
+                    <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/gallerySitemap.xml') . '</loc>
                     <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
             echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/categorySitemap.xml</loc>
+                    <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/categorySitemap.xml') . '</loc>
                     <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
             echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/pageSitemap.xml</loc>
+                    <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/pageSitemap.xml') . '</loc>
                     <lastmod>' . date('c', $latestLangTime) . '</lastmod>
                   </sitemap>';
         }
@@ -938,7 +938,7 @@ class index_mod extends indexBase
                 $pubDate = date('c', $createdTime);
 
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/news/' . $o['seo'] . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>';
                 if ($createdTime >= $recentNewsCutoff) {
                     echo '
@@ -989,7 +989,7 @@ class index_mod extends indexBase
             foreach ($pub->toArray() as $o) {
                 $lastmod = date('c', strtotime($o['updated_at'] ?: $o['created_at']));
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/publication/' . $o['seo'] . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/publication/' . $o['seo']) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.80</priority>
                     </url>';
@@ -1028,7 +1028,7 @@ class index_mod extends indexBase
             foreach ($event->toArray() as $o) {
                 $lastmod = date('c', strtotime($o['updated_at'] ?: $o['created_at']));
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/event/' . $o['seo'] . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/event/' . $o['seo']) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.80</priority>
                     </url>';
@@ -1060,7 +1060,7 @@ class index_mod extends indexBase
                 $slug = Helper::legacy_seo($o['name']);
                 $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/announcement/' . $o['id'] . '-' . $slug . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/announcement/' . $o['id'] . '-' . $slug) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.70</priority>
                     </url>';
@@ -1093,7 +1093,7 @@ class index_mod extends indexBase
                 $slug = Helper::legacy_seo($o['name']);
                 $lastmod = date('c', strtotime($o['created_at']));
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>
                           <priority>0.65</priority>
                     </url>';
@@ -1114,7 +1114,7 @@ class index_mod extends indexBase
                     $slug = Helper::legacy_seo($o['name']);
                     $lastmod = date('c', strtotime($o['created_at']));
                     echo '<url>
-                              <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                              <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug) . '</loc>
                               <lastmod>' . $lastmod . '</lastmod>
                               <priority>0.65</priority>
                         </url>';
@@ -1145,14 +1145,14 @@ class index_mod extends indexBase
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         
         echo '<url>
-                  <loc>' . $this->site['address'] . $this->site['lang'] . '/gallery</loc>
+                  <loc>' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/gallery') . '</loc>
                   <priority>0.70</priority>
             </url>';
             
         if ($model->getSize() != 0) {
             foreach ($model->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/gallery/' . $o['seo'] . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/gallery/' . $o['seo']) . '</loc>
                           <priority>0.65</priority>
                     </url>';
             }
@@ -1181,7 +1181,7 @@ class index_mod extends indexBase
                     foreach ($cat_news->toArray() as $o) {
                         if ($o['seo'] !== '#' && $o['seo'] !== '') {
                             echo '<url>
-                                      <loc>' . $this->site['address'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
+                                      <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/newses/' . $o['seo']) . '</loc>
                                       <priority>0.60</priority>
                                 </url>';
                         }
@@ -1203,7 +1203,7 @@ class index_mod extends indexBase
                     foreach ($cat_pub->toArray() as $o) {
                         if ($o['seo'] !== '#' && $o['seo'] !== '') {
                             echo '<url>
-                                      <loc>' . $this->site['address'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                                      <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/publications/' . $o['seo']) . '</loc>
                                       <priority>0.60</priority>
                                 </url>';
                         }
@@ -1225,7 +1225,7 @@ class index_mod extends indexBase
                     foreach ($cat_event->toArray() as $o) {
                         if ($o['seo'] !== '#' && $o['seo'] !== '') {
                             echo '<url>
-                                      <loc>' . $this->site['address'] . $o['lang'] . '/events/' . $o['seo'] . '</loc>
+                                      <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/events/' . $o['seo']) . '</loc>
                                       <priority>0.60</priority>
                                 </url>';
                         }
@@ -1279,7 +1279,7 @@ class index_mod extends indexBase
 
         if ($this->site['lang'] == Registry::get('default_lang')) {
             echo '<url>
-                      <loc>' . $this->site['saddress'] . '</loc>
+                      <loc>' . Helper::sitemap_url($this->site['saddress']) . '</loc>
                       <lastmod>' . $homeLastmod . '</lastmod>
                       <priority>1.0</priority>
                 </url>';
@@ -1292,7 +1292,7 @@ class index_mod extends indexBase
                     continue;
                 }
                 echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/page/' . $o['seo']) . '</loc>
                           <priority>0.50</priority>
                     </url>';
             }
@@ -1313,7 +1313,7 @@ class index_mod extends indexBase
             $baseAddress = rtrim((string) $this->site['address'], '/') . '/';
             foreach ($policySlugs as $pslug) {
                 echo '<url>
-                          <loc>' . $baseAddress . $pslug . '</loc>
+                          <loc>' . Helper::sitemap_url($baseAddress . $pslug) . '</loc>
                           <priority>0.60</priority>
                     </url>';
             }
@@ -1324,25 +1324,27 @@ class index_mod extends indexBase
 
     public function legacyRedirect($seo = null)
     {
+        $base = !empty($this->site['saddress']) ? $this->site['saddress'] : $this->site['address'];
         if ($seo) {
             header("HTTP/1.1 301 Moved Permanently");
-            header("Location: " . $this->site['address'] . 'news/' . $seo);
+            header("Location: " . Helper::sitemap_url($base . 'news/' . $seo));
             exit();
         }
         header("HTTP/1.1 301 Moved Permanently");
-        header("Location: " . $this->site['address']);
+        header("Location: " . Helper::sitemap_url($base));
         exit();
     }
 
     public function legacyRedirectPublication($seo = null)
     {
+        $base = !empty($this->site['saddress']) ? $this->site['saddress'] : $this->site['address'];
         if ($seo) {
             header("HTTP/1.1 301 Moved Permanently");
-            header("Location: " . $this->site['address'] . 'publication/' . $seo);
+            header("Location: " . Helper::sitemap_url($base . 'publication/' . $seo));
             exit();
         }
         header("HTTP/1.1 301 Moved Permanently");
-        header("Location: " . $this->site['address']);
+        header("Location: " . Helper::sitemap_url($base));
         exit();
     }
 

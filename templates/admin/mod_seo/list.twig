@@ -74,14 +74,20 @@
                 <div class="seo-card-title">{{ item.name }}</div>
                 
                 {% set badge_class = 'seo-badge-page' %}
-                {% if item.type == 'Content' %}
+                {% if item.type == 'News' or item.type == 'Content' %}
                     {% set badge_class = 'seo-badge-content' %}
                 {% elseif item.type == 'Publication' %}
                     {% set badge_class = 'seo-badge-publication' %}
                 {% endif %}
                 
                 <span class="seo-card-badge {{ badge_class }}">
-                    {{ item.type }}
+                    {% if item.type == 'News' or item.type == 'Content' %}
+                        {{ lang.mod_seo.admin.types.news }}
+                    {% elseif item.type == 'Publication' %}
+                        {{ lang.mod_seo.admin.types.publication }}
+                    {% else %}
+                        {{ lang.mod_seo.admin.types.page }}
+                    {% endif %}
                 </span>
             </div>
             

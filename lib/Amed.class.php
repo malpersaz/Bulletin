@@ -415,7 +415,7 @@ class Amed
                 }
 
                 header("HTTP/1.1 301 Moved Permanently");
-                header("Location: " . $targetUrl . $queryString);
+                header("Location: " . Helper::sitemap_url($targetUrl . $queryString));
                 exit;
             }
 
@@ -467,7 +467,7 @@ class Amed
             if ($rawLink === 'index') {
                 $targetUrl = $isI18n ? $this->site['saddress'] : $this->site['address'];
                 header("HTTP/1.1 301 Moved Permanently");
-                header("Location: " . $targetUrl . $queryString);
+                header("Location: " . Helper::sitemap_url($targetUrl . $queryString));
                 exit;
             }
 
@@ -475,7 +475,7 @@ class Amed
             if ($isI18n && $this->url->root() && $rawPath0 === '') {
                 $targetUrl = $this->site['saddress'];
                 header("HTTP/1.1 301 Moved Permanently");
-                header("Location: " . $targetUrl . $queryString);
+                header("Location: " . Helper::sitemap_url($targetUrl . $queryString));
                 exit;
             }
 
@@ -523,28 +523,45 @@ class Amed
                         if (preg_match('#^https?://#i', $target)) {
                             $redirectUrl = $target;
                         } else {
-                            $targetHasLang = false;
-                            $activeLangs = Registry::get('active_langs');
-                            if (is_array($activeLangs)) {
-                                foreach ($activeLangs as $al) {
-                                    if (strpos($target, $al . '/') === 0 || $target === $al) {
-                                        $targetHasLang = true;
-                                        break;
-                                    }
-                                }
+                            // Check if target is a statutory page path (e.g. page/Yayın_İlkeleri, tr/page/Yayın_İlkeleri, or cookie-policy)
+                            // and collapse to canonical statutory root in a single hop.
+                            $statutoryCandidate = null;
+                            if (preg_match('#^(?:[a-z]{2}/)?page/(.+)$#u', $target, $targetPageMatch)) {
+                                $statutoryCandidate = $targetPageMatch[1];
+                            } else {
+                                $statutoryCandidate = trim($target, '/');
+                            }
+                            $statutorySlug = Helper::resolve_statutory_slug($statutoryCandidate);
+                            if ($statutorySlug !== null) {
+                                $rootAddr = isset($this->site['address']) ? $this->site['address'] : '/';
+                                $redirectUrl = rtrim($rootAddr, '/') . '/' . $statutorySlug;
+                                $target = null;
                             }
 
-                            if ($targetHasLang) {
-                                $baseUrl = isset($this->site['address']) ? $this->site['address'] : '/';
-                            } else {
-                                $baseUrl = isset($this->site['saddress']) ? $this->site['saddress'] : (isset($this->site['address']) ? $this->site['address'] : '/');
-                                if (strpos($baseUrl, '/tr/') !== false && strpos($target, 'tr/') === 0) {
-                                    $target = substr($target, 3);
-                                } elseif (strpos($baseUrl, '/en/') !== false && strpos($target, 'en/') === 0) {
-                                    $target = substr($target, 3);
+                            if ($target !== null) {
+                                $targetHasLang = false;
+                                $activeLangs = Registry::get('active_langs');
+                                if (is_array($activeLangs)) {
+                                    foreach ($activeLangs as $al) {
+                                        if (strpos($target, $al . '/') === 0 || $target === $al) {
+                                            $targetHasLang = true;
+                                            break;
+                                        }
+                                    }
                                 }
+
+                                if ($targetHasLang) {
+                                    $baseUrl = isset($this->site['address']) ? $this->site['address'] : '/';
+                                } else {
+                                    $baseUrl = isset($this->site['saddress']) ? $this->site['saddress'] : (isset($this->site['address']) ? $this->site['address'] : '/');
+                                    if (strpos($baseUrl, '/tr/') !== false && strpos($target, 'tr/') === 0) {
+                                        $target = substr($target, 3);
+                                    } elseif (strpos($baseUrl, '/en/') !== false && strpos($target, 'en/') === 0) {
+                                        $target = substr($target, 3);
+                                    }
+                                }
+                                $redirectUrl = rtrim($baseUrl, '/') . '/' . ltrim($target, '/');
                             }
-                            $redirectUrl = rtrim($baseUrl, '/') . '/' . ltrim($target, '/');
                         }
 
                         if ($statusCode === 301) {
@@ -552,7 +569,7 @@ class Amed
                         } else {
                             header("HTTP/1.1 302 Found");
                         }
-                        header("Location: " . $redirectUrl);
+                        header("Location: " . Helper::sitemap_url($redirectUrl));
                         exit;
                     }
                 }

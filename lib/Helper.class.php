@@ -37,6 +37,9 @@ class Helper
     static function redirect($url, $seconds = 3)
     {
         if (!headers_sent()) {
+            @header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+            @header('Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0');
+            @header('Pragma: no-cache');
             @header("refresh: $seconds; url=$url");
         } else {
             echo '<script type="text/javascript">';
@@ -52,6 +55,11 @@ class Helper
     // JavaScript / Meta redirection without calling exit()
     static function jsRedirect($url, $seconds = 3)
     {
+        if (!headers_sent()) {
+            @header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+            @header('Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0');
+            @header('Pragma: no-cache');
+        }
         echo '<script type="text/javascript">';
         echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $seconds . '000);';
         echo '</script>';
@@ -643,5 +651,63 @@ class Helper
         }
 
         return $map[$key] ?? null;
+    }
+
+    /**
+     * Compute normalized ASCII matching key for inbound legacy URL reconciliation.
+     * Strictly used for inbound 301 redirection lookups; never for outbound slug generation.
+     */
+    public static function ascii_slug_key(string $slug): string
+    {
+        $raw = rawurldecode($slug);
+        $raw = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $raw = preg_replace('/[\'\":,.\/!?\(\)\[\]\{\}«»“”]/u', '', $raw);
+        $raw = self::sefurl($raw);
+        $raw = mb_strtolower((string)$raw, 'UTF-8');
+        $raw = preg_replace('/[-_\s]+/u', '_', $raw);
+        return trim((string)$raw, '_');
+    }
+
+    /**
+     * RFC 3986 percent-encode XML sitemap and RSS URL paths without double-encoding.
+     */
+    public static function sitemap_url(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+            return $url;
+        }
+
+        $scheme = $parts['scheme'];
+        $host = $parts['host'];
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $path = $parts['path'] ?? '/';
+
+        $segments = explode('/', $path);
+        $encodedSegments = [];
+        foreach ($segments as $segment) {
+            if ($segment === '') {
+                $encodedSegments[] = '';
+                continue;
+            }
+            $decoded = rawurldecode($segment);
+            $encodedSegments[] = rawurlencode($decoded);
+        }
+        $encodedPath = implode('/', $encodedSegments);
+
+        $result = $scheme . '://' . $host . $port . $encodedPath;
+        if (isset($parts['query']) && $parts['query'] !== '') {
+            $result .= '?' . $parts['query'];
+        }
+        if (isset($parts['fragment']) && $parts['fragment'] !== '') {
+            $result .= '#' . $parts['fragment'];
+        }
+
+        return $result;
     }
 }

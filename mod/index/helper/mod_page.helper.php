@@ -18,7 +18,9 @@ class mod_page_helper extends indexBase
 
     public function page($seo)
     {
-        $seo = Req::Url_Clear($seo);
+        $rawSeo = trim((string)$seo);
+        $decodedSeo = html_entity_decode(rawurldecode($rawSeo), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $seo = trim($decodedSeo);
 
         // Canonical 301 redirection for statutory legal & policy pages
         $targetSlug = Helper::resolve_statutory_slug((string) $seo);
@@ -35,6 +37,20 @@ class mod_page_helper extends indexBase
         $page->gRo();
         if ($page->getSize() !== 0) {
             $page->sync();
+
+            // Strict canonical slug comparison to prevent non-canonical collation / casing URLs
+            if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$page->seo !== $seo) {
+                $statutorySlug = Helper::resolve_statutory_slug((string)$page->seo);
+                if ($statutorySlug !== null) {
+                    $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
+                } else {
+                    $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
+                }
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . Helper::sitemap_url($targetUrl));
+                exit;
+            }
+
             $this->tema->ctx_set('d', $page->toArray());
             // Access permission check
             if ($this->_permission_check($page->acl_id)) {
@@ -80,6 +96,20 @@ class mod_page_helper extends indexBase
 
             if ($page->getSize() !== 0) {
                 $page->sync();
+
+                // 301 redirect to canonical slug
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    $statutorySlug = Helper::resolve_statutory_slug((string)$page->seo);
+                    if ($statutorySlug !== null) {
+                        $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
+                    } else {
+                        $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
+                    }
+                    header("HTTP/1.1 301 Moved Permanently");
+                    header("Location: " . Helper::sitemap_url($targetUrl));
+                    exit;
+                }
+
                 $this->tema->ctx_set('d', $page->toArray());
                 if ($this->_permission_check($page->acl_id)) {
                     return;
@@ -156,6 +186,39 @@ class mod_page_helper extends indexBase
                     $this->tema->tpl('index/mod_page/page');
                     $this->_index();
                     return;
+                }
+
+                // Inbound fallback: match requested ASCII slug against published pages
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    $requestedKey = Helper::ascii_slug_key($seo);
+                    if ($requestedKey !== '') {
+                        $db = Load::lib('Database');
+                        $safeLang = addslashes((string)$this->site['lang']);
+                        $db->fetch_array("SELECT id, seo FROM `mod_page` WHERE `lang` = '{$safeLang}' AND `status` = 'y' AND `root` = 'n'");
+                        $candidateRows = $db->toArray();
+                        $matchedSeo = null;
+                        $matchCount = 0;
+                        if (is_array($candidateRows)) {
+                            foreach ($candidateRows as $candidateRow) {
+                                if (Helper::ascii_slug_key((string)$candidateRow['seo']) === $requestedKey) {
+                                    $matchedSeo = (string)$candidateRow['seo'];
+                                    $matchCount++;
+                                }
+                            }
+                        }
+
+                        if ($matchCount === 1 && $matchedSeo !== null) {
+                            $statutorySlug = Helper::resolve_statutory_slug($matchedSeo);
+                            if ($statutorySlug !== null) {
+                                $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
+                            } else {
+                                $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $matchedSeo;
+                            }
+                            header("HTTP/1.1 301 Moved Permanently");
+                            header("Location: " . Helper::sitemap_url($targetUrl));
+                            exit;
+                        }
+                    }
                 }
 
                 return $this->_404();

@@ -1,5 +1,40 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.47 (2026-11-05)
+- **Search Visibility Recovery, Inbound Legacy ASCII 301 Normalization, RFC 3986 Sitemap Parity, Persistent Indexing Quota Ledger, Dynamic Cache-Control Isolation & mod_seo Reconciliation (`lib/Helper.class.php`, `lib/Amed.class.php`, `lib/AdminTemplate.class.php`, `lib/GoogleIndexingService.class.php`, `mod/index/index.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/mod_publication.helper.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/mod_event.helper.php`, `mod/mod_seo/index.php`, `mod/mod_seo/lang/*.php`, `templates/admin/mod_seo/list.twig`, `templates/amed/partials/_cookie_consent.twig`, `.htaccess`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Single-Hop Inbound Legacy ASCII & Collation 301 Redirection**:
+    - Introduced `Helper::ascii_slug_key()` in `lib/Helper.class.php` to calculate normalized ASCII matching keys for inbound legacy URL reconciliation.
+    - Implemented strict byte-identical slug verification (`$requestedSeo !== $record->seo`) across `mod_news`, `mod_publication`, `mod_page`, and `mod_event` public controllers. Category requests matching via MySQL collation (e.g. `dunya -> Dünya`) now immediately emit `301 Moved Permanently` to canonical UTF-8 slugs instead of serving duplicate HTTP 200 content.
+    - Added inbound ASCII slug fallback resolution for Turkish dotless `ı/i` misses (e.g. `/tr/news/...macinin...` -> `...maçının...`), resolving and redirecting legacy crawled URLs in a single hop.
+    - Updated `lib/Amed.class.php` and `mod/index/helper/mod_page.helper.php` so legacy statutory page URLs resolve directly to root statutory endpoints (`/editorial-policy`, `/cookie-policy`, etc.) in 1 hop.
+    - Wrapped all HTTP 301/302 `Location:` header destinations with `Helper::sitemap_url()` across `Amed.class.php`, `mod_news.helper.php`, `mod_publication.helper.php`, `mod_page.helper.php`, and `mod_event.helper.php` to ensure fully valid RFC 3986 percent-encoded redirection headers.
+  - **RFC 3986 Percent-Encoded XML Sitemaps & RSS Links**:
+    - Introduced `Helper::sitemap_url()` ensuring all `<loc>`, `<image:loc>`, and RSS `<link>`/`<guid>` URLs are percent-encoded (`rawurlencode`) without double-encoding, matching Google Search Console's canonical percent-encoded URL store.
+  - **Persistent Cross-Request Indexing API Quota & Cooldown Ledger**:
+    - Upgraded `lib/GoogleIndexingService.class.php` with a persistent ledger (`data/indexing_state.json`) preventing cross-request quota exhaustion:
+      - 15-minute cooldown per URL to stop batch MCP edits from burning the 200/day publish quota on companion homepage pings.
+      - 10-minute cooldown on GSC sitemap pings.
+      - Circuit-breaker backoff on `HTTP 429 RESOURCE_EXHAUSTED` with structured error logging.
+      - Percent-encoding of all Indexing API request URLs via `Helper::sitemap_url()`.
+  - **Dynamic Content & Admin Cache-Control Isolation**:
+    - Updated `.htaccess` with granular `mod_expires` overrides (`access plus 0 seconds`) for `text/html`, `text/xml`, `application/xml`, `application/rss+xml`, and `application/json`, preventing Apache's default 1-month expiration from caching dynamic news, sitemaps, and RSS feeds.
+    - Injected `Expires: Thu, 01 Jan 1970 00:00:00 GMT`, `Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0` and `Pragma: no-cache` in `AdminTemplate::__construct()` and `Helper::redirect()`, permanently preventing caching of unauthenticated login redirects or admin panel views.
+  - **Admin SEO Dashboard (`mod_seo/index`) Modernization & GSC Metric Aggregation**:
+    - Cleaned `mod_seo_mod::getSiteUrls()` to filter out structural root containers (`root='y'`), placeholder categories (`#`), and redirected statutory pages, while adding canonical root statutory routes and section index routes (`tr/newses`, `tr/publications`, `tr/events`, `tr/videos`, `tr/gallery`, `tr/announcements`).
+    - Normalized and aggregated (`+=`) GSC metrics in `getSearchConsoleData()` across `http://`, `https://`, `/ku/*`, legacy statutory paths, and ASCII slugs onto their canonical targets, restoring all 4 clicks and 98 impressions in the admin report.
+    - Added automated ASCII/punctuation fallback aggregation for GSC rows with punctuation variations (such as `:` in historical news slugs).
+    - Fixed weighted CTR (`totalClicks / totalImpressions * 100`) and impression-weighted average position calculations (`round(..., 1)`).
+    - Replaced `item.type == 'Content'` check with `'News'` in `list.twig` and added localized type and route labels across `en.php`, `tr.php`, and `ku.php`.
+  - **Internal Link Normalization in Themes**:
+    - Updated `templates/amed/partials/_cookie_consent.twig` to link directly to canonical `{{ site.address }}cookie-policy` avoiding unnecessary internal 301 redirects on page loads.
+  - **Live Production Database & GSC Cleanup**:
+    - Cleaned punctuation characters (`:`, `,`) from live news slugs (`id=1, 4, 7, 8, 9`) and created corresponding 301 records in `mod_redirect`.
+    - Repaired 5 live news rows with inverted timestamps (`updated_at < created_at`) on production.
+    - Updated Turkish `site_name` setting via MCP to eliminate duplicate brand occurrences in homepage `<title>`.
+    - Deleted stale `/ku/newsSitemap.xml`, `/de/newsSitemap.xml`, and empty `publicationSitemap.xml` from GSC and resubmitted all canonical sitemaps.
+  - **Framework Version Parity**:
+    - Bumped framework version to `1.0.47` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.46 (2026-11-05)
 - **Entity Knowledge Graph Reconciliation (`sameAs`), Canonical Brand Alignment & Diacritic-Agnostic SERP Matching (`templates/amed/index/index.twig`, `templates/amed/index/legal/*.twig`, `templates/amed/index/mod_news/news.twig`, `templates/amed/index/mod_publication/publication.twig`, `templates/amed/index/mod_publication/author.twig`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Knowledge Graph `sameAs` Social Entity Binding**:

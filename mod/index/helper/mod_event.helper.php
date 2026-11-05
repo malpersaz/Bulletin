@@ -477,7 +477,7 @@ class mod_event_helper extends indexBase
         // =====================================================================
         // 2. FILTERED CATEGORY MODE (/events/{seo}): Single Category Listing
         // =====================================================================
-        $decodedSeo = trim(rawurldecode(html_entity_decode((string) $category, ENT_QUOTES, 'UTF-8')));
+        $decodedSeo = trim(rawurldecode(html_entity_decode((string) $category, ENT_QUOTES | ENT_HTML5, 'UTF-8')));
 
         $catModel = Load::model('mod_event_category');
         $catModel->flush();
@@ -488,6 +488,36 @@ class mod_event_helper extends indexBase
         }
 
         if ($catModel->getSize() === 0) {
+            // Inbound legacy ASCII category matching
+            $requestedCategoryKey = Helper::ascii_slug_key($decodedSeo);
+            if ($requestedCategoryKey !== '') {
+                $db = Load::lib('Database');
+                $safeLang = addslashes($lang);
+                $db->fetch_array("SELECT id, seo FROM `mod_event_category` WHERE `lang` = '{$safeLang}' AND `root` = 'n'");
+                $candidateCategories = $db->toArray();
+                $matchedCategorySeo = null;
+                $matchedCategoryCount = 0;
+                if (is_array($candidateCategories)) {
+                    foreach ($candidateCategories as $candidateCategory) {
+                        if (Helper::ascii_slug_key((string)$candidateCategory['seo']) === $requestedCategoryKey) {
+                            $matchedCategorySeo = (string)$candidateCategory['seo'];
+                            $matchedCategoryCount++;
+                        }
+                    }
+                }
+                if ($matchedCategoryCount === 1 && $matchedCategorySeo !== null) {
+                    $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/events/' . $matchedCategorySeo;
+                    if ($page > 1) {
+                        $targetUrl .= '/' . $page;
+                    }
+                    if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                        header("HTTP/1.1 301 Moved Permanently");
+                        header("Location: " . Helper::sitemap_url($targetUrl));
+                        exit;
+                    }
+                }
+            }
+
             return $this->_404();
         }
 
@@ -495,6 +525,17 @@ class mod_event_helper extends indexBase
         $catId = (int) $activeCategory['id'];
         if (!in_array($catId, $allowedCatIds, true)) {
             return $this->_404();
+        }
+
+        // Strict canonical category slug comparison
+        if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$activeCategory['seo'] !== $decodedSeo) {
+            $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/events/' . $activeCategory['seo'];
+            if ($page > 1) {
+                $targetUrl .= '/' . $page;
+            }
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . Helper::sitemap_url($targetUrl));
+            exit;
         }
 
         $descendantIds = $this->getCategoryDescendantIds($catId, $lang, 'mod_event_category');
@@ -562,10 +603,46 @@ class mod_event_helper extends indexBase
 
         $this->_categories();
         $lang = (string) $this->site['lang'];
+        $cleanSeo = trim(html_entity_decode(rawurldecode((string)$seo), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 
-        $eventModel = $this->findItemBySeoOrIdStrict('mod_event.events', (string) $seo, $lang, 'y');
+        $eventModel = $this->findItemBySeoOrIdStrict('mod_event.events', $cleanSeo, $lang, 'y');
         if ($eventModel === null || $eventModel->getSize() === 0) {
+            // Inbound legacy ASCII fallback
+            if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                $requestedKey = Helper::ascii_slug_key($cleanSeo);
+                if ($requestedKey !== '') {
+                    $db = Load::lib('Database');
+                    $safeLang = addslashes($lang);
+                    $db->fetch_array("SELECT id, seo FROM `mod_event` WHERE `lang` = '{$safeLang}' AND `status` = 'y'");
+                    $candidateRows = $db->toArray();
+                    $matchedSeo = null;
+                    $matchedCount = 0;
+                    if (is_array($candidateRows)) {
+                        foreach ($candidateRows as $candidateRow) {
+                            if (Helper::ascii_slug_key((string)$candidateRow['seo']) === $requestedKey) {
+                                $matchedSeo = (string)$candidateRow['seo'];
+                                $matchedCount++;
+                            }
+                        }
+                    }
+                    if ($matchedCount === 1 && $matchedSeo !== null) {
+                        $canonicalUrl = rtrim((string)$this->site['saddress'], '/') . '/event/' . $matchedSeo;
+                        header("HTTP/1.1 301 Moved Permanently");
+                        header("Location: " . Helper::sitemap_url($canonicalUrl));
+                        exit;
+                    }
+                }
+            }
+
             return $this->_404();
+        }
+
+        // Strict canonical slug comparison
+        if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$eventModel->seo !== $cleanSeo) {
+            $canonicalUrl = rtrim((string)$this->site['saddress'], '/') . '/event/' . $eventModel->seo;
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . Helper::sitemap_url($canonicalUrl));
+            exit;
         }
 
         if ($this->_permission_check((int) $eventModel->acl_id)) {

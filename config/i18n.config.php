@@ -12,7 +12,10 @@
 // Enable or disable multilingual support.
 Registry::add('i18n', TRUE);
 // Fallback bootstrap state. Runtime should prefer the database-backed registry when available.
+// Keep this mirror-aligned with the production `lang` table (status='y' rows): it only activates
+// when the DB is unavailable/empty (installer, DB failure, partial boot) and then must not claim
+// unpublished languages. Publishing a new language is a DB-side action (lang.status='y'), not an edit here.
 Registry::add('i18n_bootstrap', array(
-    'default_lang' => 'ku',
-    'active_langs' => array('en', 'ku', 'ckb', 'zza', 'ar', 'de', 'fr', 'sv', 'tr', 'fa', 'ru'),
+    'default_lang' => 'tr',
+    'active_langs' => array('tr'),
 ));

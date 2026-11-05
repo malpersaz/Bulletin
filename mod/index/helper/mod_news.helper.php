@@ -137,7 +137,7 @@ class mod_news_helper extends indexBase
         }
 
         $this->_categories();
-        $seo = trim(html_entity_decode((string) $seo, ENT_QUOTES, 'UTF-8'));
+        $seo = trim(html_entity_decode(rawurldecode((string) $seo), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         $news = Load::model('mod_news.newses');
         $news->flush();
         $news->where_seo_and_status_and_lang($seo, 'y', $this->site['lang']);
@@ -146,6 +146,15 @@ class mod_news_helper extends indexBase
         $news->gRo();
         if ($news->getSize() !== 0) {
             $news->sync();
+
+            // Strict canonical slug comparison to prevent non-canonical collation / casing URLs
+            if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$news->seo !== $seo) {
+                $canonicalUrl = Helper::sitemap_url(rtrim((string) $this->site['saddress'], '/') . '/news/' . $news->seo);
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . $canonicalUrl);
+                exit;
+            }
+
             if ($this->_permission_check((int) $news->acl_id)) {
                 return;
             }
@@ -214,6 +223,36 @@ class mod_news_helper extends indexBase
             $this->theme->ctx_set('news_24h', $news_24h);
             $this->theme->ctx_set('news_24h_count', $news_24h_count);
         } else {
+            // Inbound legacy ASCII fallback: match requested key against published news
+            if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                $requestedKey = Helper::ascii_slug_key($seo);
+                if ($requestedKey !== '') {
+                    $db = Load::lib('Database');
+                    $safeLang = addslashes((string)$this->site['lang']);
+                    $publishCondition = $this->getPublishedDateCondition('');
+                    $publishSql = !empty($publishCondition) ? " AND {$publishCondition}" : "";
+                    $db->fetch_array("SELECT id, seo FROM `mod_news` WHERE `lang` = '{$safeLang}' AND `status` = 'y'{$publishSql}");
+                    $candidateRows = $db->toArray();
+                    $matchedSeo = null;
+                    $matchCount = 0;
+                    if (is_array($candidateRows)) {
+                        foreach ($candidateRows as $candidateRow) {
+                            if (Helper::ascii_slug_key((string)$candidateRow['seo']) === $requestedKey) {
+                                $matchedSeo = (string)$candidateRow['seo'];
+                                $matchCount++;
+                            }
+                        }
+                    }
+
+                    if ($matchCount === 1 && $matchedSeo !== null) {
+                        $canonicalUrl = Helper::sitemap_url(rtrim((string) $this->site['saddress'], '/') . '/news/' . $matchedSeo);
+                        header("HTTP/1.1 301 Moved Permanently");
+                        header("Location: " . $canonicalUrl);
+                        exit;
+                    }
+                }
+            }
+
             return $this->_404();
         }
         $this->theme->tpl('index/mod_news/news');
@@ -279,11 +318,54 @@ class mod_news_helper extends indexBase
             $category_seo = 'all';
             $categoryname = $allNewsLabel;
         } else {
-            $category_model->where_seo_and_lang($category, $lang)->limit(1)->gRo();
+            $category_clean = trim(html_entity_decode(rawurldecode((string)$category), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $category_model->where_seo_and_lang($category_clean, $lang)->limit(1)->gRo();
             if ($category_model->getSize() === 0) {
+                // Inbound legacy ASCII category matching
+                $requestedCategoryKey = Helper::ascii_slug_key($category_clean);
+                if ($requestedCategoryKey !== '') {
+                    $db = Load::lib('Database');
+                    $safeLang = addslashes($lang);
+                    $db->fetch_array("SELECT id, seo FROM `mod_news_category` WHERE `lang` = '{$safeLang}' AND `root` = 'n'");
+                    $candidateCategories = $db->toArray();
+                    $matchedCategorySeo = null;
+                    $matchedCategoryCount = 0;
+                    if (is_array($candidateCategories)) {
+                        foreach ($candidateCategories as $candidateCategory) {
+                            if (Helper::ascii_slug_key((string)$candidateCategory['seo']) === $requestedCategoryKey) {
+                                $matchedCategorySeo = (string)$candidateCategory['seo'];
+                                $matchedCategoryCount++;
+                            }
+                        }
+                    }
+                    if ($matchedCategoryCount === 1 && $matchedCategorySeo !== null) {
+                        $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/newses/' . $matchedCategorySeo;
+                        if ($page > 1) {
+                            $targetUrl .= '/' . $page;
+                        }
+                        if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                            header("HTTP/1.1 301 Moved Permanently");
+                            header("Location: " . Helper::sitemap_url($targetUrl));
+                            exit;
+                        }
+                    }
+                }
+
                 return $this->_404();
             }
             $category_model->sync();
+
+            // Strict canonical category slug comparison to prevent non-canonical collation / casing URLs
+            if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$category_model->seo !== $category_clean) {
+                $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/newses/' . $category_model->seo;
+                if ($page > 1) {
+                    $targetUrl .= '/' . $page;
+                }
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . Helper::sitemap_url($targetUrl));
+                exit;
+            }
+
             $categoryId = (int) $category_model->id;
             $categoryRecord = $category_model->toArray();
             if (isset($categoryRecord['name'])) {

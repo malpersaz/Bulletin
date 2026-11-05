@@ -49,17 +49,53 @@ class mod_publication_helper extends indexBase
         }
 
         $this->_categories();
-        $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
+        $seo = trim(html_entity_decode(rawurldecode((string)$seo), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         $publication = Load::model('mod_publication.publications');
         $publication->where_seo_and_status_and_lang($seo, 'y', $this->site['lang']);
         $publication->limit(1);
         $publication->gRo();
 
         if ($publication->getSize() === 0) {
+            // Inbound legacy ASCII fallback
+            if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                $requestedKey = Helper::ascii_slug_key($seo);
+                if ($requestedKey !== '') {
+                    $db = Load::lib('Database');
+                    $safeLang = addslashes((string)$this->site['lang']);
+                    $db->fetch_array("SELECT id, seo FROM `mod_publication` WHERE `lang` = '{$safeLang}' AND `status` = 'y'");
+                    $candidateRows = $db->toArray();
+                    $matchedSeo = null;
+                    $matchCount = 0;
+                    if (is_array($candidateRows)) {
+                        foreach ($candidateRows as $candidateRow) {
+                            if (Helper::ascii_slug_key((string)$candidateRow['seo']) === $requestedKey) {
+                                $matchedSeo = (string)$candidateRow['seo'];
+                                $matchCount++;
+                            }
+                        }
+                    }
+
+                    if ($matchCount === 1 && $matchedSeo !== null) {
+                        $canonicalUrl = Helper::sitemap_url(rtrim((string) $this->site['saddress'], '/') . '/publication/' . $matchedSeo);
+                        header("HTTP/1.1 301 Moved Permanently");
+                        header("Location: " . $canonicalUrl);
+                        exit;
+                    }
+                }
+            }
+
             return $this->_404();
         }
 
         $publication->sync();
+
+        // Strict canonical slug comparison to prevent non-canonical collation / casing URLs
+        if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$publication->seo !== $seo) {
+            $canonicalUrl = Helper::sitemap_url(rtrim((string) $this->site['saddress'], '/') . '/publication/' . $publication->seo);
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . $canonicalUrl);
+            exit;
+        }
 
         if ($this->_permission_check($publication->acl_id)) {
             return;
@@ -123,9 +159,43 @@ class mod_publication_helper extends indexBase
 
             $category_seo = 'all';
             $category_name = $this->lang['index']['mod_publication']['all_publications'] ?? $this->lang['index']['mod_publication']['all_items'] ?? 'All Publications';
-        } elseif ($category_model->exists_seo($category) === FALSE) {
-            return $this->_404();
         } else {
+            $category_clean = trim(html_entity_decode(rawurldecode((string)$category), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            if ($category_model->exists_seo($category_clean) === FALSE) {
+                // Inbound legacy ASCII category matching
+                $requestedCategoryKey = Helper::ascii_slug_key($category_clean);
+                if ($requestedCategoryKey !== '') {
+                    $db = Load::lib('Database');
+                    $safeLang = addslashes((string)$this->site['lang']);
+                    $db->fetch_array("SELECT id, seo FROM `mod_publication_category` WHERE `lang` = '{$safeLang}' AND `root` = 'n'");
+                    $candidateCategories = $db->toArray();
+                    $matchedCategorySeo = null;
+                    $matchedCategoryCount = 0;
+                    if (is_array($candidateCategories)) {
+                        foreach ($candidateCategories as $candidateCategory) {
+                            if (Helper::ascii_slug_key((string)$candidateCategory['seo']) === $requestedCategoryKey) {
+                                $matchedCategorySeo = (string)$candidateCategory['seo'];
+                                $matchedCategoryCount++;
+                            }
+                        }
+                    }
+                    if ($matchedCategoryCount === 1 && $matchedCategorySeo !== null) {
+                        $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/publications/' . $matchedCategorySeo;
+                        if ($page > 1) {
+                            $targetUrl .= '/' . $page;
+                        }
+                        if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                            header("HTTP/1.1 301 Moved Permanently");
+                            header("Location: " . Helper::sitemap_url($targetUrl));
+                            exit;
+                        }
+                    }
+                }
+
+                return $this->_404();
+            }
+
+            $category = $category_clean;
             $publication->where_category_seo_and_status_and_lang($category, 'y', $this->site['lang']);
             $publication->order('created_at', 'DESC')->gR();
             $total_item = $publication->getSize();
@@ -138,6 +208,17 @@ class mod_publication_helper extends indexBase
             $category_model->where_seo($category);
             $category_model->getResultOne();
             $category_model->sync();
+
+            // Strict canonical category slug comparison
+            if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$category_model->seo !== $category_clean) {
+                $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/publications/' . $category_model->seo;
+                if ($page > 1) {
+                    $targetUrl .= '/' . $page;
+                }
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . Helper::sitemap_url($targetUrl));
+                exit;
+            }
 
             $category_name = $category_model->name;
             $category_seo = $category_model->seo;
