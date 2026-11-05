@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'Användarvillkor',
-    'terms_of_service_slug' => 'Anvandarvillkor',
+    'terms_of_service_slug' => 'Användarvillkor',
     'terms_of_service_subtitle' => 'Villkor och bestämmelser som styr åtkomst, upphovsrätt, syndikering och godkänd användning av vår journalistiska plattform.',
     'terms_scope_title' => 'Omfattning & Godkännande av Villkor',
     'terms_scope_desc' => 'Villkor för läsning, interaktion och användning av våra digitala nyheter, publikationer och multimediatjänster.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'Tillgänglighetsredogörelse',
-    'accessibility_slug' => 'Tillganglighet',
+    'accessibility_slug' => 'Tillgänglighet',
     'accessibility_subtitle' => 'Vårt åtagande att säkerställa digital tillgänglighet för alla användare i enlighet med WCAG 2.1 nivå AA.',
     'accessibility_conformance_title' => 'Efterlevnadsstandarder (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Riktlinjer för design och teknisk arkitektur på mobil och dator för att avlägsna tillgänglighetshinder.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Säkerhetspolicy & Sårbarhetshantering',
-    'security_policy_slug' => 'Sakerhetspolicy',
+    'security_policy_slug' => 'Säkerhetspolicy',
     'security_policy_subtitle' => 'Plattformens säkerhetsarkitektur, tekniska skyddsåtgärder och ramverk för ansvarsfull sårbarhetsrapportering.',
     'security_safeguards_title' => 'Tekniska Skyddsåtgärder & Applikationssäkerhet',
     'security_safeguards_desc' => 'TLS/HTTPS-kryptering, härdad sessionshantering, CSRF-skydd och rollbaserad behörighetsstyrning.',

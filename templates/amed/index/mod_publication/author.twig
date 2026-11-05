@@ -36,7 +36,7 @@
 
 {% block meta_tags %}
     <meta name="author" content="{{ author_name }}">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="theme-color" content="#ffffff">
 
     <meta property="og:type" content="profile">
@@ -58,6 +58,69 @@
     <meta name="twitter:title" content="{{ author_name }} - {{ site.title }}">
     <meta name="twitter:description" content="{{ author_description }}">
     <meta name="twitter:image" content="{{ author_share_image }}">
+{% endblock %}
+
+{% block schema %}
+    {% set canonical_author_url = site.saddress ~ 'author/' ~ username %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ProfilePage",
+          "@id": {{ (canonical_author_url ~ '#profile')|json_ld|raw }},
+          "url": {{ canonical_author_url|json_ld|raw }},
+          "name": {{ author_name|json_ld|raw }},
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
+            "name": {{ site.title|json_ld|raw }},
+            "url": {{ site.saddress|json_ld|raw }}
+          },
+          "mainEntity": {
+            "@type": "Person",
+            "@id": {{ (canonical_author_url ~ '#person')|json_ld|raw }},
+            "name": {{ author_name|json_ld|raw }},
+            "url": {{ canonical_author_url|json_ld|raw }},
+            {% if author.user_image is defined and author.user_image is not empty %}
+            "image": {{ (site.iaddress ~ 'mod_user/' ~ author.user_image)|json_ld|raw }},
+            {% endif %}
+            {% if author.about is defined and author.about is not empty %}
+            "description": {{ author.about|striptags|trim|json_ld|raw }},
+            {% endif %}
+            "worksFor": {
+              "@type": "NewsMediaOrganization",
+              "name": {{ site.title|json_ld|raw }},
+              "url": {{ site.address|json_ld|raw }}
+            }
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": {{ lang.index.home|json_ld|raw }},
+              "item": {{ site.saddress|json_ld|raw }}
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": {{ lang.index.mod_publication.authors|json_ld|raw }},
+              "item": {{ (site.saddress ~ 'authors')|json_ld|raw }}
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": {{ author_name|json_ld|raw }},
+              "item": {{ canonical_author_url|json_ld|raw }}
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 {% endblock %}
 
 {% block css_custom %}

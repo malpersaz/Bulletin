@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'سياسة الخصوصية',
-    'privacy_policy_slug' => 'Privacy_Policy',
+    'privacy_policy_slug' => 'سياسة_الخصوصية',
     'privacy_policy_subtitle' => 'حماية البيانات الشخصية وإشعارات الخصوصية وفق اللائحة العامة لحماية البيانات (GDPR) والأنظمة القانونية.',
     'privacy_data_controller_title' => 'هوية المسؤول عن معالجة البيانات',
     'privacy_data_controller_desc' => 'معلومات حول الجهة القانونية المسؤولة عن جمع ومعالجة بياناتك الشخصية بموجب التشريعات السارية.',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'شروط الاستخدام',
-    'terms_of_service_slug' => 'Terms_of_Service',
+    'terms_of_service_slug' => 'شروط_الاستخدام',
     'terms_of_service_subtitle' => 'الشروط والأحكام الحاكمة للوصول وحقوق النشر والاستخدام المقبول لمنصتنا الصحفية والإعلامية.',
     'terms_scope_title' => 'نطاق الاتفاقية وقبول الشروط',
     'terms_scope_desc' => 'شروط قراءة المحتوى والتفاعل معه واستخدام أخبارنا الرقمية وإصداراتنا وخدمات الوسائط المتعددة.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'المعايير التحريرية وحق الرد',
-    'editorial_policy_slug' => 'Editorial_Policy',
+    'editorial_policy_slug' => 'المعايير_التحريرية',
     'editorial_policy_subtitle' => 'الالتزام بالحقيقة الصحفية، والتحقق متعدد المصادر، وإجراءات التصحيح الشفافة، وحق الرد القانوني.',
     'editorial_independence_title' => 'الاستقلالية التحريرية والتحقق من الوقائع',
     'editorial_independence_desc' => 'الالتزام بالتدقيق الصارم للحقائق، والحياد، وحماية سرية المصادر، والفصل التام بين الأخبار والآراء.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'بيان إمكانية الوصول',
-    'accessibility_slug' => 'Accessibility',
+    'accessibility_slug' => 'إمكانية_الوصول',
     'accessibility_subtitle' => 'التزامنا بضمان سهولة الوصول الرقمي لجميع المستخدمين وفق معايير WCAG 2.1 المستوى AA.',
     'accessibility_conformance_title' => 'معايير المطابقة (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'معايير التصميم والبرمجة المطبقة عبر واجهات الأخبار على الهواتف وأجهزة الكمبيوتر لإزالة العوائق.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'سياسة الأمان وحماية البيانات',
-    'security_policy_slug' => 'Security_Policy',
+    'security_policy_slug' => 'سياسة_الأمان',
     'security_policy_subtitle' => 'بنية الأمان للمنصة والضمانات التقنية وإطار الإبلاغ المسؤول عن الثغرات الأمنية.',
     'security_safeguards_title' => 'الضمانات التقنية والتطبيقية',
     'security_safeguards_desc' => 'تشفير النقل TLS/HTTPS، والبنية الآمنة للجلسات، وحماية ضد CSRF، والتحكم في الوصول حسب الأدوار.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'ميثاق الشرف الصحفي والامتثال المؤسسي',
-    'compliance_slug' => 'Compliance',
+    'compliance_slug' => 'ميثاق_الشرف_الصحفي',
     'compliance_subtitle' => 'ميثاق الأخلاقيات الصحفية، واستقلالية التحرير، ومنع تضارب المصالح، وحماية المبلغين عن المخالفات.',
     'compliance_ethics_title' => 'ميثاق الأخلاقيات الصحفية',
     'compliance_ethics_desc' => 'المبادئ الأساسية للأمانة والإنصاف وصون الكرامة الإنسانية ونبذ التشهير واحترام الخصوصية الشخصية في التغطيات.',

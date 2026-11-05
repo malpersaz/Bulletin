@@ -26,6 +26,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site.saddress }}newses{% if is_filtered_category %}/{{ category_seo }}{% endif %}">
     <meta property="og:title" content="{{ current_page_title }} - {{ site.title }}">
@@ -39,6 +40,7 @@
 {% endblock %}
 
 {% block schema %}
+    {% set current_canonical_url = site.saddress ~ 'newses' ~ (is_filtered_category ? '/' ~ category_seo : '') ~ (page is defined and page > 1 ? '/' ~ page : '') %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -47,25 +49,27 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": {{ lang.index.home|json_encode|raw }},
-          "item": {{ site.saddress|json_encode|raw }}
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
         }{% if is_filtered_category %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ all_news_label|json_encode|raw }},
-          "item": {{ (site.saddress ~ 'newses')|json_encode|raw }}
+          "name": {{ all_news_label|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'newses')|json_ld|raw }}
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": {{ categoryname|json_encode|raw }}
+          "name": {{ categoryname|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% else %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ all_news_label|json_encode|raw }}
+          "name": {{ all_news_label|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% endif %}
       ]
@@ -136,11 +140,10 @@
                         {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
 
                         <div class="col newses-grid-col">
-                            <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+                            <article class="news-card">
                                 <a href="{{ site.saddress }}news/{{ news.seo }}"
                                    class="news-card-media"
-                                   title="{{ news_title }}"
-                                   itemprop="url">
+                                   title="{{ news_title }}">
                                     {% if news.image is not empty %}
                                         <img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}"
                                              class="news-card-img"
@@ -148,8 +151,7 @@
                                              width="640"
                                              height="360"
                                              loading="lazy"
-                                             decoding="async"
-                                             itemprop="image">
+                                             decoding="async">
                                     {% else %}
                                         <div class="news-card-placeholder">
                                             <i class="bi bi-newspaper news-card-placeholder-icon" aria-hidden="true"></i>
@@ -163,29 +165,29 @@
                                             <span class="news-card-meta-item">
                                                 {% if news.is_last_24h %}
                                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                                    <time datetime="{{ news.created_at }}">{{ news.published_ago }}</time>
                                                 {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
                                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.formatted_datetime }}</time>
+                                                    <time datetime="{{ news.created_at }}">{{ news.formatted_datetime }}</time>
                                                 {% else %}
                                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                                    <time datetime="{{ news.created_at }}">{{ news.created_at|date('d.m.Y') }}</time>
                                                 {% endif %}
                                             </span>
                                         {% endif %}
 
                                         {% if news.categoryname is defined and news.categoryname is not empty %}
-                                            <span class="news-card-category-pill" itemprop="articleSection">{{ news.categoryname }}</span>
+                                            <span class="news-card-category-pill">{{ news.categoryname }}</span>
                                         {% endif %}
                                     </div>
 
-                                    <h2 class="news-card-title" itemprop="headline">
-                                        <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                                    <h2 class="news-card-title">
+                                        <a href="{{ site.saddress }}news/{{ news.seo }}">
                                             {{ news_title }}
                                         </a>
                                     </h2>
 
-                                    <p class="news-card-summary" itemprop="description">
+                                    <p class="news-card-summary">
                                         {{ news_excerpt|length > 150 ? news_excerpt|slice(0, 147) ~ '...' : news_excerpt }}
                                     </p>
 

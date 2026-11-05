@@ -1,10 +1,5 @@
 {% extends "layouts/base.twig" %}
 
-{% block css_custom %}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
-{% endblock %}
-
-{% block content %}
 {% set category_seo = ctx_get('category_seo') %}
 {% set categoryname = ctx_get('categoryname') %}
 {% set kategoriler = ctx_get('categories') %}
@@ -12,6 +7,79 @@
 {% set sayfalama = ctx_get('sayfalama') %}
 {% set sayfa = ctx_get('sayfa') %}
 
+{% set is_filtered = category_seo is not empty and category_seo != 'all' %}
+{% set current_page_title = is_filtered ? categoryname : lang.index.mod_video_embed.1 %}
+{% set page_canonical = site.saddress ~ 'videos' ~ (is_filtered ? '/' ~ category_seo : '') ~ (sayfa is defined and sayfa > 1 ? '/' ~ sayfa : '') %}
+{% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ page_canonical }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ current_page_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ current_page_title }} - {{ site.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ page_canonical }}">
+    <meta property="og:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta property="og:description" content="{{ current_page_title }} - {{ site.description }}">
+    <meta property="og:image" content="{{ video_logo_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ current_page_title }} - {{ site.description }}">
+    <meta name="twitter:image" content="{{ video_logo_asset }}">
+{% endblock %}
+
+{% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
+        }{% if is_filtered %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_video_embed.1|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'videos')|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ categoryname|json_ld|raw }},
+          "item": {{ page_canonical|json_ld|raw }}
+        }
+        {% else %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_video_embed.1|json_ld|raw }},
+          "item": {{ page_canonical|json_ld|raw }}
+        }
+        {% endif %}
+      ]
+    }
+    </script>
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
 <div class="row mt-4" id="mod_video_embed_list">
 
     <!-- Left Column: Categories -->

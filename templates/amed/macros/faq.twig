@@ -47,7 +47,7 @@
                 "mainEntity": main_entities
             } %}
             <script type="application/ld+json">
-{{ faq_schema|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_PRETTY_PRINT'))|raw }}
+{{ faq_schema|json_ld|raw }}
             </script>
         {% endif %}
     {% endif %}

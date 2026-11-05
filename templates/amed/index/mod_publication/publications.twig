@@ -25,6 +25,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site.saddress }}publications{% if is_filtered_category %}/{{ category_seo }}{% endif %}">
     <meta property="og:title" content="{{ current_page_title }} - {{ site.title }}">
@@ -38,6 +39,7 @@
 {% endblock %}
 
 {% block schema %}
+    {% set current_canonical_url = site.saddress ~ 'publications' ~ (is_filtered_category ? '/' ~ category_seo : '') ~ (page is defined and page > 1 ? '/' ~ page : '') %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -46,25 +48,27 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": {{ lang.index.home|json_encode|raw }},
-          "item": {{ site.saddress|json_encode|raw }}
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
         }{% if is_filtered_category %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ lang.index.mod_publication.all_publications|json_encode|raw }},
-          "item": {{ (site.saddress ~ 'publications')|json_encode|raw }}
+          "name": {{ lang.index.mod_publication.all_publications|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'publications')|json_ld|raw }}
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": {{ categoryname|json_encode|raw }}
+          "name": {{ categoryname|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% else %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ lang.index.mod_publication.all_publications|json_encode|raw }}
+          "name": {{ lang.index.mod_publication.all_publications|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% endif %}
       ]
@@ -167,11 +171,10 @@
                         {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
 
                         <div class="col publications-grid-col">
-                            <article class="publication-card" itemscope itemtype="https://schema.org/CreativeWork">
+                            <article class="publication-card">
                                 <a href="{{ site.saddress }}publication/{{ publication.seo }}"
                                    class="publication-media"
-                                   title="{{ publication_title }}"
-                                   itemprop="url">
+                                   title="{{ publication_title }}">
                                     {% if publication.image is not empty %}
                                         <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}"
                                              class="publication-img"
@@ -179,8 +182,7 @@
                                              width="640"
                                              height="360"
                                              loading="lazy"
-                                             decoding="async"
-                                             itemprop="image">
+                                             decoding="async">
                                     {% else %}
                                         <div class="publication-placeholder">
                                             <i class="bi bi-journal-text publication-placeholder-icon" aria-hidden="true"></i>
@@ -188,7 +190,7 @@
                                     {% endif %}
 
                                     {% if publication.u_name is defined and publication.u_name is not empty %}
-                                        <div class="publication-author-badge" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                                        <div class="publication-author-badge">
                                             <div class="publication-author-avatar">
                                                 {% if publication.user_image is defined and publication.user_image is not empty %}
                                                     <img src="{{ site.iaddress }}mod_user/thumb/{{ publication.user_image }}"
@@ -204,7 +206,7 @@
                                                 {% endif %}
                                             </div>
                                             <div class="publication-author-meta">
-                                                <span class="publication-author-name" itemprop="name">{{ publication.u_name }} {{ publication.u_last_name }}</span>
+                                                <span class="publication-author-name">{{ publication.u_name }} {{ publication.u_last_name }}</span>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -216,32 +218,32 @@
                                             <span class="publication-meta-item">
                                                 {% if publication.is_last_24h %}
                                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.published_ago }}</time>
+                                                    <time datetime="{{ publication.created_at }}">{{ publication.published_ago }}</time>
                                                 {% elseif publication.formatted_datetime is defined and publication.formatted_datetime is not empty %}
                                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.formatted_datetime }}</time>
+                                                    <time datetime="{{ publication.created_at }}">{{ publication.formatted_datetime }}</time>
                                                 {% else %}
                                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                    <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.created_at|date('d.m.Y') }}</time>
+                                                    <time datetime="{{ publication.created_at }}">{{ publication.created_at|date('d.m.Y') }}</time>
                                                 {% endif %}
                                             </span>
                                         {% endif %}
 
                                         {% if publication.category_name is defined and publication.category_name is not empty %}
-                                            <span class="publication-category-pill" itemprop="genre">
+                                            <span class="publication-category-pill">
                                                 <i class="bi bi-bookmark-fill" aria-hidden="true"></i>
                                                 <span>{{ publication.category_name }}</span>
                                             </span>
                                         {% endif %}
                                     </div>
 
-                                    <h2 class="publication-card-title" itemprop="headline">
-                                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" itemprop="url">
+                                    <h2 class="publication-card-title">
+                                        <a href="{{ site.saddress }}publication/{{ publication.seo }}">
                                             {{ publication_title }}
                                         </a>
                                     </h2>
 
-                                    <p class="publication-summary" itemprop="description">
+                                    <p class="publication-summary">
                                         {{ publication_excerpt|length > 150 ? publication_excerpt|slice(0, 147) ~ '...' : publication_excerpt }}
                                     </p>
 

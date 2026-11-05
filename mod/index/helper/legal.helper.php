@@ -56,7 +56,7 @@ class legal_helper extends indexBase
                 'title_key' => 'legal_info',
                 'desc_key' => 'legal_notice_desc',
                 'slug_key' => 'legal_info_slug',
-                'fallback_slugs' => ['Yasal_Bilgiler', 'Legal_Information', 'Agahiyên_Qanûnî'],
+                'fallback_slugs' => ['Agahiyên_Qanûnî', 'Agahdariya_Zagônî', 'Agahdariya_Zagonî', 'Yasal_Bilgiler', 'Legal_Information', 'Melumatê_Huqûqî'],
                 'schema_type' => 'AboutPage',
             ],
             'cookies' => [
@@ -65,7 +65,7 @@ class legal_helper extends indexBase
                 'title_key' => 'cookie_policy',
                 'desc_key' => 'cookie_policy_subtitle',
                 'slug_key' => 'cookie_policy_slug',
-                'fallback_slugs' => ['Cerez_Politikasi', 'Çerez_Politikası', 'Cookie_Policy', 'Polîtîkaya_Çerezan'],
+                'fallback_slugs' => ['Polîtîkaya_Kulîçeyan', 'Polîtîkaya_Çerezan', 'Çerez_Politikası', 'Cerez_Politikasi', 'Cookie_Richtlinie', 'Cookie-Richtlinie', 'Cookie_Policy', 'Siyasetê_Çerezan'],
                 'schema_type' => 'WebPage',
             ],
             'privacy' => [
@@ -74,7 +74,7 @@ class legal_helper extends indexBase
                 'title_key' => 'privacy_policy',
                 'desc_key' => 'privacy_policy_subtitle',
                 'slug_key' => 'privacy_policy_slug',
-                'fallback_slugs' => ['Gizlilik_Politikasi', 'Gizlilik_Politikası', 'Privacy_Policy', 'Polîtîkaya_Nepaniye', 'Polîtîkaya_Nepaniyê'],
+                'fallback_slugs' => ['Polîtîkaya_Nepeniyê', 'Gizlilik_Politikası', 'Gizlilik_Politikasi', 'Privacy_Policy', 'Polîtîkaya_Nimiteyîye', 'Politikaya_Nepaniye'],
                 'schema_type' => 'WebPage',
             ],
             'terms' => [
@@ -83,7 +83,7 @@ class legal_helper extends indexBase
                 'title_key' => 'terms_of_service',
                 'desc_key' => 'terms_of_service_subtitle',
                 'slug_key' => 'terms_of_service_slug',
-                'fallback_slugs' => ['Kullanim_Kosullari', 'Kullanım_Koşulları', 'Terms_of_Service', 'Mercen_Bikaranine', 'Mercên_Bikaranînê'],
+                'fallback_slugs' => ['Mercên_Bikaranînê', 'Kullanım_Koşulları', 'Kullanim_Kosullari', 'Terms_of_Service', 'Şertê_Xebitnayîşî', 'Mercen_Bikaranine'],
                 'schema_type' => 'WebPage',
             ],
             'editorial' => [
@@ -92,7 +92,7 @@ class legal_helper extends indexBase
                 'title_key' => 'editorial_policy',
                 'desc_key' => 'editorial_policy_subtitle',
                 'slug_key' => 'editorial_policy_slug',
-                'fallback_slugs' => ['Yayin_Ilkeleri', 'Yayın_İlkeleri', 'Editorial_Policy', 'Prensiben_Wesane', 'Prensîbên_Weşanê'],
+                'fallback_slugs' => ['Prensîbên_Weşanê', 'Yayın_İlkeleri', 'Yayin_Ilkeleri', 'Editorial_Policy', 'Prensîbê_Weşanî', 'Prensiben_Wesane'],
                 'schema_type' => 'WebPage',
             ],
             'accessibility' => [
@@ -101,7 +101,7 @@ class legal_helper extends indexBase
                 'title_key' => 'accessibility',
                 'desc_key' => 'accessibility_subtitle',
                 'slug_key' => 'accessibility_slug',
-                'fallback_slugs' => ['Erisilebilirlik', 'Erişilebilirlik', 'Accessibility', 'Gihîştbarî', 'Gihistbari'],
+                'fallback_slugs' => ['Gihîştbarî', 'Erişilebilirlik', 'Erisilebilirlik', 'Accessibility', 'Resayîşbarîye', 'Gihistinbari'],
                 'schema_type' => 'WebPage',
             ],
             'security' => [
@@ -110,7 +110,7 @@ class legal_helper extends indexBase
                 'title_key' => 'security_policy',
                 'desc_key' => 'security_policy_subtitle',
                 'slug_key' => 'security_policy_slug',
-                'fallback_slugs' => ['Guvenlik_Politikasi', 'Güvenlik_Politikası', 'Security_Policy', 'Polîtîkaya_Ewlehiyê', 'Politikaya_Ewlehiye'],
+                'fallback_slugs' => ['Polîtîkaya_Ewlehiyê', 'Güvenlik_Politikası', 'Guvenlik_Politikasi', 'Security_Policy', 'Polîtîkaya_Asayîşî', 'Politikaya_Ewlehiye'],
                 'schema_type' => 'WebPage',
             ],
             'compliance' => [
@@ -119,7 +119,7 @@ class legal_helper extends indexBase
                 'title_key' => 'compliance',
                 'desc_key' => 'compliance_subtitle',
                 'slug_key' => 'compliance_slug',
-                'fallback_slugs' => ['Basin_Etigi_ve_Uyum', 'Basın_Etiği_ve_Uyum', 'Compliance', 'Etîka_Çapemeniyê', 'Etika_Capemeniye'],
+                'fallback_slugs' => ['Etîka_Çapemeniyê_û_Lihevhatin', 'Etîka_Çapemeniyê', 'Basın_Etiği_ve_Uyum', 'Basin_Etigi_ve_Uyum', 'Compliance', 'Liheveyîye', 'Etika_Capemeniye'],
                 'schema_type' => 'WebPage',
             ],
             'contact' => [
@@ -128,7 +128,7 @@ class legal_helper extends indexBase
                 'title_key' => 'contact_us',
                 'desc_key' => 'legal_notice_desc',
                 'slug_key' => '',
-                'fallback_slugs' => ['Iletisim', 'İletişim', 'Contact'],
+                'fallback_slugs' => ['Têkilî', 'İletişim', 'Iletisim', 'Contact'],
                 'schema_type' => 'ContactPage',
             ],
         ];

@@ -27,6 +27,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}">
     <meta property="og:title" content="{{ page_title }} - {{ site.title }}">
@@ -44,6 +45,7 @@
 {% endblock %}
 
 {% block schema %}
+    {% set current_canonical_url = site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') ~ (page > 1 ? '/' ~ page : '') %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -52,25 +54,27 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": {{ lang.index.home|json_encode|raw }},
-          "item": {{ site.saddress|json_encode|raw }}
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
         }{% if is_filtered %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ lang.index.mod_event.events|json_encode|raw }},
-          "item": {{ (site.saddress ~ 'events')|json_encode|raw }}
+          "name": {{ lang.index.mod_event.events|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'events')|json_ld|raw }}
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": {{ active_category.name|json_encode|raw }}
+          "name": {{ active_category.name|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% else %},
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ lang.index.mod_event.events|json_encode|raw }}
+          "name": {{ lang.index.mod_event.events|json_ld|raw }},
+          "item": {{ current_canonical_url|json_ld|raw }}
         }
         {% endif %}
       ]

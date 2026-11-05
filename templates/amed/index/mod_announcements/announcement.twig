@@ -39,7 +39,10 @@
 {% endblock %}
 
 {% block meta_tags %}
-	<meta name="robots" content="index, follow, max-image-preview:large">
+	{% set ann_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+	{% set ann_updated_ts = d.updated_at ? d.updated_at|date('U') : ann_created_ts %}
+	{% if ann_updated_ts < ann_created_ts %}{% set ann_updated_ts = ann_created_ts %}{% endif %}
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{ announcement_url }}">
@@ -69,8 +72,8 @@
     {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
 	<meta property="og:locale" content="{{ og_locale }}">
-	<meta property="article:published_time" content="{{ d.created_at|date('c') }}">
-	<meta property="article:modified_time" content="{{ (d.updated_at ?: d.created_at)|date('c') }}">
+	<meta property="article:published_time" content="{{ ann_created_ts|date('c') }}">
+	<meta property="article:modified_time" content="{{ ann_updated_ts|date('c') }}">
 	<meta property="article:section" content="{{ lang.index.mod_announcements.title }}">
 
 	<!-- Twitter -->
@@ -84,31 +87,34 @@
 {% endblock %}
 
 {% block schema %}
+	{% set ann_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+	{% set ann_updated_ts = d.updated_at ? d.updated_at|date('U') : ann_created_ts %}
+	{% if ann_updated_ts < ann_created_ts %}{% set ann_updated_ts = ann_created_ts %}{% endif %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
 		  "@type": "Article",
-		  "headline": {{ d.name|json_encode|raw }},
-		  "image": {{ announcement_share_image|json_encode|raw }},
+		  "headline": {{ d.name|json_ld|raw }},
+		  "image": {{ announcement_share_image|json_ld|raw }},
 		  "author": {
 		    "@type": "Organization",
-		    "name": {{ site.title|json_encode|raw }}
-		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_encode|raw }}{% endif %}
-		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_encode|raw }}{% endif %}
+		    "name": {{ site.title|json_ld|raw }}
+		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_ld|raw }}{% endif %}
+		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_ld|raw }}{% endif %}
 		  },
 		  "publisher": {
 		    "@type": "Organization",
-		    "name": {{ site.title|json_encode|raw }},
-		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
-		    "url": {{ site.address|json_encode|raw }},
+		    "name": {{ site.title|json_ld|raw }},
+		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
+		    "url": {{ site.address|json_ld|raw }},
 		    "logo": {
 		      "@type": "ImageObject",
-		      "url": {{ announcement_logo_asset|json_encode|raw }}
+		      "url": {{ announcement_logo_asset|json_ld|raw }}
 		    }
 		  },
-		  "datePublished": "{{ d.created_at ? d.created_at|date('Y-m-d') : "now"|date('Y-m-d') }}",
-		  "dateModified": "{{ (d.updated_at ?: d.created_at)|date('Y-m-d') }}",
-		  "description": {{ (d.summary ?: (d.description ?: (d.content ?: site.description)))|striptags|slice(0, 200)|json_encode|raw }}
+		  "datePublished": "{{ ann_created_ts|date('c') }}",
+		  "dateModified": "{{ ann_updated_ts|date('c') }}",
+		  "description": {{ (d.summary ?: (d.description ?: (d.content ?: site.description)))|striptags|slice(0, 200)|json_ld|raw }}
 		}
 	</script>
 	<script type="application/ld+json">
@@ -119,19 +125,20 @@
 		    {
 		      "@type": "ListItem",
 		      "position": 1,
-		      "name": {{ lang.index.home|json_encode|raw }},
-		      "item": {{ site.saddress|json_encode|raw }}
+		      "name": {{ lang.index.home|json_ld|raw }},
+		      "item": {{ site.saddress|json_ld|raw }}
 		    },
 		    {
 		      "@type": "ListItem",
 		      "position": 2,
-		      "name": {{ lang.index.mod_announcements.title|json_encode|raw }},
-		      "item": {{ (site.saddress ~ 'announcements')|json_encode|raw }}
+		      "name": {{ lang.index.mod_announcements.title|json_ld|raw }},
+		      "item": {{ (site.saddress ~ 'announcements')|json_ld|raw }}
 		    },
 		    {
 		      "@type": "ListItem",
 		      "position": 3,
-		      "name": {{ d.name|json_encode|raw }}
+		      "name": {{ d.name|json_ld|raw }},
+		      "item": {{ announcement_url|json_ld|raw }}
 		    }
 		  ]
 		}

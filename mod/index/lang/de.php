@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'Datenschutzerklärung',
-    'privacy_policy_slug' => 'Datenschutzerklaerung',
+    'privacy_policy_slug' => 'Datenschutzerklärung',
     'privacy_policy_subtitle' => 'Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO und gesetzlichen Bestimmungen.',
     'privacy_data_controller_title' => 'Verantwortliche Stelle',
     'privacy_data_controller_desc' => 'Angaben zur juristischen Person, die für die Erhebung und Verarbeitung Ihrer personenbezogenen Daten verantwortlich ist.',

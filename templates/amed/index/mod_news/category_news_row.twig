@@ -2,11 +2,11 @@
     <section class="nyt-news-section">
         <div class="row g-4">
             {% for news in news_items %}
-                <article class="col-12 nyt-article" itemscope itemtype="https://schema.org/NewsArticle">
+                <article class="col-12 nyt-article">
                     <div class="nyt-article-media">
                         {% if news.image is not empty %}
                             <div class="nyt-article-img-wrapper">
-                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" itemprop="url">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}">
                                     <picture>
                                         <source srcset="{{ site.address }}r/w-380/h-214/c-1/q-78/f/mod_news/thumb/{{ news.image }}" media="(max-width: 768px)" sizes="(max-width: 768px) calc(100vw - 32px), 380px">
                                         <img src="{{ site.address }}r/w-380/h-214/c-1/q-78/f/mod_news/thumb/{{ news.image }}"
@@ -17,8 +17,7 @@
                                              sizes="(max-width: 768px) calc(100vw - 32px), 380px"
                                              loading="lazy"
                                              fetchpriority="low"
-                                             decoding="async"
-                                             itemprop="image">
+                                             decoding="async">
                                     </picture>
                                 </a>
                                 {% if news.has_video or news.has_gallery %}
@@ -38,15 +37,15 @@
                             </div>
                         {% else %}
                             <div class="nyt-article-placeholder">
-                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" itemprop="url" class="nyt-article-placeholder-link">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" class="nyt-article-placeholder-link">
                                     <i class="bi bi-newspaper" aria-hidden="true"></i>
                                 </a>
                             </div>
                         {% endif %}
                     </div>
 
-                    <h3 class="nyt-article-title" itemprop="headline">
-                        <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">{{ news.name|raw }}</a>
+                    <h3 class="nyt-article-title">
+                        <a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name|raw }}</a>
                     </h3>
                     
                     {# Reading Time Calculation #}
@@ -59,13 +58,13 @@
                         <span class="nyt-article-meta-item nyt-article-date">
                             {% if news.is_last_24h %}
                                 <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                <time datetime="{{ news.created_at }}">{{ news.published_ago }}</time>
                             {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.formatted_datetime }}</time>
+                                <time datetime="{{ news.created_at }}">{{ news.formatted_datetime }}</time>
                             {% else %}
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                <time datetime="{{ news.created_at }}">{{ news.created_at|date('d.m.Y') }}</time>
                             {% endif %}
                         </span>
                         <span class="nyt-article-meta-sep" aria-hidden="true">·</span>
@@ -74,7 +73,7 @@
                             <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
                         </span>
                     </div>
-                    <p class="nyt-article-summary" itemprop="description">
+                    <p class="nyt-article-summary">
                         {{ clean_summary|length > 160 ? clean_summary|slice(0, 157) ~ '...' : clean_summary }}
                     </p>
                 </article>

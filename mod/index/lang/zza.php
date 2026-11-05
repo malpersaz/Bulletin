@@ -65,7 +65,7 @@ $lang['index'] = [
     'registered_address' => 'Adresa Merkezî û Huqûqîye ya Şîrkete',
     'quick_copy' => 'Semedê kopya kerdene bitikne',
     'cookie_policy' => 'Polîtîkaya Çerezan',
-    'cookie_policy_slug' => 'Politîkaya_Çerezan',
+    'cookie_policy_slug' => 'Siyasetê_Çerezan',
     'cookie_policy_subtitle' => 'Melumato şefaf û tercihé înteraktîfî semedê çerezanê ke keyepelê ma de yenê xebitnayene.',
     'cookie_preferences_title' => 'Merkezê Tercîhanê Çerezan',
     'cookie_preferences_desc' => 'Mîhenganê çerezanê xo îdare bikê. Şima şenê goreyê waştişê xo babetanê ciyayan ê çerezan akerê yan bigirê. Çerezê mecburî semedê xebata bêkêmasî ya sîtey her wext akerde yê.',
@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'Polîtîkaya Nimiteyîye',
-    'privacy_policy_slug' => 'Politikaya_Nimiteyiye',
+    'privacy_policy_slug' => 'Polîtîkaya_Nimiteyîye',
     'privacy_policy_subtitle' => 'Pawitişê melumatê şexsî û agahdarîyê nimiteyîye goreyê qanûnanê qanûnî û GDPR.',
     'privacy_data_controller_title' => 'Nasnameyê Berpirsîyarê Melumatî',
     'privacy_data_controller_desc' => 'Agahîyê dezgehê huqûqî yo ke semedê arêdayîş û karkerdene serê melumatê şima yê şexsî berpirsîyar o.',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'Şertê Xebitnayîşî',
-    'terms_of_service_slug' => 'Serte_Xebitnayisi',
+    'terms_of_service_slug' => 'Şertê_Xebitnayîşî',
     'terms_of_service_subtitle' => 'Şert û bendê ke resayîş, heqê telîfî, vilakerdiş û xebitnayîşê rewa yê platformê ma yê rojnamegerîye îdare kenê.',
     'terms_scope_title' => 'Çarçewaya Pêkerdişî û Qebûlkerdişê Şertan',
     'terms_scope_desc' => 'Şertê wendene, têkilîdayene û xebitnayîşê xeberan, weşanan û xizmetanê multîmedya yê ma.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'Prensîbê Weşanî û Heqê Cewabdayene',
-    'editorial_policy_slug' => 'Prensibe_Wesani',
+    'editorial_policy_slug' => 'Prensîbê_Weşanî',
     'editorial_policy_subtitle' => 'Pabesteyîya raştîya rojnamegerîye, çimeyê cîyayî, roşnîya serastkerdişî û heqo qanûnî yê cewabdayene.',
     'editorial_independence_title' => 'Xoserîya Weşanîye û Kontrolê Raştîyan',
     'editorial_independence_desc' => 'Diqetê kontrolkerdişê raştîyan, bêterefîye, pawitişê çimeyê nimiteyî û cîyakerdişê xeberan ji fikranê şexsî.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'Beyanê Resayîşbarîye',
-    'accessibility_slug' => 'Resayisbariye',
+    'accessibility_slug' => 'Resayîşbarîye',
     'accessibility_subtitle' => 'Pabesteyîya ma ya semedê temînkerdişê resayîşê dîjîtalî yê her kesî goreyê standardê WCAG 2.1 sewîyeya AA.',
     'accessibility_conformance_title' => 'Standardê Liheveyîye (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Qeydeyê dîzayn û mendezyarîye yê ke serê mobil û komputere de yenê xebitnayene semedê wedartişê astengan.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Polîtîkaya Asayîşî û Pawitişê Melumatî',
-    'security_policy_slug' => 'Politikaya_Asayisi',
+    'security_policy_slug' => 'Polîtîkaya_Asayîşî',
     'security_policy_subtitle' => 'Mîmarîya asayîşê platformî, garantîyê teknîkî û çarçewaya xeberdayîşê rewa ya kêmasîyanê asayîşî.',
     'security_safeguards_title' => 'Pawitişê Teknîkî û Programî',
     'security_safeguards_desc' => 'Şîfrekerdişê TLS/HTTPS, roniştişê ewle, pawitişê vera CSRF û kontrolkerdişê selahîyetan goreyê rolan.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'Etîkê Çapemenîye û Liheveyîye',
-    'compliance_slug' => 'Liheveyiye',
+    'compliance_slug' => 'Liheveyîye',
     'compliance_subtitle' => 'Qeydeyê exlaqê rojnamegerîye, xoserîya weşangerîye, vergirotişê pêtîya berjewendîyan û pawitişê eşkêrakaran.',
     'compliance_ethics_title' => 'Qeydeyê Exlaqê Rojnamegerîye',
     'compliance_ethics_desc' => 'Prensîbê sereke yê rastîye, edaletî, hurmetê rûmetê merdimîye, dûrîkewtişê tuhmetî û hurmetê heqê nimiteyîye.',

@@ -46,7 +46,10 @@
 {% endblock %}
 
 {% block meta_tags %}
-    <meta name="robots" content="index, follow, max-image-preview:large">
+    {% set pub_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+    {% set pub_updated_ts = d.updated_at ? d.updated_at|date('U') : pub_created_ts %}
+    {% if pub_updated_ts < pub_created_ts %}{% set pub_updated_ts = pub_created_ts %}{% endif %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site.saddress }}publication/{{ d.seo }}">
     <meta property="og:title" content="{{ d.title|default(d.name) }}">
@@ -75,8 +78,8 @@
     {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
     <meta property="og:locale" content="{{ og_locale }}">
-    <meta property="article:published_time" content="{{ (d.created_at ?: "now")|date('c') }}">
-    <meta property="article:modified_time" content="{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}">
+    <meta property="article:published_time" content="{{ pub_created_ts|date('c') }}">
+    <meta property="article:modified_time" content="{{ pub_updated_ts|date('c') }}">
     {% if d.category_name is defined and d.category_name is not empty %}
         <meta property="article:section" content="{{ d.category_name }}">
     {% endif %}
@@ -91,28 +94,56 @@
 {% endblock %}
 
 {% block schema %}
+    {% set pub_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+    {% set pub_updated_ts = d.updated_at ? d.updated_at|date('U') : pub_created_ts %}
+    {% if pub_updated_ts < pub_created_ts %}{% set pub_updated_ts = pub_created_ts %}{% endif %}
+    {% set pub_img_url = publication_share_image is not empty ? publication_share_image : (publication_logo_asset|default(site.iaddress ~ 'mod_settings/logo.png')) %}
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": {{ d.name|json_encode|raw }},
-          "image": {{ publication_share_image|json_encode|raw }},
+          "@id": {{ (site.saddress ~ 'publication/' ~ d.seo ~ '#article')|json_ld|raw }},
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
+            "name": {{ site.title|json_ld|raw }},
+            "url": {{ site.saddress|json_ld|raw }}
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": {{ (site.saddress ~ 'publication/' ~ d.seo)|json_ld|raw }}
+          },
+          "url": {{ (site.saddress ~ 'publication/' ~ d.seo)|json_ld|raw }},
+          "headline": {{ d.name|json_ld|raw }},
+          "inLanguage": "{{ site.lang }}",
+          "isAccessibleForFree": true,
+          {% if d.category_name is defined and d.category_name is not empty %}"articleSection": {{ d.category_name|json_ld|raw }},{% endif %}
+          "image": [
+            {
+              "@type": "ImageObject",
+              "url": {{ pub_img_url|json_ld|raw }},
+              "width": 1200,
+              "height": 630
+            }
+          ],
           "author": {
             "@type": "Person",
-            "name": {{ (d.u_name|default('') ~ ' ' ~ d.u_last_name|default(''))|trim|json_encode|raw }}{% if d.user_image is defined and d.user_image is not empty %},
-            "image": {{ (site.iaddress ~ 'mod_user/' ~ d.user_image)|json_encode|raw }}{% endif %}
+            "name": {{ (d.u_name|default('') ~ ' ' ~ d.u_last_name|default(''))|trim|json_ld|raw }}{% if d.username is defined and d.username is not empty %},
+            "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_ld|raw }}{% endif %}{% if d.user_image is defined and d.user_image is not empty %},
+            "image": {{ (site.iaddress ~ 'mod_user/' ~ d.user_image)|json_ld|raw }}{% endif %}
           },
           "publisher": {
-            "@type": "Organization",
-            "name": {{ site.title|json_encode|raw }},
+            "@type": "NewsMediaOrganization",
+            "name": {{ site.title|json_ld|raw }},
+            "url": {{ site.address|json_ld|raw }},
             "logo": {
               "@type": "ImageObject",
-              "url": {{ publication_logo_asset|default(site.iaddress ~ 'mod_settings/logo.png')|json_encode|raw }}
+              "url": {{ publication_logo_asset|default(site.iaddress ~ 'mod_settings/logo.png')|json_ld|raw }}
             }
           },
-          "datePublished": "{{ (d.created_at ?: "now")|date('c') }}",
-          "dateModified": "{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}",
-          "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_encode|raw }}
+          "datePublished": "{{ pub_created_ts|date('c') }}",
+          "dateModified": "{{ pub_updated_ts|date('c') }}",
+          "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_ld|raw }}
         }
     </script>
     <script type="application/ld+json">
@@ -123,25 +154,26 @@
             {
               "@type": "ListItem",
               "position": 1,
-              "name": {{ lang.index.home|json_encode|raw }},
-              "item": {{ site.saddress|json_encode|raw }}
+              "name": {{ lang.index.home|json_ld|raw }},
+              "item": {{ site.saddress|json_ld|raw }}
             },
             {
               "@type": "ListItem",
               "position": 2,
-              "name": {{ lang.index.mod_publication.all_publications|json_encode|raw }},
-              "item": {{ (site.saddress ~ 'publications')|json_encode|raw }}
+              "name": {{ lang.index.mod_publication.all_publications|json_ld|raw }},
+              "item": {{ (site.saddress ~ 'publications')|json_ld|raw }}
             }{% if d.category_name is defined and d.category_name is not empty %},
             {
               "@type": "ListItem",
               "position": 3,
-              "name": {{ d.category_name|json_encode|raw }},
-              "item": {{ (site.saddress ~ 'publications/' ~ d.category_seo)|json_encode|raw }}
+              "name": {{ d.category_name|json_ld|raw }},
+              "item": {{ (site.saddress ~ 'publications/' ~ d.category_seo)|json_ld|raw }}
             }{% endif %},
             {
               "@type": "ListItem",
               "position": {{ (d.category_name is defined and d.category_name is not empty) ? 4 : 3 }},
-              "name": {{ d.name|json_encode|raw }}
+              "name": {{ d.name|json_ld|raw }},
+              "item": {{ (site.saddress ~ 'publication/' ~ d.seo)|json_ld|raw }}
             }
           ]
         }

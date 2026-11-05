@@ -930,7 +930,10 @@ class index_mod extends indexBase
             foreach ($news->toArray() as $o) {
                 $createdTime = !empty($o['created_at']) ? strtotime($o['created_at']) : $nowTime;
                 $updatedTime = !empty($o['updated_at']) ? strtotime($o['updated_at']) : $createdTime;
-                $lastmod = date('c', $updatedTime ?: $createdTime);
+                if ($updatedTime < $createdTime) {
+                    $updatedTime = $createdTime;
+                }
+                $lastmod = date('c', $updatedTime);
                 $cleanTitle = htmlspecialchars(html_entity_decode(strip_tags((string) $o['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
                 $pubDate = date('c', $createdTime);
 
@@ -1284,6 +1287,10 @@ class index_mod extends indexBase
         
         if ($pages->getSize() != 0) {
             foreach ($pages->toArray() as $o) {
+                $rawSeo = (string) $o['seo'];
+                if (Helper::resolve_statutory_slug($rawSeo) !== null) {
+                    continue;
+                }
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
                           <priority>0.50</priority>

@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ site.address }}legal">
 	<meta property="og:title" content="{{ page_meta_title }}">
@@ -55,15 +56,15 @@
 		  "@graph": [
 		    {
 		      "@type": "AboutPage",
-		      "@id": {{ (site.address ~ 'legal#webpage')|json_encode|raw }},
-		      "url": {{ (site.address ~ 'legal')|json_encode|raw }},
-		      "name": {{ page_meta_title|json_encode|raw }},
-		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
+		      "@id": {{ (site.address ~ 'legal#webpage')|json_ld|raw }},
+		      "url": {{ (site.address ~ 'legal')|json_ld|raw }},
+		      "name": {{ page_meta_title|json_ld|raw }},
+		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_ld|raw }},
 		      "isPartOf": {
 		        "@type": "WebSite",
-		        "@id": {{ (site.address ~ '#website')|json_encode|raw }},
-		        "name": {{ site.name|json_encode|raw }},
-		        "url": {{ site.address|json_encode|raw }}
+		        "@id": {{ (site.address ~ '#website')|json_ld|raw }},
+		        "name": {{ site.name|json_ld|raw }},
+		        "url": {{ site.address|json_ld|raw }}
 		      },
 		      "breadcrumb": {
 		        "@type": "BreadcrumbList",
@@ -71,36 +72,36 @@
 		          {
 		            "@type": "ListItem",
 		            "position": 1,
-		            "name": {{ lang.index.home|json_encode|raw }},
-		            "item": {{ site.address|json_encode|raw }}
+		            "name": {{ lang.index.home|json_ld|raw }},
+		            "item": {{ site.address|json_ld|raw }}
 		          },
 		          {
 		            "@type": "ListItem",
 		            "position": 2,
-		            "name": {{ page_meta_title|json_encode|raw }},
-		            "item": {{ (site.address ~ 'legal')|json_encode|raw }}
+		            "name": {{ page_meta_title|json_ld|raw }},
+		            "item": {{ (site.address ~ 'legal')|json_ld|raw }}
 		          }
 		        ]
 		      }
 		    },
 		    {
 		      "@type": "NewsMediaOrganization",
-		      "@id": {{ (site.address ~ '#organization')|json_encode|raw }},
-		      "name": {{ site.name|json_encode|raw }},
-		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
-		      {% if site.vat_number is defined and site.vat_number is not empty %}"vatID": {{ site.vat_number|json_encode|raw }},{% endif %}
-		      {% if site.tax_number is defined and site.tax_number is not empty %}"taxID": {{ site.tax_number|json_encode|raw }},{% endif %}
-		      {% if site.central_registration_number is defined and site.central_registration_number is not empty %}"leiCode": {{ site.central_registration_number|json_encode|raw }},{% endif %}
-		      {% if site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_encode|raw }},{% endif %}
-		      {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_encode|raw }},{% endif %}
-		      "publishingPrinciples": {{ (site.address ~ 'editorial-policy')|json_encode|raw }},
-		      "correctionsPolicy": {{ (site.address ~ 'editorial-policy#corrections')|json_encode|raw }},
-		      "actionableFeedbackPolicy": {{ (site.address ~ 'editorial-policy')|json_encode|raw }},
-		      "ethicsPolicy": {{ (site.address ~ 'compliance')|json_encode|raw }},
-		      "diversityPolicy": {{ (site.address ~ 'compliance')|json_encode|raw }},
-		      "masthead": {{ (site.address ~ 'legal')|json_encode|raw }},
-		      "url": {{ site.address|json_encode|raw }},
-		      "logo": {{ page_logo_asset|json_encode|raw }}
+		      "@id": {{ (site.address ~ '#organization')|json_ld|raw }},
+		      "name": {{ site.name|json_ld|raw }},
+		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
+		      {% if site.vat_number is defined and site.vat_number is not empty %}"vatID": {{ site.vat_number|json_ld|raw }},{% endif %}
+		      {% if site.tax_number is defined and site.tax_number is not empty %}"taxID": {{ site.tax_number|json_ld|raw }},{% endif %}
+		      {% if site.central_registration_number is defined and site.central_registration_number is not empty %}"leiCode": {{ site.central_registration_number|json_ld|raw }},{% endif %}
+		      {% if site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_ld|raw }},{% endif %}
+		      {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_ld|raw }},{% endif %}
+		      "publishingPrinciples": {{ (site.address ~ 'editorial-policy')|json_ld|raw }},
+		      "correctionsPolicy": {{ (site.address ~ 'editorial-policy#corrections')|json_ld|raw }},
+		      "actionableFeedbackPolicy": {{ (site.address ~ 'editorial-policy')|json_ld|raw }},
+		      "ethicsPolicy": {{ (site.address ~ 'compliance')|json_ld|raw }},
+		      "diversityPolicy": {{ (site.address ~ 'compliance')|json_ld|raw }},
+		      "masthead": {{ (site.address ~ 'legal')|json_ld|raw }},
+		      "url": {{ site.address|json_ld|raw }},
+		      "logo": {{ page_logo_asset|json_ld|raw }}
 		    }
 		  ]
 		}

@@ -1,12 +1,64 @@
 {% extends "layouts/base.twig" %}
 
-{% block content %}
 {% set d = ctx_get('d') %}
 {% set announcements = ctx_get('announcements') %}
 {% set yil = ctx_get('yil') %}
 {% set ay = ctx_get('ay') %}
 {% set arsiv_yil = ctx_get('arsiv_yil') %}
 {% set bulunamadi = ctx_get('bulunamadi') %}
+{% set announcements_url = site.saddress ~ 'announcements' %}
+{% set announcement_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ announcements_url }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ lang.index.mod_announcements.1 }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ lang.index.mod_announcements.1 }} - {{ site.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ announcements_url }}">
+    <meta property="og:title" content="{{ lang.index.mod_announcements.1 }} - {{ site.title }}">
+    <meta property="og:description" content="{{ lang.index.mod_announcements.1 }} - {{ site.description }}">
+    <meta property="og:image" content="{{ announcement_logo_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ lang.index.mod_announcements.1 }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ lang.index.mod_announcements.1 }} - {{ site.description }}">
+    <meta name="twitter:image" content="{{ announcement_logo_asset }}">
+{% endblock %}
+
+{% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_announcements.1|json_ld|raw }},
+          "item": {{ announcements_url|json_ld|raw }}
+        }
+      ]
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
 <div class="row" id="mod_announcements_list">
     <div class="card">
         <div class="card-header">

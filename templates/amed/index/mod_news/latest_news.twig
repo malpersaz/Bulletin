@@ -20,12 +20,11 @@
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 latest-news-grid">
             {% for news in latest_news %}
-                <article class="col latest-news-col" itemscope itemtype="https://schema.org/NewsArticle">
+                <article class="col latest-news-col">
                     <div class="latest-news-card">
                         <a href="{{ site.saddress }}news/{{ news.seo }}"
                            class="latest-news-media"
-                           title="{{ news.name }}"
-                           itemprop="url">
+                           title="{{ news.name }}">
                             {% if news.image is not empty %}
                                 <img src="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }}"
                                      srcset="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }} 256w, {{ site.address }}r/w-384/h-216/c-1/f/mod_news/thumb/{{ news.image }} 384w, {{ site.address }}r/w-480/h-270/c-1/f/mod_news/thumb/{{ news.image }} 480w"
@@ -36,8 +35,7 @@
                                      height="140"
                                      loading="lazy"
                                      fetchpriority="low"
-                                     decoding="async"
-                                     itemprop="image">
+                                     decoding="async">
                             {% else %}
                                 <div class="latest-news-placeholder">
                                     <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
@@ -45,11 +43,11 @@
                             {% endif %}
 
                             {% if news.category_name is defined and news.category_name is not empty %}
-                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                <span class="latest-news-category-badge">
                                     {{ news.category_name }}
                                 </span>
                             {% elseif news.categoryname is defined and news.categoryname is not empty %}
-                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                <span class="latest-news-category-badge">
                                     {{ news.categoryname }}
                                 </span>
                             {% endif %}
@@ -75,19 +73,19 @@
                                 {% if news.is_last_24h %}
                                     <span class="latest-news-meta-item">
                                         <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                        <time datetime="{{ news.created_at|default('') }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                        <time datetime="{{ news.created_at|default('') }}">{{ news.published_ago }}</time>
                                     </span>
                                     <span class="latest-news-meta-sep" aria-hidden="true">·</span>
                                 {% elseif news.formatted_datetime is defined and news.formatted_datetime is not empty %}
                                     <span class="latest-news-meta-item">
                                         <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                        <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.formatted_datetime }}</time>
+                                        <time datetime="{{ news.created_at }}">{{ news.formatted_datetime }}</time>
                                     </span>
                                     <span class="latest-news-meta-sep" aria-hidden="true">·</span>
                                 {% elseif news.created_at is defined and news.created_at is not empty %}
                                     <span class="latest-news-meta-item">
                                         <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                        <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                        <time datetime="{{ news.created_at }}">{{ news.created_at|date('d.m.Y') }}</time>
                                     </span>
                                     <span class="latest-news-meta-sep" aria-hidden="true">·</span>
                                 {% endif %}
@@ -102,13 +100,13 @@
                                 </span>
                             </div>
 
-                            <h3 class="latest-news-article-title" itemprop="headline">
-                                <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                            <h3 class="latest-news-article-title">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}">
                                     {{ news.name|raw }}
                                 </a>
                             </h3>
 
-                            <p class="latest-news-summary" itemprop="description">
+                            <p class="latest-news-summary">
                                 {{ clean_summary }}
                             </p>
                         </div>

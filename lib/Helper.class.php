@@ -409,4 +409,239 @@ class Helper
         }
         return rtrim($sub, " \t\n\r\0\x0B.,:;!?") . '...';
     }
+
+    /**
+     * Normalizes a URL slug or path token for pure UTF-8 case-insensitive comparisons
+     * preserving Wikipedia-style UTF-8 characters across all languages.
+     * Decodes URL encoding, normalizes hyphens/spaces to underscores, and applies
+     * Unicode-safe lowercase folding (handling Turkish dotted İ -> i safely).
+     */
+    public static function utf8_slug_key(string $slug): string
+    {
+        $decoded = rawurldecode($slug);
+        $normalized = str_replace(['-', ' '], '_', trim($decoded, "/ \t\n\r\0\x0B"));
+        // Safely fold Turkish capital dotted İ (\xC4\xB0) to 'i' before mb_strtolower
+        // to avoid mb_strtolower producing combining dot characters on certain PHP libicu setups.
+        $foldedI = str_replace("\xC4\xB0", 'i', $normalized);
+        return mb_strtolower($foldedI, 'UTF-8');
+    }
+
+    /**
+     * Resolves a statutory page slug or alias to its canonical root route slug
+     * ('legal', 'cookie-policy', 'privacy-policy', 'terms-of-service',
+     *  'editorial-policy', 'accessibility', 'security-policy', 'compliance', 'contact').
+     * Returns null if the slug is not a statutory page.
+     */
+    public static function resolve_statutory_slug(string $slug): ?string
+    {
+        $key = self::utf8_slug_key($slug);
+        if ($key === '') {
+            return null;
+        }
+
+        static $map = null;
+        if ($map === null) {
+            $map = [
+                // Canonical root route keys & English short aliases
+                'legal' => 'legal',
+                'imprint' => 'legal',
+                'masthead' => 'legal',
+                'legal_info' => 'legal',
+                'legal_information' => 'legal',
+
+                'cookie_policy' => 'cookie-policy',
+                'cookie-policy' => 'cookie-policy',
+                'cookies' => 'cookie-policy',
+
+                'privacy_policy' => 'privacy-policy',
+                'privacy-policy' => 'privacy-policy',
+                'privacy' => 'privacy-policy',
+
+                'terms_of_service' => 'terms-of-service',
+                'terms-of-service' => 'terms-of-service',
+                'terms' => 'terms-of-service',
+                'tos' => 'terms-of-service',
+
+                'editorial_policy' => 'editorial-policy',
+                'editorial-policy' => 'editorial-policy',
+                'editorial' => 'editorial-policy',
+                'editorial_guidelines' => 'editorial-policy',
+                'editorial-guidelines' => 'editorial-policy',
+                'corrections' => 'editorial-policy',
+                'corrections_policy' => 'editorial-policy',
+                'corrections-policy' => 'editorial-policy',
+
+                'accessibility' => 'accessibility',
+                'a11y' => 'accessibility',
+
+                'security_policy' => 'security-policy',
+                'security-policy' => 'security-policy',
+                'security' => 'security-policy',
+
+                'compliance' => 'compliance',
+                'ethics' => 'compliance',
+                'ethics_policy' => 'compliance',
+                'ethics-policy' => 'compliance',
+
+                'contact' => 'contact',
+                'contact_us' => 'contact',
+
+                // Turkish (tr) - Native UTF-8
+                'yasal_bilgiler' => 'legal',
+                'künye' => 'legal',
+                'kunye' => 'legal',
+                'kunya' => 'legal',
+                'çerez_politikası' => 'cookie-policy',
+                'gizlilik_politikası' => 'privacy-policy',
+                'kullanım_koşulları' => 'terms-of-service',
+                'yayın_ilkeleri' => 'editorial-policy',
+                'yayın_ılkeleri' => 'editorial-policy',
+                'erişilebilirlik' => 'accessibility',
+                'güvenlik_politikası' => 'security-policy',
+                'basın_etiği_ve_uyum' => 'compliance',
+                'iletişim' => 'contact',
+
+                // Kurdish (ku) - Native UTF-8
+                'agahiyên_qanûnî' => 'legal',
+                'agahdariya_zagonî' => 'legal',
+                'agahdariya_zagônî' => 'legal',
+                'polîtîkaya_çerezan' => 'cookie-policy',
+                'polîtîkaya_kulîçeyan' => 'cookie-policy',
+                'rêbaza_çerezan' => 'cookie-policy',
+                'polîtîkaya_nepeniyê' => 'privacy-policy',
+                'polîtîkaya_nepaniyê' => 'privacy-policy',
+                'mercên_bikaranînê' => 'terms-of-service',
+                'mercên_bikarhanînê' => 'terms-of-service',
+                'prensîbên_weşanê' => 'editorial-policy',
+                'yasayên_weşanê' => 'editorial-policy',
+                'zasayên_weşanê' => 'editorial-policy',
+                'gihîştbarî' => 'accessibility',
+                'gihîştinbarî' => 'accessibility',
+                'polîtîkaya_ewlehiyê' => 'security-policy',
+                'etîka_çapemeniyê' => 'compliance',
+                'etîka_çapemeniyê_û_lihevhatin' => 'compliance',
+                'kûnye' => 'legal',
+                'têkilî' => 'contact',
+
+                // Kurdish dialect (zza) - Native UTF-8
+                'melumatê_huqûqî' => 'legal',
+                'melûmatê_hiqûqî' => 'legal',
+                'siyasetê_çerezan' => 'cookie-policy',
+                'politîkaya_çerezan' => 'cookie-policy',
+                'polîtîkaya_nimiteyîye' => 'privacy-policy',
+                'şertê_xebitnayîşî' => 'terms-of-service',
+                'prensîbê_weşanî' => 'editorial-policy',
+                'resayîşbarîye' => 'accessibility',
+                'polîtîkaya_asayîşî' => 'security-policy',
+                'liheveyîye' => 'compliance',
+
+                // Central Kurdish (ckb) - Native script
+                'زانیارییە_یاساییەکان' => 'legal',
+                'سیاسەتی_کووکییەکان' => 'cookie-policy',
+                'سیاسەتی_تایبەتمەندی' => 'privacy-policy',
+                'مەرجەکانی_بەکارهێنان' => 'terms-of-service',
+                'بنەماکانی_دەستەی_نووسەران' => 'editorial-policy',
+                'دەستپێڕاگەیشتن' => 'accessibility',
+                'سیاسەتی_ئاسایش' => 'security-policy',
+                'ئیتیکی_ڕۆژنامەوانی' => 'compliance',
+
+                // Arabic (ar) - Native script
+                'المعلومات_القانونية' => 'legal',
+                'سياسة_ملفات_تعريف_الارتباط' => 'cookie-policy',
+                'سياسة_الخصوصية' => 'privacy-policy',
+                'شروط_الاستخدام' => 'terms-of-service',
+                'المعايير_التحريرية' => 'editorial-policy',
+                'إمكانية_الوصول' => 'accessibility',
+                'امكانية_الوصول' => 'accessibility',
+                'سياسة_الأمان' => 'security-policy',
+                'سياسة_الامان' => 'security-policy',
+                'ميثاق_الشرف_الصحفي' => 'compliance',
+
+                // Russian (ru) - Native script
+                'правовая_информация' => 'legal',
+                'политика_cookie' => 'cookie-policy',
+                'политика_конфиденциальности' => 'privacy-policy',
+                'условия_использования' => 'terms-of-service',
+                'редакционная_политика' => 'editorial-policy',
+                'доступность' => 'accessibility',
+                'политика_безопасности' => 'security-policy',
+                'журналистская_этика' => 'compliance',
+
+                // German (de) - Native UTF-8
+                'rechtliche_hinweise' => 'legal',
+                'cookie_richtlinie' => 'cookie-policy',
+                'datenschutzerklärung' => 'privacy-policy',
+                'nutzungsbedingungen' => 'terms-of-service',
+                'redaktionelle_richtlinien' => 'editorial-policy',
+                'barrierefreiheit' => 'accessibility',
+                'sicherheitsrichtlinie' => 'security-policy',
+                'presseethik_und_compliance' => 'compliance',
+
+                // French (fr) - Native UTF-8
+                'informations_légales' => 'legal',
+                'politique_de_cookies' => 'cookie-policy',
+                'politique_de_confidentialité' => 'privacy-policy',
+                'conditions_d_utilisation' => 'terms-of-service',
+                'principes_éditoriaux' => 'editorial-policy',
+                'accessibilité' => 'accessibility',
+                'politique_de_sécurité' => 'security-policy',
+                'conformité' => 'compliance',
+
+                // Swedish (sv) - Native UTF-8
+                'juridisk_information' => 'legal',
+                'cookiepolicy' => 'cookie-policy',
+                'integritetspolicy' => 'privacy-policy',
+                'användarvillkor' => 'terms-of-service',
+                'publicistiska_riktlinjer' => 'editorial-policy',
+                'tillgänglighet' => 'accessibility',
+                'säkerhetspolicy' => 'security-policy',
+                'regelefterlevnad' => 'compliance',
+
+                // Historical legacy ASCII slugs (preserved for 301 backward compatibility)
+                'cerez_politikasi' => 'cookie-policy',
+                'gizlilik_politikasi' => 'privacy-policy',
+                'kullanim_kosullari' => 'terms-of-service',
+                'yayin_ilkeleri' => 'editorial-policy',
+                'erisilebilirlik' => 'accessibility',
+                'guvenlik_politikasi' => 'security-policy',
+                'basin_etigi_ve_uyum' => 'compliance',
+                'iletisim' => 'contact',
+                'agahiyen_qanuni' => 'legal',
+                'agahdariya_zagoni' => 'legal',
+                'melumate_huquqi' => 'legal',
+                'politikaya_cerezan' => 'cookie-policy',
+                'politikaya_kuliceyan' => 'cookie-policy',
+                'siyasete_cerezan' => 'cookie-policy',
+                'politikaya_nepaniye' => 'privacy-policy',
+                'politika_nepeniye' => 'privacy-policy',
+                'mercen_bikaranine' => 'terms-of-service',
+                'mercen_bikarhanine' => 'terms-of-service',
+                'prensiben_wesane' => 'editorial-policy',
+                'zasayen_wesane' => 'editorial-policy',
+                'yasayen_wesane' => 'editorial-policy',
+                'gihistbari' => 'accessibility',
+                'gihistinbari' => 'accessibility',
+                'politikaya_ewlehiye' => 'security-policy',
+                'etika_capemeniye' => 'compliance',
+                'etiqa_capemeniye_u_lihevhatin' => 'compliance',
+                'politikaya_nimiteyiye' => 'privacy-policy',
+                'serte_xebitnayisi' => 'terms-of-service',
+                'prensibe_wesani' => 'editorial-policy',
+                'resayisbariye' => 'accessibility',
+                'politikaya_asayisi' => 'security-policy',
+                'liheveyiye' => 'compliance',
+                'datenschutzerklaerung' => 'privacy-policy',
+                'politique_de_confidentialite' => 'privacy-policy',
+                'principes_editoriaux' => 'editorial-policy',
+                'accessibilite' => 'accessibility',
+                'politique_de_securite' => 'security-policy',
+                'conformite' => 'compliance',
+                'anvandarvillkor' => 'terms-of-service',
+                'tillganglighet' => 'accessibility',
+                'sakerhetspolicy' => 'security-policy',
+            ];
+        }
+
+        return $map[$key] ?? null;
+    }
 }

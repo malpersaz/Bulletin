@@ -1,16 +1,78 @@
 {% extends "layouts/base.twig" %}
 
-{% block content %}
-
-
 {% set d = ctx_get('d') %}
 {% set kategoriler = ctx_get('categories') %}
+{% set video_url = site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo) %}
+{% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set video_image = (d.image is defined and d.image is not empty) ? site.iaddress ~ 'mod_video_embed/' ~ d.image : video_logo_asset %}
 
+{% block canonical %}
+    <link rel="canonical" href="{{ video_url }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ d.name }} - {{ lang.index.mod_video_embed.1 }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta property="og:type" content="video.other">
+    <meta property="og:url" content="{{ video_url }}">
+    <meta property="og:title" content="{{ d.name }} - {{ site.title }}">
+    <meta property="og:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
+    <meta property="og:image" content="{{ video_image }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ d.name }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
+    <meta name="twitter:image" content="{{ video_image }}">
+{% endblock %}
+
+{% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_video_embed.1|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'videos')|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ d.categoryname|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'videos/' ~ d.category_seo)|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": {{ d.name|json_ld|raw }},
+          "item": {{ video_url|json_ld|raw }}
+        }
+      ]
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
 <div class="row mt-4" id="mod_video_embed_detail">
 
     <!-- Sol Sütun: Kategoriler -->
     <aside class="col-lg-3 order-lg-1 mb-4">
-        <div class="card position-sticky" style="top: 2rem;" aria-labelledby="video-categories-title">
+        <div class="card position-sticky sticky-top" aria-labelledby="video-categories-title">
             <div class="card-header">
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>

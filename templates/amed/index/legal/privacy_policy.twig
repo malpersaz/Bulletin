@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block meta_tags %}
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ site.address }}privacy-policy">
 	<meta property="og:title" content="{{ page_meta_title }}">
@@ -51,13 +52,13 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": "WebPage",
-		  "name": {{ page_meta_title|json_encode|raw }},
-		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
-		  "url": {{ (site.address ~ 'privacy-policy')|json_encode|raw }},
+		  "name": {{ page_meta_title|json_ld|raw }},
+		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_ld|raw }},
+		  "url": {{ (site.address ~ 'privacy-policy')|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
-		    "name": {{ site.name|json_encode|raw }},
-		    "url": {{ site.address|json_encode|raw }}
+		    "name": {{ site.name|json_ld|raw }},
+		    "url": {{ site.address|json_ld|raw }}
 		  },
 		  "breadcrumb": {
 		    "@type": "BreadcrumbList",
@@ -65,14 +66,14 @@
 		      {
 			"@type": "ListItem",
 			"position": 1,
-			"name": {{ lang.index.home|json_encode|raw }},
-			"item": {{ site.address|json_encode|raw }}
+			"name": {{ lang.index.home|json_ld|raw }},
+			"item": {{ site.address|json_ld|raw }}
 		      },
 		      {
 			"@type": "ListItem",
 			"position": 2,
-			"name": {{ page_meta_title|json_encode|raw }},
-			"item": {{ (site.address ~ 'privacy-policy')|json_encode|raw }}
+			"name": {{ page_meta_title|json_ld|raw }},
+			"item": {{ (site.address ~ 'privacy-policy')|json_ld|raw }}
 		      }
 		    ]
 		  }

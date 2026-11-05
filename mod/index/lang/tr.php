@@ -65,7 +65,7 @@ $lang['index'] = [
     'registered_address' => 'Şirket Merkezi ve Yasal Adres',
     'quick_copy' => 'Kopyalamak için tıklayın',
     'cookie_policy' => 'Çerez Politikası',
-    'cookie_policy_slug' => 'Cerez_Politikasi',
+    'cookie_policy_slug' => 'Çerez_Politikası',
     'cookie_policy_subtitle' => 'Web sitemizde kullanılan çerezler hakkında şeffaf bilgilendirme ve etkileşimli çerez tercihleri.',
     'cookie_preferences_title' => 'Çerez Tercihleri Merkezi',
     'cookie_preferences_desc' => 'Çerez ayarlarınızı yönetin. İsteğinize bağlı olarak farklı çerez türlerini etkinleştirebilir veya devre dışı bırakabilirsiniz. Zorunlu çerezler sitenin düzgün çalışması için her zaman etkindir.',
@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'Gizlilik Politikası',
-    'privacy_policy_slug' => 'Gizlilik_Politikasi',
+    'privacy_policy_slug' => 'Gizlilik_Politikası',
     'privacy_policy_subtitle' => '6698 Sayılı KVKK ve GDPR kapsamında kişisel verilerin korunması ve gizlilik aydınlatma metni.',
     'privacy_data_controller_title' => 'Veri Sorumlusunun Kimliği',
     'privacy_data_controller_desc' => 'Kişisel verilerinizin toplanması ve işlenmesinden sorumlu tüzel kişiliğe ilişkin yasal bilgiler.',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'Kullanım Koşulları',
-    'terms_of_service_slug' => 'Kullanim_Kosullari',
+    'terms_of_service_slug' => 'Kullanım_Koşulları',
     'terms_of_service_subtitle' => 'Yayın platformumuza erişim, telif hakları, alıntı kuralları ve hizmet şartları.',
     'terms_scope_title' => 'Kapsam ve Koşulların Kabulü',
     'terms_scope_desc' => 'Dijital haber, köşe yazıları ve multimedya yayın servislerimizden yararlanma koşulları.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'Yayın İlkeleri ve Cevap Düzeltme Hakkı',
-    'editorial_policy_slug' => 'Yayin_Ilkeleri',
+    'editorial_policy_slug' => 'Yayın_İlkeleri',
     'editorial_policy_subtitle' => 'Gazetecilik etik ilkeleri, haber doğrulama, düzeltme protokolü ve cevap hakkı prosedürü.',
     'editorial_independence_title' => 'Editoryal Bağımsızlık ve Doğrulama',
     'editorial_independence_desc' => 'Çok kaynaklı doğrulama, tarafsızlık, haber ile köşe yazısı ayrımı ve gizli kaynakların korunması.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'Erişilebilirlik Beyanı',
-    'accessibility_slug' => 'Erisilebilirlik',
+    'accessibility_slug' => 'Erişilebilirlik',
     'accessibility_subtitle' => 'Tüm okurlarımız için WCAG 2.1 Seviye AA standartlarında dijital erişilebilirlik taahhüdümüz.',
     'accessibility_conformance_title' => 'Uyum Standartları (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Masaüstü ve mobil arayüzlerde erişilebilirlik engellerini ortadan kaldıran tasarım ilkeleri.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Güvenlik Politikası',
-    'security_policy_slug' => 'Guvenlik_Politikasi',
+    'security_policy_slug' => 'Güvenlik_Politikası',
     'security_policy_subtitle' => 'Platform güvenlik mimarisi, teknik önlemler ve sorumlu güvenlik açığı bildirim süreci.',
     'security_safeguards_title' => 'Teknik ve Uygulama Güvenlik Önlemleri',
     'security_safeguards_desc' => 'Uçtan uca TLS/HTTPS şifreleme, güvenli oturum yönetimi, CSRF koruması ve rol tabanlı erişim yetkilendirmesi.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'Basın Etiği ve Kurumsal Uyum',
-    'compliance_slug' => 'Basin_Etigi_ve_Uyum',
+    'compliance_slug' => 'Basın_Etiği_ve_Uyum',
     'compliance_subtitle' => 'Basın meslek ilkeleri, editoryal dürüstlük, çıkar çatışmasını önleme ve uyum taahhüdü.',
     'compliance_ethics_title' => 'Basın Meslek İlkeleri',
     'compliance_ethics_desc' => 'Doğruluk, dürüstlük, insan onuruna saygı, masumiyet karinesi ve özel hayatın gizliliğinin korunması.',

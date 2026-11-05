@@ -1,5 +1,48 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.45 (2026-11-05)
+- **Wikipedia-Style UTF-8 URL Parity, Pure Multi-Language Slug Remediation & SERP SEO Hardening (`lib/Helper.class.php`, `lib/Amed.class.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/legal.helper.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amed/index/search.twig`, `lib/Session.class.php`, `lib/TwigLibs.class.php`, `mod/mod_news/index.php`, `lib/GoogleIndexingService.class.php`, `templates/amed/**`, `.htaccess`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Wikipedia-Style Native UTF-8 URL Parity & `$transMap` Removal (Primary Rule 9 Enforcement)**:
+    - Completely removed legacy ASCII-stripping transliteration tables (`$transMap` stripping `ç, ğ, ı, ö, ş, ü, î, ê, û` to ASCII) from `lib/Amed.class.php`, `mod/index/helper/mod_page.helper.php`, and `mod/index/index.php`.
+    - Centralized pure UTF-8 statutory slug normalization and resolution in `Helper::utf8_slug_key()` and `Helper::resolve_statutory_slug()` (`lib/Helper.class.php`), protecting original multi-script characters across all repository languages with safe Turkish dotted `İ -> i` lowercase folding and comprehensive 301 redirect mapping for historical legacy aliases.
+    - Updated `mod_page_helper::page()` and `Amed.class.php` routing to perform case-insensitive, prefix-safe (`stripos(..., 'page/') === 0`) statutory slug resolution with strict byte-length parity (`strlen`).
+    - Cleaned `pageSitemap.xml` filtering in `mod/index/index.php` to leverage `Helper::resolve_statutory_slug()`, preventing duplicate statutory URLs without stripping characters.
+    - Replaced legacy `|sefurl` filter with native `|legacy_seo` filter in `templates/amed/index/search.twig`, enforcing canonical Wikipedia-style announcement URLs (`{id}-{name|legacy_seo}`).
+  - **Multi-Language Statutory Slug Alignment (All 10 Supported Languages)**:
+    - Upgraded all 8 statutory policy slugs across all 10 language dictionaries in `mod/index/lang/` (`tr.php`, `ku.php`, `zza.php`, `de.php`, `fr.php`, `sv.php`, `ar.php`, `ckb.php`, `ru.php`, `en.php`) to native UTF-8 and localized scripts:
+      - **Kurdish (Kurmanji / `ku`):** Native `Polîtîkaya_Kulîçeyan` (standardizing on clean Kurmanji *kulîçe, kulîçeyê, kulîçeyan*), `Agahiyên_Qanûnî`, `Polîtîkaya_Nepeniyê` (standardizing on *nepenî*), `Mercên_Bikaranînê`, `Prensîbên_Weşanê`, `Gihîştbarî`, `Polîtîkaya_Ewlehiyê`, `Etîka_Çapemeniyê_û_Lihevhatin`.
+      - **Turkish (`tr`):** `Yasal_Bilgiler`, `Çerez_Politikası`, `Gizlilik_Politikası`, `Kullanım_Koşulları`, `Yayın_İlkeleri`, `Erişilebilirlik`, `Güvenlik_Politikası`, `Basın_Etiği_ve_Uyum`.
+      - **Zazaki (`zza`):** `Melumatê_Huqûqî`, `Siyasetê_Çerezan`, `Polîtîkaya_Nimiteyîye`, `Şertê_Xebitnayîşî`, `Prensîbê_Weşanî`, `Resayîşbarîye`, `Polîtîkaya_Asayîşî`, `Liheveyîye`.
+      - **German (`de`):** `Rechtliche_Hinweise`, `Cookie_Richtlinie`, `Datenschutzerklärung`, `Nutzungsbedingungen`, `Redaktionelle_Richtlinien`, `Barrierefreiheit`, `Sicherheitsrichtlinie`, `Presseethik_und_Compliance`.
+      - **French (`fr`):** `Informations_Légales`, `Politique_de_Cookies`, `Politique_de_Confidentialité`, `Conditions_d_Utilisation`, `Principes_Éditoriaux`, `Accessibilité`, `Politique_de_Sécurité`, `Conformité`.
+      - **Swedish (`sv`):** `Juridisk_Information`, `Cookiepolicy`, `Integritetspolicy`, `Användarvillkor`, `Publicistiska_Riktlinjer`, `Tillgänglighet`, `Säkerhetspolicy`, `Regelefterlevnad`.
+      - **Arabic (`ar`):** `المعلومات_القانونية`, `سياسة_ملفات_تعريف_الارتباط`, `سياسة_الخصوصية`, `شروط_الاستخدام`, `المعايير_التحريرية`, `إمكانية_الوصول`, `سياسة_الأمان`, `ميثاق_الشرف_الصحفي`.
+      - **Central Kurdish (Sorani / `ckb`):** `زانیارییە_یاساییەکان`, `سیاسەتی_کووکییەکان`, `سیاسەتی_تایبەتمەندی`, `مەرجەکانی_بەکارهێنان`, `بنەماکانی_دەستەی_نووسەران`, `دەستپێڕاگەیشتن`, `سیاسەتی_ئاسایش`, `ئیتیکی_ڕۆژنامەوانی`.
+      - **Russian (`ru`):** `Правовая_Информация`, `Политика_Cookie`, `Политика_Конфиденциальности`, `Условия_Использования`, `Редакционная_Политика`, `Доступность`, `Политика_Безопасности`, `Журналистская_Этика`.
+    - Synced live production server (`amed-bulletin` MCP) and local database dumps (`d048d282.sql`, `bulletin.sql`) for statutory `mod_page` records (`ID=22`, `ID=31`, `ID=34`, and `ID=37-44`).
+    - Expanded fallback lookup slugs in `mod/index/helper/legal.helper.php` to guarantee zero-loss resolution for legacy aliases and new native UTF-8 routes alike.
+  - **Public Cache-Control & Googlebot Ingestion Hardening (`lib/Session.class.php`, `.htaccess`, `config/site.config.php`, `config/site.config.example.php`)**:
+    - Invoked `session_cache_limiter('')` before `session_start()`, preventing PHP from sending `Expires: Thu, 19 Nov 1981`, `Cache-Control: no-store, no-cache, must-revalidate`, and `Pragma: no-cache` headers on public pages crawled by Googlebot and search snippet indexers.
+    - Added proxy-aware (`X-Forwarded-Proto`, `CF-Visitor`) canonical HTTPS and non-WWW 301 redirection rules in `.htaccess`, `config/site.config.php`, and `config/site.config.example.php`, ensuring single-hop resolution without redirect loops.
+  - **Single Unambiguous `NewsArticle` Schema & Unescaped UTF-8 Linked Data (`lib/TwigLibs.class.php`, `templates/amed/**`)**:
+    - Introduced `json_ld` Twig filter (`jsonLinkedDataFilter`) using `json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP)` across all public and statutory templates, ensuring exact string parity between canonical links and JSON-LD `@id` / `url` properties without escaped slashes (`\/`) or Unicode escapes (`\u00e7`).
+    - Stripped invalid `itemscope itemtype="https://schema.org/NewsArticle"` and orphaned `itemprop` microdata from sidebar widgets (`news-24h-item`) and card partials (`newses.twig`, `latest_news.twig`, `featured_news.twig`, `economy_news.twig`, `sports_news.twig`, `world_news.twig`, `category_news_row.twig`, `publications.twig`), ensuring news detail pages expose exactly **one** canonical `NewsArticle` entity.
+    - Enriched `NewsArticle` and `Article` schemas with `"isAccessibleForFree": true`, `"inLanguage": "{{ site.lang }}"`, structured `ImageObject` dimensions (`1280x720`), and clamped `dateModified >= datePublished` across both JSON-LD and Open Graph `article:modified_time` tags.
+    - Added `ProfilePage` / `Person` JSON-LD schema to `author.twig` for E-E-A-T entity verification.
+    - Fixed final `ListItem` omission of `"item"` URL across all breadcrumb templates, eliminating Google Search Console's `Breadcrumbs -> Unnamed item` warning.
+    - Restored `<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">` across all public indexable templates and added `noindex, follow` to search and POST-driven archive filter views (`search.twig`, `mod_news/archive.twig`, `mod_publication/archive.twig`).
+    - Added complete `canonical`, `title`, `description`, `meta_tags`, and `BreadcrumbList` blocks to `videos.twig`, `video.twig`, `announcements.twig`, and `gallery.twig`.
+    - Added hidden semantic `<h1>` on homepage (`index.twig`) when header logo operates in rectangle mode.
+  - **Canonical Sitemap De-duplication & Inactive Language 301 Redirection (`mod/index/index.php`, `mod/index/helper/mod_page.helper.php`, `lib/Amed.class.php`)**:
+    - Filtered statutory legal/policy page slugs (including UTF-8 Turkish and Kurdish transliterated variants) out of `mod_page` results in `pageSitemap.xml` preventing duplicate legal page entries.
+    - Added UTF-8-aware automatic `301 Moved Permanently` redirects in `mod_page_helper::page()` sending old statutory page requests (`/tr/page/Çerez_Politikası`, etc.) directly to canonical root routes (`/cookie-policy`, etc.).
+    - Implemented single-hop inactive language 301 redirection in `Amed.class.php` (guarded for `GET`/`HEAD` non-AJAX requests) migrating legacy `/ku/...` URLs directly to active `/tr/...` equivalents or canonical root policy slugs.
+  - **Timestamp Integrity, In-Process Quota Protection & Search Console Comprehensive Sitemap Submission (`mod/mod_news/index.php`, `lib/GoogleIndexingService.class.php`)**:
+    - Ensured `beforeUpdate` in `mod_news` assigns `updated_at` using active timezone (`Europe/Istanbul`) and enforces `updated_at >= created_at`.
+    - Expanded `GoogleIndexingService::pingSitemaps()` to register and ping `sitemap.xml`, `newsSitemap.xml`, `pageSitemap.xml`, `categorySitemap.xml`, `publicationSitemap.xml`, and `gallerySitemap.xml` in Google Search Console, with static in-process de-duplication (`$notifiedUrls`, `$pingedSitemapLangs`) to protect daily Indexing API quota during batch operations.
+  - **Framework Version Parity**:
+    - Bumped framework version to `1.0.45` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.44 (2026-11-05)
 - **Google Search Console & Indexing Hardening, Canonical URL & Sitemap Synchronization, and Human-Readable Sharing Protocol (`lib/GoogleIndexingService.class.php`, `lib/BaseModuleController.class.php`, `lib/Mcp*Tools.class.php`, `mod/index/index.php`, `mod/mod_news/index.php`, `mod/mod_announcements/index.php`, `mod/mod_seo/index.php`, `robots.php`, `templates/amed/**`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Automated Multi-Scope Google Indexing & Search Console Ping Service (`lib/GoogleIndexingService.class.php`)**:

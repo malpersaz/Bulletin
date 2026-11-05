@@ -67,18 +67,38 @@
 	<meta name="keywords" content="{{ site.keywords }}">
 {% endblock %}
 
+{% block meta_tags %}
+	{% set gallery_page_title = d.name is not empty ? (d.name ~ ' - ' ~ lang.index.mod_pictures.title) : lang.index.mod_pictures.title %}
+	{% set gallery_page_desc = d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description) %}
+	{% set gallery_canonical_url = site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : '') %}
+	{% set gallery_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+	{% set gallery_share_img = (gallery is defined and gallery is not empty and gallery|first.url is defined) ? site.iaddress ~ 'mod_gallery/mod_imagecategories/original/' ~ (gallery|first.url) : gallery_logo_asset %}
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="{{ gallery_canonical_url }}">
+	<meta property="og:title" content="{{ gallery_page_title }} - {{ site.title }}">
+	<meta property="og:description" content="{{ gallery_page_desc|striptags|slice(0, 200) }}">
+	<meta property="og:image" content="{{ gallery_share_img }}">
+	<meta property="og:site_name" content="{{ site.title }}">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="{{ gallery_page_title }} - {{ site.title }}">
+	<meta name="twitter:description" content="{{ gallery_page_desc|striptags|slice(0, 200) }}">
+	<meta name="twitter:image" content="{{ gallery_share_img }}">
+{% endblock %}
+
 {% block schema %}
+	{% set current_gallery_url = site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : '') %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
 		  "@type": "ImageGallery",
-		  "name": {{ (d.name is not empty ? d.name : lang.index.mod_pictures.title)|json_encode|raw }},
-		  "description": {{ (d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description))|striptags|slice(0, 200)|json_encode|raw }},
-		  "url": {{ (site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : ''))|json_encode|raw }},
+		  "name": {{ (d.name is not empty ? d.name : lang.index.mod_pictures.title)|json_ld|raw }},
+		  "description": {{ (d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description))|striptags|slice(0, 200)|json_ld|raw }},
+		  "url": {{ current_gallery_url|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
-		    "name": {{ site.title|json_encode|raw }},
-		    "url": {{ site.address|json_encode|raw }}
+		    "name": {{ site.title|json_ld|raw }},
+		    "url": {{ site.address|json_ld|raw }}
 		  },
 		  "breadcrumb": {
 		    "@type": "BreadcrumbList",
@@ -86,19 +106,20 @@
 		      {
 		        "@type": "ListItem",
 		        "position": 1,
-		        "name": {{ lang.index.home|json_encode|raw }},
-		        "item": {{ site.saddress|json_encode|raw }}
+		        "name": {{ lang.index.home|json_ld|raw }},
+		        "item": {{ site.saddress|json_ld|raw }}
 		      },
 		      {
 		        "@type": "ListItem",
 		        "position": 2,
-		        "name": {{ lang.index.mod_pictures.title|json_encode|raw }},
-		        "item": {{ (site.saddress ~ 'gallery')|json_encode|raw }}
+		        "name": {{ lang.index.mod_pictures.title|json_ld|raw }},
+		        "item": {{ (site.saddress ~ 'gallery')|json_ld|raw }}
 		      }{% if d.name is not empty %},
 		      {
 		        "@type": "ListItem",
 		        "position": 3,
-		        "name": {{ d.name|json_encode|raw }}
+		        "name": {{ d.name|json_ld|raw }},
+		        "item": {{ current_gallery_url|json_ld|raw }}
 		      }{% endif %}
 		    ]
 		  }

@@ -137,9 +137,12 @@ class mod_news_mod extends BaseModuleController
     protected function beforeUpdate($model, $id)
     {
         $updatedAt = Req::Post_Safe('updated_at');
-        $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : null;
+        $model->updated_at = !empty($updatedAt) ? $this->normalizeDateTime($updatedAt) : date('Y-m-d H:i:s');
         if (isset($model->created_at)) {
             $model->created_at = $this->normalizeDateTime($model->created_at);
+            if (strtotime((string) $model->updated_at) < strtotime((string) $model->created_at)) {
+                $model->updated_at = $model->created_at;
+            }
         }
 
         if (Req::is_Post('show_on_homepage')) {

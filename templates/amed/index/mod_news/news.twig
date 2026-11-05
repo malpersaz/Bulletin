@@ -49,8 +49,11 @@
 {% endblock %}
 
 {% block meta_tags %}
+	{% set article_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+	{% set article_updated_ts = d.updated_at ? d.updated_at|date('U') : article_created_ts %}
+	{% if article_updated_ts < article_created_ts %}{% set article_updated_ts = article_created_ts %}{% endif %}
 	<!-- Standard Robots & Search Directives -->
-	<meta name="robots" content="index, follow, max-image-preview:large">
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
@@ -81,8 +84,8 @@
     {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
 	<meta property="og:locale" content="{{ og_locale }}">
-	<meta property="article:published_time" content="{{ (d.created_at ?: "now")|date('c') }}">
-	<meta property="article:modified_time" content="{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}">
+	<meta property="article:published_time" content="{{ article_created_ts|date('c') }}">
+	<meta property="article:modified_time" content="{{ article_updated_ts|date('c') }}">
 	{% if has_news_category %}
 		<meta property="article:section" content="{{ d.categoryname }}">
 	{% endif %}
@@ -98,40 +101,61 @@
 {% endblock %}
 
 {% block schema %}
+	{% set article_img_url = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image) : news_logo_asset %}
+	{% set article_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
+	{% set article_updated_ts = d.updated_at ? d.updated_at|date('U') : article_created_ts %}
+	{% if article_updated_ts < article_created_ts %}{% set article_updated_ts = article_created_ts %}{% endif %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
 		  "@type": "NewsArticle",
+		  "@id": {{ (site.saddress ~ 'news/' ~ d.seo ~ '#article')|json_ld|raw }},
+		  "isPartOf": {
+		    "@type": "WebSite",
+		    "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
+		    "name": {{ site.title|json_ld|raw }},
+		    "url": {{ site.saddress|json_ld|raw }}
+		  },
 		  "mainEntityOfPage": {
 		    "@type": "WebPage",
-		    "@id": {{ (site.saddress ~ 'news/' ~ d.seo)|json_encode|raw }}
+		    "@id": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }}
 		  },
-		  "headline": {{ d.name|json_encode|raw }},
-		  {% if has_news_category %}"articleSection": {{ d.categoryname|json_encode|raw }},{% endif %}
-		  "image": {% if d.image is not empty %}{{ (site.iaddress ~ 'mod_news/' ~ d.image)|json_encode|raw }}{% else %}{{ news_logo_asset|json_encode|raw }}{% endif %},
+		  "url": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }},
+		  "headline": {{ d.name|json_ld|raw }},
+		  "inLanguage": "{{ site.lang }}",
+		  "isAccessibleForFree": true,
+		  {% if has_news_category %}"articleSection": {{ d.categoryname|json_ld|raw }},{% endif %}
+		  "image": [
+		    {
+		      "@type": "ImageObject",
+		      "url": {{ article_img_url|json_ld|raw }},
+		      "width": 1280,
+		      "height": 720
+		    }
+		  ],
 		  "author": {% if d.u_name is defined and d.u_name is not empty %}{
 		    "@type": "Person",
-		    "name": {{ author_full_name|json_encode|raw }}{% if d.username is defined and d.username is not empty %},
-		    "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_encode|raw }}{% endif %}
+		    "name": {{ author_full_name|json_ld|raw }}{% if d.username is defined and d.username is not empty %},
+		    "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_ld|raw }}{% endif %}
 		  }{% else %}{
 		    "@type": "Organization",
-		    "name": {{ site.title|json_encode|raw }}
-		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_encode|raw }}{% endif %}
-		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_encode|raw }}{% endif %}
+		    "name": {{ site.title|json_ld|raw }}
+		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_ld|raw }}{% endif %}
+		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_ld|raw }}{% endif %}
 		  }{% endif %},
 		  "publisher": {
-		    "@type": "Organization",
-		    "name": {{ site.title|json_encode|raw }},
-		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
-		    "url": {{ site.address|json_encode|raw }},
+		    "@type": "NewsMediaOrganization",
+		    "name": {{ site.title|json_ld|raw }},
+		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
+		    "url": {{ site.address|json_ld|raw }},
 		    "logo": {
 		      "@type": "ImageObject",
-		      "url": {{ news_logo_asset|json_encode|raw }}
+		      "url": {{ news_logo_asset|json_ld|raw }}
 		    }
 		  },
-		  "datePublished": "{{ (d.created_at ?: "now")|date('c') }}",
-		  "dateModified": "{{ (d.updated_at ?: d.created_at ?: "now")|date('c') }}",
-		  "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_encode|raw }}
+		  "datePublished": "{{ article_created_ts|date('c') }}",
+		  "dateModified": "{{ article_updated_ts|date('c') }}",
+		  "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_ld|raw }}
 		}
 	</script>
     {% if video is not empty %}
@@ -140,11 +164,11 @@
             {
               "@context": "https://schema.org",
               "@type": "VideoObject",
-              "name": {{ v.name|json_encode|raw }},
-              "description": {{ (d.name ~ ' - ' ~ v.name)|json_encode|raw }},
-              "thumbnailUrl": {{ (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg')|json_encode|raw }},
+              "name": {{ v.name|json_ld|raw }},
+              "description": {{ (d.name ~ ' - ' ~ v.name)|json_ld|raw }},
+              "thumbnailUrl": {{ (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg')|json_ld|raw }},
               "uploadDate": "{{ d.created_at ? d.created_at|date('Y-m-d') : "now"|date('Y-m-d') }}",
-              "contentUrl": {{ (site.saddress ~ 'tools/videoFlv/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.mp4')|json_encode|raw }}
+              "contentUrl": {{ (site.saddress ~ 'tools/videoFlv/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.mp4')|json_ld|raw }}
             }
         </script>
         {% endfor %}
@@ -157,25 +181,26 @@
 		    {
 		      "@type": "ListItem",
 		      "position": 1,
-		      "name": {{ lang.index.home|json_encode|raw }},
-		      "item": {{ site.saddress|json_encode|raw }}
+		      "name": {{ lang.index.home|json_ld|raw }},
+		      "item": {{ site.saddress|json_ld|raw }}
 		    },
 		    {
 		      "@type": "ListItem",
 		      "position": 2,
-		      "name": {{ news_all_label|json_encode|raw }},
-		      "item": {{ (site.saddress ~ 'newses')|json_encode|raw }}
+		      "name": {{ news_all_label|json_ld|raw }},
+		      "item": {{ (site.saddress ~ 'newses')|json_ld|raw }}
 		    }{% if has_news_category %},
 		    {
 		      "@type": "ListItem",
 		      "position": 3,
-		      "name": {{ d.categoryname|json_encode|raw }},
-		      "item": {{ (site.saddress ~ 'newses/' ~ d.category_seo)|json_encode|raw }}
+		      "name": {{ d.categoryname|json_ld|raw }},
+		      "item": {{ (site.saddress ~ 'newses/' ~ d.category_seo)|json_ld|raw }}
 		    }{% endif %},
 		    {
 		      "@type": "ListItem",
 		      "position": {{ has_news_category ? 4 : 3 }},
-		      "name": {{ d.name|json_encode|raw }}
+		      "name": {{ d.name|json_ld|raw }},
+		      "item": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }}
 		    }
 		  ]
 		}
@@ -503,11 +528,10 @@
 
 					<div class="news-24h-list">
 						{% for item in news_24h %}
-							<article class="news-24h-item" itemscope itemtype="https://schema.org/NewsArticle">
+							<article class="news-24h-item">
 								<a href="{{ site.saddress }}news/{{ item.seo }}"
 								   class="news-24h-media"
-								   title="{{ item.name|striptags }}"
-								   itemprop="url">
+								   title="{{ item.name|striptags }}">
 									{% if item.image is not empty %}
 										<img src="{{ site.iaddress }}mod_news/{{ item.image }}"
 											 class="news-24h-img"
@@ -515,8 +539,7 @@
 											 width="180"
 											 height="120"
 											 loading="lazy"
-											 decoding="async"
-											 itemprop="image">
+											 decoding="async">
 									{% else %}
 										<div class="news-24h-placeholder">
 											<i class="bi bi-newspaper" aria-hidden="true"></i>
@@ -525,8 +548,8 @@
 								</a>
 
 								<div class="news-24h-content">
-									<h4 class="news-24h-headline" itemprop="headline">
-										<a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url" title="{{ item.name|striptags }}">
+									<h4 class="news-24h-headline">
+										<a href="{{ site.saddress }}news/{{ item.seo }}" title="{{ item.name|striptags }}">
 											{{ item.name|striptags }}
 										</a>
 									</h4>
@@ -534,7 +557,7 @@
 									{% if item.published_ago is defined and item.published_ago is not empty %}
 										<div class="news-24h-meta">
 											<i class="bi bi-clock" aria-hidden="true"></i>
-											<time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.published_ago }}</time>
+											<time datetime="{{ item.created_at }}">{{ item.published_ago }}</time>
 										</div>
 									{% endif %}
 								</div>

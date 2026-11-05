@@ -124,7 +124,13 @@ class TwigLibs extends AbstractExtension
             new TwigFilter('legacy_seo', [$this, 'legacySeoFilter']),
             new TwigFilter('base64_encode', [$this, 'base64Encode']),
             new TwigFilter('time_ago', [$this, 'timeAgoFilter']),
+            new TwigFilter('json_ld', [$this, 'jsonLinkedDataFilter']),
         ];
+    }
+
+    public function jsonLinkedDataFilter($value): string
+    {
+        return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
     }
 
     public function timeAgoFilter($datetime): string

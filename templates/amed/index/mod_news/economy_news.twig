@@ -28,9 +28,9 @@
         {% for item in economy_news %}
             {% set item_url = site.saddress ~ 'news/' ~ item.seo %}
             {% if loop.first %}
-                <article class="economy-card-lead" itemscope itemtype="https://schema.org/NewsArticle">
+                <article class="economy-card-lead">
                     <div class="economy-lead-media-wrapper">
-                        <a href="{{ item_url }}" class="economy-lead-media-link" title="{{ item.name }}" itemprop="url">
+                        <a href="{{ item_url }}" class="economy-lead-media-link" title="{{ item.name }}">
                             {% if item.image is not empty %}
                                 <img src="{{ site.address }}r/w-380/h-214/c-1/f/mod_news/thumb/{{ item.image }}"
                                      srcset="{{ site.address }}r/w-380/h-214/c-1/f/mod_news/thumb/{{ item.image }} 380w, {{ site.address }}r/w-480/h-270/c-1/f/mod_news/thumb/{{ item.image }} 480w"
@@ -41,8 +41,7 @@
                                      height="214"
                                      loading="lazy"
                                      fetchpriority="low"
-                                     decoding="async"
-                                     itemprop="image">
+                                     decoding="async">
                             {% else %}
                                 <div class="economy-lead-placeholder">
                                     <i class="bi bi-cash-stack economy-placeholder-icon" aria-hidden="true"></i>
@@ -56,19 +55,19 @@
                             {% if item.is_last_24h %}
                                 <span class="economy-meta-item">
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                    <time datetime="{{ item.created_at|default('') }}">{{ item.published_ago }}</time>
                                 </span>
                                 <span class="economy-meta-sep" aria-hidden="true">·</span>
                             {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
                                 <span class="economy-meta-item">
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.formatted_datetime }}</time>
                                 </span>
                                 <span class="economy-meta-sep" aria-hidden="true">·</span>
                             {% elseif item.created_at is defined and item.created_at is not empty %}
                                 <span class="economy-meta-item">
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.created_at|date('d.m.Y') }}</time>
                                 </span>
                                 <span class="economy-meta-sep" aria-hidden="true">·</span>
                             {% endif %}
@@ -82,11 +81,11 @@
                                 <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
                             </span>
                         </div>
-                        <h3 class="economy-lead-title" itemprop="headline">
-                            <a href="{{ item_url }}" class="economy-lead-title-link" itemprop="url">{{ item.name|raw }}</a>
+                        <h3 class="economy-lead-title">
+                            <a href="{{ item_url }}" class="economy-lead-title-link">{{ item.name|raw }}</a>
                         </h3>
                         {% if item.summary_short is defined and item.summary_short is not empty %}
-                            <p class="economy-lead-summary" itemprop="description">
+                            <p class="economy-lead-summary">
                                 <a href="{{ item_url }}" class="economy-lead-summary-link">{{ item.summary_short }}</a>
                             </p>
                         {% endif %}
@@ -96,8 +95,8 @@
                 {% if loop.index == 2 %}
                     <div class="economy-sub-list">
                 {% endif %}
-                <article class="economy-card-sub" itemscope itemtype="https://schema.org/NewsArticle">
-                    <a href="{{ item_url }}" class="economy-sub-thumb" title="{{ item.name }}" itemprop="url">
+                <article class="economy-card-sub">
+                    <a href="{{ item_url }}" class="economy-sub-thumb" title="{{ item.name }}">
                         {% if item.image is not empty %}
                             <img src="{{ site.address }}r/w-108/h-61/c-1/f/mod_news/thumb/{{ item.image }}"
                                  srcset="{{ site.address }}r/w-108/h-61/c-1/f/mod_news/thumb/{{ item.image }} 1x, {{ site.address }}r/w-216/h-122/c-1/f/mod_news/thumb/{{ item.image }} 2x"
@@ -107,8 +106,7 @@
                                  height="61"
                                  loading="lazy"
                                  fetchpriority="low"
-                                 decoding="async"
-                                 itemprop="image">
+                                 decoding="async">
                         {% else %}
                             <div class="economy-sub-placeholder">
                                 <i class="bi bi-bar-chart-line economy-placeholder-icon" aria-hidden="true"></i>
@@ -122,22 +120,22 @@
                             {% if item.is_last_24h %}
                                 <span class="economy-sub-time">
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                    <time datetime="{{ item.created_at|default('') }}">{{ item.published_ago }}</time>
                                 </span>
                             {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
                                 <span class="economy-sub-time">
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.formatted_datetime }}</time>
                                 </span>
                             {% elseif item.created_at is defined and item.created_at is not empty %}
                                 <span class="economy-sub-time">
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.created_at|date('d.m.Y') }}</time>
                                 </span>
                             {% endif %}
                         </div>
-                        <h3 class="economy-sub-title" itemprop="headline">
-                            <a href="{{ item_url }}" class="economy-sub-title-link" itemprop="url">{{ item.name|raw }}</a>
+                        <h3 class="economy-sub-title">
+                            <a href="{{ item_url }}" class="economy-sub-title-link">{{ item.name|raw }}</a>
                         </h3>
                     </div>
                 </article>

@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'Politique de Confidentialité',
-    'privacy_policy_slug' => 'Politique_de_Confidentialite',
+    'privacy_policy_slug' => 'Politique_de_Confidentialité',
     'privacy_policy_subtitle' => 'Protection des données personnelles et mentions légales selon le RGPD et la législation en vigueur.',
     'privacy_data_controller_title' => 'Identité du Responsable de Traitement',
     'privacy_data_controller_desc' => 'Informations sur l\'entité légale responsable de la collecte et du traitement de vos données personnelles.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'Principes Éditoriaux & Droit de Réponse',
-    'editorial_policy_slug' => 'Principes_Editoriaux',
+    'editorial_policy_slug' => 'Principes_Éditoriaux',
     'editorial_policy_subtitle' => 'Engagement pour la vérité journalistique, la vérification par sources multiples, la transparence des rectificatifs et le droit de réponse.',
     'editorial_independence_title' => 'Indépendance Éditoriale & Vérification des Faits',
     'editorial_independence_desc' => 'Engagement envers la rigueur de vérification, l\'impartialité, la protection des sources d\'information et la stricte séparation des faits et des opinions.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'Déclaration d\'Accessibilité',
-    'accessibility_slug' => 'Accessibilite',
+    'accessibility_slug' => 'Accessibilité',
     'accessibility_subtitle' => 'Notre engagement à assurer l\'accessibilité numérique pour tous les publics, conformément aux directives WCAG 2.1 niveau AA.',
     'accessibility_conformance_title' => 'Normes de Conformité (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Critères de conception et d\'ingénierie appliqués sur mobile et bureau pour lever tout obstacle à l\'accès à l\'information.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Politique de Sécurité',
-    'security_policy_slug' => 'Politique_de_Securite',
+    'security_policy_slug' => 'Politique_de_Sécurité',
     'security_policy_subtitle' => 'Architecture de sécurité de la plateforme, garanties techniques et protocole de divulgation responsable des vulnérabilités.',
     'security_safeguards_title' => 'Mesures Techniques & Applicatives',
     'security_safeguards_desc' => 'Chiffrement des flux TLS/HTTPS, sécurisation avancée des sessions, protection contre le CSRF et contrôle des accès basé sur les rôles.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'Déontologie de la Presse & Conformité',
-    'compliance_slug' => 'Conformite',
+    'compliance_slug' => 'Conformité',
     'compliance_subtitle' => 'Code de déontologie journalistique, indépendance de la rédaction, prévention des conflits d\'intérêts et protection des lanceurs d\'alerte.',
     'compliance_ethics_title' => 'Code de Déontologie Journalistique',
     'compliance_ethics_desc' => 'Principes fondamentaux d\'honnêteté, d\'équité, de respect de la dignité humaine, de refus de la diffamation et de protection de la vie privée.',

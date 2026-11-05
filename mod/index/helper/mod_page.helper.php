@@ -19,6 +19,16 @@ class mod_page_helper extends indexBase
     public function page($seo)
     {
         $seo = Req::Url_Clear($seo);
+
+        // Canonical 301 redirection for statutory legal & policy pages
+        $targetSlug = Helper::resolve_statutory_slug((string) $seo);
+        if ($targetSlug !== null && PHP_SAPI !== 'cli' && !headers_sent()) {
+            $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $targetSlug;
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . $targetUrl);
+            exit;
+        }
+
         $page = Load::model('mod_page');
         $page->where_seo_and_status_and_root_and_lang($seo, 'y', 'n', $this->site['lang']);
         $page->limit(1);

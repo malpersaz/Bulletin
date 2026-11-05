@@ -12,6 +12,8 @@ class GoogleIndexingService
     private $credentialsPath = '';
     private $isEnabled = false;
     private $tokenCache = [];
+    private static $notifiedUrls = [];
+    private static $pingedSitemapLangs = [];
 
     public function __construct()
     {
@@ -124,7 +126,12 @@ class GoogleIndexingService
 
         $sitemaps = [$baseOrigin . '/sitemap.xml'];
         if (!empty($lang)) {
-            $sitemaps[] = $baseOrigin . '/' . trim($lang, '/') . '/newsSitemap.xml';
+            $langPrefix = trim($lang, '/');
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsSitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/pageSitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/categorySitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/publicationSitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/gallerySitemap.xml';
         }
 
         $propertyId = 'sc-domain:' . $propertyDomain;
@@ -190,12 +197,17 @@ class GoogleIndexingService
         // If the notified URL is an inner content page (e.g. /tr/news/...), also refresh the language homepage
         if (count($segments) > 1 && $lang !== null) {
             $homepageUrl = $baseOrigin . '/' . $lang . '/';
-            if ($homepageUrl !== $url) {
+            if ($homepageUrl !== $url && empty(self::$notifiedUrls[$homepageUrl])) {
+                self::$notifiedUrls[$homepageUrl] = true;
                 $this->publishNotification($homepageUrl, 'URL_UPDATED');
             }
         }
 
-        $this->pingSitemaps($baseOrigin, $lang);
+        $sitemapKey = $baseOrigin . '|' . ($lang ?? '');
+        if (empty(self::$pingedSitemapLangs[$sitemapKey])) {
+            self::$pingedSitemapLangs[$sitemapKey] = true;
+            $this->pingSitemaps($baseOrigin, $lang);
+        }
     }
 
     /**

@@ -89,6 +89,7 @@ class Amed
             $hasStatusColumn = array_key_exists('status', $rows[0]);
             $hasDefaultColumn = array_key_exists('is_default', $rows[0]);
             $activeCodes = [];
+            $inactiveCodes = [];
             $availableLanguages = [];
 
             foreach ($rows as $row) {
@@ -99,6 +100,8 @@ class Amed
                         'code' => $row['seo'],
                         'name' => $row['name'],
                     ];
+                } else {
+                    $inactiveCodes[] = $row['seo'];
                 }
 
                 if ($hasDefaultColumn && isset($row['is_default']) && $row['is_default'] === 'y') {
@@ -111,6 +114,7 @@ class Amed
             }
 
             $state['active_codes'] = array_values(array_unique($activeCodes));
+            $state['inactive_codes'] = array_values(array_unique($inactiveCodes));
             $state['default_language'] = in_array($defaultLanguage, $state['active_codes'], TRUE) ? $defaultLanguage : $state['active_codes'][0];
             $state['available_languages'] = $availableLanguages;
         } catch (Exception $exception) {
@@ -126,6 +130,7 @@ class Amed
         $this->site['available_languages'] = $languageState['available_languages'];
 
         Registry::set('active_langs', $languageState['active_codes']);
+        Registry::set('inactive_langs', $languageState['inactive_codes'] ?? []);
         Registry::set('default_lang', $languageState['default_language']);
     }
 
@@ -381,6 +386,39 @@ class Amed
 
         if (Registry::get('i18n') === true) {
             $activeLangs = Registry::get('active_langs');
+            $inactiveLangs = Registry::get('inactive_langs');
+            $rawPath0 = isset($this->url->path['0']) ? $this->url->path['0'] : '';
+
+            // 301-redirect legacy URLs with inactive language prefixes (e.g. /ku/...) to active default language or canonical root
+            $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+            $isSafeMethod = in_array(strtoupper($requestMethod), ['GET', 'HEAD'], true);
+            $isAjaxRequest = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+
+            if ($isSafeMethod && !$isAjaxRequest && is_array($inactiveLangs) && in_array($rawPath0, $inactiveLangs, TRUE) && PHP_SAPI !== 'cli' && !headers_sent()) {
+                $lang_len = strlen($rawPath0);
+                $remainder = (strlen($this->url->link) <= $lang_len) ? '' : substr($this->url->link, $lang_len + 1);
+                $default_lang = Registry::get('default_lang') ?: 'tr';
+                $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
+
+                $normRemainder = trim($remainder, '/');
+                $targetSlug = Helper::resolve_statutory_slug($normRemainder);
+                if ($targetSlug === null && stripos($normRemainder, 'page/') === 0) {
+                    $targetSlug = Helper::resolve_statutory_slug(substr($normRemainder, 5));
+                }
+
+                if ($targetSlug !== null) {
+                    $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $targetSlug;
+                } elseif ($remainder === '') {
+                    $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $default_lang . '/';
+                } else {
+                    $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $default_lang . '/' . ltrim($remainder, '/');
+                }
+
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . $targetUrl . $queryString);
+                exit;
+            }
+
             if (is_array($activeLangs) && in_array($this->url->path['0'], $activeLangs, TRUE)) {
                 $this->site['lang'] = $this->url->path['0'];
                 $this->site['saddress'] = $this->site['address'] . $this->url->path['0'] . '/';

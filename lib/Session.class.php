@@ -39,6 +39,7 @@ class Session
             $this->sessionName = Registry::get('session_name');
         }
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_cache_limiter('');
             session_start();
         }
 

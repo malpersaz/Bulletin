@@ -101,12 +101,12 @@ $lang['index'] = [
     // === Policy Navigation Bar ===
     'legal_nav_masthead' => 'Kunyeya Weşanê (Künye)',
     'legal_nav_editorial' => 'Prensîbên Weşanê',
-    'legal_nav_privacy' => 'Polîtîkaya Nepaniyê',
+    'legal_nav_privacy' => 'Polîtîkaya Nepeniyê',
     'legal_nav_cookies' => 'Polîtîkaya Kulîçeyan',
     'legal_nav_terms' => 'Mercên Bikaranînê',
-    'legal_nav_accessibility' => 'Gihîştinbarî',
+    'legal_nav_accessibility' => 'Gihîştbarî',
     'legal_nav_security' => 'Polîtîkaya Ewlehiyê',
-    'legal_nav_compliance' => 'Etiqa Çapemeniyê û Lihevhatin',
+    'legal_nav_compliance' => 'Etîka Çapemeniyê û Lihevhatin',
 
     // === Cookie Policy Fallback Samples & Labels ===
     'cookie_first_party' => 'Aliyê Yekem',
@@ -121,9 +121,9 @@ $lang['index'] = [
     'cookie_sample_marketing_purpose' => 'Bandor û têkiliyên reklam û ragihandinan dipîve.',
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
-    'privacy_policy' => 'Polîtîkaya Nepaniyê',
-    'privacy_policy_slug' => 'Politikaya_Nepaniye',
-    'privacy_policy_subtitle' => 'Agahdariya fermî ya li gorî KVKK û GDPR a parastina daneyên kesane û nepaniyê.',
+    'privacy_policy' => 'Polîtîkaya Nepeniyê',
+    'privacy_policy_slug' => 'Polîtîkaya_Nepeniyê',
+    'privacy_policy_subtitle' => 'Agahdariya fermî ya li gorî KVKK û GDPR a parastina daneyên kesane û nepeniyê.',
     'privacy_data_controller_title' => 'Nasnameya Berpirsê Daneyan',
     'privacy_data_controller_desc' => 'Agahiyên saziya berpirsyar ji berhevkirin û pêvajokirina daneyên we yên kesane.',
     'privacy_data_collected_title' => 'Kategoriyên Daneyên Kesane yên Pêvajokirî',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'Mercên Bikaranînê',
-    'terms_of_service_slug' => 'Mercen_Bikaranine',
+    'terms_of_service_slug' => 'Mercên_Bikaranînê',
     'terms_of_service_subtitle' => 'Rêgez û şertên gihîştina platforma me ya rojnamevaniyê, mafên daneriyê û qanûnên jêdergirtinê.',
     'terms_scope_title' => 'Qad û Pejirandina Mercan',
     'terms_scope_desc' => 'Mercên xwendin, sûdwergirtin û xebitandina servîsên me yên nûçe, nivîs û multimedyayê.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'Prensîbên Weşanê û Mafê Bersivdanê',
-    'editorial_policy_slug' => 'Prensiben_Wesane',
+    'editorial_policy_slug' => 'Prensîbên_Weşanê',
     'editorial_policy_subtitle' => 'Prensîbên pîşeyî yên rojnamevaniyê, piştrastkirina nûçeyan, rêbaza rastkirinê û mafê bersivê.',
     'editorial_independence_title' => 'Serxwebûna Edîtorî û Piştrastkirin',
     'editorial_independence_desc' => 'Piştrastkirina ji çend çavkaniyan, bêalîbûn, cudakirina nûçe û quncikan û parastina çavkaniyên nehênî.',
@@ -166,9 +166,9 @@ $lang['index'] = [
     'editorial_ai_workflow_desc' => 'Di hemû qonaxên lêkolîn û piştrastkirinê de, erêkirina dawî bi temamî di bin berpirsiyariya edîtorên mirov de ye.',
 
     // === Accessibility Statement ===
-    'accessibility' => 'Daxuyaniya Gihîştinbariyê',
-    'accessibility_slug' => 'Gihistinbari',
-    'accessibility_subtitle' => 'Ji bo hemû xwendevanan, pêbaweriya me ya gihîştinbariya dîjîtal li gorî pîvanên WCAG 2.1 Asta AA.',
+    'accessibility' => 'Daxuyaniya Gihîştbariyê',
+    'accessibility_slug' => 'Gihîştbarî',
+    'accessibility_subtitle' => 'Ji bo hemû xwendevanan, pêbaweriya me ya gihîştbariya dîjîtal li gorî pîvanên WCAG 2.1 Asta AA.',
     'accessibility_conformance_title' => 'Pîvanên Lihevhatinê (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Prensîbên sêwiranê yên ku astengiyên gihîştinê li ser komputer û mobîlan radikin.',
     'accessibility_features_title' => 'Taybetmendiyên Gihîştinbariyê yên Pêkhatî',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Polîtîkaya Ewlehiyê',
-    'security_policy_slug' => 'Politikaya_Ewlehiye',
+    'security_policy_slug' => 'Polîtîkaya_Ewlehiyê',
     'security_policy_subtitle' => 'Mîmariya ewlehiyê ya platformê, tedbîrên teknîkî û rêbaza raporkirina lawaziyên ewlehiyê.',
     'security_safeguards_title' => 'Tedbîrên Ewlehiyê yên Teknîkî',
     'security_safeguards_desc' => 'Şîfrekirina TLS/HTTPS, birêvebiriya ewle ya danişînan, parastina CSRF û kontrolkirina destûrên gihîştinê.',
@@ -190,8 +190,8 @@ $lang['index'] = [
     'security_incident_desc' => 'Di bûyerên ewlehiyê de daxuyaniyên fermî yên bilez, parastina daneyan û xurtkirina sîstemê.',
 
     // === Press Ethics & Corporate Compliance ===
-    'compliance' => 'Etiqa Çapemeniyê û Lihevhatin',
-    'compliance_slug' => 'Etiqa_Capemeniye_u_Lihevhatin',
+    'compliance' => 'Etîka Çapemeniyê û Lihevhatin',
+    'compliance_slug' => 'Etîka_Çapemeniyê_û_Lihevhatin',
     'compliance_subtitle' => 'Prensîbên exlaqî yên çapemeniyê, serxwebûna edîtorî, rêgirtina li berjewendiyan û parastina agahdaran.',
     'compliance_ethics_title' => 'Exlaqê Pîşeyî yê Çapemeniyê',
     'compliance_ethics_desc' => 'Rastbêjî, dadmendî, rêzgirtina li rûmeta mirovî, parastina mafê jiyana taybet û bêgunehiyê.',

@@ -1,5 +1,11 @@
 {% extends "layouts/base.twig" %}
 
+{% block meta_tags %}
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ lang.index.search.search }} - {{ site.title }}">
+{% endblock %}
+
 {% block css_custom %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/search.css?v={{ site.version }}">
@@ -316,7 +322,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for announcement in announcements %}
-                            <a href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}" 
+                            <a href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|legacy_seo }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ announcement.name }}">

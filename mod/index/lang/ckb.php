@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'سیاسەتی تایبەتمەندی',
-    'privacy_policy_slug' => 'Privacy_Policy',
+    'privacy_policy_slug' => 'سیاسەتی_تایبەتمەندی',
     'privacy_policy_subtitle' => 'پاراستنی زانیارییە کەسییەکان و ئاگادارییەکانی تایبەتمەندی بەپێی GDPR و یاسا پەیوەندیدارەکان.',
     'privacy_data_controller_title' => 'ناسنامەی بەرپرسی بەڕێوەبردنی زانیارییەکان',
     'privacy_data_controller_desc' => 'زانیاری لەسەر ئەو لایەنە یاساییەی بەرپرسە لە کۆکردنەوە و چارەسەرکردنی زانیارییە کەسییەکانت.',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'مەرجەکانی بەکارهێنان',
-    'terms_of_service_slug' => 'Terms_of_Service',
+    'terms_of_service_slug' => 'مەرجەکانی_بەکارهێنان',
     'terms_of_service_subtitle' => 'مەرج و رێساکانی دەستگەیشتن، مافی لەبەرگرتنەوە، بڵاوکردنەوە و بەکارهێنانی ڕەوای پلاتفۆرمی ڕۆژنامەوانی.',
     'terms_scope_title' => 'سنووری ڕێککەوتن و پەسەندکردنی مەرجەکان',
     'terms_scope_desc' => 'مەرجەکانی خوێندنەوە، کارلێککردن و بەکارهێنانی هەواڵ، بڵاوکراوە و خزمەتگوزارییە مالتیمیدیاییەکانمان.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'بنەماکانی دەستەی نووسەران و مافی وەڵامدانەوە',
-    'editorial_policy_slug' => 'Editorial_Policy',
+    'editorial_policy_slug' => 'بنەماکانی_دەستەی_نووسەران',
     'editorial_policy_subtitle' => 'پابەندبوون بە ڕاستی ڕۆژنامەوانی، پشتڕاستکردنەوە لە چەند سەرچاوەیەک، ڕاستکردنەوەی ڕوون و مافی یاسایی وەڵامدانەوە.',
     'editorial_independence_title' => 'سەربەخۆیی دەستەی نووسەران و پشتڕاستکردنەوەی ڕاستییەکان',
     'editorial_independence_desc' => 'پابەندبوون بە وردبینی لە پشکنینی ڕاستییەکان، بێلایەنی، پاراستنی نهێنیی سەرچاوەکان و جیاکردنەوەی تەواوی هەواڵ لە بۆچوون.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'بەیاننامەی دەستپێڕاگەیشتن',
-    'accessibility_slug' => 'Accessibility',
+    'accessibility_slug' => 'دەستپێڕاگەیشتن',
     'accessibility_subtitle' => 'پابەندبوونمان بە دابینکردنی دەستپێڕاگەیشتنی دیجیتاڵی بۆ هەموو بەکارهێنەران بەپێی ستانداردەکانی WCAG 2.1 ئاستی AA.',
     'accessibility_conformance_title' => 'ستانداردەکانی گونجان (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'پێوەرەکانی دیزاین و ئەندازیاری کە لەسەر مۆبایل و کۆمپیوتەر جێبەجێ کراون بۆ نەهێشتنی بەربەستەکانی گەیشتن بە زانیاری.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'سیاسەتی ئاسایش و پاراستن',
-    'security_policy_slug' => 'Security_Policy',
+    'security_policy_slug' => 'سیاسەتی_ئاسایش',
     'security_policy_subtitle' => 'تەلارسازی ئاسایشی پلاتفۆرم، پارێزگارییە تەکنیکییەکان و چوارچێوەی بەرپرسیارانەی ئاشکراکردنی کەلێنە ئەمنییەکان.',
     'security_safeguards_title' => 'پارێزگارییە تەکنیکی و کاربەرنامەییەکان',
     'security_safeguards_desc' => 'کۆدکردنی گواستنەوە بە TLS/HTTPS، تۆکمەکردنی دانیشتنەکان، پاراستن لە CSRF و کۆنترۆڵی دەسەڵاتەکان بەپێی ڕۆڵ.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'ئیتیکی ڕۆژنامەوانی و پابەندبوون',
-    'compliance_slug' => 'Compliance',
+    'compliance_slug' => 'ئیتیکی_ڕۆژنامەوانی',
     'compliance_subtitle' => 'ڕێساکانی ڕەوشتی ڕۆژنامەوانی، سەربەخۆیی دەستەی نووسەران، ڕێگری لە دژایەتی بەرژەوەندییەکان و پاراستنی ئاشکراکەران.',
     'compliance_ethics_title' => 'ڕێساکانی ڕەوشتی ڕۆژنامەوانی',
     'compliance_ethics_desc' => 'بنەما سەرەکییەکانی دەستپاکی، دادپەروەری، ڕێزگرتن لە کەرامەتی مرۆڤ، دوورکەوتنەوە لە ناوزڕاندن و ڕێزگرتن لە تایبەتمەندی کەسی.',

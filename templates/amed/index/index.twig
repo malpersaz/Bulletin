@@ -13,9 +13,9 @@
           "@type": "WebSite",
           "@id": "{{ site.saddress }}#website",
           "url": "{{ site.saddress }}",
-          "name": {{ site.title|json_encode|raw }},
+          "name": {{ site.title|json_ld|raw }},
           "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
-          "description": {{ site.description|json_encode|raw }},
+          "description": {{ site.description|json_ld|raw }},
           "inLanguage": "{{ site.lang }}",
           "potentialAction": {
             "@type": "SearchAction",
@@ -29,7 +29,7 @@
         {
           "@type": "NewsMediaOrganization",
           "@id": "{{ site.address }}#organization",
-          "name": {{ site.title|json_encode|raw }},
+          "name": {{ site.title|json_ld|raw }},
           "alternateName": ["Amed Bulten", "amedbulten.com", "Amed Bülteni"],
           "url": "{{ site.address }}",
           "logo": {
@@ -67,6 +67,7 @@
 
 {% block content %}
 <!-- START: index/index.twig -->
+    <h1 class="visually-hidden">{{ site.title }}{% if site.site_name is defined and site.site_name is not empty and site.site_name != site.title %} — {{ site.site_name }}{% endif %}</h1>
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
     {% if homepage_hero_slider is empty %}
         {{ run({"mod": "index", "method": "_hero_slider", "extra": [10]}) }}

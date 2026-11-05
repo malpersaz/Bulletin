@@ -1,10 +1,5 @@
 {% extends "layouts/base.twig" %}
 
-{% block css_custom %}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ site.version }}">
-{% endblock %}
-
-{% block content %}
 {% set d = ctx_get('detail') ?: ctx_get('d') %}
 {% set archive_categories = ctx_get('archive_categories') %}
 {% set selected_category = ctx_get('category_id') %}
@@ -13,7 +8,70 @@
 {% set selected_month = ctx_get('month') ?: ctx_get('ay') %}
 {% set not_found = ctx_get('not_found') ?: ctx_get('bulunamadi') %}
 {% set publications = ctx_get('publications') %}
+{% set pub_archive_title = lang.index.mod_publication.archive %}
+{% set pub_archive_url = site.saddress ~ 'publication-archive' %}
+{% set pub_archive_logo = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 
+{% block canonical %}
+    <link rel="canonical" href="{{ pub_archive_url }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ pub_archive_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ pub_archive_title }} - {{ site.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ pub_archive_url }}">
+    <meta property="og:title" content="{{ pub_archive_title }} - {{ site.title }}">
+    <meta property="og:description" content="{{ pub_archive_title }} - {{ site.description }}">
+    <meta property="og:image" content="{{ pub_archive_logo }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ pub_archive_title }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ pub_archive_title }} - {{ site.description }}">
+    <meta name="twitter:image" content="{{ pub_archive_logo }}">
+{% endblock %}
+
+{% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_ld|raw }},
+          "item": {{ site.saddress|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_publication.all_publications|json_ld|raw }},
+          "item": {{ (site.saddress ~ 'publications')|json_ld|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ pub_archive_title|json_ld|raw }},
+          "item": {{ pub_archive_url|json_ld|raw }}
+        }
+      ]
+    }
+    </script>
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
 <div class="row g-4" id="mod_publication_archive">
     <div class="col-12">
         <nav aria-label="breadcrumb" class="mb-3">

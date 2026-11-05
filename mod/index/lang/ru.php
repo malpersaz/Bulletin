@@ -24,7 +24,7 @@ $lang['index'] = [
     'sitemap' => 'Карта сайта',
     'llms_index' => 'Индекс ИИ (llms.txt)',
     'legal_info' => 'Правовая информация и выходные данные',
-    'legal_info_slug' => 'Legal_Information',
+    'legal_info_slug' => 'Правовая_Информация',
     'legal_info_pending' => 'Официальная и уставная информация об организации в настоящее время готовится.',
     'company_registry_title' => 'Организация и реестр',
     'publishing_credentials_title' => 'Выходные данные издания (Künye)',
@@ -65,7 +65,7 @@ $lang['index'] = [
     'registered_address' => 'Адрес штаб-квартиры',
     'quick_copy' => 'Нажмите, чтобы скопировать',
     'cookie_policy' => 'Политика использования файлов Cookie',
-    'cookie_policy_slug' => 'Cookie_Policy',
+    'cookie_policy_slug' => 'Политика_Cookie',
     'cookie_policy_subtitle' => 'Прозрачная информация и интерактивное управление настройками файлов cookie, используемых на нашем сайте.',
     'cookie_preferences_title' => 'Центр управления настройками Cookie',
     'cookie_preferences_desc' => 'Управляйте настройками файлов cookie. Вы можете включить или отключить различные категории файлов cookie в соответствии со своими предпочтениями. Строго необходимые файлы cookie всегда активны для обеспечения корректной работы сайта.',
@@ -122,7 +122,7 @@ $lang['index'] = [
 
     // === Privacy Policy & Personal Data Protection (GDPR / KVKK) ===
     'privacy_policy' => 'Политика конфиденциальности',
-    'privacy_policy_slug' => 'Privacy_Policy',
+    'privacy_policy_slug' => 'Политика_Конфиденциальности',
     'privacy_policy_subtitle' => 'Защита персональных данных и уведомления о конфиденциальности в соответствии с GDPR и KVKK.',
     'privacy_data_controller_title' => 'Сведения об операторе персональных данных',
     'privacy_data_controller_desc' => 'Информация о юридическом лице, ответственном за сбор и обработку ваших персональных данных в соответствии с действующим законодательством о защите данных.',
@@ -139,7 +139,7 @@ $lang['index'] = [
 
     // === Terms of Service & Copyright Policy ===
     'terms_of_service' => 'Условия использования',
-    'terms_of_service_slug' => 'Terms_of_Service',
+    'terms_of_service_slug' => 'Условия_Использования',
     'terms_of_service_subtitle' => 'Условия и правила доступа, авторского права, цитирования и допустимого использования нашей информационной платформы.',
     'terms_scope_title' => 'Область применения и принятие условий',
     'terms_scope_desc' => 'Правила чтения, взаимодействия и использования наших цифровых новостей, публикаций и мультимедийных сервисов.',
@@ -154,7 +154,7 @@ $lang['index'] = [
 
     // === Editorial Principles, Corrections & Right of Reply ===
     'editorial_policy' => 'Редакционная политика и право на ответ',
-    'editorial_policy_slug' => 'Editorial_Policy',
+    'editorial_policy_slug' => 'Редакционная_Политика',
     'editorial_policy_subtitle' => 'Приверженность журналистской достоверности, проверке фактов из нескольких источников, протоколу исправлений и законному праву на ответ.',
     'editorial_independence_title' => 'Редакционная независимость и проверка фактов',
     'editorial_independence_desc' => 'Приверженность тщательной верификации фактов, беспристрастности, защите конфиденциальных источников и строгому разделению новостей и авторских мнений.',
@@ -167,7 +167,7 @@ $lang['index'] = [
 
     // === Accessibility Statement ===
     'accessibility' => 'Заявление о доступности',
-    'accessibility_slug' => 'Accessibility',
+    'accessibility_slug' => 'Доступность',
     'accessibility_subtitle' => 'Наше обязательство обеспечивать цифровую доступность для всех пользователей в соответствии со стандартом WCAG 2.1 уровня AA.',
     'accessibility_conformance_title' => 'Стандарты соответствия (WCAG 2.1 AA)',
     'accessibility_conformance_desc' => 'Проектные и инженерные стандарты, применяемые в настольных и мобильных новостных интерфейсах для устранения барьеров доступности.',
@@ -180,7 +180,7 @@ $lang['index'] = [
 
     // === Security Policy & Vulnerability Disclosure ===
     'security_policy' => 'Политика безопасности',
-    'security_policy_slug' => 'Security_Policy',
+    'security_policy_slug' => 'Политика_Безопасности',
     'security_policy_subtitle' => 'Архитектура безопасности платформы, технические меры защиты и программа ответственного раскрытия уязвимостей.',
     'security_safeguards_title' => 'Технические и прикладные меры защиты',
     'security_safeguards_desc' => 'Шифрование передачи данных TLS/HTTPS, защищенная архитектура сессий, защита от CSRF и ролевой контроль доступа.',
@@ -191,7 +191,7 @@ $lang['index'] = [
 
     // === Press Ethics & Corporate Compliance ===
     'compliance' => 'Журналистская этика и комплаенс',
-    'compliance_slug' => 'Compliance',
+    'compliance_slug' => 'Журналистская_Этика',
     'compliance_subtitle' => 'Кодекс журналистской этики, редакционная независимость, предотвращение конфликта интересов и защита заявителей.',
     'compliance_ethics_title' => 'Кодекс журналистской этики',
     'compliance_ethics_desc' => 'Основополагающие принципы честности, объективности, уважения человеческого достоинства, недопустимости клеветы и неприкосновенности частной жизни.',

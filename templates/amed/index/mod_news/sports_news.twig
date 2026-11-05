@@ -26,8 +26,8 @@
             {% set words = clean_summary|split(' ')|length %}
             {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
             {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
-            <article class="sports-news-card" itemscope itemtype="https://schema.org/NewsArticle">
-                <a href="{{ site.saddress }}news/{{ item.seo }}" class="sports-news-thumb-link" title="{{ item.name }}" itemprop="url">
+            <article class="sports-news-card">
+                <a href="{{ site.saddress }}news/{{ item.seo }}" class="sports-news-thumb-link" title="{{ item.name }}">
                     {% if item.image is not empty %}
                         <img src="{{ site.address }}r/w-160/h-90/c-1/f/mod_news/thumb/{{ item.image }}"
                              srcset="{{ site.address }}r/w-160/h-90/c-1/f/mod_news/thumb/{{ item.image }} 1x, {{ site.address }}r/w-320/h-180/c-1/f/mod_news/thumb/{{ item.image }} 2x"
@@ -37,8 +37,7 @@
                              height="90"
                              loading="lazy"
                              fetchpriority="low"
-                             decoding="async"
-                             itemprop="image">
+                             decoding="async">
                     {% else %}
                         <div class="sports-news-placeholder">
                             <i class="bi bi-trophy sports-news-placeholder-icon" aria-hidden="true"></i>
@@ -51,13 +50,13 @@
                             <span class="sports-news-meta-item">
                                 {% if item.is_last_24h %}
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.published_ago }}</time>
                                 {% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.formatted_datetime }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.formatted_datetime }}</time>
                                 {% else %}
                                     <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                    <time datetime="{{ item.created_at }}">{{ item.created_at|date('d.m.Y') }}</time>
                                 {% endif %}
                             </span>
                             <span class="sports-news-meta-sep" aria-hidden="true">·</span>
@@ -67,13 +66,13 @@
                             <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
                         </span>
                     </div>
-                    <h3 class="sports-news-article-title" itemprop="headline">
-                        <a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url">
+                    <h3 class="sports-news-article-title">
+                        <a href="{{ site.saddress }}news/{{ item.seo }}">
                             {{ item.name|raw }}
                         </a>
                     </h3>
                     {% if item.summary_short is defined and item.summary_short is not empty %}
-                        <p class="sports-news-summary" itemprop="description">
+                        <p class="sports-news-summary">
                             {{ item.summary_short }}
                         </p>
                     {% endif %}

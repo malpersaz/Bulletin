@@ -29,12 +29,12 @@ $isHttps = (
 // Enforce HTTPS in production environments while keeping HTTP for local development
 $scheme = ($isLocal && !$isHttps) ? 'http' : 'https';
 
-// Perform HTTP to HTTPS 301 redirection for live non-CLI requests when not already on HTTPS
-if (!$isLocal && !$isHttps && PHP_SAPI !== 'cli') {
-    if (PHP_SAPI !== 'cli') {
-        header('Location: https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
-        exit();
-    }
+// Perform HTTP to HTTPS and WWW-stripping 301 redirection for live non-CLI requests
+$hasWww = (stripos($host, 'www.') === 0);
+$cleanHost = $hasWww ? substr($host, 4) : $host;
+if (!$isLocal && (!$isHttps || $hasWww) && PHP_SAPI !== 'cli') {
+    header('Location: https://' . $cleanHost . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
+    exit();
 }
 
 $site['address']  = $scheme . '://' . $host . '/';
@@ -59,7 +59,7 @@ $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.44';
+$site['version'] = '1.0.45';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');
