@@ -573,12 +573,15 @@
 
     class UserFormManager {
         constructor() {
-            this.form = document.getElementById('addForm') || document.getElementById('editForm') || document.getElementById('settingsForm');
+            const container = document.querySelector('[data-module="user-form"]');
+            if (!container) return;
+
+            this.form = container.querySelector('#addForm, #editForm, #settingsForm') || container.querySelector('form');
             if (!this.form) return;
 
-            this.alertContainer = document.getElementById('formAlert');
+            this.alertContainer = container.querySelector('#formAlert') || document.getElementById('formAlert');
             this.submitBtn = document.getElementById('submitBtn') || this.form.querySelector('button[type="submit"]');
-            this.countryPickerBtn = document.getElementById('countryPickerBtn');
+            this.countryPickerBtn = container.querySelector('#countryPickerBtn') || document.getElementById('countryPickerBtn');
             this.countryModal = null;
 
             this.countries = [

@@ -1,5 +1,27 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.49 (2026-11-06)
+- **Kevtemen Same-Day Freshness Sentinel, mod_settings Numeric & Ownership Integrity, Admin User Form Scoping & Editorial FAQ Accordion Redesign (`.agents/skills/kevtemen/`, `.agents/skills/kevanger/SKILL.md`, `mod/mod_settings/index.php`, `templates/admin/assets/js/mod_user.js`, `templates/amed/macros/faq.twig`, `templates/amed/static/css/detail-foundation.css`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **Kevtemen Same-Day Freshness Sentinel (New Skill `.agents/skills/kevtemen/`)**:
+    - Introduced the `kevtemen` skill (`SKILL.md` + `scripts/check_freshness.py`) as an absolute same-day editorial gate: only content whose source publication date is TODAY (`Europe/Istanbul`) may be drafted, edited, or staged; undatable, unreachable, or ambiguous sources are fail-closed blocked, with no override flag, no backdating, and no exception for user-supplied stale links.
+    - `check_freshness.py` extracts the most authoritative publication datetime per target from OpenGraph `article:published_time`, JSON-LD `datePublished`, `<time datetime>`, ISO 8601, `DD.MM.YYYY[ HH:MM]`, `DD/MM/YYYY`, URL path `/YYYY/MM/DD/` segments, Turkish long-form dates (`DD Ay YYYY`), and Turkish relative expressions (`X saat/dakika/gün önce`, `dün`, `bugün`), all normalized to `Europe/Istanbul`.
+    - Supports explicit URL targets, `--date` dossier verification, and `--file` draft mode scanning every cited `href`; exits `0` on `PASSED (Same-Day)` and `1` on `BLOCKED`, always reporting the exact offending publication date.
+  - **Kevanger 5-Tier Editorial Pipeline Upgrade (`.agents/skills/kevanger/SKILL.md`)**:
+    - Promoted the editorial pipeline from 4-tier to 5-tier: `kevtemen` (Same-Day Gate) now runs mandatorily before any `kevkolin` research or `kevanger` drafting, and the sentinel re-runs against the final draft HTML (`--file`) before `create_news`/`update_news` staging.
+    - Documented verdict handling (exit 1 = hard stop with the sentinel warning reported verbatim), extended the gate to `update_news` edits on existing records, and renumbered the subsequent checklist steps accordingly.
+  - **mod_settings Numeric Field & Ownership Integrity (`mod/mod_settings/index.php`)**:
+    - Normalized `established_year` to a true `int|null` in `_normalize_setting_fields()` (empty or non-numeric input resolves to `null` instead of a bare trimmed string) and coerced legacy empty-string `established_year` values to `null` before persistence across the `_edit()`, `_save_setting_fields()`, and `generate_assets_ajax()` save paths, preventing strict-mode SQL failures and phantom empty-year rendering.
+    - Guarded `stat_workforce`/`stat_offices` normalization so empty submissions fall back to the canonical defaults (1200/18) instead of collapsing to `intval('') === 0`.
+    - Made `$has_changes`/`$has_values` detection null-aware, so a `null` normalized value no longer mis-triggers change detection against empty-string columns nor counts as a submitted value.
+    - Backfilled `user_id` ownership (`$this->user->id ?? 1`) on the update and create paths of `_edit()`, `_save_setting_fields()`, and `generate_assets_ajax()`, ensuring every language settings row always carries an owning editor.
+  - **Admin User Form DOM Scoping (`templates/admin/assets/js/mod_user.js`)**:
+    - Scoped `UserFormManager` element resolution (form, alert container, country picker) to the `[data-module="user-form"]` container with document-level fallbacks, and made initialization a no-op when the container is absent, eliminating cross-module DOM ID collisions on composite admin pages.
+  - **Editorial FAQ Accordion Redesign (`templates/amed/macros/faq.twig`, `templates/amed/static/css/detail-foundation.css`)**:
+    - Reworked the shared FAQ macro: icon-badged section header (`bi-patch-question-fill`), first accordion item open by default, zero-padded numbered question badges (`01`, `02`, …), and the answer wrapped in a dedicated `.faq-answer-inner` block.
+    - Added the full `.faq-accordion-section` stylesheet (~223 lines) to `detail-foundation.css`: rounded card items with open-state accent borders and soft shadows, rotating chevron affordance, `:focus-visible` outlines, RTL mirroring, sub-768px responsive adjustments, and theming through the existing `--detail-*` design tokens — automatically applied across news, publication, page, and event detail pages via the shared macro.
+  - **Framework Version Parity**:
+    - Bumped framework version to `1.0.49` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.48 (2026-11-06)
 - **Phantom Timestamp Display Clamp, Public Admin-Template Header Isolation, Indexing API Discipline, Homepage Title Hygiene & Deploy Cache Revalidation (`templates/amed/index/mod_news/news.twig`, `mod/mod_user/model/user.model.php`, `templates/amed/index/index.twig`, `lib/GoogleIndexingService.class.php`, `tools/deploy_production.sh`, live `mod_settings`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **P0-1 Visible Byline Timestamp Clamp (`templates/amed/index/mod_news/news.twig`)**:

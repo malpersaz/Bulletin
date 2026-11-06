@@ -3,18 +3,26 @@
     {% if faqs is defined and faqs is iterable and faqs|length > 0 %}
         <section class="faq-accordion-section" aria-labelledby="faq-section-heading">
             {% if title %}
-                <h3 id="faq-section-heading" class="faq-section-title">{{ title }}</h3>
+                <div class="faq-section-header">
+                    <span class="faq-section-icon" aria-hidden="true">
+                        <i class="bi bi-patch-question-fill"></i>
+                    </span>
+                    <h3 id="faq-section-heading" class="faq-section-title">{{ title }}</h3>
+                </div>
             {% endif %}
             <div class="faq-accordion">
                 {% for item in faqs %}
                     {% if item.status == 'y' or item.status is not defined %}
-                        <details class="faq-item" id="faq-{{ item.id|default(loop.index) }}">
+                        <details class="faq-item" id="faq-{{ item.id|default(loop.index) }}"{% if loop.first %} open{% endif %}>
                             <summary class="faq-question">
+                                <span class="faq-question-badge" aria-hidden="true">{{ '%02d'|format(loop.index) }}</span>
                                 <span class="faq-question-text">{{ item.question }}</span>
                                 <span class="faq-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
                             </summary>
                             <div class="faq-answer">
-                                <p>{{ item.answer|nl2br }}</p>
+                                <div class="faq-answer-inner">
+                                    <p>{{ item.answer|nl2br }}</p>
+                                </div>
                             </div>
                         </details>
                     {% endif %}

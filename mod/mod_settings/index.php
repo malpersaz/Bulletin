@@ -1742,6 +1742,13 @@ class mod_settings_mod extends indexMain
             }
         }
 
+        if ($setting->established_year === '') {
+            $setting->established_year = null;
+        }
+        if (empty($setting->user_id)) {
+            $setting->user_id = $this->user->id ?? 1;
+        }
+
         $save_result = $settings_model->getSize() > 0 ? $setting->update('lang') : $setting->save();
 
         if ($save_result) {
@@ -1909,12 +1916,15 @@ class mod_settings_mod extends indexMain
 
     private function _normalize_setting_fields(array $values)
     {
+        $year_val = trim((string) ($values['established_year'] ?? ''));
+        $established_year = ($year_val !== '' && is_numeric($year_val)) ? (int) $year_val : null;
+
         $normalized = [
             'title' => trim((string) ($values['title'] ?? '')),
             'site_name' => trim((string) ($values['site_name'] ?? '')),
             'description' => trim((string) ($values['description'] ?? '')),
             'owner_name' => trim((string) ($values['owner_name'] ?? '')),
-            'established_year' => trim((string) ($values['established_year'] ?? '')),
+            'established_year' => $established_year,
             'phone' => trim((string) ($values['phone'] ?? '')),
             'whatsapp' => trim((string) ($values['whatsapp'] ?? '')),
             'email' => trim((string) ($values['email'] ?? '')),
@@ -1924,8 +1934,8 @@ class mod_settings_mod extends indexMain
             'google_search_console' => trim((string) ($values['google_search_console'] ?? '')),
             'google_analytics' => trim((string) ($values['google_analytics'] ?? '')),
             'meta_tags' => trim((string) ($values['meta_tags'] ?? '')),
-            'stat_workforce' => intval($values['stat_workforce'] ?? 1200),
-            'stat_offices' => intval($values['stat_offices'] ?? 18),
+            'stat_workforce' => isset($values['stat_workforce']) && $values['stat_workforce'] !== '' ? intval($values['stat_workforce']) : 1200,
+            'stat_offices' => isset($values['stat_offices']) && $values['stat_offices'] !== '' ? intval($values['stat_offices']) : 18,
             'cookie_policy_content' => trim((string) ($values['cookie_policy_content'] ?? '')),
         ];
 
@@ -1956,9 +1966,17 @@ class mod_settings_mod extends indexMain
 
             $has_changes = false;
             foreach ($normalized_values as $field => $value) {
-                if (trim((string) $setting->$field) !== $value) {
-                    $has_changes = true;
-                    break;
+                $current_val = $setting->$field;
+                if ($value === null) {
+                    if ($current_val !== null && trim((string) $current_val) !== '') {
+                        $has_changes = true;
+                        break;
+                    }
+                } else {
+                    if (trim((string) $current_val) !== (string) $value) {
+                        $has_changes = true;
+                        break;
+                    }
                 }
             }
 
@@ -1968,7 +1986,7 @@ class mod_settings_mod extends indexMain
         } else {
             $has_values = false;
             foreach ($normalized_values as $value) {
-                if ($value !== '') {
+                if ($value !== '' && $value !== null) {
                     $has_values = true;
                     break;
                 }
@@ -1980,10 +1998,18 @@ class mod_settings_mod extends indexMain
 
             $setting = Load::model('mod_settings');
             $setting->lang = $lang;
+            $setting->user_id = $this->user->id ?? 1;
         }
 
         foreach ($normalized_values as $field => $value) {
             $setting->$field = $value;
+        }
+
+        if ($setting->established_year === '') {
+            $setting->established_year = null;
+        }
+        if (empty($setting->user_id)) {
+            $setting->user_id = $this->user->id ?? 1;
         }
 
         $save_result = $settings_model->getSize() > 0 ? $setting->update('lang') : $setting->save();
@@ -2677,6 +2703,13 @@ class mod_settings_mod extends indexMain
                 'message' => $this->_resolve_asset_generator_error($e->getMessage()),
             ]);
             return;
+        }
+
+        if ($setting->established_year === '') {
+            $setting->established_year = null;
+        }
+        if (empty($setting->user_id)) {
+            $setting->user_id = $this->user->id ?? 1;
         }
 
         $save_result = $settings_model->getSize() > 0 ? $setting->update('lang') : $setting->save();

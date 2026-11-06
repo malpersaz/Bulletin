@@ -1,6 +1,6 @@
 ---
 name: kevanger
-description: Curate, draft, structure, and stage Turkish-language news articles for Bulletin's mod_news via MCP. Coordinates with kevkolin (research), kevrast (fact-checking), and kevseo (SEO & Semantic HTML) in the editorial pipeline.
+description: Curate, draft, structure, and stage Turkish-language news articles for Bulletin's mod_news via MCP. Coordinates with kevtemen (same-day freshness gate), kevkolin (research), kevrast (fact-checking), and kevseo (SEO & Semantic HTML) in the editorial pipeline.
 ---
 
 # Kevanger News Drafting Skill (Turkish Editorial Pipeline)
@@ -9,8 +9,8 @@ description: Curate, draft, structure, and stage Turkish-language news articles 
 
 - **STRICT NO-PUBLISH MANDATE**: AI is strictly prohibited from publishing news articles (`status: "y"`). Every new or updated article MUST be staged exclusively as a draft (`status: "n"`) for human editorial review and approval.
 - **NO MCP BRIDGE BYPASS**: Always invoke MCP tools through `call_mcp_tool` (`amed-bulletin`). NEVER extract API keys from local bridge scripts or bypass the local MCP bridge with direct `curl`/`urllib` requests to `mcp.php`.
-- Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeline strictly:
-  `kevkolin` (Research) -> `kevrast` (Stage 1) -> `kevanger` (Drafting in Turkish) -> `kevseo` (SEO & Semantic HTML) -> `kevrast` (Stage 2) -> Staging.
+- Keep this skill as a short ordered execution checklist. Follow the 5-tier pipeline strictly:
+  `kevtemen` (Same-Day Gate) -> `kevkolin` (Research) -> `kevrast` (Stage 1) -> `kevanger` (Drafting in Turkish) -> `kevseo` (SEO & Semantic HTML) -> `kevrast` (Stage 2) -> Staging.
 
 In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusively in **Turkish (`tr`)**.
 
@@ -23,14 +23,23 @@ In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusivel
 - Perform a lightweight liveness check (e.g. `list_news_categories` with `lang: "tr"`).
 - If connection fails, credentials are missing, or the target language is inactive (`lang_status === 'n'`), report immediately in Kurmanji Kurdish and halt before drafting.
 
-### 2. Research Dossier Intake (`kevkolin` & `kevrast` Stage 1)
+### 2. Same-Day Freshness Gate (`kevtemen`) — Mandatory, Before Any Research
+- Run `.agents/skills/kevtemen/scripts/check_freshness.py` against the user-supplied link(s) and/or the dossier's newest source publication date BEFORE any `kevkolin` research or drafting:
+  ```bash
+  .agents/skills/kevtemen/scripts/check_freshness.py "$URL1" "$URL2"  # or --date "<pub datetime>"
+  ```
+- Exit 1 (`BLOCKED`): STOP. Do not research, do not draft, do not stage. Report the sentinel's warning verbatim (e.g., "DURDURULDU: Bu içerik eski — yayın tarihi 02.11.2026. Siteye eski ve bayat haber girilmesi doğru değildir; işlem kesildi.") and halt the job.
+- Exit 0 (`PASSED (Same-Day)`): proceed; re-run on the final draft (`--file "$DRAFT_HTML"`) before `create_news`/`update_news` as the pre-staging re-check.
+- The gate is absolute and fail-closed: no override, no backdating — even if the user supplies the old link themselves. See `.agents/skills/kevtemen/SKILL.md`.
+
+### 3. Research Dossier Intake (`kevkolin` & `kevrast` Stage 1)
 - Receive the verified Research Dossier produced by `kevkolin` and pre-verified by `kevrast` (Stage 1).
 - For **Diyarbakır (Amed)** local news items, ensure multi-source cross-referencing against the dedicated `amed_diyarbakir` registry in `.agents/skills/kevkolin/scripts/source_catalog.py` (Amida Haber, Tigris Haber, Güneydoğu Ekspres, Diyarbakır Yenigün, Mücadele Gazetesi, CEGA Medya, Amed Times, Diyarbakır Söz, Özgür Haber Gazetesi, Güneydoğu Güncel, Amed Haber, and official institutions such as Diyarbakır Büyükşehir Belediyesi, DTSO, DTB, Diyarbakır Barosu, Karacadağ Kalkınma Ajansı, Dicle Üniversitesi, and Amedspor).
 - Ensure all source evidence, dates, numbers, and live URLs are grounded before beginning prose writing.
 - If contradictory reports were identified by `kevkolin`, formulate the Turkish prose to explicitly reflect the variance:
   - Format: *"$A tarafından paylaşılan bilgilere göre ..., ancak $B kaynağında ..."*
 
-### 3. Journalistic Drafting & Storytelling (Turkish - `tr`)
+### 4. Journalistic Drafting & Storytelling (Turkish - `tr`)
 - Write fluent, engaging, and objective Turkish prose following professional newsroom standards (5N1K lead paragraph, inverted pyramid, concise paragraphs).
 - Craft a compelling Turkish headline (`name`) and deck summary (`summary` strictly **90 to 120 characters**).
 - Embed in-text citations linking to verified live URLs:
@@ -44,7 +53,7 @@ In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusivel
 - **Strict Code Separation**:
   - Do not insert inline `style` attributes, `<style>` blocks, or inline JavaScript handlers.
 
-### 4. Ethical Image Intake, AI Generation & WebP Optimization
+### 5. Ethical Image Intake, AI Generation & WebP Optimization
 Whenever `kevanger` brings or drafts a news article from any source:
 - **Case 1: Source Image Present**:
   - Extract and verify the original photograph from the source.
@@ -75,7 +84,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
     - In environments with programmatic tool invocation (e.g., OMP `tool.<name>(args)`), parse `/tmp/img_payload.json` programmatically in code and pass `image: {"data_base64": payload["data_base64"], "mime": "image/webp"}` directly so the base64 string is never truncated by terminal output limits.
     - In local MCP bridge environments (or same-filesystem local servers), you may also pass `image: {"file_path": "/tmp/news_img.webp", "mime": "image/webp"}`. Never copy-paste `<truncated ...>` base64 strings from terminal logs.
 
-### 5. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
+### 6. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
 - Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.
 - Execute the `kevseo` auditor script against the drafted article, deck summary, and headline:
   ```bash
@@ -84,7 +93,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
 - After staging or updating via MCP, verify the persisted database record against the 100-point rubric (`tools/audit_content_seo.py --module mod_news --id <id>`) to confirm active language status, zero cross-language prose contamination, metadata synchronization, and strict code separation.
 - Address any flagged HTML architecture issues, deck length violations (must be 90–120 chars; 90–160 chars accepted by MCP SERP parity), or invalid URL slugs before proceeding.
 
-### 6. Fact-Checking & Anti-Hallucination Gate (`kevrast` Stage 2)
+### 7. Fact-Checking & Anti-Hallucination Gate (`kevrast` Stage 2)
 - Execute `kevrast` auditor script against the drafted article:
   ```bash
   python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --text "$DRAFT_HTML"
@@ -92,7 +101,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
 - **Rule**: Do not proceed to staging until `kevrast` passes 100% (`Status: PASSED`).
 - If any link fails (not HTTP 200) or claim drifts, correct the draft text immediately.
 
-### 7. Provenance Tracking, Categorization & Draft Staging
+### 8. Provenance Tracking, Categorization & Draft Staging
 - Map the article to the appropriate Turkish (`tr`) category in `mod_news` (e.g., under `Haberler` / `id: 18` or the designated Diyarbakır category).
 - **Amed Framework Wikipedia-Style SEO Slug (AGENTS.md Rule 10)**:
   - Strictly adhere to Amed Framework's Wikipedia-style URL generation parity (`Helper::legacy_seo`).
@@ -109,7 +118,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
   - Wikipedia-style `seo` slug (with underscores and Turkish characters), meta description, and 3–5 relevant Turkish keywords.
   - Mandatory featured `image` object (`data_base64` and `mime: "image/webp"` / `"image/jpeg"`). News articles cannot be created without an image.
 
-### 8. Editorial Reporting & User Handoff
+### 9. Editorial Reporting & User Handoff
 Report completion to the user in Kurmanji (per user communication protocol), providing:
 - Generated News ID
 - Category name
@@ -117,7 +126,7 @@ Report completion to the user in Kurmanji (per user communication protocol), pro
 - List of verified sources and detected contradictions (if any)
 - Confirmation that the article is staged as a draft (`status: "n"`) awaiting human editorial approval.
 
-### 9. Non-Destructive Editorial Updates (Strict Anti-Overwrite Gate)
+### 10. Non-Destructive Editorial Updates (Strict Anti-Overwrite Gate)
 When instructed to update an existing news article (`update_news`):
 1. **Mandatory Read-Before-Write**: ALWAYS call `get_news` before updating.
 2. **Preserve User Revisions**: User manual corrections are canonical; never revert them.
