@@ -40,8 +40,7 @@ class user_model extends ORM
         $this->session = Load::lib('Session');
         // Load language file
         $this->lang = Load::lang('mod_user');
-        // Theme
-        $this->theme = Load::lib('AdminTemplate');
+        // AdminTemplate is lazy-loaded by authorization error renderers.
         // Site
         $this->site = Registry::get('site_config');
     }
@@ -390,6 +389,7 @@ class user_model extends ORM
     private function _renderUnauthorized()
     {
         Run::import('management', '_index');
+        $this->theme = Load::lib('AdminTemplate');
         $this->site['title'] = $this->lang['mod_user']['error']['permission_error'];
         $this->theme->set('site', $this->site);
         $this->theme->set('error_message', $this->error);
@@ -398,9 +398,7 @@ class user_model extends ORM
 
     private function _renderFlashError()
     {
-        // Flash error handler
-        if (isset($this->theme)) {
-            $this->theme->set('error_message', $this->error);
-        }
+        $this->theme = Load::lib('AdminTemplate');
+        $this->theme->set('error_message', $this->error);
     }
 }

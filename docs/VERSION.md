@@ -1,5 +1,26 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.48 (2026-11-06)
+- **Phantom Timestamp Display Clamp, Public Admin-Template Header Isolation, Indexing API Discipline, Homepage Title Hygiene & Deploy Cache Revalidation (`templates/amed/index/mod_news/news.twig`, `mod/mod_user/model/user.model.php`, `templates/amed/index/index.twig`, `lib/GoogleIndexingService.class.php`, `tools/deploy_production.sh`, live `mod_settings`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+  - **P0-1 Visible Byline Timestamp Clamp (`templates/amed/index/mod_news/news.twig`)**:
+    - Changed the "Güncelleme Tarihi" badge condition from `d.updated_at != d.created_at` to a strict epoch comparison `(d.updated_at|date('U')) > (d.created_at|date('U'))`, mirroring the existing JSON-LD/sitemap `max(created, updated)` clamp.
+    - Pre-v1.0.31 rows whose `updated_at` walls were written under the server CET session no longer render a phantom "updated before published" byline (mixed `TIMESTAMP`/`DATETIME` session-timezone artifact); database rows are intentionally left untouched.
+  - **P0-2 Public Admin-Template Header Isolation (`mod/mod_user/model/user.model.php`)**:
+    - Removed eager `AdminTemplate` construction from `user_model::__construct()`. The public hero-slider avatar lookup uses this model; production records with a `user_id` caused `AdminTemplate::__construct()` to inject admin-only `Expires`, `Cache-Control: no-store`, and `Pragma` headers into `/tr/`.
+    - `AdminTemplate` now loads only in `_renderUnauthorized()` and `_renderFlashError()`, retaining administrative error rendering while successful public responses remain cacheable.
+  - **P1-1 Indexing API Discipline (`lib/GoogleIndexingService.class.php`)**:
+    - Removed the companion homepage `publishNotification($homepageUrl, 'URL_UPDATED')` dispatch from `dispatchCompanionNotifications()`: article saves now notify only the leaf URL, letting sitemap pings handle homepage/feed discovery (Google guidance; halves per-edit quota usage).
+    - Removed the `publicationSitemap.xml` entry from `pingSitemaps()` (that sitemap is empty and was deleted from GSC in v1.0.47); remaining pings are `sitemap.xml`, `newsSitemap.xml`, `pageSitemap.xml`, `categorySitemap.xml`, `gallerySitemap.xml`.
+    - Simplified path-to-language detection to a single regex and dropped the now-dead `$segments` plumbing.
+  - **P1-2 Homepage Title/H1 Brand Duplication Cleanup (`templates/amed/index/index.twig`, live `mod_settings`)**:
+    - Removed the dead `{% else %} (Amed Bulten)` fallback from the `<title>` block and the visually-hidden `<h1>`; ASCII brand variants remain declared through JSON-LD `alternateName`.
+    - Stripped the duplicate `Amed Bulten — ` prefix from the live Turkish `mod_settings.site_name` via MCP, restoring a single-brand `<title>`/`<h1>` (`Amed Bülten — <tagline>`).
+  - **P0-3 Deploy Cache Revalidation & Homepage Header Assertion (`tools/deploy_production.sh`)**:
+    - Step [3/4] now bumps mtimes of all deployed PHP files (`lib/`, `mod/`, `tasks/`, `index.php`, `init.php`) after rsync, allowing mtime-revalidating PHP-FPM OPcache instances to discard stale bytecode on their next check; this is deployment hygiene, not the source-level header fix.
+    - Step [4/4] now asserts that `https://amedbulten.com/tr/` emits no `Cache-Control: no-store`, `Pragma: no-cache`, or `Expires: Thu, 01 Jan 1970` headers and fails the deploy otherwise.
+  - **Framework Version Parity**:
+    - Bumped framework version to `1.0.48` across `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.47 (2026-11-05)
 - **Search Visibility Recovery, Inbound Legacy ASCII 301 Normalization, RFC 3986 Sitemap Parity, Persistent Indexing Quota Ledger, Dynamic Cache-Control Isolation & mod_seo Reconciliation (`lib/Helper.class.php`, `lib/Amed.class.php`, `lib/AdminTemplate.class.php`, `lib/GoogleIndexingService.class.php`, `mod/index/index.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/helper/mod_publication.helper.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/mod_event.helper.php`, `mod/mod_seo/index.php`, `mod/mod_seo/lang/*.php`, `templates/admin/mod_seo/list.twig`, `templates/amed/partials/_cookie_consent.twig`, `.htaccess`, `config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
   - **Single-Hop Inbound Legacy ASCII & Collation 301 Redirection**:

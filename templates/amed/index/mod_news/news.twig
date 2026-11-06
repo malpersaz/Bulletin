@@ -292,7 +292,7 @@
 											<i class="bi bi-calendar3"></i>
 											<span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('c') }}">{{ d.formatted_datetime is defined and d.formatted_datetime is not empty ? d.formatted_datetime : d.created_at|date('d.m.Y') }}</time></span>
 										</span>
-										{% if d.updated_at is not empty and d.updated_at != d.created_at %}
+										{% if d.updated_at is not empty and (d.updated_at|date('U')) > (d.created_at|date('U')) %}
 											<span class="news-byline-date-item">
 												<i class="bi bi-pencil-square"></i>
 												<span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('c') }}">{{ d.formatted_updated_datetime is defined and d.formatted_updated_datetime is not empty ? d.formatted_updated_datetime : d.updated_at|date('d.m.Y') }}</time></span>

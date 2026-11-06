@@ -1,7 +1,7 @@
 {% extends "layouts/base.twig" %}
 
 {% block title %}
-    <title>{{ site.title }}{% if site.site_name is defined and site.site_name is not empty and site.site_name != site.title %} — {{ site.site_name }}{% else %} (Amed Bulten){% endif %}</title>
+    <title>{{ site.title }}{% if site.site_name is defined and site.site_name is not empty and site.site_name != site.title %} — {{ site.site_name }}{% endif %}</title>
 {% endblock %}
 
 {% block keywords %}
@@ -84,7 +84,7 @@
 
 {% block content %}
 <!-- START: index/index.twig -->
-    <h1 class="visually-hidden">{{ site.title }}{% if site.site_name is defined and site.site_name is not empty and site.site_name != site.title %} — {{ site.site_name }}{% else %} (Amed Bulten){% endif %}</h1>
+    <h1 class="visually-hidden">{{ site.title }}{% if site.site_name is defined and site.site_name is not empty and site.site_name != site.title %} — {{ site.site_name }}{% endif %}</h1>
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
     {% if homepage_hero_slider is empty %}
         {{ run({"mod": "index", "method": "_hero_slider", "extra": [10]}) }}

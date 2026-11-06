@@ -169,7 +169,7 @@ class GoogleIndexingService
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/pageSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/categorySitemap.xml';
-            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/publicationSitemap.xml';
+
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/gallerySitemap.xml';
         }
 
@@ -211,8 +211,8 @@ class GoogleIndexingService
     }
 
     /**
-     * When a content item URL is updated/deleted, also notify Google to re-crawl
-     * the language homepage and resubmit the sitemaps.
+     * When a content item URL is updated/deleted, resubmit the sitemaps
+     * for the affected language to Google Search Console.
      */
     private function dispatchCompanionNotifications(string $url): void
     {
@@ -227,30 +227,14 @@ class GoogleIndexingService
         }
 
         $baseOrigin = $parsed['scheme'] . '://' . $parsed['host'] . (isset($parsed['port']) ? ':' . $parsed['port'] : '');
-        $path = trim((string) ($parsed['path'] ?? ''), '/');
-        $segments = $path !== '' ? explode('/', $path) : [];
         $lang = null;
 
-        if (!empty($segments[0]) && preg_match('/^[a-z]{2,3}$/i', $segments[0])) {
-            $lang = strtolower($segments[0]);
+        if (!empty($parsed['path']) && preg_match('#^/([a-z]{2,3})(/|$)#i', (string) $parsed['path'], $m)) {
+            $lang = strtolower($m[1]);
         } else {
             $siteConfig = Registry::get('site_config');
             if (is_array($siteConfig) && !empty($siteConfig['default_lang'])) {
                 $lang = (string) $siteConfig['default_lang'];
-            }
-        }
-
-        // If the notified URL is an inner content page (e.g. /tr/news/...), also refresh the language homepage
-        if (count($segments) > 1 && $lang !== null) {
-            $homepageUrl = $baseOrigin . '/' . $lang . '/';
-            if ($homepageUrl !== $url && empty(self::$notifiedUrls[$homepageUrl])) {
-                $state = $this->loadState();
-                $lastHomePing = (int)($state['urls'][$homepageUrl . '|URL_UPDATED'] ?? 0);
-                // Cooldown: do not re-ping companion homepage within 15 minutes (900s)
-                if ((time() - $lastHomePing) >= 900) {
-                    self::$notifiedUrls[$homepageUrl] = true;
-                    $this->publishNotification($homepageUrl, 'URL_UPDATED');
-                }
             }
         }
 
