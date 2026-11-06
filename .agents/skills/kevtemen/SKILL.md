@@ -28,11 +28,12 @@ Run the sentinel against the user-supplied link(s) and/or the dossier's source d
   `DURDURULDU: Bu içerik eski — yayın tarihi 02.11.2026. Siteye eski ve bayat haber girilmesi doğru değildir; işlem kesildi.`
 - Never offer to proceed after a block; the gate is not negotiable and there is no approval path around it.
 
-### 3. Pre-Staging Re-Check
-Before `create_news`/`update_news`, re-run the sentinel in draft mode against the article HTML; it extracts every cited `href` and verifies each is same-day:
+### 3. Pre-Staging Re-Check (Role-Aware)
+Before `create_news`/`update_news`, re-run the sentinel in draft mode together with the kevkolin dossier JSON. Only `primary`-role sources are same-day checked; `supplementary` and `historical` links (polls, research pages, past statements) are exempt from the date gate — their liveness and claim anchoring belong to `kevrast`:
 ```bash
-.agents/skills/kevtemen/scripts/check_freshness.py --file /path/to/draft.html
+.agents/skills/kevtemen/scripts/check_freshness.py --file /path/to/draft.html --dossier /tmp/dossier_<slug>.json
 ```
+Without `--dossier`, the sentinel stays strict and same-day checks every cited `href` (legacy behavior).
 
 ### 4. Applies To Edits Too
 `update_news` on an existing record whose source or `created_at` date is not today is equally blocked: report the record's date and halt.

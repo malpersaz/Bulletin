@@ -69,8 +69,23 @@ Compile the verified findings into a standardized Research Dossier containing:
    - Exact numbers, quantities, metrics, and units.
    - Exact dates, years, times, and timezones.
    - Verbatim official statements and quotes.
-3. **Source Evidence & Live Links**:
-   - Source names and deep URLs for each claim.
+3. **Source Evidence & Live Links (Role-Tagged JSON Dossier Contract)**:
+   - Every claim MUST carry a deep content URL that was actually fetched and read during research — URLs recalled from memory are strictly prohibited.
+   - Persist the dossier as a JSON file (e.g. `/tmp/dossier_<slug>.json`). This file is the single source of truth for URLs in the pipeline; `kevtemen`, `kevrast`, and `kevanger` consume it via `--dossier`.
+   - Each source entry carries a role tag:
+     - `primary`: the same-day source(s) the news exists for (kevtemen same-day target).
+     - `supplementary`: additional verification or data for the same event (polls, research, official pages; any date).
+     - `historical`: past-event attribution ("X previously said ..."; any date).
+   - Dossier schema:
+     ```json
+     {
+       "event": "...",
+       "sources": [
+         {"url": "https://...", "outlet": "BBC", "role": "primary", "claims": ["..."]},
+         {"url": "https://...", "outlet": "Gallup", "role": "supplementary", "claims": ["..."]}
+       ]
+     }
+     ```
 4. **Contradictions & Nuances**:
    - Explicitly listed discrepancies between sources.
 5. **Visual Assets & Media Identification**:
@@ -79,5 +94,8 @@ Compile the verified findings into a standardized Research Dossier containing:
    - If absent: Explicitly note `Image: None (requires downstream representative generation)`.
 
 ### 5. Hand-off to Kevrast (Stage 1 Pre-Verification)
-- Pass the compiled Research Dossier to `kevrast` for Stage 1 pre-draft verification.
-- Once `kevrast` confirms all links are live (HTTP 200) and claims are groundable, the verified dossier proceeds to `kevanger` for Turkish journalistic drafting.
+- Run `kevrast` Stage 1 against the persisted dossier JSON (liveness, deep-link precision, and claim anchoring for every dossier URL):
+  ```bash
+  python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier /tmp/dossier_<slug>.json
+  ```
+- Once `kevrast` Stage 1 passes, hand the verified dossier file path to `kevanger`. `kevanger` may only copy URLs from this file.

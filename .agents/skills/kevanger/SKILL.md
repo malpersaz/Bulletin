@@ -29,20 +29,23 @@ In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusivel
   .agents/skills/kevtemen/scripts/check_freshness.py "$URL1" "$URL2"  # or --date "<pub datetime>"
   ```
 - Exit 1 (`BLOCKED`): STOP. Do not research, do not draft, do not stage. Report the sentinel's warning verbatim (e.g., "DURDURULDU: Bu içerik eski — yayın tarihi 02.11.2026. Siteye eski ve bayat haber girilmesi doğru değildir; işlem kesildi.") and halt the job.
-- Exit 0 (`PASSED (Same-Day)`): proceed; re-run on the final draft (`--file "$DRAFT_HTML"`) before `create_news`/`update_news` as the pre-staging re-check.
+- Exit 0 (`PASSED (Same-Day)`): proceed; re-run on the final draft before `create_news`/`update_news` as the pre-staging re-check, in role-aware mode so only `primary` sources are same-day checked:
+  ```bash
+  .agents/skills/kevtemen/scripts/check_freshness.py --file "$DRAFT_HTML" --dossier "$DOSSIER_JSON"
+  ```
 - The gate is absolute and fail-closed: no override, no backdating — even if the user supplies the old link themselves. See `.agents/skills/kevtemen/SKILL.md`.
 
 ### 3. Research Dossier Intake (`kevkolin` & `kevrast` Stage 1)
-- Receive the verified Research Dossier produced by `kevkolin` and pre-verified by `kevrast` (Stage 1).
+- Receive the verified Research Dossier (JSON file, e.g. `/tmp/dossier_<slug>.json`) produced by `kevkolin` and pre-verified by `kevrast` (Stage 1). The dossier is the ONLY source of URLs for this article.
+- **URL Chain-of-Custody (STRICT)**: URLs in the draft may ONLY be copied verbatim from the dossier file. Synthesizing, guessing, or shortening URLs (e.g. outlet homepage instead of the article page) is strictly prohibited. If an additional source is needed mid-drafting, first add it to the dossier with a role tag (`primary` / `supplementary` / `historical`) and re-run `kevrast` Stage 1 on the dossier; only then may it be cited.
 - For **Diyarbakır (Amed)** local news items, ensure multi-source cross-referencing against the dedicated `amed_diyarbakir` registry in `.agents/skills/kevkolin/scripts/source_catalog.py` (Amida Haber, Tigris Haber, Güneydoğu Ekspres, Diyarbakır Yenigün, Mücadele Gazetesi, CEGA Medya, Amed Times, Diyarbakır Söz, Özgür Haber Gazetesi, Güneydoğu Güncel, Amed Haber, and official institutions such as Diyarbakır Büyükşehir Belediyesi, DTSO, DTB, Diyarbakır Barosu, Karacadağ Kalkınma Ajansı, Dicle Üniversitesi, and Amedspor).
-- Ensure all source evidence, dates, numbers, and live URLs are grounded before beginning prose writing.
 - If contradictory reports were identified by `kevkolin`, formulate the Turkish prose to explicitly reflect the variance:
   - Format: *"$A tarafından paylaşılan bilgilere göre ..., ancak $B kaynağında ..."*
 
 ### 4. Journalistic Drafting & Storytelling (Turkish - `tr`)
 - Write fluent, engaging, and objective Turkish prose following professional newsroom standards (5N1K lead paragraph, inverted pyramid, concise paragraphs).
 - Craft a compelling Turkish headline (`name`) and deck summary (`summary` strictly **90 to 120 characters**).
-- Embed in-text citations linking to verified live URLs:
+- Embed in-text citations linking to verified live URLs — every URL copied verbatim from the dossier JSON:
   - Format: `<a href="$URL">$Name</a> tarafından aktarılan bilgilere göre` or `<a href="$URL">$Name</a> haberine göre`.
 - **Date Grounding Constraint**:
   - Do NOT inject today's date or current date into the news content if it was not explicitly stated in the source text. Only include dates or days of the week that appear in verified source reporting.
@@ -94,12 +97,12 @@ Whenever `kevanger` brings or drafts a news article from any source:
 - Address any flagged HTML architecture issues, deck length violations (must be 90–120 chars; 90–160 chars accepted by MCP SERP parity), or invalid URL slugs before proceeding.
 
 ### 7. Fact-Checking & Anti-Hallucination Gate (`kevrast` Stage 2)
-- Execute `kevrast` auditor script against the drafted article:
+- Execute `kevrast` auditor script against the drafted article together with the dossier (liveness, deep-link precision, claim anchoring, citation linkage, and draft-URL ⊆ dossier-URL):
   ```bash
-  python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --text "$DRAFT_HTML"
+  python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --text "$DRAFT_HTML" --dossier "$DOSSIER_JSON"
   ```
 - **Rule**: Do not proceed to staging until `kevrast` passes 100% (`Status: PASSED`).
-- If any link fails (not HTTP 200) or claim drifts, correct the draft text immediately.
+- If any link is dead, is not the deep article page, is missing from the dossier, sits in an unlinked attribution, or its cited figures do not appear on the linked page, correct the draft immediately.
 
 ### 8. Provenance Tracking, Categorization & Draft Staging
 - Map the article to the appropriate Turkish (`tr`) category in `mod_news` (e.g., under `Haberler` / `id: 18` or the designated Diyarbakır category).

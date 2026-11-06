@@ -252,6 +252,10 @@ def main() -> None:
     parser.add_argument("--file", help="Read draft HTML/text from file path")
     parser.add_argument("--timeout", type=int, default=15)
     parser.add_argument("--json", action="store_true", help="Output JSON")
+    parser.add_argument("--dossier",
+                        help="Kevkolin döşme JSON'u (rol etiketli kaynak listesi): "
+                             "yalnız 'primary' rolleri same-day denetlenir; "
+                             "supplementary/historical linkler tarih kapısından muaftır")
     args = parser.parse_args()
 
     checks: List[Dict[str, Any]] = []
@@ -269,7 +273,27 @@ def main() -> None:
             draft = f.read()
     elif args.text:
         draft = args.text
-    for href in HREF_RE.findall(draft):
+    role_map = {}
+    if args.dossier:
+        try:
+            with open(args.dossier, encoding="utf-8") as df:
+                dossier_data = json.load(df)
+            for src in dossier_data.get("sources", []):
+                role_map[str(src.get("url", "")).rstrip("/")] = src.get("role", "-")
+        except (OSError, ValueError) as exc:
+            print(f"HATA: döşme okunamadı ({args.dossier}): {exc}", file=sys.stderr)
+            sys.exit(2)
+    draft_hrefs = HREF_RE.findall(draft)
+    if draft_hrefs and not args.dossier:
+        print("Uyarı: --dossier verilmedi; tüm href'ler same-day denetlenir "
+              "(rol-farkındal mod için kevkolin döşmesini --dossier ile geçirin).")
+    for href in draft_hrefs:
+        role = role_map.get(href.rstrip("/"))
+        if role in ("supplementary", "historical"):
+            checks.append({"target": href, "kind": "url", "state": "skipped_role",
+                           "same_day": True,
+                           "note": f"rol={role} → same-day muaf; canlılık ve örtüşme kevrast'ın kapsamı"})
+            continue
         try:
             checks.append(check_target(href, "url", fetch_html(href, args.timeout), href, None))
         except (urllib.error.URLError, OSError, ValueError) as exc:
@@ -310,6 +334,8 @@ def main() -> None:
             if t["state"] == "dated":
                 mark = "[OK]" if t["same_day"] else "[!]"
                 print(f"  {mark} {t['target']} -> {t['pub_date']} ({t['evidence']})")
+            elif t["state"] == "skipped_role":
+                print(f"  [BİLGİ] {t['target']} -> {t.get('note', '')}")
             else:
                 print(f"  [!] {t['target']} -> {t.get('note', 'tarih belirlenemedi')}")
         if not report["passed"]:
