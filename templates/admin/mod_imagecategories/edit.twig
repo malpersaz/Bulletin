@@ -7,6 +7,10 @@
 {% block title %}{{ lang.mod_imagecategories.edit }}{% endblock %}
 {% block headline %}{{ lang.mod_imagecategories.edit }}{% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_imagecategories.css?v=1.0">
+{% endblock %}
+
 {% block content %}
 {% if fatal_error is defined %}
     <div class="image-category-shell">
@@ -30,4 +34,8 @@
         </button>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ site.address }}templates/admin/assets/js/mod_imagecategories.js?v=1.0"></script>
 {% endblock %}

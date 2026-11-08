@@ -459,4 +459,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'Karê AI yo nêvêrde.',
         'copy' => 'Vê Bikar Bîne',
     ],
+    'quality_meter' => [
+        'title' => 'Peymana Qelîteyê ya Google News',
+        'chars' => 'Herfî',
+        'words' => 'Vateyî',
+        'subheadings' => 'Sernameyê H2',
+        'min_chars' => 'Tewr kêm 1.500',
+        'ideal_chars' => 'Îdeal 2.500+',
+        'min_h2' => 'Tewr kêm 2 H2',
+        'status_poor' => 'Kêmî Esta',
+        'status_good' => 'Hol o',
+        'status_excellent' => 'Bêqusûr',
+    ],
 ];

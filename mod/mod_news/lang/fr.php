@@ -454,4 +454,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'Action IA non valide.',
         'copy' => 'Utiliser ceci',
     ],
+    'quality_meter' => [
+        'title' => 'Indicateur de qualité Google News',
+        'chars' => 'Caractères',
+        'words' => 'Mots',
+        'subheadings' => 'Titres H2',
+        'min_chars' => 'Minimum 1 500',
+        'ideal_chars' => 'Idéal 2 500+',
+        'min_h2' => 'Minimum 2 H2',
+        'status_poor' => 'À améliorer',
+        'status_good' => 'Bon',
+        'status_excellent' => 'Excellent',
+    ],
 ];

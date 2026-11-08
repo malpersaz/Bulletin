@@ -137,37 +137,40 @@ foreach ($imageFiles as $filename) {
 
     try {
         // 1. Process thumbnail (480x270 @ 75)
-        $oldThumbSize = file_exists($thumbPath) ? filesize($thumbPath) : 0;
-        
-        $image = $manager->read($sourcePath);
-        $image->cover(480, 270);
-        
-        $canvas = $manager->create($image->width(), $image->height());
-        $canvas->place($image);
-        $encodedThumb = $canvas->toWebp(75);
-        $newThumbSize = strlen((string) $encodedThumb);
+        $thumbExists = file_exists($thumbPath) && filesize($thumbPath) > 0;
+        if ($forceRatios || !$thumbExists) {
+            $oldThumbSize = $thumbExists ? filesize($thumbPath) : 0;
+            
+            $image = $manager->read($sourcePath);
+            $image->cover(480, 270);
+            
+            $canvas = $manager->create($image->width(), $image->height());
+            $canvas->place($image);
+            $encodedThumb = $canvas->toWebp(75);
+            $newThumbSize = strlen((string) $encodedThumb);
 
-        if (!$isDryRun) {
-            file_put_contents($thumbPath, (string) $encodedThumb);
+            if (!$isDryRun) {
+                file_put_contents($thumbPath, (string) $encodedThumb);
+            }
+
+            $savedThumb = $oldThumbSize > 0 ? ($oldThumbSize - $newThumbSize) : 0;
+            if ($savedThumb > 0) {
+                $totalSavedBytes += $savedThumb;
+            }
+
+            $savedPct = $oldThumbSize > 0 ? round(($savedThumb / $oldThumbSize) * 100, 1) : 0;
+            $oldSizeKb = round($oldThumbSize / 1024, 1);
+            $newSizeKb = round($newThumbSize / 1024, 1);
+
+            echo sprintf(
+                "[THUMB] %-25s | Old: %6.1f KB -> New: %5.1f KB | Saved: %5.1f%% (%d bytes)\n",
+                $filename,
+                $oldSizeKb,
+                $newSizeKb,
+                $savedPct,
+                $savedThumb
+            );
         }
-
-        $savedThumb = $oldThumbSize > 0 ? ($oldThumbSize - $newThumbSize) : 0;
-        if ($savedThumb > 0) {
-            $totalSavedBytes += $savedThumb;
-        }
-
-        $savedPct = $oldThumbSize > 0 ? round(($savedThumb / $oldThumbSize) * 100, 1) : 0;
-        $oldSizeKb = round($oldThumbSize / 1024, 1);
-        $newSizeKb = round($newThumbSize / 1024, 1);
-
-        echo sprintf(
-            "[THUMB] %-25s | Old: %6.1f KB -> New: %5.1f KB | Saved: %5.1f%% (%d bytes)\n",
-            $filename,
-            $oldSizeKb,
-            $newSizeKb,
-            $savedPct,
-            $savedThumb
-        );
 
         // 2. Process multi-ratio derivatives (4x3: 1200x900 @ 80, 1x1: 1200x1200 @ 80)
         if ($processRatios && file_exists($mainPath)) {

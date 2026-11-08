@@ -326,6 +326,7 @@ class AIService
         }
 
         $cleanSeoTitle = trim(html_entity_decode(html_entity_decode((string) ($decoded['seo_title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $cleanSeoTitle = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $cleanSeoTitle));
         $cleanMetaDesc = trim(html_entity_decode(html_entity_decode((string) ($decoded['meta_description'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         $keywordsList = array_map(function ($kw) {
             return trim(html_entity_decode(html_entity_decode((string) $kw, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));

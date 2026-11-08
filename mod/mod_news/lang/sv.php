@@ -455,4 +455,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'Ogiltig AI-åtgärd.',
         'copy' => 'Använd denna',
     ],
+    'quality_meter' => [
+        'title' => 'Google News kvalitetsmätare',
+        'chars' => 'Tecken',
+        'words' => 'Ord',
+        'subheadings' => 'H2-rubriker',
+        'min_chars' => 'Minst 1 500',
+        'ideal_chars' => 'Idealiskt 2 500+',
+        'min_h2' => 'Minst 2 H2',
+        'status_poor' => 'Kräver arbete',
+        'status_good' => 'Bra',
+        'status_excellent' => 'Utmärkt',
+    ],
 ];

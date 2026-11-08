@@ -454,4 +454,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'إجراء ذكاء اصطناعي غير صالح.',
         'copy' => 'استخدم هذا',
     ],
+    'quality_meter' => [
+        'title' => 'مقياس جودة أخبار Google',
+        'chars' => 'أحرف',
+        'words' => 'كلمات',
+        'subheadings' => 'عناوين H2',
+        'min_chars' => 'الحد الأدنى 1,500',
+        'ideal_chars' => 'المثالي +2,500',
+        'min_h2' => 'عناوين H2 (على الأقل 2)',
+        'status_poor' => 'يحتاج إلى تحسين',
+        'status_good' => 'جيد',
+        'status_excellent' => 'ممتاز',
+    ],
 ];

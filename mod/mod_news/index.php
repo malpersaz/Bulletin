@@ -123,6 +123,12 @@ class mod_news_mod extends BaseModuleController
             if ($field === 'description') {
                 $val = Helper::truncateWords($val, 255);
             }
+            if ($field === 'title') {
+                $val = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $val));
+                if ($val === '') {
+                    $val = (string) $model->name;
+                }
+            }
             $model->$field = $val;
         }
 

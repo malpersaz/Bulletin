@@ -41,7 +41,6 @@ tasks/agent_*
 tasks/mcp_smoke.php
 tasks/module_management_smoke.php
 tasks/migrate_*
-tasks/recompress_*
 tasks/mcp_bootstrap.php
 
 # Composer Metadata (vendor/ is transferred, but not metadata in public root)

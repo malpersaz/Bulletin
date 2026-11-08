@@ -482,4 +482,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'کرداری AI نادروستە.',
         'copy' => 'Vê Bikar Bîne',
     ],
+    'quality_meter' => [
+        'title' => 'پێوه‌ری کوالێتی Google News',
+        'chars' => 'پیت',
+        'words' => 'وشە',
+        'subheadings' => 'سەردێڕەکانی H2',
+        'min_chars' => 'کەمترین ١,٥٠٠',
+        'ideal_chars' => 'گونجاو +٢,٥٠٠',
+        'min_h2' => 'کەمترین ٢ سەردێڕی H2',
+        'status_poor' => 'پێویستی بە کارە',
+        'status_good' => 'باشە',
+        'status_excellent' => 'ناوازە',
+    ],
 ];

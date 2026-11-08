@@ -168,6 +168,7 @@
 		  "author": {% if d.author_is_org %}
 		  {
 		    "@type": "NewsMediaOrganization",
+		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
 		    "name": {{ site.title|json_ld|raw }},
 		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
 		    "url": {{ site.saddress|json_ld|raw }}
@@ -182,6 +183,7 @@
 		    {% if d.author_same_as is defined and d.author_same_as is not empty %}, "sameAs": {{ d.author_same_as|json_ld|raw }}{% endif %},
 		    "worksFor": {
 		      "@type": "NewsMediaOrganization",
+		      "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
 		      "name": {{ site.title|json_ld|raw }},
 		      "url": {{ site.saddress|json_ld|raw }}
 		    }
@@ -316,7 +318,7 @@
 									     width="56"
 									     height="56">
 								{% else %}
-									<div class="news-byline-avatar news-byline-avatar-initials">
+									<div class="news-byline-avatar news-byline-avatar-initials" aria-hidden="true">
 										{{ author_initials }}
 									</div>
 								{% endif %}
@@ -527,9 +529,9 @@
 										{% endif %}
 									</a>
 									<div class="detail-related-copy">
-										<h6 class="detail-related-title">
+										<h3 class="detail-related-title">
 											<a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
-										</h6>
+										</h3>
 										{% if news.created_at is defined and news.created_at is not empty %}
 											<div class="detail-related-time text-muted small mb-1">
 												{% if news.is_last_24h %}

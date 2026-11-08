@@ -214,7 +214,7 @@ class image_mod extends indexMain
             return $this->custom_name . "." . $final_ext;
         }
         $url = Helper::randomkey(15) . "." . $final_ext;
-        $file = root_dir . $this->mod . DS . $url;
+        $file = root_dir . 'static' . DS . $this->mod . DS . $url;
         if (file_exists($file)) {
             return $this->_generate_url($ext);
         }

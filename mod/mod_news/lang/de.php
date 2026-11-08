@@ -454,4 +454,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'Ungültige KI-Aktion.',
         'copy' => 'Verwenden',
     ],
+    'quality_meter' => [
+        'title' => 'Google News Qualitätsmesser',
+        'chars' => 'Zeichen',
+        'words' => 'Wörter',
+        'subheadings' => 'H2-Überschriften',
+        'min_chars' => 'Mindestens 1.500',
+        'ideal_chars' => 'Ideal 2.500+',
+        'min_h2' => 'Mindestens 2 H2',
+        'status_poor' => 'Verbesserungswürdig',
+        'status_good' => 'Gut',
+        'status_excellent' => 'Hervorragend',
+    ],
 ];

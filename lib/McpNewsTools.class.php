@@ -735,7 +735,9 @@ class McpNewsTools extends McpCrudToolsBase
         $model->content = $content;
         $model->summary = $summary;
         $model->seo = $seo;
-        $model->title = $this->cleanTextEntities($this->optionalString($args, 'title', $name, 255));
+        $rawTitle = $this->cleanTextEntities($this->optionalString($args, 'title', $name, 255));
+        $cleanTitle = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $rawTitle));
+        $model->title = ($cleanTitle !== '') ? $cleanTitle : $name;
         $model->keywords = $this->cleanTextEntities($this->optionalString($args, 'keywords', '', 255));
         $rawDescription = $this->cleanTextEntities($this->optionalString($args, 'description', $summary, 255));
         $model->description = self::truncateWords($rawDescription, 255);
@@ -900,6 +902,9 @@ class McpNewsTools extends McpCrudToolsBase
                 $val = $this->optionalString($args, $field, (string) $model->{$field}, 255);
                 if ($field === 'description') {
                     $model->description = self::truncateWords($this->cleanTextEntities($val), 255);
+                } elseif ($field === 'title') {
+                    $cleanTitle = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $this->cleanTextEntities($val)));
+                    $model->title = ($cleanTitle !== '') ? $cleanTitle : (string) $model->name;
                 } else {
                     $model->{$field} = $this->cleanTextEntities($val);
                 }

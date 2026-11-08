@@ -9,6 +9,12 @@ function sanitizeText(text) {
     return clean.replace(/\s+/g, " ");
 }
 
+function sanitizeMetaText(text) {
+    if (!text) return "";
+    let clean = String(text).replace(/[\p{Extended_Pictographic}\p{Cc}\p{Cf}]+/gu, " ").trim();
+    return clean.replace(/\s+/g, " ");
+}
+
 function isKurdishLocale(locale) {
     if (!locale) return false;
     const l = String(locale).toLowerCase().trim();

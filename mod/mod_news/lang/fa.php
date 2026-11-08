@@ -454,4 +454,16 @@ $lang['mod_news'] = [
         'invalid_action' => 'عملیات هوش مصنوعی نامعتبر است.',
         'copy' => 'استفاده از این',
     ],
+    'quality_meter' => [
+        'title' => 'سنجش کیفیت Google News',
+        'chars' => 'کاراکتر',
+        'words' => 'کلمه',
+        'subheadings' => 'عناوین H2',
+        'min_chars' => 'حداقل ۱,۵۰۰',
+        'ideal_chars' => 'ایده‌آل +۲,۵۰۰',
+        'min_h2' => 'حداقل ۲ عنوان H2',
+        'status_poor' => 'نیازمند بهبود',
+        'status_good' => 'خوب',
+        'status_excellent' => 'عالی',
+    ],
 ];

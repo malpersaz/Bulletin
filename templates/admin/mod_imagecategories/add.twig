@@ -7,6 +7,10 @@
 {% block title %}{{ lang.mod_imagecategories.add }}{% endblock %}
 {% block headline %}{{ lang.mod_imagecategories.add }}{% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_imagecategories.css?v=1.0">
+{% endblock %}
+
 {% block content %}
 {% include 'admin/mod_imagecategories/_form.twig' with { mode: 'add', form_id: 'imageCategoryAddForm', record: record } %}
 {% endblock %}
@@ -24,4 +28,8 @@
         </button>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ site.address }}templates/admin/assets/js/mod_imagecategories.js?v=1.0"></script>
 {% endblock %}

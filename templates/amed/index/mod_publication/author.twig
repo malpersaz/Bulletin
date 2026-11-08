@@ -246,7 +246,7 @@
                                 {% if author_news %}
                                     <div class="author-stream">
                                         {% for item in author_news %}
-                                            {% set news_title = item.title is defined and item.title is not empty ? item.title : item.name %}
+                                            {% set news_title = item.name is defined and item.name is not empty ? item.name : item.title %}
                                             <article class="publication-row news-row">
                                                 <div class="publication-topline">
                                                     <span class="publication-date">
@@ -287,7 +287,7 @@
                         </div>
                         <div class="author-stream">
                             {% for item in author_news %}
-                                {% set news_title = item.title is defined and item.title is not empty ? item.title : item.name %}
+                                {% set news_title = item.name is defined and item.name is not empty ? item.name : item.title %}
                                 <article class="publication-row news-row">
                                     <div class="publication-topline">
                                         <span class="publication-date">

@@ -250,20 +250,21 @@ class mod_news_helper extends indexBase
             $news_data['author_same_as'] = [];
             if (!$news_data['author_is_org'] && !empty($news_data['user_id'])) {
                 try {
-                    $db = Load::lib('Database');
                     $userId = (int) $news_data['user_id'];
-                    $db->fetch_array("SELECT `link` FROM `mod_user_social` WHERE `user_id` = {$userId} AND `status` = 'y'");
-                    $socialRows = $db->toArray();
-                    if (is_array($socialRows)) {
-                        foreach ($socialRows as $sRow) {
-                            $sLink = trim((string) ($sRow['link'] ?? ''));
+                    $social = Load::model('mod_user.mod_user_social');
+                    $social->flush();
+                    $social->where_user_id_and_is_active($userId, 'y')->order('display_order', 'ASC')->gR();
+                    if ($social->getSize() > 0) {
+                        foreach ($social->toArray() as $sRow) {
+                            $sLink = trim((string) ($sRow['url'] ?? ''));
                             if ($sLink !== '' && preg_match('~^https?://~i', $sLink)) {
                                 $news_data['author_same_as'][] = $sLink;
                             }
                         }
                     }
                 } catch (\Throwable $e) {
-                    // Non-fatal if social table is missing or empty
+                    // Database::query() exits on error (lib/Database/Database.php:130); this catch
+                    // only intercepts non-DB throwables. The query must match mod_user_social's schema.
                 }
             }
 

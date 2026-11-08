@@ -23,35 +23,6 @@
     {% endif %}
 {% endmacro %}
 
-<style>
-    .image-category-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
-    .image-category-card { background: var(--md-sys-color-surface); border-radius: 20px; padding: 20px; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; }
-    .image-category-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); margin: 0; }
-    .form-status { border-radius: 16px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
-    .form-status.error { background: #fce8e6; color: #b3261e; }
-    .form-status.success { background: #e6f4ea; color: #1e4620; }
-    .m3-input-wrapper { position: relative; }
-    .m3-input-lg { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); box-sizing: border-box; outline: none; min-height: 54px; }
-    .m3-input-lg:focus { border-width: 2px; border-color: var(--md-sys-color-primary); padding: 15px; }
-    textarea.m3-input-lg { min-height: 124px; resize: vertical; }
-    .m3-floating-label { position: absolute; top: 16px; left: 16px; background: var(--md-sys-color-surface); padding: 0 6px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: all 0.2s ease; }
-    .m3-input-lg:focus + .m3-floating-label, .m3-input-lg:not(:placeholder-shown) + .m3-floating-label, select.m3-input-lg + .m3-floating-label, textarea.m3-input-lg:not(:placeholder-shown) + .m3-floating-label { top: -9px; left: 12px; font-size: 12px; color: var(--md-sys-color-primary); }
-    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .selection-card { border: 1px solid var(--md-sys-color-outline); border-radius: 16px; padding: 16px; display: grid; gap: 6px; cursor: pointer; }
-    .selection-card input { display: none; }
-    .selection-card.active { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
-    .selection-title { font-weight: 700; }
-    .selection-copy { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
-    .image-note { font-size: 13px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; }
-    .current-image { display: grid; gap: 10px; }
-    .current-image img { width: 100%; max-width: 180px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); }
-    .image-remove-btn { min-height: 44px; justify-self: start; border: none; border-radius: 999px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; background: #fce8e6; color: #b3261e; }
-    .image-category-bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)); }
-    .image-category-bottom-bar a, .image-category-bottom-bar button { flex: 1; min-height: 52px; border-radius: 999px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; cursor: pointer; }
-    .image-category-bottom-bar .cancel-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
-    .image-category-bottom-bar .save-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-</style>
-
 <div class="image-category-shell">
     {% set current_lang = form_lang is defined ? form_lang : selected_lang %}
     {% set selected_parent = parent_id is defined ? parent_id : category_selected_parent_id %}
@@ -73,8 +44,15 @@
         </div>
     {% endif %}
 
-    <form method="POST" action="" enctype="multipart/form-data" id="{{ form_id }}" class="image-category-shell" style="padding:0; gap:16px;">
-        <div class="image-category-card">
+    <form method="POST" action="" enctype="multipart/form-data" id="{{ form_id }}" class="image-category-shell image-category-form-inner"
+          data-site-address="{{ site.saddress }}"
+          data-remove-image-url="{{ site.saddress }}mod_imagecategories/image_remove_image"
+          data-i18n-remove-image-confirm="{{ lang.mod_imagecategories.remove_image|e('html_attr') }}"
+          data-i18n-remove-button="{{ lang.mod_imagecategories.button.remove|e('html_attr') }}"
+          data-i18n-cancel-button="{{ lang.mod_imagecategories.button.cancel|e('html_attr') }}"
+          data-i18n-image-removed-success="{{ lang.mod_imagecategories.message.success.image_removed|e('html_attr') }}"
+          data-i18n-network-error="{{ lang.mod_imagecategories.list_ui.network_error|e('html_attr') }}">
+        <div class="image-category-card image-category-card-form">
             <h3 class="image-category-title">{{ lang.mod_imagecategories.form.basics }}</h3>
 
             <div class="m3-input-wrapper">
@@ -87,7 +65,7 @@
             </div>
 
             <div class="m3-input-wrapper">
-                <input class="m3-input-lg" type="text" name="name" id="image-category-name" value="{{ name is defined ? name : record.name }}" placeholder=" " oninput="syncImageCategoryMeta()">
+                <input class="m3-input-lg" type="text" name="name" id="image-category-name" value="{{ name is defined ? name : record.name }}" placeholder=" ">
                 <label class="m3-floating-label">{{ lang.mod_imagecategories.admin.columns.name }}</label>
             </div>
 
@@ -102,7 +80,7 @@
             </div>
         </div>
 
-        <div class="image-category-card">
+        <div class="image-category-card image-category-card-form">
             <h3 class="image-category-title">{{ lang.mod_imagecategories.form.structure }}</h3>
 
             <div class="m3-input-wrapper">
@@ -132,7 +110,7 @@
             </div>
         </div>
 
-        <div class="image-category-card">
+        <div class="image-category-card image-category-card-form">
             <h3 class="image-category-title">{{ lang.mod_imagecategories.form.seo }}</h3>
 
             <div class="m3-input-wrapper">
@@ -151,7 +129,7 @@
             </div>
         </div>
 
-        <div class="image-category-card">
+        <div class="image-category-card image-category-card-form">
             <h3 class="image-category-title">{{ lang.mod_imagecategories.form.publishing }}</h3>
 
             <div class="m3-input-wrapper">
@@ -175,114 +153,15 @@
             {% if mode == 'edit' and record.image %}
                 <div class="current-image" id="image-category-current-image">
                     <img src="{{ site.iaddress ~ 'mod_imagecategories/thumb/' ~ record.image }}" alt="{{ record.name }}">
-                    <button type="button" class="image-remove-btn" onclick="removeImageCategoryImage('{{ record.id }}')">
+                    <button type="button" class="image-remove-btn" data-action="remove-image" data-id="{{ record.id }}">
                         <i class="bi bi-x-circle"></i>
                         <span>{{ lang.mod_imagecategories.button.remove }}</span>
                     </button>
                 </div>
             {% endif %}
 
-            <input class="m3-input-lg" type="file" name="image" accept="image/*" style="padding:12px;">
+            <input class="m3-input-lg m3-input-file" type="file" name="image" accept="image/*">
             <div class="image-note">{{ lang.mod_imagecategories.form.image_help }}</div>
         </div>
     </form>
 </div>
-
-<script>
-function syncImageCategoryMeta() {
-    const nameInput = document.getElementById('image-category-name');
-    const seoInput = document.getElementById('image-category-seo');
-    const titleInput = document.getElementById('image-category-title');
-    const keywordsInput = document.getElementById('image-category-keywords');
-    const descriptionInput = document.getElementById('image-category-description');
-    const langSelect = document.getElementById('image-category-lang');
-    const locale = (langSelect && langSelect.value) ? String(langSelect.value).toLowerCase().trim() : (typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en');
-    if (!nameInput || !seoInput || !titleInput || !keywordsInput || !descriptionInput) {
-        return;
-    }
-    if (!seoInput.dataset.touched) {
-        seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(nameInput.value, locale) : nameInput.value;
-    }
-    if (!titleInput.dataset.touched) {
-        titleInput.value = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
-    }
-    if (!keywordsInput.dataset.touched) {
-        keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(nameInput.value, locale) : nameInput.value;
-    }
-    if (!descriptionInput.dataset.touched) {
-        const cleanedValue = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
-        descriptionInput.value = cleanedValue.substring(0, 255);
-    }
-}
-
-async function removeImageCategoryImage(id) {
-    const confirmation = await Swal.fire({
-        icon: 'warning',
-        text: {{ lang.mod_imagecategories.remove_image|json_encode|raw }},
-        showCancelButton: true,
-        confirmButtonText: {{ lang.mod_imagecategories.button.remove|json_encode|raw }},
-        cancelButtonText: {{ lang.mod_imagecategories.button.cancel|json_encode|raw }},
-        reverseButtons: true,
-        focusCancel: true
-    });
-
-    if (!confirmation.isConfirmed) {
-        return;
-    }
-
-    const body = new URLSearchParams();
-    body.append('id', id);
-
-    try {
-        const response = await fetch('{{ site.saddress }}mod_imagecategories/image_remove_image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            body: body.toString()
-        });
-        const text = await response.text();
-        if (text.trim() === 'Success') {
-            const currentImage = document.getElementById('image-category-current-image');
-            if (currentImage) {
-                currentImage.remove();
-            }
-            showSnackbar({{ lang.mod_imagecategories.message.success.image_removed|json_encode|raw }}, 'success');
-            return;
-        }
-
-        Swal.fire({ icon: 'error', text: text });
-    } catch (error) {
-        showSnackbar({{ lang.mod_imagecategories.list_ui.network_error|json_encode|raw }}, 'error');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const langSelect = document.getElementById('image-category-lang');
-    if (langSelect) {
-        langSelect.addEventListener('change', function () {
-            const url = new URL(window.location.href);
-            url.searchParams.set('lang', langSelect.value);
-            window.location.href = url.toString();
-        });
-    }
-
-    const seoInput = document.getElementById('image-category-seo');
-    const titleInput = document.getElementById('image-category-title');
-    const keywordsInput = document.getElementById('image-category-keywords');
-    const descriptionInput = document.getElementById('image-category-description');
-    [seoInput, titleInput, keywordsInput, descriptionInput].forEach(function (input) {
-        if (!input) return;
-        input.addEventListener('input', function () {
-            input.dataset.touched = '1';
-        });
-    });
-    syncImageCategoryMeta();
-    document.querySelectorAll('[data-selection-group]').forEach(function (group) {
-        group.addEventListener('change', function (event) {
-            if (event.target.type !== 'radio') return;
-            group.querySelectorAll('.selection-card').forEach(function (card) {
-                card.classList.toggle('active', card.contains(event.target));
-            });
-        });
-    });
-});
-</script>

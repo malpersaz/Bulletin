@@ -1938,6 +1938,18 @@ class NewsEditManager {
             });
         }
 
+        if (titleMeta) {
+            titleMeta.addEventListener('input', () => {
+                titleMeta.dataset.touched = 'true';
+            });
+        }
+
+        if (keywordsInput) {
+            keywordsInput.addEventListener('input', () => {
+                keywordsInput.dataset.touched = 'true';
+            });
+        }
+
         if (descriptionInput) {
             descriptionInput.addEventListener('input', () => {
                 descriptionInput.dataset.touched = 'true';
@@ -1957,10 +1969,10 @@ class NewsEditManager {
                 if (seoInput && (!seoInput.value || seoInput.dataset.touched !== 'true')) {
                     seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(name, locale) : name;
                 }
-                if (titleMeta) {
-                    titleMeta.value = typeof sanitizeText === 'function' ? sanitizeText(name) : name;
+                if (titleMeta && (!titleMeta.value || titleMeta.dataset.touched !== 'true')) {
+                    titleMeta.value = typeof sanitizeMetaText === 'function' ? sanitizeMetaText(name) : name.trim();
                 }
-                if (keywordsInput) {
+                if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.touched !== 'true')) {
                     keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(name, locale) : name;
                 }
             });
@@ -1975,8 +1987,8 @@ class NewsEditManager {
                     introText = normalizeKurdishTypos(introText, locale);
                 }
                 if (descriptionInput && (!descriptionInput.value || descriptionInput.dataset.touched !== 'true')) {
-                    const cleanDesc = typeof sanitizeText === 'function' ? sanitizeText(introText) : introText;
-                    descriptionInput.value = cleanDesc.substring(0, 120);
+                    const cleanDesc = typeof sanitizeMetaText === 'function' ? sanitizeMetaText(introText) : introText.trim();
+                    descriptionInput.value = cleanDesc.substring(0, 160);
                 }
             });
         }

@@ -48,6 +48,9 @@ RewriteRule ^site\.webmanifest$ static/mod_settings/site.webmanifest [L]
 # Block direct HTTP access to internal framework, runtime, task, and tool directories
 RewriteRule ^(config|lib|vendor|tasks|data|logs|tools|tests|installer|docs|templates_c)(/|$) - [F,L]
 
+# Do not route missing static or template files through the PHP front controller
+RewriteRule ^(static|templates)/ - [L]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

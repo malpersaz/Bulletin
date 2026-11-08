@@ -105,6 +105,13 @@ class edit_validator
             return True;
         }
         // title Required
+        $rawTitle = trim((string) Req::Post('title'));
+        $strippedTitle = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $rawTitle));
+        if ($strippedTitle === '') {
+            $strippedTitle = trim((string) Req::Post('name'));
+        }
+        $_POST['title'] = $strippedTitle;
+
         $this->valid->add(
             [
                 'name' => 'title',
