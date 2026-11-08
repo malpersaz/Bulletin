@@ -1643,7 +1643,13 @@ class mod_user_mod extends indexMain
             return null;
         }
 
-        $searchParts = [$title];
+        $cleanModule = str_replace('mod_', '', $module);
+        $searchParts = [
+            $title,
+            $module,
+            $cleanModule,
+            str_replace('_', ' ', $cleanModule),
+        ];
         foreach ($usableLinks as $link) {
             $searchParts[] = $link['label'];
         }
@@ -1722,36 +1728,36 @@ class mod_user_mod extends indexMain
                         $list('mod_news', 'list', $base . 'mod_news/list'),
                         $add('mod_news', 'add', $base . 'mod_news/add'),
                         $cats('mod_news_category', 'list', $base . 'mod_news_category/list'),
-                    ]),
+                    ], ['news', 'haber', 'haberler', 'nuce', 'nûçe', 'gotar', 'makale', 'ajans']),
                     $mod('mod_publication', 'list', $management['publication_management'], 'bi bi-journal-richtext', [
                         $list('mod_publication', 'list', $base . 'mod_publication/list'),
                         $add('mod_publication', 'add', $base . 'mod_publication/add'),
                         $cats('mod_publication_category', 'list', $base . 'mod_publication_category/list'),
-                    ]),
+                    ], ['publication', 'publications', 'yayin', 'yayın', 'yayinlar', 'wesan', 'weşan', 'dergi', 'gazete', 'kovar', 'rojname', 'bulten']),
                     $mod('mod_event', 'list', $management['event_management'], 'bi bi-calendar-event', [
                         $list('mod_event', 'list', $base . 'mod_event/list'),
                         $add('mod_event', 'add', $base . 'mod_event/add'),
                         $cats('mod_event_category', 'list', $base . 'mod_event_category/list'),
-                    ]),
+                    ], ['event', 'events', 'etkinlik', 'etkinlikler', 'calaki', 'çalakî', 'ajanda', 'takvim', 'program']),
                     $mod('mod_page', 'list', $management['page_management'], 'bi bi-file-richtext', [
                         $list('mod_page', 'list', $base . 'mod_page/list'),
                         $add('mod_page', 'add', $base . 'mod_page/add'),
-                    ]),
+                    ], ['page', 'pages', 'sayfa', 'sayfalar', 'rupel', 'rûpel', 'metin']),
                     $mod('mod_document', 'list', $management['file_management'], 'bi bi-folder-fill', [
                         $list('mod_document', 'list', $base . 'mod_document/list'),
                         $add('mod_document', 'add', $base . 'mod_document/add'),
-                    ]),
+                    ], ['document', 'documents', 'dosya', 'dosyalar', 'belge', 'belgeler', 'dokuman', 'döküman', 'pele', 'pel', 'file', 'files']),
                     $mod('mod_survey', 'list', $management['survey_management'], 'bi bi-ui-checks-grid', [
                         $list('mod_survey', 'list', $base . 'mod_survey/list'),
                         $add('mod_survey', 'add', $base . 'mod_survey/add'),
-                    ]),
+                    ], ['survey', 'surveys', 'anket', 'anketler', 'raporsin', 'raporsîn', 'oylama', 'poll']),
                     $mod('mod_faq', 'list', $faq_lang['mod_faq']['admin']['faq_management'], 'bi bi-patch-question-fill', [
                         $list('mod_faq', 'list', $base . 'mod_faq/list'),
-                    ]),
+                    ], ['faq', 'sss', 'soru', 'sorular', 'cevap', 'cevaplar', 'pirs', 'bersiv', 'question', 'answer']),
                     $mod('mod_faq_mod', 'list', Load::lang('mod_faq_mod')['mod_faq_mod']['list'], 'bi bi-patch-question', [
                         $list('mod_faq_mod', 'list', $base . 'mod_faq_mod/list'),
                         $add('mod_faq_mod', 'add', $base . 'mod_faq_mod/add'),
-                    ]),
+                    ], ['faq', 'sss', 'modul', 'modül', 'pirs']),
                     $mod('mod_menu', 'list', $management['menu_management'], 'bi bi-list', [
                         $list('mod_menu', 'list', $base . 'mod_menu/list'),
                         $add('mod_menu', 'add', $base . 'mod_menu/add'),
@@ -1761,7 +1767,8 @@ class mod_user_mod extends indexMain
                     ], ['menu', 'menü', 'pesek', 'pêşek', 'navigasyon', 'navigation', 'navbar', 'header', 'footer', 'ust menu', 'alt menu', 'eylem menusu', 'slot']),
                     $mod('mod_redirect', 'list', $management['redirect_management'], 'bi bi-arrow-return-right', [
                         $list('mod_redirect', 'list', $base . 'mod_redirect/list'),
-                    ]),
+                        $add('mod_redirect', 'add', $base . 'mod_redirect/add'),
+                    ], ['redirect', 'redirects', 'redirection', 'yonlendirme', 'yönlendirme', 'yonlendirmeler', 'beralikirin', 'beralîkirin', 'arastekirin', 'araste', '301', '302', 'url', 'link', 'forward', 'forwarding', 'rewrite', 'route', 'routing']),
                 ]),
             ],
             [
@@ -1771,35 +1778,35 @@ class mod_user_mod extends indexMain
                     $mod('mod_video', 'list', $management['videos'], 'bi bi-camera-reels-fill', [
                         $list('mod_video', 'list', $base . 'mod_video/list'),
                         $add('mod_video', 'add', $base . 'mod_video/add'),
-                    ]),
+                    ], ['video', 'videolar', 'klip', 'medya', 'film']),
                     $mod('mod_video_embed', 'list', $management['remote_video_category'], 'bi bi-collection-play-fill', [
                         $list('mod_video_embed', 'list', $base . 'mod_video_embed/list'),
                         $add('mod_video_embed', 'add', $base . 'mod_video_embed/add'),
                         $cats('mod_video_embed_category', 'list', $base . 'mod_video_embed_category/list'),
-                    ]),
+                    ], ['video', 'embed', 'youtube', 'vimeo', 'harici video', 'video kategori']),
                     $mod('mod_slider', 'list', $management['headline_management'], 'bi bi-card-image', [
                         $list('mod_slider', 'list', $base . 'mod_slider/list'),
                         $add('mod_slider', 'add', $base . 'mod_slider/add'),
-                    ]),
+                    ], ['slider', 'manset', 'manşet', 'mansetler', 'slide', 'surugleyici']),
                     $mod('mod_headline', 'list', $management['full_headline_management'], 'bi bi-layout-text-window-reverse', [
                         $list('mod_headline', 'list', $base . 'mod_headline/list'),
                         $add('mod_headline', 'add', $base . 'mod_headline/add'),
-                    ]),
+                    ], ['headline', 'tam ekran', 'manset', 'manşet', 'surme', 'sernuce', 'sernûçe']),
                     $mod('mod_imagecategories', 'list', $management['image_gallery'], 'bi bi-image-fill', [
                         $list('mod_imagecategories', 'list', $base . 'mod_imagecategories/list'),
-                    ]),
+                    ], ['image', 'images', 'resim', 'resimler', 'fotograf', 'fotoğraf', 'kategori', 'wene', 'wêne']),
                     $mod('mod_gallery_mod', 'list', $management['gallery_modules'], 'bi bi-images', [
                         $list('mod_gallery_mod', 'list', $base . 'mod_gallery_mod/list'),
-                    ]),
+                    ], ['gallery', 'galeri', 'modul', 'foto', 'album']),
                     $mod('mod_attachment_mod', 'list', $management['file_modules'], 'bi bi-paperclip', [
                         $list('mod_attachment_mod', 'list', $base . 'mod_attachment_mod/list'),
-                    ]),
+                    ], ['attachment', 'ek', 'ekler', 'dosya', 'modul']),
                     $mod('mod_gallery', 'list', $gallery_lang['mod_gallery']['admin']['title'], 'bi bi-collection-fill', [
                         $list('mod_gallery', 'list', $base . 'mod_gallery/list'),
-                    ]),
+                    ], ['gallery', 'galeri', 'resim', 'fotograf', 'fotoğraf', 'album', 'albüm', 'galerî', 'wene']),
                     $mod('mod_attachment', 'list', $attachment_lang['mod_attachment']['admin']['file_management'], 'bi bi-file-earmark-zip-fill', [
                         $list('mod_attachment', 'list', $base . 'mod_attachment/list'),
-                    ]),
+                    ], ['attachment', 'ek', 'ekler', 'dosya', 'dosyalar', 'belge', 'zip', 'pdf', 'upload']),
                 ]),
             ],
             [
@@ -1809,15 +1816,15 @@ class mod_user_mod extends indexMain
                     $mod('mod_announcements', 'list', $management['announcement_management'], 'bi bi-volume-up-fill', [
                         $list('mod_announcements', 'list', $base . 'mod_announcements/list'),
                         $add('mod_announcements', 'add', $base . 'mod_announcements/add'),
-                    ]),
+                    ], ['announcement', 'announcements', 'duyuru', 'duyurular', 'agahdari', 'agahdarî', 'ilan', 'bildiri']),
                     $mod('mod_popup', 'list', $management['popup_announcements'], 'bi bi-layout-wtf', [
                         $list('mod_popup', 'list', $base . 'mod_popup/list'),
                         $add('mod_popup', 'add', $base . 'mod_popup/add'),
-                    ]),
+                    ], ['popup', 'pop-up', 'modal', 'pencere', 'acilir pencere', 'açılır pencere', 'duyuru']),
                     $mod('mod_newsletter', 'list', $management['newsletter_management'], 'bi bi-envelope-at-fill', [
                         $list('mod_newsletter', 'list', $base . 'mod_newsletter/list'),
                         $add('mod_newsletter', 'add', $base . 'mod_newsletter/add'),
-                    ]),
+                    ], ['newsletter', 'bulten', 'bülten', 'abone', 'abonelik', 'e-bulten', 'e-bülten', 'e-posta', 'email']),
                 ]),
             ],
             [
@@ -1827,15 +1834,15 @@ class mod_user_mod extends indexMain
                     $mod('mod_user', 'list', $management['members'], 'bi bi-person-gear', [
                         $list('mod_user', 'list', $base . 'mod_user/list'),
                         $add('mod_user', 'add', $base . 'mod_user/add'),
-                    ]),
+                    ], ['user', 'users', 'uye', 'üye', 'uyeler', 'üyeler', 'endam', 'kullanici', 'kullanıcı', 'hesap', 'account']),
                     $mod('mod_user_group', 'list', $management['user_groups'], 'bi bi-diagram-2-fill', [
                         $list('mod_user_group', 'list', $base . 'mod_user_group/list'),
                         $add('mod_user_group', 'add', $base . 'mod_user_group/add'),
-                    ]),
+                    ], ['group', 'groups', 'grup', 'gruplar', 'kom', 'kome', 'rol', 'role']),
                     $mod('mod_user', 'acl', $management['user_permission_management_acl'], 'bi bi-shield-lock', [
                         $this->_panel_link('mod_acl', 'list', $p['link_list'], $base . 'mod_acl/list'),
                         $this->_panel_link('mod_user', 'acl', $management['acl'], $base . 'mod_user/acl'),
-                    ]),
+                    ], ['acl', 'permission', 'permissions', 'yetki', 'yetkiler', 'raye', 'izin', 'izinler', 'access', 'rol']),
                     [
                         'title' => $pm_lang['mod_user_pm']['inbox_link_label'],
                         'icon' => 'bi bi-envelope-paper',
@@ -1844,7 +1851,7 @@ class mod_user_mod extends indexMain
                             $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['sent_title'], $base . 'mod_user_pm/sent'),
                             $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['new_message_action'], $base . 'mod_user_pm/send'),
                         ])),
-                        'search' => $this->_panel_search($pm_lang['mod_user_pm']['inbox_link_label'] . ' ' . $pm_lang['mod_user_pm']['inbox_title'] . ' ' . $pm_lang['mod_user_pm']['sent_title'] . ' ' . $pm_lang['mod_user_pm']['new_message_action'] . ' ' . $pm_lang['mod_user_pm']['message_label']),
+                        'search' => $this->_panel_search($pm_lang['mod_user_pm']['inbox_link_label'] . ' ' . $pm_lang['mod_user_pm']['inbox_title'] . ' ' . $pm_lang['mod_user_pm']['sent_title'] . ' ' . $pm_lang['mod_user_pm']['new_message_action'] . ' ' . $pm_lang['mod_user_pm']['message_label'] . ' pm message messages mesaj mesajlar peyem inbox sent'),
                     ],
                     [
                         'title' => $management['profile'],
@@ -1853,7 +1860,7 @@ class mod_user_mod extends indexMain
                             ['label' => $management['edit_profile_menu'], 'url' => $base . 'mod_user/info'],
                             ['label' => $management['change_password_menu'], 'url' => $base . 'mod_user/change_password'],
                         ],
-                        'search' => $this->_panel_search($management['profile'] . ' ' . $management['edit_profile_menu'] . ' ' . $management['change_password_menu']),
+                        'search' => $this->_panel_search($management['profile'] . ' ' . $management['edit_profile_menu'] . ' ' . $management['change_password_menu'] . ' profile profil account hesap hesab password sifre şifre sirte şîrte'),
                     ],
                 ]),
             ],
@@ -1874,7 +1881,7 @@ class mod_user_mod extends indexMain
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'open-site-settings-menu'),
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['theme_management_title'], 'open-theme-management'),
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['logo_icon_management_title'], 'open-logo-icon-management'),
-                    ]),
+                    ], ['settings', 'ayar', 'ayarlar', 'sawek', 'konfigurasyon', 'config', 'site']),
                     $mod('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', 'bi bi-building-check', [
                         $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'mod_settings/affiliations'),
                     ], ['affiliation', 'affiliations', 'kurum', 'baro', 'akreditasyon', 'baglanti', 'sazi', 'hevkari', 'meb', 'bakanlik', 'partner', 'oda', 'birlik', 'adliye', 'adalet']),
@@ -1883,10 +1890,10 @@ class mod_user_mod extends indexMain
                     ], ['saat', 'calisma saatleri', 'working hours', 'saeten xebate', 'tatil', 'closures', 'betlane', 'mesai', 'tatiller']),
                     $mod('mod_seo', 'list', $seo_lang['mod_seo']['list'], 'bi bi-graph-up-arrow', [
                         $this->_panel_link('mod_seo', 'list', $p['link_list'], $base . 'mod_seo/index'),
-                    ]),
+                    ], ['seo', 'arama motoru', 'google', 'meta', 'sitemap', 'robots', 'optimizasyon']),
                     $mod('mod_settings', 'edit', $management['language_management_menu'], 'bi bi-translate', [
                         $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'lang/panel'),
-                    ]),
+                    ], ['language', 'languages', 'dil', 'diller', 'ziman', 'ceviri', 'çeviri', 'tercume', 'tercüme', 'translate', 'translation']),
                     $mod('mod_mcp', 'list', $management['mcp_api_keys'], 'bi bi-plug-fill', [
                         $list('mod_mcp', 'list', $base . 'mod_mcp/list'),
                     ], ['mcp', 'api', 'key', 'keys', 'mifte', 'anahtar', 'token', 'ai', 'gemini', 'claude', 'antigravity']),

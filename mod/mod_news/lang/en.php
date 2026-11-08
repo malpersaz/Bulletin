@@ -454,4 +454,18 @@ $lang['mod_news'] = [
         'invalid_action' => 'Invalid AI action.',
         'copy' => 'Use This',
     ],
+
+    // === Google News Quality Meter ===
+    'quality_meter' => [
+        'title' => 'Google News Quality',
+        'chars' => 'Characters',
+        'words' => 'Words',
+        'subheadings' => 'H2 Headings',
+        'min_chars' => 'Min 1,500',
+        'ideal_chars' => 'Ideal 2,500+',
+        'min_h2' => 'Min 2 H2',
+        'status_poor' => 'Needs Work',
+        'status_good' => 'Good',
+        'status_excellent' => 'Excellent',
+    ],
 ];

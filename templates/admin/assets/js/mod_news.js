@@ -2302,7 +2302,110 @@ class NewsEditManager {
     }
 }
 
+function initNewsQualityMeters() {
+    const meters = document.querySelectorAll('.news-quality-meter');
+    if (!meters.length) return;
+
+    const al = (typeof window.adminLang !== 'undefined' && window.adminLang) ? window.adminLang : {};
+    const mod = al.mod_news || al.active_module || {};
+    const qLang = mod.quality_meter || {};
+    const labelPoor = qLang.status_poor || 'Needs Work';
+    const labelGood = qLang.status_good || 'Good';
+    const labelExcellent = qLang.status_excellent || 'Excellent';
+
+    meters.forEach((meter) => {
+        const editorId = meter.dataset.editorId;
+        if (!editorId) return;
+
+        const charEl = meter.querySelector('[data-count="chars"]');
+        const wordEl = meter.querySelector('[data-count="words"]');
+        const h2El = meter.querySelector('[data-count="h2"]');
+        const badgeEl = meter.querySelector('[data-badge]');
+        const metricChars = meter.querySelector('[data-metric="chars"]');
+        const metricH2 = meter.querySelector('[data-metric="h2"]');
+
+        const updateStats = (htmlContent) => {
+            const rawHtml = htmlContent || '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = rawHtml;
+            const plainText = (tempDiv.textContent || tempDiv.innerText || '').trim();
+
+            const charCount = plainText.length;
+            const words = plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
+            const h2Count = (rawHtml.match(/<h2\b[^>]*>/gi) || []).length;
+
+            if (charEl) charEl.textContent = charCount.toLocaleString();
+            if (wordEl) wordEl.textContent = words.toLocaleString();
+            if (h2El) h2El.textContent = h2Count.toString();
+
+            if (metricChars) {
+                metricChars.classList.remove('is-valid', 'is-warning', 'is-error');
+                if (charCount >= 2500) {
+                    metricChars.classList.add('is-valid');
+                } else if (charCount >= 1500) {
+                    metricChars.classList.add('is-warning');
+                } else {
+                    metricChars.classList.add('is-error');
+                }
+            }
+
+            if (metricH2) {
+                metricH2.classList.remove('is-valid', 'is-warning');
+                if (h2Count >= 2) {
+                    metricH2.classList.add('is-valid');
+                } else {
+                    metricH2.classList.add('is-warning');
+                }
+            }
+
+            if (badgeEl) {
+                badgeEl.classList.remove('badge-needs-work', 'badge-good', 'badge-excellent');
+                if (charCount >= 2500 && h2Count >= 2) {
+                    badgeEl.classList.add('badge-excellent');
+                    badgeEl.textContent = labelExcellent;
+                } else if (charCount >= 1500) {
+                    badgeEl.classList.add('badge-good');
+                    badgeEl.textContent = labelGood;
+                } else {
+                    badgeEl.classList.add('badge-needs-work');
+                    badgeEl.textContent = labelPoor;
+                }
+            }
+        };
+
+        const attachEditor = () => {
+            if (typeof tinymce !== 'undefined') {
+                const editor = tinymce.get(editorId);
+                if (editor) {
+                    updateStats(editor.getContent());
+                    editor.on('input change KeyUp SetContent NodeChange', () => {
+                        updateStats(editor.getContent());
+                    });
+                    return true;
+                }
+            }
+            const textarea = document.getElementById(editorId);
+            if (textarea) {
+                updateStats(textarea.value);
+                textarea.addEventListener('input', () => updateStats(textarea.value));
+            }
+            return false;
+        };
+
+        if (!attachEditor()) {
+            let retries = 0;
+            const timer = setInterval(() => {
+                retries++;
+                if (attachEditor() || retries > 25) {
+                    clearInterval(timer);
+                }
+            }, 250);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    initNewsQualityMeters();
     const addShell = document.getElementById('newsAddShell');
     if (addShell) {
         if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {

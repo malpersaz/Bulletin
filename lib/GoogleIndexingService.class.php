@@ -167,6 +167,7 @@ class GoogleIndexingService
         if (!empty($lang)) {
             $langPrefix = trim($lang, '/');
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsSitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsArchiveSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/pageSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/categorySitemap.xml';
 

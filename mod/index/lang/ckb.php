@@ -401,6 +401,7 @@ $lang['index'] = [
     'mod_news' => [
         'title_format' => '%s ',
         'all_news' => 'هەموو ناوەڕۆک',
+        'related_news' => 'هەواڵە پەیوەندیدارەکان',
         'keywords' => 'ناوەڕۆک,زانیاری,پێناسە',
         'no_content_found' => 'هیچ ناوەڕۆکێک لەم پۆلەدا نەدۆزرایەوە!',
         'archive_page_title' => 'ئەرشیفی %s - پەڕەی %s',

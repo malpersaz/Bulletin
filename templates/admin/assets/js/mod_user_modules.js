@@ -14,7 +14,7 @@
         function normalize(value) {
             // Case- and diacritic-insensitive: Turkish dotted/dotless I and
             // combining marks from decomposed characters fold to ASCII.
-            return value
+            return (value || '')
                 .toLowerCase()
                 .replace(/ı/g, 'i')
                 .normalize('NFD')
@@ -25,9 +25,13 @@
             var query = normalize(input.value.trim());
             clearBtn.hidden = query === '';
             var anyCardMatched = false;
+            var terms = query.split(/\s+/).filter(Boolean);
             cards.forEach(function (card) {
-                var hit = query !== '' && normalize(card.getAttribute('data-search')).indexOf(query) !== -1;
-                card.hidden = query !== '' && !hit;
+                var searchData = normalize(card.getAttribute('data-search') || '');
+                var hit = terms.length > 0 && terms.every(function (term) {
+                    return searchData.indexOf(term) !== -1;
+                });
+                card.hidden = terms.length > 0 && !hit;
                 if (hit) anyCardMatched = true;
             });
             var anyVisible = false;
@@ -37,7 +41,10 @@
                 // Category label matches only expand as a fallback: when no card
                 // matched anywhere, prevent the empty state by revealing the
                 // matching category's cards.
-                var categoryHit = query !== '' && !anyCardMatched && normalize(cat.getAttribute('data-cat-search')).indexOf(query) !== -1;
+                var catSearchData = normalize(cat.getAttribute('data-cat-search') || '');
+                var categoryHit = terms.length > 0 && !anyCardMatched && terms.every(function (term) {
+                    return catSearchData.indexOf(term) !== -1;
+                });
                 if (categoryHit) {
                     visible = Array.prototype.slice.call(cat.querySelectorAll('.panel-module-card'));
                     visible.forEach(function (card) { card.hidden = false; });

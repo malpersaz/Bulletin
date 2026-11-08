@@ -320,18 +320,20 @@
 							{% set item_seo = item.seo ?: (item.id ~ '-' ~ (item.name|legacy_seo)) %}
 							<div>
 								<div class="detail-related-card">
-									<a href="{{ site.saddress }}announcement/{{ item_seo }}" class="overflow-hidden rounded-top">
+									<a href="{{ site.saddress }}announcement/{{ item_seo }}" class="detail-related-media" aria-label="{{ item.name|striptags }}">
 										{% if item.image is not empty and item.image != '#' %}
-											<img src="{{ site.iaddress }}mod_announcements/{{ item.image }}" class="card-img-top" alt="{{ item.name }}">
+											<img src="{{ site.iaddress }}mod_announcements/{{ item.image }}" class="detail-related-img" alt="{{ item.name|striptags }}" width="480" height="270" loading="lazy" decoding="async">
 										{% else %}
-											<img src="{{ site.iaddress }}mod_settings/logo.png" class="card-img-top p-4 bg-light" alt="{{ item.name }}">
+											<div class="detail-related-placeholder">
+												<img src="{{ site.iaddress }}mod_settings/logo.png" alt="{{ item.name|striptags }}" width="120" height="120" loading="lazy" decoding="async">
+											</div>
 										{% endif %}
 									</a>
 									<div class="detail-related-copy">
 										<h6 class="detail-related-title">
 											<a href="{{ site.saddress }}announcement/{{ item_seo }}" class="text-dark text-decoration-none">{{ item.name }}</a>
 										</h6>
-										<p class="detail-related-summary">{{ item.summary|striptags|slice(0, 80) }}...</p>
+										<p class="detail-related-summary mb-0">{{ item.summary|striptags|trim }}</p>
 									</div>
 								</div>
 							</div>

@@ -119,6 +119,31 @@
             <div class="mod-news-editor-wrap">
                 <textarea name="content" id="wizardContentTextarea"></textarea>
             </div>
+            {% if wizard_lang_key == 'mod_news' %}
+            <div class="news-quality-meter" data-editor-id="wizardContentTextarea">
+                <div class="quality-meter-header">
+                    <span class="quality-meter-title">
+                        <i class="bi bi-shield-check"></i>
+                        <span>{{ wizard_lang.quality_meter.title }}</span>
+                    </span>
+                    <span class="quality-badge badge-needs-work" data-badge>{{ wizard_lang.quality_meter.status_poor }}</span>
+                </div>
+                <div class="quality-meter-metrics">
+                    <div class="quality-metric" data-metric="chars">
+                        <span class="metric-label">{{ wizard_lang.quality_meter.chars }}</span>
+                        <span class="metric-value"><strong data-count="chars">0</strong> / 2,500</span>
+                    </div>
+                    <div class="quality-metric" data-metric="words">
+                        <span class="metric-label">{{ wizard_lang.quality_meter.words }}</span>
+                        <span class="metric-value"><strong data-count="words">0</strong></span>
+                    </div>
+                    <div class="quality-metric" data-metric="h2">
+                        <span class="metric-label">{{ wizard_lang.quality_meter.subheadings }}</span>
+                        <span class="metric-value"><strong data-count="h2">0</strong> / 2</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Step 7: Image -->

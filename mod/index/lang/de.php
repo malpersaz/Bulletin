@@ -401,6 +401,7 @@ $lang['index'] = [
     'mod_news' => [
         'title_format' => '%s ',
         'all_news' => 'Alle Inhalte',
+        'related_news' => 'Verwandte Nachrichten',
         'keywords' => 'Inhalt,Information,Beschreibung',
         'no_content_found' => 'Kein Inhalt in dieser Kategorie gefunden!',
         'archive_page_title' => '%s Archiv - Seite %s',

@@ -60,6 +60,7 @@ if ($baseUrl !== '') {
     echo "Sitemap: " . $baseUrl . "sitemap.xml\n";
     foreach (array_values(array_unique($activeLangs)) as $lang) {
         echo "Sitemap: " . $baseUrl . $lang . "/newsSitemap.xml\n";
+        echo "Sitemap: " . $baseUrl . $lang . "/newsArchiveSitemap.xml\n";
     }
     echo "\n# AI / LLM Index\n";
     echo "# LLMS-Txt: " . $baseUrl . "llms.txt\n";

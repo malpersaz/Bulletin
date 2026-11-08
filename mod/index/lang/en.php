@@ -430,6 +430,7 @@ $lang['index']['hero_slider'] = [
 $lang['index']['mod_news'] = [
     'title_format' => '%s ',
     'all_news' => 'All News',
+    'related_news' => 'Related News',
     'keywords' => 'news,information,latest news',
     'no_content_found' => 'No news found in this category!',
     'archive_page_title' => '%s Archive - Page %s',

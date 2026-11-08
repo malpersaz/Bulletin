@@ -34,6 +34,7 @@ $cache = $dir . 'cache/img/';
 if (!is_dir($cache)) {
     @mkdir($cache, 0777, true);
 }
+@chmod($cache, 0777);
 
 $options = Req::is_Get('options') ? Req::Get_Safe('options') : exit('1');
 $file = Req::is_Get('file') ? Req::Get_Safe('file') : exit('2');
@@ -110,7 +111,7 @@ try {
 
     // Apply transformation
     if ($c === 1 && $w && $h) {
-        $image = $image->coverDown($w, $h);
+        $image = ($u === 1) ? $image->cover($w, $h) : $image->coverDown($w, $h);
     } elseif ($a === 1 && $u === 1) {
         if ($w && $h) {
             $image = $image->scaleDown($w, $h);

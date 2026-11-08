@@ -401,6 +401,7 @@ $lang['index'] = [
     'mod_news' => [
         'title_format' => '%s ',
         'all_news' => 'Tüm Haberler',
+        'related_news' => 'İlgili Haberler',
         'keywords' => 'haber,bilgi,son dakika',
         'no_content_found' => 'Bu kategoriye ait haber bulunamadı!',
         'archive_page_title' => '%s Arşiv - Sayfa %s',

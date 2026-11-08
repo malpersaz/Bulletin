@@ -411,10 +411,9 @@ class mod_seo_mod extends indexMain
             'path' => $langCode
         ];
 
-        // 1. Root Statutory Pages (legal, cookie-policy)
+        // 1. Root Statutory Pages (legal)
         $statutorySlugs = [
             'legal' => $routeLabels['legal'] ?? 'Legal Information',
-            'cookie-policy' => $routeLabels['cookie_policy'] ?? 'Cookie Policy',
         ];
         foreach ($statutorySlugs as $sSlug => $sName) {
             $urls[] = [

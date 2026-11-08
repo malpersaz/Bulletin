@@ -1703,3 +1703,91 @@ mark.news-search-hit {
     margin-bottom: 4px;
 }
 
+/* Google News Live Quality Meter (Phone-First M3) */
+.news-quality-meter {
+    background-color: var(--md-sys-color-surface-container-low, #f7f2fa);
+    border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quality-meter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.quality-meter-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quality-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.quality-badge.badge-needs-work {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.quality-badge.badge-good {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+.quality-badge.badge-excellent {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.quality-meter-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    border-top: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    padding-top: 8px;
+}
+
+.quality-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.quality-metric .metric-label {
+    font-size: 0.7rem;
+    color: var(--md-sys-color-on-surface-variant, #79747e);
+}
+
+.quality-metric .metric-value {
+    font-size: 0.8rem;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+}
+
+.quality-metric.is-valid .metric-value strong {
+    color: #15803d;
+}
+
+.quality-metric.is-warning .metric-value strong {
+    color: #b45309;
+}
+
+.quality-metric.is-error .metric-value strong {
+    color: #b91c1c;
+}
+
+

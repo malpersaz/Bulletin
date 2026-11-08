@@ -132,7 +132,7 @@ class KevseoAuditor:
         s_len = len(summary) if summary else 0
 
         deck_valid = (90 <= s_len <= 120)
-        h_status = "PASSED" if (40 <= h_len <= 90) else ("WARNING" if h_len > 90 else "NOTICE")
+        h_status = "PASSED" if (40 <= h_len <= 70) else ("FAILED" if (h_len > 70 or (0 < h_len < 40)) else "EMPTY")
 
         return {
             "headline_length": h_len,

@@ -225,6 +225,7 @@ class LlmsService
         $md[] = "## Optional";
         $md[] = "- [Master XML Sitemap](" . $this->baseUrl . "sitemap.xml): Machine-readable XML index of all articles, publications, and pages.";
         $md[] = "- [News XML Sitemap](" . $this->buildUrl($lang, 'newsSitemap.xml') . "): Dedicated Google News compatible XML feed.";
+        $md[] = "- [News Archive XML Sitemap](" . $this->buildUrl($lang, 'newsArchiveSitemap.xml') . "): Complete news archive sitemap containing all published journalism reports.";
         $md[] = "- [Full Aggregated Context](" . $this->buildUrl($lang, 'llms-full.txt') . "): Complete plain-text news and publication archive for direct LLM context-window loading and RAG pipelines.";
         $md[] = "- [Imprint & Masthead (Künye)](" . $this->buildUrl($lang, 'legal') . "): Statutory publishing credentials, corporate registry, and press masthead.";
         $md[] = "- [Cookie Policy](" . $this->buildUrl($lang, 'cookie-policy') . "): Interactive cookie preferences and categorization breakdown.";

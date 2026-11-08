@@ -401,6 +401,7 @@ $lang['index'] = [
     'mod_news' => [
         'title_format' => '%s ',
         'all_news' => 'Hemû Nûçe',
+        'related_news' => 'Nûçeyên Têkildar',
         'keywords' => 'nûçe,agahî,nûçeyên dawî',
         'no_content_found' => 'Di vê kategoriyê de nûçe nehat dîtin!',
         'archive_page_title' => '%s Arşîv - Rûpel %s',

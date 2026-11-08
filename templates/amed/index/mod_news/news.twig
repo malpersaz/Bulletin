@@ -22,6 +22,7 @@
 {% set faq_lang = ctx_get('faq_lang') %}
 {% set news_24h = ctx_get('news_24h') %}
 {% set news_24h_count = ctx_get('news_24h_count') ?? (news_24h ? news_24h|length : 0) %}
+{% set news_24h_is_backfill = ctx_get('news_24h_is_backfill') %}
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
 {% set news_all_label = lang.index.mod_news.all_news %}
 {% set author_full_name = (d.u_name is defined and d.u_name is not empty) ? (d.u_name ~ ' ' ~ (d.u_last_name ?? ''))|trim : site.title %}
@@ -37,7 +38,7 @@
 {% endblock %}
 
 {% block title %}
-	<title>{{ d.title }} - {{ site.title }}</title>
+	<title>{{ d.title|default(d.name) }} - {{ site.title }}</title>
 {% endblock %}
 
 {% block description %}
@@ -105,6 +106,14 @@
 	{% set article_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
 	{% set article_updated_ts = d.updated_at ? d.updated_at|date('U') : article_created_ts %}
 	{% if article_updated_ts < article_created_ts %}{% set article_updated_ts = article_created_ts %}{% endif %}
+	{% set pub_same_as = [] %}
+	{% if site.social_links is defined and site.social_links is not empty %}
+		{% for sl in site.social_links %}
+			{% if sl.url|trim is not empty and sl.url starts with 'http' %}
+				{% set pub_same_as = pub_same_as|merge([sl.url|trim]) %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
@@ -125,24 +134,59 @@
 		  "inLanguage": "{{ site.lang }}",
 		  "isAccessibleForFree": true,
 		  {% if has_news_category %}"articleSection": {{ d.categoryname|json_ld|raw }},{% endif %}
+		  {% if d.word_count is defined and d.word_count > 0 %}"wordCount": {{ d.word_count }},{% endif %}
+		  "articleBody": {{ d.content|striptags|trim|json_ld|raw }},
 		  "image": [
+		    {% if d.image is not empty %}
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ article_img_url|json_ld|raw }},
+		      "url": {{ (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|json_ld|raw }},
 		      "width": 1280,
 		      "height": 720
+		    },
+		    {
+		      "@type": "ImageObject",
+		      "url": {{ (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|json_ld|raw }},
+		      "width": 1200,
+		      "height": 900
+		    },
+		    {
+		      "@type": "ImageObject",
+		      "url": {{ (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|json_ld|raw }},
+		      "width": 1200,
+		      "height": 1200
 		    }
+		    {% else %}
+		    {
+		      "@type": "ImageObject",
+		      "url": {{ news_logo_asset|json_ld|raw }},
+		      "width": 300,
+		      "height": 300
+		    }
+		    {% endif %}
 		  ],
-		  "author": {% if d.u_name is defined and d.u_name is not empty %}{
+		  "author": {% if d.author_is_org %}
+		  {
+		    "@type": "NewsMediaOrganization",
+		    "name": {{ site.title|json_ld|raw }},
+		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
+		    "url": {{ site.saddress|json_ld|raw }}
+		  }
+		  {% else %}
+		  {
 		    "@type": "Person",
-		    "name": {{ author_full_name|json_ld|raw }}{% if d.username is defined and d.username is not empty %},
-		    "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_ld|raw }}{% endif %}
-		  }{% else %}{
-		    "@type": "Organization",
-		    "name": {{ site.title|json_ld|raw }}
-		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_ld|raw }}{% endif %}
-		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_ld|raw }}{% endif %}
-		  }{% endif %},
+		    "name": {{ author_full_name|json_ld|raw }}
+		    {% if d.author_job_title is defined and d.author_job_title is not empty %}, "jobTitle": {{ d.author_job_title|json_ld|raw }}{% endif %}
+		    {% if d.author_avatar_url is defined and d.author_avatar_url is not empty %}, "image": {{ d.author_avatar_url|json_ld|raw }}{% endif %}
+		    {% if d.username is defined and d.username is not empty %}, "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_ld|raw }}{% endif %}
+		    {% if d.author_same_as is defined and d.author_same_as is not empty %}, "sameAs": {{ d.author_same_as|json_ld|raw }}{% endif %},
+		    "worksFor": {
+		      "@type": "NewsMediaOrganization",
+		      "name": {{ site.title|json_ld|raw }},
+		      "url": {{ site.saddress|json_ld|raw }}
+		    }
+		  }
+		  {% endif %},
 		  "publisher": {
 		    "@type": "NewsMediaOrganization",
 		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
@@ -152,8 +196,16 @@
 		    "url": {{ site.saddress|json_ld|raw }},
 		    "logo": {
 		      "@type": "ImageObject",
-		      "url": {{ news_logo_asset|json_ld|raw }}
-		    }
+		      "url": {{ news_logo_asset|json_ld|raw }},
+		      "width": 300,
+		      "height": 300
+		    },
+		    "masthead": {{ (site.saddress ~ 'legal')|json_ld|raw }},
+		    "publishingPrinciples": {{ (site.saddress ~ 'page/Yayın_İlkeleri')|json_ld|raw }},
+		    "correctionsPolicy": {{ (site.saddress ~ 'page/Yayın_İlkeleri')|json_ld|raw }},
+		    "ethicsPolicy": {{ (site.saddress ~ 'page/Basın_Etiği_ve_Uyum')|json_ld|raw }},
+		    "actionableFeedbackPolicy": {{ (site.saddress ~ 'page/Hakkımızda')|json_ld|raw }}{% if pub_same_as is not empty %},
+		    "sameAs": {{ pub_same_as|json_ld|raw }}{% endif %}
 		  },
 		  "datePublished": "{{ article_created_ts|date('c') }}",
 		  "dateModified": "{{ article_updated_ts|date('c') }}",
@@ -460,21 +512,23 @@
 
 			{% if newses is not empty %}
 				<section class="detail-section" aria-labelledby="related-articles-title">
-					<h2 id="related-articles-title" class="detail-section-heading h4">{{ news_all_label }}</h2>
+					<h2 id="related-articles-title" class="detail-section-heading h4">{{ lang.index.mod_news.related_news }}</h2>
 					<div class="detail-related-grid">
 						{% for news in newses %}
 							<div>
 								<div class="detail-related-card">
-									<a href="{{ site.saddress }}news/{{ news.seo }}" class="overflow-hidden rounded-top">
+									<a href="{{ site.saddress }}news/{{ news.seo }}" class="detail-related-media" aria-label="{{ news.name|striptags }}">
 										{% if news.image is not empty %}
-											<img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}" class="card-img-top" alt="{{ news.name }}">
+											<img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}" class="detail-related-img" alt="{{ news.name|striptags }}" width="480" height="270" loading="lazy" decoding="async">
 										{% else %}
-											<img src="{{ site.iaddress }}mod_settings/logo.png" class="card-img-top p-4 bg-light" alt="{{ news.name }}">
+											<div class="detail-related-placeholder">
+												<img src="{{ site.iaddress }}mod_settings/logo.png" alt="{{ news.name|striptags }}" width="120" height="120" loading="lazy" decoding="async">
+											</div>
 										{% endif %}
 									</a>
 									<div class="detail-related-copy">
 										<h6 class="detail-related-title">
-											<a href="{{ site.saddress }}news/{{ news.seo }}" class="text-dark text-decoration-none">{{ news.name }}</a>
+											<a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
 										</h6>
 										{% if news.created_at is defined and news.created_at is not empty %}
 											<div class="detail-related-time text-muted small mb-1">
@@ -487,7 +541,7 @@
 												{% endif %}
 											</div>
 										{% endif %}
-										<p class="detail-related-summary mb-0">{{ news.summary|striptags|slice(0, 80) }}...</p>
+										<p class="detail-related-summary mb-0">{{ news.summary|striptags|trim }}</p>
 									</div>
 								</div>
 							</div>
@@ -519,10 +573,12 @@
 				<div class="news-24h-card">
 					<header class="news-24h-header">
 						<div class="news-24h-title-wrap">
-							<span class="news-24h-pulse-dot" aria-hidden="true"></span>
+							{% if not news_24h_is_backfill %}
+								<span class="news-24h-pulse-dot" aria-hidden="true"></span>
+							{% endif %}
 							<h3 class="news-24h-title">
-								<i class="bi bi-clock-history" aria-hidden="true"></i>
-								<span>{{ lang.index.mod_news.latest_news.last_24_hours }}</span>
+								<i class="bi {{ news_24h_is_backfill ? 'bi-newspaper' : 'bi-clock-history' }}" aria-hidden="true"></i>
+								<span>{{ news_24h_is_backfill ? lang.index.mod_news.latest_news.title : lang.index.mod_news.latest_news.last_24_hours }}</span>
 							</h3>
 						</div>
 						<span class="news-24h-badge">{{ news_24h_count }}</span>
@@ -535,7 +591,7 @@
 								   class="news-24h-media"
 								   title="{{ item.name|striptags }}">
 									{% if item.image is not empty %}
-										<img src="{{ site.iaddress }}mod_news/{{ item.image }}"
+										<img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
 											 class="news-24h-img"
 											 alt="{{ item.name|striptags }}"
 											 width="180"
@@ -556,10 +612,15 @@
 										</a>
 									</h4>
 
-									{% if item.published_ago is defined and item.published_ago is not empty %}
-										<div class="news-24h-meta">
-											<i class="bi bi-clock" aria-hidden="true"></i>
-											<time datetime="{{ item.created_at }}">{{ item.published_ago }}</time>
+									{% if item.created_at is defined and item.created_at is not empty %}
+										<div class="news-24h-meta text-muted small">
+											{% if item.is_last_24h %}
+												<i class="bi bi-clock-history me-1" aria-hidden="true"></i>{{ item.published_ago }}
+											{% elseif item.formatted_datetime is defined and item.formatted_datetime is not empty %}
+												<i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ item.formatted_datetime }}
+											{% else %}
+												<i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ item.created_at|date('d.m.Y H:i') }}
+											{% endif %}
 										</div>
 									{% endif %}
 								</div>

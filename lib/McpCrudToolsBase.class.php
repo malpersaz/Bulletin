@@ -393,11 +393,19 @@ abstract class McpCrudToolsBase
         ));
     }
 
+    protected function assertHeadlineLength(string $headline): void
+    {
+        $headlineLength = mb_strlen($headline);
+        if ($headlineLength < 1 || $headlineLength > 70) {
+            throw new McpToolException("Field 'name' must be between 1 and 70 characters (40 to 70 recommended), got {$headlineLength}.");
+        }
+    }
+
     protected function assertSummaryLength(string $summary): void
     {
         $summaryLength = mb_strlen($summary);
-        if ($summaryLength < 90 || $summaryLength > 160) {
-            throw new McpToolException("Field 'summary' must be between 90 and 160 characters (90 and 120 deck standard; 120-160 SERP snippet standard), got {$summaryLength}.");
+        if ($summaryLength < 90 || $summaryLength > 120) {
+            throw new McpToolException("Field 'summary' must be between 90 and 120 characters (deck standard), got {$summaryLength}.");
         }
     }
 

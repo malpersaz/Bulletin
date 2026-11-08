@@ -873,11 +873,6 @@ a.news-byline-name:hover {
     font-weight: 700;
     font-size: 0.88rem;
     line-height: 1.38;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 .news-24h-headline a {
@@ -895,13 +890,18 @@ a.news-byline-name:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--detail-muted, #66758a);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--detail-muted, #6c757d);
+    margin-top: 0.25rem;
 }
 
 .news-24h-meta i {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--detail-muted, #6c757d);
+}
+
+.news-24h-meta i.bi-clock-history {
     color: #10b981;
 }
 

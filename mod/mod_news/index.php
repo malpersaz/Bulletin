@@ -37,6 +37,18 @@ class mod_news_mod extends BaseModuleController
                     'option' => 'cover',
                     'quality' => 80,
                 ],
+                '/4x3' => [
+                    'width' => 1200,
+                    'height' => 900,
+                    'option' => 'cover',
+                    'quality' => 80,
+                ],
+                '/1x1' => [
+                    'width' => 1200,
+                    'height' => 1200,
+                    'option' => 'cover',
+                    'quality' => 80,
+                ],
                 '/thumb' => [
                     'width' => 480,
                     'height' => 270,

@@ -52,7 +52,7 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
 
 ### 3. Headline & Deck Summary Standards
 1. **Headline (`name`)**:
-   - Recommended length: 55–75 characters (maximum 80).
+   - Strictly 40–70 characters (hard max 70 enforced by database schema and admin interface).
    - Entity-first and keyword-frontloaded (place the person, institution, or city/event at the front).
    - Non-clickbait: Directly communicates the factual essence.
 2. **Deck Summary (`summary`)**:

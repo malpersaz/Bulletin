@@ -455,4 +455,18 @@ $lang['mod_news'] = [
         'invalid_action' => 'Çalakiya AI nederbasdar e.',
         'copy' => 'Vê Bikar Bîne',
     ],
+
+    // === Google News Quality Meter ===
+    'quality_meter' => [
+        'title' => 'Pîvana Qelîteyê ya Google News',
+        'chars' => 'Tîp',
+        'words' => 'Peyv',
+        'subheadings' => 'Serdêrên H2',
+        'min_chars' => 'Kêmanî 1.500',
+        'ideal_chars' => 'Îdeal 2.500+',
+        'min_h2' => 'Kêmanî 2 H2',
+        'status_poor' => 'Kêmasî Heye',
+        'status_good' => 'Baş e',
+        'status_excellent' => 'Bê Qisûr',
+    ],
 ];

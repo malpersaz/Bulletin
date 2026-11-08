@@ -8,6 +8,16 @@ class mod_news_helper extends indexBase
         parent::__construct();
     }
 
+    private static array $imageFileCache = [];
+
+    private function _checkImageExists(string $path): bool
+    {
+        if (!isset(self::$imageFileCache[$path])) {
+            self::$imageFileCache[$path] = (file_exists($path) && is_file($path));
+        }
+        return self::$imageFileCache[$path];
+    }
+
     private function _cleanText(?string $value): string
     {
         return html_entity_decode(
@@ -26,9 +36,38 @@ class mod_news_helper extends indexBase
         }
         if (!empty($row['image'])) {
             $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $row['image'];
-            if (!file_exists($imageFile) || !is_file($imageFile)) {
+            if (!$this->_checkImageExists($imageFile)) {
                 $row['image'] = '';
+                $row['image_16x9'] = '';
+                $row['image_4x3'] = '';
+                $row['image_1x1'] = '';
+            } else {
+                $baseImgUrl = (string) ($this->site['iaddress'] ?? '');
+                $baseResizerUrl = (string) ($this->site['address'] ?? '');
+
+                // 16:9 (Main image: 1280x720)
+                $row['image_16x9'] = $baseImgUrl . 'mod_news/' . $row['image'];
+
+                // 4:3 (1200x900)
+                $file4x3 = root_dir . 'static' . DS . 'mod_news' . DS . '4x3' . DS . $row['image'];
+                if ($this->_checkImageExists($file4x3)) {
+                    $row['image_4x3'] = $baseImgUrl . 'mod_news/4x3/' . $row['image'];
+                } else {
+                    $row['image_4x3'] = $baseResizerUrl . 'r/w-1200/h-900/c-1/q-80/f/mod_news/' . $row['image'];
+                }
+
+                // 1:1 (1200x1200)
+                $file1x1 = root_dir . 'static' . DS . 'mod_news' . DS . '1x1' . DS . $row['image'];
+                if ($this->_checkImageExists($file1x1)) {
+                    $row['image_1x1'] = $baseImgUrl . 'mod_news/1x1/' . $row['image'];
+                } else {
+                    $row['image_1x1'] = $baseResizerUrl . 'r/w-1200/h-1200/c-1/q-80/f/mod_news/' . $row['image'];
+                }
             }
+        } else {
+            $row['image_16x9'] = '';
+            $row['image_4x3'] = '';
+            $row['image_1x1'] = '';
         }
         $row['has_video'] = (!empty($row['video']) && $row['video'] !== 'a:0:{}');
         $row['has_gallery'] = (isset($row['gallery_id']) && (int) $row['gallery_id'] !== 0);
@@ -180,6 +219,54 @@ class mod_news_helper extends indexBase
             $this->_mod_faq('mod_news', $news->id);
 
             $news_data = $this->_cleanNewsRow($news->toArray());
+
+            // Metrics & E-E-A-T Enrichment
+            $cleanBodyText = trim(strip_tags((string) ($news_data['content'] ?? '')));
+            $cleanBodyText = preg_replace('/\s+/u', ' ', $cleanBodyText);
+            $news_data['char_count'] = mb_strlen($cleanBodyText, 'UTF-8');
+            $news_data['word_count'] = ($cleanBodyText !== '') ? count(preg_split('/\s+/u', $cleanBodyText, -1, PREG_SPLIT_NO_EMPTY)) : 0;
+
+            // Author metadata resolution
+            $username = trim((string) ($news_data['username'] ?? ''));
+            $uName = trim((string) ($news_data['u_name'] ?? ''));
+            $news_data['author_is_org'] = ($username === '' || $username === 'habermerkezi' || $uName === '');
+
+            $allowedJobTitles = ['Gazeteci', 'Yazar', 'Editör', 'Editor', 'Muhabir', 'Köşe Yazarı'];
+            $userGroup = (string) ($news_data['group_name'] ?? '');
+            $news_data['author_job_title'] = in_array($userGroup, $allowedJobTitles, true) ? $userGroup : '';
+
+            $userImg = trim((string) ($news_data['user_image'] ?? ''));
+            if ($userImg !== '') {
+                $avatarFile = root_dir . 'static' . DS . 'mod_user' . DS . 'thumb' . DS . $userImg;
+                if ($this->_checkImageExists($avatarFile)) {
+                    $news_data['author_avatar_url'] = (string) ($this->site['iaddress'] ?? '') . 'mod_user/thumb/' . $userImg;
+                } else {
+                    $news_data['author_avatar_url'] = '';
+                }
+            } else {
+                $news_data['author_avatar_url'] = '';
+            }
+
+            $news_data['author_same_as'] = [];
+            if (!$news_data['author_is_org'] && !empty($news_data['user_id'])) {
+                try {
+                    $db = Load::lib('Database');
+                    $userId = (int) $news_data['user_id'];
+                    $db->fetch_array("SELECT `link` FROM `mod_user_social` WHERE `user_id` = {$userId} AND `status` = 'y'");
+                    $socialRows = $db->toArray();
+                    if (is_array($socialRows)) {
+                        foreach ($socialRows as $sRow) {
+                            $sLink = trim((string) ($sRow['link'] ?? ''));
+                            if ($sLink !== '' && preg_match('~^https?://~i', $sLink)) {
+                                $news_data['author_same_as'][] = $sLink;
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Non-fatal if social table is missing or empty
+                }
+            }
+
             $this->theme->ctx_set('d', $news_data);
             $this->theme->ctx_set('detail', $news_data);
 
@@ -220,8 +307,85 @@ class mod_news_helper extends indexBase
             $news_24h_count_model->getResult(true, true);
             $news_24h_count = (int) $news_24h_count_model->getSize();
 
+            $isBackfill = false;
+            if (count($news_24h) < 5) {
+                $isBackfill = true;
+                $exclude24hIds = [(int) $news->id];
+                foreach ($news_24h as $n24) {
+                    if (!empty($n24['id'])) {
+                        $exclude24hIds[] = (int) $n24['id'];
+                    }
+                }
+                $exclude24hList = implode(',', $exclude24hIds);
+                $neededBackfill = 8 - count($news_24h);
+
+                $backfill_model = Load::model('mod_news');
+                $backfill_model->flush();
+                $backfill_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,deck')
+                    ->where_lang_and_status($this->site['lang'], 'y');
+                $backfill_model->addWhere("id NOT IN ({$exclude24hList})");
+                $backfill_model->addWhere($aclCondition);
+                $backfill_model->addWhere($this->getPublishedDateCondition(''));
+                $backfill_model->addWhere("category_id IN ({$allowedCatList})");
+                $backfill_model->limit($neededBackfill)->order('created_at', 'DESC');
+                $backfill_model->gR();
+                if ($backfill_model->getSize() !== 0) {
+                    $backfillRows = $this->_cleanNewsRows($backfill_model->toArray());
+                    $news_24h = array_merge($news_24h, $backfillRows);
+                }
+                $news_24h_count = count($news_24h);
+            }
+
             $this->theme->ctx_set('news_24h', $news_24h);
             $this->theme->ctx_set('news_24h_count', $news_24h_count);
+            $this->theme->ctx_set('news_24h_is_backfill', $isBackfill);
+
+            // Related News Grid (newses)
+            $relatedNews = [];
+            $currentCatId = (int) ($news->category_id ?? 0);
+            $catExcludeIds = [(int) $news->id];
+
+            if ($currentCatId > 0) {
+                $related_model = Load::model('mod_news');
+                $related_model->flush();
+                $related_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,deck')
+                    ->where_lang_and_status($this->site['lang'], 'y');
+                $related_model->addWhere("id != '" . (int) $news->id . "'");
+                $related_model->addWhere("category_id = {$currentCatId}");
+                $related_model->addWhere($aclCondition);
+                $related_model->addWhere($this->getPublishedDateCondition(''));
+                $related_model->limit(6)->order('created_at', 'DESC');
+                $related_model->gR();
+                if ($related_model->getSize() !== 0) {
+                    $relatedNews = $this->_cleanNewsRows($related_model->toArray());
+                    foreach ($relatedNews as $rn) {
+                        if (!empty($rn['id'])) {
+                            $catExcludeIds[] = (int) $rn['id'];
+                        }
+                    }
+                }
+            }
+
+            if (count($relatedNews) < 6) {
+                $neededRelated = 6 - count($relatedNews);
+                $excludeRelatedList = implode(',', $catExcludeIds);
+                $fallback_model = Load::model('mod_news');
+                $fallback_model->flush();
+                $fallback_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,deck')
+                    ->where_lang_and_status($this->site['lang'], 'y');
+                $fallback_model->addWhere("id NOT IN ({$excludeRelatedList})");
+                $fallback_model->addWhere($aclCondition);
+                $fallback_model->addWhere($this->getPublishedDateCondition(''));
+                $fallback_model->addWhere("category_id IN ({$allowedCatList})");
+                $fallback_model->limit($neededRelated)->order('created_at', 'DESC');
+                $fallback_model->gR();
+                if ($fallback_model->getSize() !== 0) {
+                    $fallbackRows = $this->_cleanNewsRows($fallback_model->toArray());
+                    $relatedNews = array_merge($relatedNews, $fallbackRows);
+                }
+            }
+
+            $this->theme->ctx_set('newses', $relatedNews);
         } else {
             // Inbound legacy ASCII fallback: match requested key against published news
             if (PHP_SAPI !== 'cli' && !headers_sent()) {

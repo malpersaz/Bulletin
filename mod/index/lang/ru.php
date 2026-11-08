@@ -427,6 +427,7 @@ $lang['index']['hero_slider'] = [
 $lang['index']['mod_news'] = [
     'title_format' => '%s ',
     'all_news' => 'Все новости',
+    'related_news' => 'Связанные новости',
     'keywords' => 'новости,информация,последние новости',
     'no_content_found' => 'В этой категории новостей не найдено!',
     'archive_page_title' => 'Архив %s — Страница %s',

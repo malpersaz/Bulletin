@@ -401,6 +401,7 @@ $lang['index'] = [
     'mod_news' => [
         'title_format' => '%s ',
         'all_news' => 'Hemû Naverok',
+        'related_news' => 'Xeberê Eleqedari',
         'keywords' => 'naverok,agahî,rave',
         'no_content_found' => 'Di vê kategoriyê de naverok nehat dîtin!',
         'archive_page_title' => '%s Arşîv - Rûpel %s',

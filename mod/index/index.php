@@ -652,9 +652,19 @@ class index_mod extends indexBase
         $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
-        $news->select(['title', 'summary', 'created_at', 'seo', 'lang', 'image']);
+        $news->select(['name', 'title', 'summary', 'created_at', 'updated_at', 'seo', 'lang', 'image']);
         $news->limit(50);
         $news->gR();
+
+        $newsArray = $news->getSize() != 0 ? $news->toArray() : [];
+        $lastBuildDate = date(DATE_RSS);
+        if (!empty($newsArray)) {
+            $newest = $newsArray[0];
+            $newestTs = !empty($newest['updated_at']) ? strtotime((string) $newest['updated_at']) : (!empty($newest['created_at']) ? strtotime((string) $newest['created_at']) : time());
+            if ($newestTs > 0) {
+                $lastBuildDate = date(DATE_RSS, $newestTs);
+            }
+        }
         
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
@@ -663,39 +673,56 @@ class index_mod extends indexBase
             <link>' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/') . '</link>
             <description>' . htmlspecialchars((string) $this->site['description']) . '</description>
             <language>' . $this->site['lang'] . '</language>
-            <lastBuildDate>' . date(DATE_RSS) . '</lastBuildDate>
+            <lastBuildDate>' . $lastBuildDate . '</lastBuildDate>
             <atom:link href="' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss.xml') . '" rel="self" type="application/rss+xml" />';
 
-        if ($news->getSize() != 0) {
-            foreach ($news->toArray() as $o) {
+        if (!empty($newsArray)) {
+            foreach ($newsArray as $o) {
                 $link = Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']);
                 $imageUrl = "";
                 $thumbUrl = "";
                 $imageMime = "image/jpeg";
+                $imageLength = 0;
                 if (!empty($o['image'])) {
-                    $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
-                    $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
-                    $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
-                    if ($ext === 'webp') {
-                        $imageMime = 'image/webp';
-                    } elseif ($ext === 'png') {
-                        $imageMime = 'image/png';
-                    } elseif ($ext === 'gif') {
-                        $imageMime = 'image/gif';
+                    $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $o['image'];
+                    if (is_file($imageFile)) {
+                        $imageLength = (int) @filesize($imageFile);
+                        if ($imageLength > 0) {
+                            $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
+                            $thumbFile = root_dir . 'static' . DS . 'mod_news' . DS . 'thumb' . DS . $o['image'];
+                            if (is_file($thumbFile)) {
+                                $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
+                            } else {
+                                $thumbUrl = $imageUrl;
+                            }
+                            $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
+                            if ($ext === 'webp') {
+                                $imageMime = 'image/webp';
+                            } elseif ($ext === 'png') {
+                                $imageMime = 'image/png';
+                            } elseif ($ext === 'gif') {
+                                $imageMime = 'image/gif';
+                            }
+                        }
                     }
                 }
+
+                $headline = !empty($o['name']) ? $o['name'] : (!empty($o['title']) ? $o['title'] : '');
+                $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1, 'UTF-8');
+                $cleanSummary = html_entity_decode(strip_tags((string) $o['summary']), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $cleanSummary = mb_substr($cleanSummary, 0, 500);
                 
                 echo '
             <item>
-                <title>' . htmlspecialchars((string) $o['title']) . '</title>
+                <title>' . $cleanHeadline . '</title>
                 <link>' . $link . '</link>
-                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . mb_substr(strip_tags((string) $o['summary']), 0, 500) . '...]]></description>
+                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . $cleanSummary . '...]]></description>
                 <pubDate>' . date(DATE_RSS, strtotime((string) $o['created_at'])) . '</pubDate>
                 <guid isPermaLink="true">' . $link . '</guid>';
-                if ($imageUrl) {
+                if ($imageUrl && $imageLength > 0) {
                     echo '
                 <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="1280" height="720" />
-                <enclosure url="' . $imageUrl . '" type="' . $imageMime . '" />';
+                <enclosure url="' . $imageUrl . '" type="' . $imageMime . '" length="' . $imageLength . '" />';
                 }
                 echo '
             </item>';
@@ -743,6 +770,10 @@ class index_mod extends indexBase
                 }
                 echo '<sitemap>
                         <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/newsSitemap.xml') . '</loc>
+                        <lastmod>' . $newsLastmod . '</lastmod>
+                      </sitemap>';
+                echo '<sitemap>
+                        <loc>' . Helper::sitemap_url($this->site['address'] . $l . '/newsArchiveSitemap.xml') . '</loc>
                         <lastmod>' . $newsLastmod . '</lastmod>
                       </sitemap>';
             }
@@ -860,11 +891,15 @@ class index_mod extends indexBase
         $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
         $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
 
+        $nowTime = time();
+        $recentNewsCutoff = $nowTime - (48 * 3600);
+
         $news = Load::model('mod_news.newses');
         $news->where_status_and_lang('y', $this->site['lang']);
         $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
+        $news->addWhere("created_at >= '" . date('Y-m-d H:i:s', $recentNewsCutoff) . "'");
         $news->order('created_at', 'DESC');
         $news->select(['name', 'seo', 'lang', 'created_at', 'updated_at']);
         $news->limit($page_limit, $offset);
@@ -872,13 +907,31 @@ class index_mod extends indexBase
 
         $siteTitle = htmlspecialchars(html_entity_decode((string) ($this->site['title'] ?? 'Amed Bülten'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
         $langCode = htmlspecialchars((string) ($this->site['lang'] ?? 'tr'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
-        $nowTime = time();
-        $recentNewsCutoff = $nowTime - (48 * 3600);
         
+        $items = ($news->getSize() !== 0) ? $news->toArray() : [];
+        $isFallback = false;
+
+        // Tier 1 Guard: If 0 published in last 48h, query 5 latest published news to prevent empty <urlset>
+        if (empty($items)) {
+            $fallbackNews = Load::model('mod_news.newses');
+            $fallbackNews->where_status_and_lang('y', $this->site['lang']);
+            $fallbackNews->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+            $fallbackNews->addWhere($this->getPublishedDateCondition(''));
+            $fallbackNews->addWhere("category_id IN ({$allowedCatList})");
+            $fallbackNews->order('created_at', 'DESC');
+            $fallbackNews->select(['name', 'seo', 'lang', 'created_at', 'updated_at']);
+            $fallbackNews->limit(5, 0);
+            $fallbackNews->gR();
+            if ($fallbackNews->getSize() !== 0) {
+                $items = $fallbackNews->toArray();
+                $isFallback = true;
+            }
+        }
+
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">';
-        if ($news->getSize() != 0) {
-            foreach ($news->toArray() as $o) {
+        if (!empty($items)) {
+            foreach ($items as $o) {
                 $createdTime = !empty($o['created_at']) ? strtotime($o['created_at']) : $nowTime;
                 $updatedTime = !empty($o['updated_at']) ? strtotime($o['updated_at']) : $createdTime;
                 if ($updatedTime < $createdTime) {
@@ -891,7 +944,7 @@ class index_mod extends indexBase
                 echo '<url>
                           <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']) . '</loc>
                           <lastmod>' . $lastmod . '</lastmod>';
-                if ($createdTime >= $recentNewsCutoff) {
+                if (!$isFallback) {
                     echo '
                           <news:news>
                             <news:publication>
@@ -906,6 +959,69 @@ class index_mod extends indexBase
                           <priority>0.80</priority>
                     </url>';
             }
+        } else {
+            // Tier 2 Guard: Zero published news in database (fresh install) -> emit homepage URL
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['address'] . $langCode . '/') . '</loc>
+                      <lastmod>' . date('c', $nowTime) . '</lastmod>
+                      <priority>1.00</priority>
+                  </url>';
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function newsArchiveSitemap($page = 1)
+    {
+        if (!$this->guardFeatureOr404('news.latest')) {
+            return;
+        }
+
+        header("content-type: text/xml; charset=utf-8");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
+        $news = Load::model('mod_news.newses');
+        $news->where_status_and_lang('y', $this->site['lang']);
+        $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere($this->getPublishedDateCondition(''));
+        $news->addWhere("category_id IN ({$allowedCatList})");
+        $news->order('created_at', 'DESC');
+        $news->select(['name', 'seo', 'lang', 'created_at', 'updated_at']);
+        $news->limit($page_limit, $offset);
+        $news->gR();
+
+        $langCode = htmlspecialchars((string) ($this->site['lang'] ?? 'tr'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $nowTime = time();
+
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($news->getSize() != 0) {
+            foreach ($news->toArray() as $o) {
+                $createdTime = !empty($o['created_at']) ? strtotime($o['created_at']) : $nowTime;
+                $updatedTime = !empty($o['updated_at']) ? strtotime($o['updated_at']) : $createdTime;
+                if ($updatedTime < $createdTime) {
+                    $updatedTime = $createdTime;
+                }
+                $lastmod = date('c', $updatedTime);
+
+                echo '<url>
+                          <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']) . '</loc>
+                          <lastmod>' . $lastmod . '</lastmod>
+                          <priority>0.80</priority>
+                    </url>';
+            }
+        } else {
+            // Tier 2 Guard: Zero published news in database (fresh install) -> emit homepage URL
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['address'] . $langCode . '/') . '</loc>
+                      <lastmod>' . date('c', $nowTime) . '</lastmod>
+                      <priority>1.00</priority>
+                  </url>';
         }
         echo '</urlset>';
         exit;
@@ -1248,10 +1364,6 @@ class index_mod extends indexBase
         if ($page === 1 && $this->site['lang'] == Registry::get('default_lang')) {
             echo '<url>
                       <loc>' . Helper::sitemap_url($this->site['saddress'] . 'legal') . '</loc>
-                      <priority>0.70</priority>
-                </url>';
-            echo '<url>
-                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'cookie-policy') . '</loc>
                       <priority>0.70</priority>
                 </url>';
             if ($this->isFeatureReady('news.front')) {

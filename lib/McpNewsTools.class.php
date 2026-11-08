@@ -8,8 +8,10 @@
 class McpNewsTools extends McpCrudToolsBase
 {
     private const NEWS_IMAGE_SIZES = [
-        '/' => ['width' => 1280, 'height' => 720, 'option' => 'cover'],
-        '/thumb' => ['width' => 480, 'height' => 270, 'option' => 'cover'],
+        '/' => ['width' => 1280, 'height' => 720, 'option' => 'cover', 'quality' => 80],
+        '/4x3' => ['width' => 1200, 'height' => 900, 'option' => 'cover', 'quality' => 80],
+        '/1x1' => ['width' => 1200, 'height' => 1200, 'option' => 'cover', 'quality' => 80],
+        '/thumb' => ['width' => 480, 'height' => 270, 'option' => 'cover', 'quality' => 75],
     ];
 
     private const CATEGORY_IMAGE_SIZES = [
@@ -117,14 +119,14 @@ class McpNewsTools extends McpCrudToolsBase
                 'role' => 'add',
                 'domain' => 'news',
                 'handler' => 'createNews',
-                'description' => 'Create a news article. The summary must be between 90 and 160 characters (90-120 deck standard; 120-160 SERP snippet standard). The category must exist and match the news language. The seo slug must be unique per language.',
+                'description' => 'Create a news article. The summary must be between 90 and 120 characters (deck standard). The category must exist and match the news language. The seo slug must be unique per language.',
                 'schema' => [
                     'type' => 'object',
                     'properties' => [
                         'name' => [
                             'type' => 'string',
                             'maxLength' => 70,
-                            'description' => 'News title/headline (1-70 characters).',
+                            'description' => 'News title/headline (40-70 characters recommended, hard max 70).',
                         ],
                         'lang' => [
                             'type' => 'string',
@@ -141,8 +143,8 @@ class McpNewsTools extends McpCrudToolsBase
                         'summary' => [
                             'type' => 'string',
                             'minLength' => 90,
-                            'maxLength' => 160,
-                            'description' => 'Deck and SERP summary (90-160 characters).',
+                            'maxLength' => 120,
+                            'description' => 'Deck summary (90-120 characters).',
                         ],
                         'seo' => [
                             'type' => 'string',
@@ -267,6 +269,7 @@ class McpNewsTools extends McpCrudToolsBase
                         'name' => [
                             'type' => 'string',
                             'maxLength' => 70,
+                            'description' => 'News title/headline (40-70 characters recommended, hard max 70).',
                         ],
                         'lang' => [
                             'type' => 'string',
@@ -280,7 +283,7 @@ class McpNewsTools extends McpCrudToolsBase
                         'summary' => [
                             'type' => 'string',
                             'minLength' => 90,
-                            'maxLength' => 160,
+                            'maxLength' => 120,
                         ],
                         'seo' => [
                             'type' => 'string',
@@ -692,9 +695,7 @@ class McpNewsTools extends McpCrudToolsBase
     public function createNews(array $args): array
     {
         $name = $this->cleanTextEntities($args['name'] ?? '');
-        if ($name === '' || mb_strlen($name) > 70) {
-            throw new McpToolException("Field 'name' is required (1-70 characters).");
-        }
+        $this->assertHeadlineLength($name);
 
         $lang = $this->requireActiveLang($args);
         $categoryId = (int) ($args['category_id'] ?? 0);
@@ -862,9 +863,7 @@ class McpNewsTools extends McpCrudToolsBase
 
         if (isset($args['name'])) {
             $name = $this->cleanTextEntities($args['name']);
-            if ($name === '' || mb_strlen($name) > 70) {
-                throw new McpToolException("Field 'name' must be 1-70 characters.");
-            }
+            $this->assertHeadlineLength($name);
             $model->name = $name;
         }
 

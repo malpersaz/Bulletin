@@ -10,6 +10,7 @@ Disallow: /installer/
 # Master Sitemap Index
 Sitemap: https://amedbulten.com/sitemap.xml
 Sitemap: https://amedbulten.com/tr/newsSitemap.xml
+Sitemap: https://amedbulten.com/tr/newsArchiveSitemap.xml
 
 # AI / LLM Index
 # LLMS-Txt: https://amedbulten.com/llms.txt

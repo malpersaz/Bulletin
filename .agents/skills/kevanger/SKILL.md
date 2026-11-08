@@ -44,7 +44,7 @@ In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusivel
 
 ### 4. Journalistic Drafting & Storytelling (Turkish - `tr`)
 - Write fluent, engaging, and objective Turkish prose following professional newsroom standards (5N1K lead paragraph, inverted pyramid, concise paragraphs).
-- Craft a compelling Turkish headline (`name`) and deck summary (`summary` strictly **90 to 120 characters**).
+- Craft a compelling Turkish headline (`name` strictly **40 to 70 characters**) and deck summary (`summary` strictly **90 to 120 characters**).
 - Embed in-text citations linking to verified live URLs — every URL copied verbatim from the dossier JSON:
   - Format: `<a href="$URL">$Name</a> tarafından aktarılan bilgilere göre` or `<a href="$URL">$Name</a> haberine göre`.
 - **Date Grounding Constraint**:

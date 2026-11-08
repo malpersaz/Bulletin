@@ -29,13 +29,15 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 
-$options = getopt('', ['limit::', 'main', 'dry-run', 'help']);
+$options = getopt('', ['limit::', 'main', 'ratios', 'force', 'dry-run', 'help']);
 
 if (isset($options['help'])) {
     echo "Usage: php tasks/recompress_news_images.php [options]\n";
     echo "Options:\n";
     echo "  --limit=N   Process at most N images\n";
     echo "  --main      Also recompress main images to 1280x720 HD\n";
+    echo "  --ratios    Generate 4x3 (1200x900) and 1x1 (1200x1200) aspect ratios (default enabled)\n";
+    echo "  --force     Overwrite existing 4x3 and 1x1 derivatives\n";
     echo "  --dry-run   Simulate operations without overwriting files\n";
     echo "  --help      Show this help message\n";
     exit(0);
@@ -43,11 +45,14 @@ if (isset($options['help'])) {
 
 $limit = isset($options['limit']) ? (int) $options['limit'] : 0;
 $recompressMain = isset($options['main']);
+$processRatios = !isset($options['main']) || isset($options['ratios']);
+$forceRatios = isset($options['force']);
 $isDryRun = isset($options['dry-run']);
 
 echo "=== Bulletin News Image Recompression ===\n";
 echo "Dry Run: " . ($isDryRun ? "YES (simulation mode)" : "NO (writing files)") . "\n";
 echo "Recompress Main Images: " . ($recompressMain ? "YES" : "NO (thumbs only)") . "\n";
+echo "Generate 4x3 & 1x1 Ratios: " . ($processRatios ? ($forceRatios ? "YES (force overwrite)" : "YES (missing only)") : "NO") . "\n";
 if ($limit > 0) {
     echo "Limit: " . $limit . " images\n";
 }
@@ -58,9 +63,17 @@ $manager = new ImageManager($driver);
 
 $newsDir = root_dir . 'static' . DS . 'mod_news' . DS;
 $thumbDir = $newsDir . 'thumb' . DS;
+$dir4x3 = $newsDir . '4x3' . DS;
+$dir1x1 = $newsDir . '1x1' . DS;
 
 if (!is_dir($thumbDir)) {
     @mkdir($thumbDir, 0777, true);
+}
+if (!is_dir($dir4x3)) {
+    @mkdir($dir4x3, 0777, true);
+}
+if (!is_dir($dir1x1)) {
+    @mkdir($dir1x1, 0777, true);
 }
 
 $imageFiles = [];
@@ -69,7 +82,7 @@ $imageFiles = [];
 if (is_dir($newsDir)) {
     $scanned = scandir($newsDir);
     foreach ($scanned as $f) {
-        if ($f === '.' || $f === '..' || $f === 'thumb') continue;
+        if ($f === '.' || $f === '..' || $f === 'thumb' || $f === '4x3' || $f === '1x1') continue;
         if (preg_match('/\.(webp|jpg|jpeg|png)$/i', $f)) {
             $imageFiles[] = $f;
             if ($limit > 0 && count($imageFiles) >= $limit) {
@@ -156,7 +169,36 @@ foreach ($imageFiles as $filename) {
             $savedThumb
         );
 
-        // 2. Optionally process main image (1280x720 @ 80)
+        // 2. Process multi-ratio derivatives (4x3: 1200x900 @ 80, 1x1: 1200x1200 @ 80)
+        if ($processRatios && file_exists($mainPath)) {
+            $path4x3 = $dir4x3 . $filename;
+            if ($forceRatios || !file_exists($path4x3) || filesize($path4x3) === 0) {
+                $img4x3 = $manager->read($mainPath);
+                $img4x3->cover(1200, 900);
+                $canvas4x3 = $manager->create($img4x3->width(), $img4x3->height());
+                $canvas4x3->place($img4x3);
+                $encoded4x3 = $canvas4x3->toWebp(80);
+                if (!$isDryRun) {
+                    file_put_contents($path4x3, (string) $encoded4x3);
+                }
+                echo sprintf("[4x3]   %-25s | Generated 1200x900 (%5.1f KB)\n", $filename, strlen((string) $encoded4x3) / 1024);
+            }
+
+            $path1x1 = $dir1x1 . $filename;
+            if ($forceRatios || !file_exists($path1x1) || filesize($path1x1) === 0) {
+                $img1x1 = $manager->read($mainPath);
+                $img1x1->cover(1200, 1200);
+                $canvas1x1 = $manager->create($img1x1->width(), $img1x1->height());
+                $canvas1x1->place($img1x1);
+                $encoded1x1 = $canvas1x1->toWebp(80);
+                if (!$isDryRun) {
+                    file_put_contents($path1x1, (string) $encoded1x1);
+                }
+                echo sprintf("[1x1]   %-25s | Generated 1200x1200 (%5.1f KB)\n", $filename, strlen((string) $encoded1x1) / 1024);
+            }
+        }
+
+        // 3. Optionally process main image (1280x720 @ 80)
         if ($recompressMain && file_exists($mainPath)) {
             $oldMainSize = filesize($mainPath);
             $mainImg = $manager->read($mainPath);

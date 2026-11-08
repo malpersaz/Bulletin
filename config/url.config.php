@@ -60,6 +60,7 @@ $url['seo'] = 'mod_seo/index';
 $url['seo/settings'] = 'mod_seo/settings';
 $url['sitemap.xml'] = 'index/sitemapIndex';
 $url['newsSitemap.xml'] = 'index/newsSitemap';
+$url['newsArchiveSitemap.xml'] = 'index/newsArchiveSitemap';
 $url['publicationSitemap.xml'] = 'index/publicationSitemap';
 $url['categorySitemap.xml'] = 'index/categorySitemap';
 $url['pageSitemap.xml'] = 'index/pageSitemap';

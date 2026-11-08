@@ -454,4 +454,18 @@ $lang['mod_news'] = [
         'invalid_action' => 'Geçersiz AI işlemi.',
         'copy' => 'Bunu Kullan',
     ],
+
+    // === Google News Quality Meter ===
+    'quality_meter' => [
+        'title' => 'Google News Kalite Ölçer',
+        'chars' => 'Karakter',
+        'words' => 'Kelime',
+        'subheadings' => 'H2 Başlık',
+        'min_chars' => 'En az 1.500',
+        'ideal_chars' => 'İdeal 2.500+',
+        'min_h2' => 'En az 2 H2',
+        'status_poor' => 'Geliştirilmeli',
+        'status_good' => 'İyi',
+        'status_excellent' => 'Kusursuz',
+    ],
 ];
