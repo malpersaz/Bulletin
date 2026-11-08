@@ -71,8 +71,8 @@
   outline-offset: 2px;
 }
 
-.legal-dossier-shell a:not(.btn):not(.policy-nav-link),
-.legal-info-wrapper a:not(.btn):not(.policy-nav-link) {
+.legal-dossier-shell a:not(.btn),
+.legal-info-wrapper a:not(.btn) {
   color: var(--legal-primary);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -80,13 +80,13 @@
   transition: color 0.15s ease;
 }
 
-.legal-dossier-shell a:not(.btn):not(.policy-nav-link):hover,
-.legal-info-wrapper a:not(.btn):not(.policy-nav-link):hover {
+.legal-dossier-shell a:not(.btn):hover,
+.legal-info-wrapper a:not(.btn):hover {
   color: var(--legal-primary-hover);
 }
 
 /* ==========================================================================
-   3. Dossier Shell, Breadcrumb Bar & Asymmetric 2-Column Layout
+   3. Dossier Shell, Breadcrumb Bar & Document Grid Layout
    ========================================================================== */
 .legal-dossier-shell {
   margin-top: 1.5rem;
@@ -123,85 +123,9 @@
 
 .legal-dossier-grid {
   display: grid;
-  grid-template-columns: 256px minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 2rem;
   align-items: start;
-}
-
-.legal-dossier-sidebar {
-  position: sticky;
-  top: 92px;
-  z-index: 5;
-}
-
-/* ==========================================================================
-   4. Statutory & Policy Directory Navigation (_legal_nav.twig)
-   ========================================================================== */
-.policy-nav-pills-wrap {
-  background: var(--legal-surface);
-  border: 1px solid var(--legal-border);
-  border-radius: var(--legal-radius-lg);
-  padding: 0.5rem;
-}
-
-.policy-nav-pills {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.policy-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--legal-radius-md);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--legal-text-muted);
-  background: transparent;
-  border: 1px solid transparent;
-  text-decoration: none;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.policy-nav-link i {
-  font-size: 1rem;
-  color: var(--legal-text-soft);
-  flex-shrink: 0;
-  transition: color 0.15s ease;
-}
-
-.policy-nav-link:hover {
-  color: var(--legal-primary);
-  background: var(--legal-surface-hover);
-}
-
-.policy-nav-link:hover i {
-  color: var(--legal-primary);
-}
-
-.policy-nav-link.active {
-  color: #ffffff;
-  background: var(--legal-primary);
-  border-color: var(--legal-primary);
-}
-
-.policy-nav-link.active i {
-  color: #ffffff;
-}
-
-[data-bs-theme="dark"] .policy-nav-link.active,
-.theme-dark .policy-nav-link.active {
-  color: #0f172a;
-  background: var(--legal-primary);
-  border-color: var(--legal-primary);
-}
-
-[data-bs-theme="dark"] .policy-nav-link.active i,
-.theme-dark .policy-nav-link.active i {
-  color: #0f172a;
 }
 
 /* ==========================================================================
@@ -869,43 +793,7 @@
    ========================================================================== */
 @media (max-width: 991.98px) {
   .legal-dossier-grid {
-    grid-template-columns: 1fr;
     gap: 1.25rem;
-  }
-
-  .legal-dossier-sidebar {
-    position: static;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .policy-nav-pills-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.4rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--legal-border-strong) transparent;
-  }
-
-  .policy-nav-pills-wrap::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .policy-nav-pills-wrap::-webkit-scrollbar-thumb {
-    background-color: var(--legal-border-strong);
-    border-radius: 4px;
-  }
-
-  .policy-nav-pills {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    min-width: max-content;
-    gap: 0.35rem;
-  }
-
-  .policy-nav-link {
-    white-space: nowrap;
-    padding: 0.5rem 0.85rem;
   }
 
   .legal-bento-grid {
@@ -1018,7 +906,6 @@
   .site-header,
   .site-footer,
   .legal-breadcrumb-bar,
-  .legal-dossier-sidebar,
   .legal-actions-bar,
   .legal-copy-btn,
   .legal-toast,

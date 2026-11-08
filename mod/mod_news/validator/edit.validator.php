@@ -141,9 +141,9 @@ class edit_validator
                 'func' => 'length',
                 'arg' => [
                     'min' => '1',
-                    'max' => '255'
+                    'max' => '70'
                 ],
-                'message' => sprintf($this->lang['mod_news']['validator']['length'], $this->lang['mod_news']['admin']['columns']['name'], '1', '255')
+                'message' => $this->lang['mod_news']['validator']['title_length']
             ]
         );
         if ($this->_check() === True) {

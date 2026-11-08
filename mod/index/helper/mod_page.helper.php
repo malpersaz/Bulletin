@@ -22,15 +22,6 @@ class mod_page_helper extends indexBase
         $decodedSeo = html_entity_decode(rawurldecode($rawSeo), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $seo = trim($decodedSeo);
 
-        // Canonical 301 redirection for statutory legal & policy pages
-        $targetSlug = Helper::resolve_statutory_slug((string) $seo);
-        if ($targetSlug !== null && PHP_SAPI !== 'cli' && !headers_sent()) {
-            $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $targetSlug;
-            header("HTTP/1.1 301 Moved Permanently");
-            header("Location: " . $targetUrl);
-            exit;
-        }
-
         $page = Load::model('mod_page');
         $page->where_seo_and_status_and_root_and_lang($seo, 'y', 'n', $this->site['lang']);
         $page->limit(1);
@@ -40,18 +31,14 @@ class mod_page_helper extends indexBase
 
             // Strict canonical slug comparison to prevent non-canonical collation / casing URLs
             if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$page->seo !== $seo) {
-                $statutorySlug = Helper::resolve_statutory_slug((string)$page->seo);
-                if ($statutorySlug !== null) {
-                    $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
-                } else {
-                    $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
-                }
+                $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: " . Helper::sitemap_url($targetUrl));
                 exit;
             }
 
             $this->tema->ctx_set('d', $page->toArray());
+            $this->tema->ctx_set('detail', $page->toArray());
             // Access permission check
             if ($this->_permission_check($page->acl_id)) {
                 return;
@@ -78,7 +65,11 @@ class mod_page_helper extends indexBase
                 $this->_mod_attachment('mod_page', $page->id);
             }
 
-            $this->_mod_ust_list('mod_page', $page->parent_id, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
+            $pageId = (int) $page->id;
+            $parentId = (int) $page->parent_id;
+            $this->_mod_faq('mod_page', $pageId);
+            $this->_mod_ust_list('mod_page', $parentId, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
+            $this->_mod_parent_id_list('mod_page', $pageId, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
         } else {
             // Check alternate slug variations (underscore/space)
             $altSeo = str_replace(['_', '-'], ' ', $seo);
@@ -99,18 +90,14 @@ class mod_page_helper extends indexBase
 
                 // 301 redirect to canonical slug
                 if (PHP_SAPI !== 'cli' && !headers_sent()) {
-                    $statutorySlug = Helper::resolve_statutory_slug((string)$page->seo);
-                    if ($statutorySlug !== null) {
-                        $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
-                    } else {
-                        $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
-                    }
+                    $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $page->seo;
                     header("HTTP/1.1 301 Moved Permanently");
                     header("Location: " . Helper::sitemap_url($targetUrl));
                     exit;
                 }
 
                 $this->tema->ctx_set('d', $page->toArray());
+                $this->tema->ctx_set('detail', $page->toArray());
                 if ($this->_permission_check($page->acl_id)) {
                     return;
                 }
@@ -119,75 +106,25 @@ class mod_page_helper extends indexBase
                 if ($page->category_id !== 0) {
                     $this->_related_content($page->category_id);
                 }
-                $this->_mod_ust_list('mod_page', $page->parent_id, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
+
+                if (isset($page->gallery_id) && $page->gallery_id != 0) {
+                    $this->_exact_gallery($page->gallery_id);
+                } else {
+                    $this->_fetch_gallery_images('mod_page', $page->id);
+                }
+
+                if (isset($page->file_id) && $page->file_id != 0) {
+                    $this->_mod_attachment('mod_page', $page->file_id);
+                } else {
+                    $this->_mod_attachment('mod_page', $page->id);
+                }
+
+                $pageId = (int) $page->id;
+                $parentId = (int) $page->parent_id;
+                $this->_mod_faq('mod_page', $pageId);
+                $this->_mod_ust_list('mod_page', $parentId, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
+                $this->_mod_parent_id_list('mod_page', $pageId, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
             } else {
-                // Check fallback for statutory legal & cookie policy pages
-                $legalSlugs = [
-                    'Legal_Information', 'Agahiyên_Qanûnî', 'Agahdariya_Zagônî',
-                    'زانیارییە_یاساییەکان', 'المعلومات_القانونية', 'Rechtliche_Hinweise',
-                    'Informations_Légales', 'Juridisk_Information', 'Yasal_Bilgiler', 'Melumatê_Huqûqî'
-                ];
-                $cookieSlugs = [
-                    'Cookie_Policy', 'Polîtîkaya_Çerezan', 'سیاسەتی_کووکییەکان',
-                    'سياسة_ملفات_تعريف_الارتباط', 'Cookie_Richtlinie', 'Cookie-Richtlinie',
-                    'Politique_de_Cookies', 'Cookiepolicy', 'Cerez_Politikasi',
-                    'Çerez_Politikası', 'Siyasetê_Çerezan'
-                ];
-
-                $lang = $this->site['lang'];
-
-                if (in_array($seo, $legalSlugs, true)) {
-                    $pageData = [
-                        'id' => 0,
-                        'name' => isset($this->lang['index']['legal_info']) ? $this->lang['index']['legal_info'] : 'Legal Information',
-                        'title' => isset($this->lang['index']['legal_info']) ? $this->lang['index']['legal_info'] : 'Legal Information',
-                        'seo' => isset($this->lang['index']['legal_info_slug']) ? $this->lang['index']['legal_info_slug'] : 'Legal_Information',
-                        'summary' => isset($this->lang['index']['legal_info_pending']) ? $this->lang['index']['legal_info_pending'] : '',
-                        'description' => isset($this->lang['index']['legal_info_pending']) ? $this->lang['index']['legal_info_pending'] : '',
-                        'content' => '',
-                        'lang' => $lang,
-                        'parent_id' => 0,
-                        'status' => 'y',
-                        'root' => 'n',
-                        'image' => null,
-                        'acl_id' => 0,
-                        'category_id' => 0,
-                        'gallery_id' => 0,
-                        'file_id' => 0,
-                    ];
-                    $this->tema->ctx_set('d', $pageData);
-                    $this->tema->ctx_set('detail', $pageData);
-                    $this->tema->tpl('index/mod_page/page');
-                    $this->_index();
-                    return;
-                }
-
-                if (in_array($seo, $cookieSlugs, true)) {
-                    $pageData = [
-                        'id' => 0,
-                        'name' => isset($this->lang['index']['cookie_policy']) ? $this->lang['index']['cookie_policy'] : 'Cookie Policy',
-                        'title' => isset($this->lang['index']['cookie_policy']) ? $this->lang['index']['cookie_policy'] : 'Cookie Policy',
-                        'seo' => isset($this->lang['index']['cookie_policy_slug']) ? $this->lang['index']['cookie_policy_slug'] : 'Cookie_Policy',
-                        'summary' => isset($this->lang['index']['cookie_policy_subtitle']) ? $this->lang['index']['cookie_policy_subtitle'] : '',
-                        'description' => isset($this->lang['index']['cookie_policy_subtitle']) ? $this->lang['index']['cookie_policy_subtitle'] : '',
-                        'content' => '',
-                        'lang' => $lang,
-                        'parent_id' => 0,
-                        'status' => 'y',
-                        'root' => 'n',
-                        'image' => null,
-                        'acl_id' => 0,
-                        'category_id' => 0,
-                        'gallery_id' => 0,
-                        'file_id' => 0,
-                    ];
-                    $this->tema->ctx_set('d', $pageData);
-                    $this->tema->ctx_set('detail', $pageData);
-                    $this->tema->tpl('index/mod_page/page');
-                    $this->_index();
-                    return;
-                }
-
                 // Inbound fallback: match requested ASCII slug against published pages
                 if (PHP_SAPI !== 'cli' && !headers_sent()) {
                     $requestedKey = Helper::ascii_slug_key($seo);
@@ -208,12 +145,7 @@ class mod_page_helper extends indexBase
                         }
 
                         if ($matchCount === 1 && $matchedSeo !== null) {
-                            $statutorySlug = Helper::resolve_statutory_slug($matchedSeo);
-                            if ($statutorySlug !== null) {
-                                $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $statutorySlug;
-                            } else {
-                                $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $matchedSeo;
-                            }
+                            $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/page/' . $matchedSeo;
                             header("HTTP/1.1 301 Moved Permanently");
                             header("Location: " . Helper::sitemap_url($targetUrl));
                             exit;

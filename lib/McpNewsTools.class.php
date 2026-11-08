@@ -123,8 +123,8 @@ class McpNewsTools extends McpCrudToolsBase
                     'properties' => [
                         'name' => [
                             'type' => 'string',
-                            'maxLength' => 255,
-                            'description' => 'News title/headline (1-255 characters).',
+                            'maxLength' => 70,
+                            'description' => 'News title/headline (1-70 characters).',
                         ],
                         'lang' => [
                             'type' => 'string',
@@ -266,7 +266,7 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'name' => [
                             'type' => 'string',
-                            'maxLength' => 255,
+                            'maxLength' => 70,
                         ],
                         'lang' => [
                             'type' => 'string',
@@ -692,8 +692,8 @@ class McpNewsTools extends McpCrudToolsBase
     public function createNews(array $args): array
     {
         $name = $this->cleanTextEntities($args['name'] ?? '');
-        if ($name === '' || mb_strlen($name) > 255) {
-            throw new McpToolException("Field 'name' is required (1-255 characters).");
+        if ($name === '' || mb_strlen($name) > 70) {
+            throw new McpToolException("Field 'name' is required (1-70 characters).");
         }
 
         $lang = $this->requireActiveLang($args);
@@ -862,8 +862,8 @@ class McpNewsTools extends McpCrudToolsBase
 
         if (isset($args['name'])) {
             $name = $this->cleanTextEntities($args['name']);
-            if ($name === '' || mb_strlen($name) > 255) {
-                throw new McpToolException("Field 'name' must be 1-255 characters.");
+            if ($name === '' || mb_strlen($name) > 70) {
+                throw new McpToolException("Field 'name' must be 1-70 characters.");
             }
             $model->name = $name;
         }

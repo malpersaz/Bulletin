@@ -271,25 +271,19 @@ abstract class indexBase
 
     public function _mod_ust_list($mod, $id, $select, $order)
     {
-
         if ($id == 0) {
             return false;
         }
         $list = Load::model($mod);
         $list->flush();
-        $list->addWhere(['id' => $id], ' OR');
-        $list->addWhere(['parent_id' => $id], ' OR');
+        $safeId = (int) $id;
+        $list->addWhere("(id = '{$safeId}' OR parent_id = '{$safeId}')");
+        $list->addWhere("status = 'y'");
 
         $list->select($select)->order($order, 'ASC');
         $list->gR();
         if ($list->getSize() !== 0) {
-
-
-            $myArray = [];
-            foreach ($list->toArray() as $ar) {
-                $myArray[$ar[$order]] = $ar;
-            }
-            $this->tema->ctx_set('list', $myArray);
+            $this->tema->ctx_set('list', $list->toArray());
             $this->tema->ctx_set('list_root', $id);
         }
         unset($list);
@@ -297,24 +291,19 @@ abstract class indexBase
 
     public function _mod_parent_id_list($mod, $id, $select, $order)
     {
-
         if ($id == 0) {
             return false;
         }
         $list = Load::model($mod);
         $list->flush();
-        $list->addWhere(['parent_id' => $id], ' OR');
+        $safeId = (int) $id;
+        $list->addWhere("parent_id = '{$safeId}'");
+        $list->addWhere("status = 'y'");
 
         $list->select($select)->order($order, 'ASC');
         $list->gR();
         if ($list->getSize() !== 0) {
-
-
-            $myArray = [];
-            foreach ($list->toArray() as $ar) {
-                $myArray[$ar[$order]] = $ar;
-            }
-            $this->tema->ctx_set('parent_id_list', $myArray);
+            $this->tema->ctx_set('parent_id_list', $list->toArray());
             $this->tema->ctx_set('parent_id_list_root', $id);
         }
         unset($list);

@@ -231,7 +231,8 @@ class AIService
 
         $prompt = "You are a chief headline editor for a respected broadsheet news publication.\n"
             . "Read the article and provide 3 distinct, strong, and journalistic headlines in {$targetLang}.\n"
-            . "Headlines should be clear, objective, and impactful without clickbait.\n\n"
+            . "Headlines should be clear, objective, and impactful without clickbait.\n"
+            . "Each headline must be at most 70 characters long.\n"
             . (!empty($currentTitle) ? "Current Working Title: " . $currentTitle . "\n" : "")
             . "Content: " . strip_tags($content);
 
@@ -263,7 +264,14 @@ class AIService
         $decoded = json_decode($res['text'], true);
         $headlines = is_array($decoded['headlines'] ?? null) ? $decoded['headlines'] : [];
         $headlines = array_map(function ($hl) {
-            return trim(html_entity_decode(html_entity_decode((string) $hl, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $hl = trim(html_entity_decode(html_entity_decode((string) $hl, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            // Absolute headline limit: trim over-length suggestions at a word boundary
+            if (mb_strlen($hl) > 70) {
+                $trimmed = mb_substr($hl, 0, 70);
+                $lastSpace = mb_strrpos($trimmed, ' ');
+                $hl = trim($lastSpace !== false ? mb_substr($trimmed, 0, $lastSpace) : $trimmed);
+            }
+            return $hl;
         }, $headlines);
 
         return [

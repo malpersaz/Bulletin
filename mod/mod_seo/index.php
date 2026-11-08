@@ -362,19 +362,10 @@ class mod_seo_mod extends indexMain
                 if ($rawPath === '' || preg_match('#^(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)$#', $rawPath)) {
                     $targetPath = $activeLang;
                 } elseif (preg_match('#^(?:(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)/)?page/(.+)$#u', $rawPath, $m)) {
-                    $stat = Helper::resolve_statutory_slug($m[1]);
-                    $targetPath = $stat !== null ? $stat : ($activeLang . '/page/' . $m[1]);
+                    $targetPath = $activeLang . '/page/' . $m[1];
                 } else {
-                    $stat = Helper::resolve_statutory_slug($rawPath);
-                    if ($stat !== null) {
-                        $targetPath = $stat;
-                    } elseif (preg_match('#^(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)/(.+)$#u', $rawPath, $langInnerMatch)) {
-                        $innerStat = Helper::resolve_statutory_slug($langInnerMatch[1]);
-                        if ($innerStat !== null) {
-                            $targetPath = $innerStat;
-                        } else {
-                            $targetPath = $activeLang . '/' . $langInnerMatch[1];
-                        }
+                    if (preg_match('#^(?:tr|ku|en|de|ckb|zza|ar|fr|sv|fa|ru)/(.+)$#u', $rawPath, $langInnerMatch)) {
+                        $targetPath = $activeLang . '/' . $langInnerMatch[1];
                     } else {
                         $targetPath = $rawPath;
                     }
@@ -420,23 +411,16 @@ class mod_seo_mod extends indexMain
             'path' => $langCode
         ];
 
-        // 1. Root Statutory Pages (legal, privacy, etc.)
+        // 1. Root Statutory Pages (legal, cookie-policy)
         $statutorySlugs = [
             'legal' => $routeLabels['legal'] ?? 'Legal Information',
-            'editorial-policy' => $routeLabels['editorial_policy'] ?? 'Editorial Policy',
-            'privacy-policy' => $routeLabels['privacy_policy'] ?? 'Privacy Policy',
             'cookie-policy' => $routeLabels['cookie_policy'] ?? 'Cookie Policy',
-            'terms-of-service' => $routeLabels['terms_of_service'] ?? 'Terms of Service',
-            'accessibility' => $routeLabels['accessibility'] ?? 'Accessibility',
-            'security-policy' => $routeLabels['security_policy'] ?? 'Security Policy',
-            'compliance' => $routeLabels['compliance'] ?? 'Press Ethics & Compliance',
-            'contact' => $routeLabels['contact'] ?? 'Contact'
         ];
         foreach ($statutorySlugs as $sSlug => $sName) {
             $urls[] = [
                 'type' => 'Page',
                 'name' => $sName,
-                'path' => $sSlug
+                'path' => $langCode . '/' . $sSlug
             ];
         }
 
@@ -453,13 +437,10 @@ class mod_seo_mod extends indexMain
             $urls[] = $sIdx;
         }
 
-        // 2. Regular Pages (mod_page) excluding structural roots and statutory redirects
+        // 2. Regular Pages (mod_page) excluding structural roots
         $db->fetch_array("SELECT name, seo, lang FROM `mod_page` WHERE status='y' AND root='n' AND lang='" . $safeLang . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
-                if (Helper::resolve_statutory_slug((string)$r['seo']) !== null) {
-                    continue;
-                }
                 $urls[] = [
                     'type' => 'Page',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),

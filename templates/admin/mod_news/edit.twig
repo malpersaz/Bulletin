@@ -90,19 +90,20 @@
 					</div>
 				</div>
 
-				<div class="form-row">
-					<div class="m3-input-wrapper">
-						<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" required>
-						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title }}</label>
-					</div>
-					<div class="ai-action-bar">
-						<button type="button" class="m3-ai-btn" id="btnAiSuggestHeadlines" data-action="ai-suggest-headlines" title="{{ lang.mod_news.ai.suggest_headlines|escape('html_attr') }}">
-							<i class="bi bi-stars"></i>
-							<span>{{ lang.mod_news.ai.suggest_headlines }}</span>
-						</button>
-					</div>
-					<div id="aiHeadlinesContainer" class="ai-suggestions-container is-hidden"></div>
+			<div class="form-row">
+				<div class="m3-input-wrapper">
+					<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" maxlength="70" data-counter-target="editTitleCounter" data-counter-min="1" data-counter-max="70" required>
+					<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title }}</label>
 				</div>
+				<div class="deck-helper-bar">
+					<div class="char-counter" id="editTitleCounter">{{ d.name|length }} / 70</div>
+					<button type="button" class="m3-ai-btn" id="btnAiSuggestHeadlines" data-action="ai-suggest-headlines" title="{{ lang.mod_news.ai.suggest_headlines|escape('html_attr') }}">
+						<i class="bi bi-stars"></i>
+						<span>{{ lang.mod_news.ai.suggest_headlines }}</span>
+					</button>
+				</div>
+				<div id="aiHeadlinesContainer" class="ai-suggestions-container is-hidden"></div>
+			</div>
 
 				<div class="form-row">
 					<div class="m3-input-wrapper">

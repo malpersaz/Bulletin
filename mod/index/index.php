@@ -36,55 +36,6 @@ class index_mod extends indexBase
         unset($legal);
     }
 
-    public function privacy_policy()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('privacy');
-        unset($legal);
-    }
-
-    public function terms_of_service()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('terms');
-        unset($legal);
-    }
-
-    public function editorial_policy()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('editorial');
-        unset($legal);
-    }
-
-    public function accessibility()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('accessibility');
-        unset($legal);
-    }
-
-    public function security_policy()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('security');
-        unset($legal);
-    }
-
-    public function compliance()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('compliance');
-        unset($legal);
-    }
-
-    public function contact()
-    {
-        $legal = Load::helper("index.legal");
-        $legal->render('contact');
-        unset($legal);
-    }
-
     public function clear_cache($target = null)
     {
         $cache = Load::helper("index.cache_manager");
@@ -1287,10 +1238,6 @@ class index_mod extends indexBase
         
         if ($pages->getSize() != 0) {
             foreach ($pages->toArray() as $o) {
-                $rawSeo = (string) $o['seo'];
-                if (Helper::resolve_statutory_slug($rawSeo) !== null) {
-                    continue;
-                }
                 echo '<url>
                           <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/page/' . $o['seo']) . '</loc>
                           <priority>0.50</priority>
@@ -1299,22 +1246,42 @@ class index_mod extends indexBase
         }
 
         if ($page === 1 && $this->site['lang'] == Registry::get('default_lang')) {
-            $policySlugs = [
-                'legal',
-                'editorial-policy',
-                'privacy-policy',
-                'cookie-policy',
-                'terms-of-service',
-                'accessibility',
-                'security-policy',
-                'compliance',
-                'contact',
-            ];
-            $baseAddress = rtrim((string) $this->site['address'], '/') . '/';
-            foreach ($policySlugs as $pslug) {
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'legal') . '</loc>
+                      <priority>0.70</priority>
+                </url>';
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'cookie-policy') . '</loc>
+                      <priority>0.70</priority>
+                </url>';
+            if ($this->isFeatureReady('news.front')) {
                 echo '<url>
-                          <loc>' . Helper::sitemap_url($baseAddress . $pslug) . '</loc>
-                          <priority>0.60</priority>
+                          <loc>' . Helper::sitemap_url($this->site['saddress'] . 'newses') . '</loc>
+                          <priority>0.80</priority>
+                    </url>';
+            }
+            if ($this->isFeatureReady('publication.front')) {
+                echo '<url>
+                          <loc>' . Helper::sitemap_url($this->site['saddress'] . 'publications') . '</loc>
+                          <priority>0.80</priority>
+                    </url>';
+                echo '<url>
+                          <loc>' . Helper::sitemap_url($this->site['saddress'] . 'authors') . '</loc>
+                          <priority>0.70</priority>
+                    </url>';
+            }
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'videos') . '</loc>
+                      <priority>0.70</priority>
+                </url>';
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'announcements') . '</loc>
+                      <priority>0.70</priority>
+                </url>';
+            if ($this->isFeatureReady('event.front')) {
+                echo '<url>
+                          <loc>' . Helper::sitemap_url($this->site['saddress'] . 'events') . '</loc>
+                          <priority>0.70</priority>
                     </url>';
             }
         }

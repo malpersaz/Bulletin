@@ -10,6 +10,8 @@
 
 class LlmsService
 {
+    use PublicHelperTrait;
+
     private $db;
     private $runtime;
     private $siteConfig;
@@ -224,14 +226,8 @@ class LlmsService
         $md[] = "- [Master XML Sitemap](" . $this->baseUrl . "sitemap.xml): Machine-readable XML index of all articles, publications, and pages.";
         $md[] = "- [News XML Sitemap](" . $this->buildUrl($lang, 'newsSitemap.xml') . "): Dedicated Google News compatible XML feed.";
         $md[] = "- [Full Aggregated Context](" . $this->buildUrl($lang, 'llms-full.txt') . "): Complete plain-text news and publication archive for direct LLM context-window loading and RAG pipelines.";
-        $md[] = "- [Imprint & Masthead (Künye)](" . $this->baseUrl . "legal): Statutory publishing credentials, corporate registry, and press masthead.";
-        $md[] = "- [Editorial Principles & Right of Reply](" . $this->baseUrl . "editorial-policy): Journalistic fact-checking standards, corrections protocol, and statutory right of reply.";
-        $md[] = "- [Privacy Policy](" . $this->baseUrl . "privacy-policy): GDPR and statutory personal data protection declarations and subject rights.";
-        $md[] = "- [Cookie Policy](" . $this->baseUrl . "cookie-policy): Interactive cookie preferences and categorization breakdown.";
-        $md[] = "- [Terms of Service](" . $this->baseUrl . "terms-of-service): Reader terms, copyright syndication, and acceptable usage rules.";
-        $md[] = "- [Accessibility Statement](" . $this->baseUrl . "accessibility): WCAG 2.1 Level AA conformance and accessibility features.";
-        $md[] = "- [Security Policy](" . $this->baseUrl . "security-policy): Transport encryption, application safeguards, and vulnerability disclosure.";
-        $md[] = "- [Press Ethics & Compliance](" . $this->baseUrl . "compliance): Journalistic code of ethics, commercial separation, and whistleblower channels.";
+        $md[] = "- [Imprint & Masthead (Künye)](" . $this->buildUrl($lang, 'legal') . "): Statutory publishing credentials, corporate registry, and press masthead.";
+        $md[] = "- [Cookie Policy](" . $this->buildUrl($lang, 'cookie-policy') . "): Interactive cookie preferences and categorization breakdown.";
         $md[] = "";
 
         // Append Full Text in Full Mode
@@ -260,17 +256,6 @@ class LlmsService
                         $pTitle = !empty($p['name']) ? $p['name'] : (!empty($p['title']) ? $p['title'] : 'Publication');
                         $md[] = "### Publication: " . $pTitle;
                         $md[] = $this->htmlToCleanMarkdown($p['content']);
-                        $md[] = "";
-                    }
-                }
-            }
-
-            if (!empty($articles)) {
-                foreach ($articles as $c) {
-                    if (!empty($c['content'])) {
-                        $cTitle = !empty($c['name']) ? $c['name'] : (!empty($c['title']) ? $c['title'] : 'Article');
-                        $md[] = "### Article: " . $cTitle;
-                        $md[] = $this->htmlToCleanMarkdown($c['content']);
                         $md[] = "";
                     }
                 }
@@ -338,7 +323,7 @@ class LlmsService
 
     private function resolveLanguage(string $lang): string
     {
-        $defaultLang = Registry::has('default_lang') ? (string) Registry::get('default_lang') : 'ku';
+        $defaultLang = Registry::has('default_lang') ? (string) Registry::get('default_lang') : 'tr';
         if (empty($lang)) {
             $lang = Registry::has('lang') ? (string) Registry::get('lang') : $defaultLang;
         }
@@ -362,14 +347,11 @@ class LlmsService
 
     private function buildUrl(string $lang, string $path): string
     {
-        $defaultLang = Registry::has('default_lang') ? (string) Registry::get('default_lang') : 'ku';
         $trimmedPath = ltrim($path, '/');
-
-        if ($lang === $defaultLang) {
-            return $this->baseUrl . $trimmedPath;
+        if (Registry::get('i18n') === true) {
+            return $this->baseUrl . $lang . '/' . $trimmedPath;
         }
-
-        return $this->baseUrl . $lang . '/' . $trimmedPath;
+        return $this->baseUrl . $trimmedPath;
     }
 
     private function getSettings(string $lang): array
@@ -408,6 +390,8 @@ class LlmsService
         try {
             $model = Load::model('mod_news');
             $model->where_status_and_lang('y', $lang);
+            $model->addWhere($this->getPublishedDateCondition(''));
+            $model->addWhere('(acl_id = 0 OR acl_id IS NULL)');
             $model->order('created_at', 'DESC');
             $model->limit($limit);
             $model->gR();
@@ -441,6 +425,8 @@ class LlmsService
         try {
             $model = Load::model('mod_page');
             $model->where_status_and_lang('y', $lang);
+            $model->addWhere("root != 'y'");
+            $model->addWhere('(acl_id = 0 OR acl_id IS NULL)');
             $model->order('order', 'ASC');
             $model->gR();
             if ($model->getSize() > 0) {

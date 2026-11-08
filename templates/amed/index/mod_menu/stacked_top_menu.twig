@@ -186,7 +186,7 @@
 								</li>
 								{% for l in site.available_languages %}
 									<li>
-										<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
+										<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}/">
 											<span>{{ l.name }}</span>
 											{% if site.lang == l.code %}
 												<i class="bi bi-check2 text-success ms-2" aria-hidden="true"></i>
@@ -412,7 +412,7 @@
 							</li>
 							{% for l in site.available_languages %}
 								<li>
-									<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
+									<a class="dropdown-item d-flex align-items-center justify-content-between {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}/">
 										<span>{{ l.name }}</span>
 										{% if site.lang == l.code %}
 											<i class="bi bi-check2 text-success" aria-hidden="true"></i>

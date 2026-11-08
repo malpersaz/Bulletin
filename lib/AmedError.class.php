@@ -16,9 +16,14 @@ class AmedError
     public static $lang;
     public static $template;
 
-    public static function error($page, $argument = NULL)
+    public static function error($page, $argument = NULL, $statusCode = 404)
     {
-        header("HTTP/1.1 404 Not Found");
+        if ($statusCode === 410) {
+            header("HTTP/1.1 410 Gone");
+        } else {
+            header("HTTP/1.1 404 Not Found");
+        }
+        header("X-Robots-Tag: noindex, nofollow");
         self::$lang = Load::lang('index');
         self::$template = Load::lib('TwigTemplate');
         
@@ -32,7 +37,7 @@ class AmedError
             "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
         self::$template->setGlobal('link', $currentFullUrl);
 
-        $errorData = self::$lang['index']['error'][$page];
+        $errorData = self::$lang['index']['error'][$page] ?? [];
         $errorTitlePrefix = self::$lang['index']['error']['title'] ?? 'Error';
         self::$template->setGlobal('title', $errorTitlePrefix . " : " . ($errorData['title'] ?? 'Error'));
         self::$template->setGlobal('message', sprintf($errorData['message'] ?? '%s', $argument));
@@ -72,9 +77,14 @@ class AmedError
         return self::error('mod', $a);
     }
 
-    public static function not($a)
+    public static function not($a, $statusCode = 404)
     {
-        return self::error('not', $a);
+        return self::error('not', $a, $statusCode);
+    }
+
+    public static function gone($a = null)
+    {
+        return self::error('not', $a, 410);
     }
 
     public static function lang($path)

@@ -3,18 +3,11 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
 	{% include 'partials/_detail_scripts.twig' %}
-{% endblock %}
-
-{% block js_custom %}
-	{{ parent() }}
-	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/legal-info.js?v={{ site.version }}" defer></script>
 {% endblock %}
 
 {% set d = ctx_get('detail') ?: ctx_get('d') %}
@@ -259,46 +252,8 @@
 							'show_share_text': false
 						} %}
 
-						{% set is_legal_page = d.seo in [
-							lang.index.legal_info_slug,
-							'Legal_Information',
-							'Agahdariya_Zagônî',
-							'Agahiyên_Qanûnî',
-							'زانیارییە_یاساییەکان',
-							'المعلومات_القانونية',
-							'Rechtliche_Hinweise',
-							'Informations_Légales',
-							'Juridisk_Information',
-							'Yasal_Bilgiler',
-							'Melumatê_Huqûqî'
-						] %}
-
-						{% set is_cookie_page = d.seo in [
-							lang.index.cookie_policy_slug,
-							'Cookie_Policy',
-							'Polîtîkaya_Çerezan',
-							'سیاسەتی_کووکییەکان',
-							'سياسة_ملفات_تعريف_الارتباط',
-							'Cookie_Richtlinie',
-							'Cookie-Richtlinie',
-							'Politique_de_Cookies',
-							'Cookiepolicy',
-							'Cerez_Politikasi',
-							'Çerez_Politikası',
-							'Siyasetê_Çerezan'
-						] %}
-
 						<div id="amed_content" class="detail-body">
-							{% if is_legal_page %}
-								{% if d.content is defined and d.content is not empty %}
-									<div class="mb-4">{{ d.content|raw }}</div>
-								{% endif %}
-								{% include 'partials/_legal_info.twig' with {'hide_intro_desc': (d.content is defined and d.content is not empty)} %}
-							{% elseif is_cookie_page and (d.content is not defined or d.content is empty) %}
-								{% include 'partials/_cookie_policy.twig' %}
-							{% else %}
-								{{ d.content|raw }}
-							{% endif %}
+							{{ d.content|raw }}
 						</div>
 
 						{% include 'partials/share_toolbar.twig' with {
@@ -372,7 +327,7 @@
 							</section>
 						{% endif %}
 
-						{% if subpages is not empty %}
+						{% if subpages is not empty and not has_sidebar %}
 							<section class="detail-list-card mt-5" aria-labelledby="subpages-title">
 								<div class="card-header">
 									<h5 id="subpages-title" class="fw-bold mb-0">

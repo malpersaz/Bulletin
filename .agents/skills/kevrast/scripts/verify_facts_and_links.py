@@ -71,6 +71,11 @@ SOFT_404_TITLE_RE = re.compile(
 
 QUERY_ID_PARAMS = ("id", "p", "post", "art", "article", "story", "haber", "news")
 
+# Flat single-segment article permalinks that end in a numeric ID + extension
+# (e.g. internethaber.com/...-foto-galerisi-2467480.htm) are deep content
+# pages, not rubric fronts.
+FLAT_ARTICLE_RE = re.compile(r"\d+\.html?$", re.I)
+
 
 def strip_tags(text: str) -> str:
     return TAG_RE.sub(" ", text)
@@ -143,7 +148,8 @@ class KevrastAuditor:
         if not segments and not has_id_query:
             return {"precise": False, "kind": "domain_root",
                     "note": "alan kökü atıf olarak kullanılamaz (R2: derin içerik linki gerekli)"}
-        if len(segments) <= 1 and not has_id_query:
+        flat_article = bool(segments) and bool(FLAT_ARTICLE_RE.search(segments[-1]))
+        if len(segments) <= 1 and not has_id_query and not flat_article:
             return {"precise": False, "kind": "section_front",
                     "note": "rubrik/bölüm sayfası atıf olarak kullanılamaz (R2: haber sayfası gerekli)"}
         return {"precise": True, "kind": "deep_page", "note": None}

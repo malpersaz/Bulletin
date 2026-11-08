@@ -1,5 +1,9 @@
 {% extends "layouts/base.twig" %}
 
+{% block canonical %}
+    <link rel="canonical" href="{{ site.saddress }}us-elections"/>
+{% endblock %}
+
 {% block css_custom %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/us-elections.css?v={{ site.version }}">
@@ -54,7 +58,7 @@
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{{ site.saddress }}newses/dunya" class="text-decoration-none">
+                <a href="{{ site.saddress }}newses/Dünya" class="text-decoration-none">
                     <span>Dünya</span>
                 </a>
             </li>

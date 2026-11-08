@@ -91,9 +91,6 @@
         {% set homepage_hero_slider = ctx_get('hero_slider') %}
     {% endif %}
 
-    {# US Elections Live Tracker Widget #}
-    {% include 'index/mod_news/us_elections.twig' %}
-
     <section class="row mt-3 homepage-hero-row" id="homepageHeroRow">
         <article id="homepageHeroMain" class="col-12 col-lg-8 homepage-hero-main">
             {# Block L1 — Hero News Slider (800 x 450 px, 16:9) #}
@@ -151,8 +148,5 @@
             {% endif %}
         </aside>
     </section>
-    
-    {# Include the bottom menu when needed. #}
-    {% include 'partials/bottom_menu.twig' %}
 <!-- END: index/index.twig -->
 {% endblock %}

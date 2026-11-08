@@ -17,7 +17,7 @@
                            {% if m.url == '' or m.url == '#' %}
                                href="javascript:void(0);"
                            {% else %}
-                               {% set clean_menu_url = (m.url starts with 'http://' or m.url starts with 'https://' or m.url starts with '//') ? m.url : (m.url starts with '/' ? m.url : site.address ~ m.url) %}
+                               {% set clean_menu_url = (m.url starts with 'http://' or m.url starts with 'https://' or m.url starts with '//' or m.url starts with 'mailto:' or m.url starts with 'tel:') ? m.url : (m.url starts with '/' ? m.url : (m.url starts with (site.lang ~ '/') ? site.address ~ m.url : site.saddress ~ m.url)) %}
                                href="{{ clean_menu_url }}"{% if m.target == 'y' %} target="_blank"{% endif %}
                            {% endif %}
                            {% if menu[parent_id] is defined and menu[parent_id] is iterable %}

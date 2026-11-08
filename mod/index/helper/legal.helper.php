@@ -19,26 +19,8 @@ class legal_helper extends indexBase
         $aliasMap = [
             'info' => 'info',
             'legal' => 'info',
-            'imprint' => 'info',
-            'kunya' => 'info',
             'cookies' => 'cookies',
             'cookie-policy' => 'cookies',
-            'privacy' => 'privacy',
-            'privacy-policy' => 'privacy',
-            'terms' => 'terms',
-            'terms-of-service' => 'terms',
-            'editorial' => 'editorial',
-            'editorial-policy' => 'editorial',
-            'editorial-guidelines' => 'editorial',
-            'corrections' => 'editorial',
-            'corrections-policy' => 'editorial',
-            'accessibility' => 'accessibility',
-            'a11y' => 'accessibility',
-            'security' => 'security',
-            'security-policy' => 'security',
-            'compliance' => 'compliance',
-            'ethics-policy' => 'compliance',
-            'contact' => 'contact',
         ];
 
         if (!isset($aliasMap[$rawType])) {
@@ -55,8 +37,6 @@ class legal_helper extends indexBase
                 'template' => 'index/legal/index',
                 'title_key' => 'legal_info',
                 'desc_key' => 'legal_notice_desc',
-                'slug_key' => 'legal_info_slug',
-                'fallback_slugs' => ['Agahiyên_Qanûnî', 'Agahdariya_Zagônî', 'Agahdariya_Zagonî', 'Yasal_Bilgiler', 'Legal_Information', 'Melumatê_Huqûqî'],
                 'schema_type' => 'AboutPage',
             ],
             'cookies' => [
@@ -64,88 +44,25 @@ class legal_helper extends indexBase
                 'template' => 'index/legal/cookie_policy',
                 'title_key' => 'cookie_policy',
                 'desc_key' => 'cookie_policy_subtitle',
-                'slug_key' => 'cookie_policy_slug',
-                'fallback_slugs' => ['Polîtîkaya_Kulîçeyan', 'Polîtîkaya_Çerezan', 'Çerez_Politikası', 'Cerez_Politikasi', 'Cookie_Richtlinie', 'Cookie-Richtlinie', 'Cookie_Policy', 'Siyasetê_Çerezan'],
                 'schema_type' => 'WebPage',
-            ],
-            'privacy' => [
-                'canonical_slug' => 'privacy-policy',
-                'template' => 'index/legal/privacy_policy',
-                'title_key' => 'privacy_policy',
-                'desc_key' => 'privacy_policy_subtitle',
-                'slug_key' => 'privacy_policy_slug',
-                'fallback_slugs' => ['Polîtîkaya_Nepeniyê', 'Gizlilik_Politikası', 'Gizlilik_Politikasi', 'Privacy_Policy', 'Polîtîkaya_Nimiteyîye', 'Politikaya_Nepaniye'],
-                'schema_type' => 'WebPage',
-            ],
-            'terms' => [
-                'canonical_slug' => 'terms-of-service',
-                'template' => 'index/legal/terms_of_service',
-                'title_key' => 'terms_of_service',
-                'desc_key' => 'terms_of_service_subtitle',
-                'slug_key' => 'terms_of_service_slug',
-                'fallback_slugs' => ['Mercên_Bikaranînê', 'Kullanım_Koşulları', 'Kullanim_Kosullari', 'Terms_of_Service', 'Şertê_Xebitnayîşî', 'Mercen_Bikaranine'],
-                'schema_type' => 'WebPage',
-            ],
-            'editorial' => [
-                'canonical_slug' => 'editorial-policy',
-                'template' => 'index/legal/editorial_policy',
-                'title_key' => 'editorial_policy',
-                'desc_key' => 'editorial_policy_subtitle',
-                'slug_key' => 'editorial_policy_slug',
-                'fallback_slugs' => ['Prensîbên_Weşanê', 'Yayın_İlkeleri', 'Yayin_Ilkeleri', 'Editorial_Policy', 'Prensîbê_Weşanî', 'Prensiben_Wesane'],
-                'schema_type' => 'WebPage',
-            ],
-            'accessibility' => [
-                'canonical_slug' => 'accessibility',
-                'template' => 'index/legal/accessibility',
-                'title_key' => 'accessibility',
-                'desc_key' => 'accessibility_subtitle',
-                'slug_key' => 'accessibility_slug',
-                'fallback_slugs' => ['Gihîştbarî', 'Erişilebilirlik', 'Erisilebilirlik', 'Accessibility', 'Resayîşbarîye', 'Gihistinbari'],
-                'schema_type' => 'WebPage',
-            ],
-            'security' => [
-                'canonical_slug' => 'security-policy',
-                'template' => 'index/legal/security_policy',
-                'title_key' => 'security_policy',
-                'desc_key' => 'security_policy_subtitle',
-                'slug_key' => 'security_policy_slug',
-                'fallback_slugs' => ['Polîtîkaya_Ewlehiyê', 'Güvenlik_Politikası', 'Guvenlik_Politikasi', 'Security_Policy', 'Polîtîkaya_Asayîşî', 'Politikaya_Ewlehiye'],
-                'schema_type' => 'WebPage',
-            ],
-            'compliance' => [
-                'canonical_slug' => 'compliance',
-                'template' => 'index/legal/compliance',
-                'title_key' => 'compliance',
-                'desc_key' => 'compliance_subtitle',
-                'slug_key' => 'compliance_slug',
-                'fallback_slugs' => ['Etîka_Çapemeniyê_û_Lihevhatin', 'Etîka_Çapemeniyê', 'Basın_Etiği_ve_Uyum', 'Basin_Etigi_ve_Uyum', 'Compliance', 'Liheveyîye', 'Etika_Capemeniye'],
-                'schema_type' => 'WebPage',
-            ],
-            'contact' => [
-                'canonical_slug' => 'contact',
-                'template' => 'index/legal/contact',
-                'title_key' => 'contact_us',
-                'desc_key' => 'legal_notice_desc',
-                'slug_key' => '',
-                'fallback_slugs' => ['Têkilî', 'İletişim', 'Iletisim', 'Contact'],
-                'schema_type' => 'ContactPage',
             ],
         ];
 
         $policy = $registry[$resolvedKey];
 
-        // 301 Canonical Normalization: Ensure statutory legal & policy pages never serve under language prefixes (e.g. /ku/security-policy)
+        // 301 Canonical Normalization: Ensure bare-root /legal and /cookie-policy redirect to active language (e.g. /tr/legal)
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $isSafeMethod = in_array(strtoupper($requestMethod), ['GET', 'HEAD'], true);
         $isAjax = (
             (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
             || (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'))
         );
 
-        if (PHP_SAPI !== 'cli' && !$isAjax && !headers_sent()) {
+        if (PHP_SAPI !== 'cli' && $isSafeMethod && !$isAjax && !headers_sent()) {
             $activeLangs = Registry::has('active_langs') ? (array) Registry::get('active_langs') : [];
             $rawPath0 = isset($this->url->path[0]) ? (string) $this->url->path[0] : '';
-            if (!empty($rawPath0) && in_array($rawPath0, $activeLangs, true)) {
-                $targetUrl = rtrim((string) $this->site['address'], '/') . '/' . $policy['canonical_slug'];
+            if (empty($rawPath0) || !in_array($rawPath0, $activeLangs, true)) {
+                $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/' . $policy['canonical_slug'];
                 $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: " . $targetUrl . $queryString);
@@ -153,23 +70,15 @@ class legal_helper extends indexBase
             }
         }
 
-        $pageRecord = $this->resolvePolicyPageRecord($policy);
+        $title = (isset($this->lang['index'][$policy['title_key']]) && !empty($this->lang['index'][$policy['title_key']]))
+            ? $this->lang['index'][$policy['title_key']]
+            : ucwords(str_replace('-', ' ', $policy['canonical_slug']));
 
-        $title = (!empty($pageRecord['name']))
-            ? $pageRecord['name']
-            : ((isset($this->lang['index'][$policy['title_key']]) && !empty($this->lang['index'][$policy['title_key']]))
-                ? $this->lang['index'][$policy['title_key']]
-                : ucwords(str_replace('-', ' ', $policy['canonical_slug'])));
+        $description = (isset($this->lang['index'][$policy['desc_key']]) && !empty($this->lang['index'][$policy['desc_key']]))
+            ? $this->lang['index'][$policy['desc_key']]
+            : (!empty($this->site['description']) ? $this->site['description'] : '');
 
-        $description = (!empty($pageRecord['summary']))
-            ? $pageRecord['summary']
-            : ((!empty($pageRecord['description']))
-                ? $pageRecord['description']
-                : ((isset($this->lang['index'][$policy['desc_key']]) && !empty($this->lang['index'][$policy['desc_key']]))
-                    ? $this->lang['index'][$policy['desc_key']]
-                    : (!empty($this->site['description']) ? $this->site['description'] : '')));
-
-        $canonicalUrl = rtrim((string) $this->site['address'], '/') . '/' . $policy['canonical_slug'];
+        $canonicalUrl = rtrim((string) $this->site['saddress'], '/') . '/' . $policy['canonical_slug'];
 
         if ($resolvedKey === 'cookies') {
             // Fetch dynamic cookies grouped by category from mod_settings_cookies
@@ -225,11 +134,6 @@ class legal_helper extends indexBase
         $this->theme->set('schema_type', $policy['schema_type']);
         $this->theme->set('policy_title', $title);
         $this->theme->set('policy_description', $description);
-        $this->theme->set('policy_page', $pageRecord);
-        if (!empty($pageRecord)) {
-            $this->theme->ctx_set('d', $pageRecord);
-            $this->theme->ctx_set('detail', $pageRecord);
-        }
 
         $this->site['title'] = $title;
         if (!empty($description)) {
@@ -239,61 +143,6 @@ class legal_helper extends indexBase
         $this->theme->set('site', $this->site);
         $this->theme->tpl($policy['template']);
         $this->_index();
-    }
-
-    /**
-     * Resolves a matching mod_page record for the active language and policy route.
-     *
-     * @param array $policy
-     * @return array|null
-     */
-    private function resolvePolicyPageRecord(array $policy): ?array
-    {
-        if (!$this->db) {
-            return null;
-        }
-
-        $langCode = Registry::get('lang');
-        if (!is_string($langCode) || $langCode === '') {
-            $langCode = $this->site['lang'] ?? 'tr';
-        }
-        $safeLang = addslashes($langCode);
-
-        $candidateSlugs = [];
-        if (!empty($policy['slug_key']) && !empty($this->lang['index'][$policy['slug_key']])) {
-            $candidateSlugs[] = trim((string) $this->lang['index'][$policy['slug_key']]);
-        }
-        if (!empty($policy['fallback_slugs']) && is_array($policy['fallback_slugs'])) {
-            foreach ($policy['fallback_slugs'] as $s) {
-                $candidateSlugs[] = trim((string) $s);
-            }
-        }
-        if (!empty($policy['canonical_slug'])) {
-            $candidateSlugs[] = trim((string) $policy['canonical_slug']);
-            $candidateSlugs[] = str_replace('-', '_', trim((string) $policy['canonical_slug']));
-        }
-
-        $candidateSlugs = array_values(array_unique(array_filter($candidateSlugs)));
-        if (empty($candidateSlugs)) {
-            return null;
-        }
-
-        try {
-            foreach ($candidateSlugs as $slug) {
-                $safeSlug = addslashes($slug);
-                $this->db->fetch_array("SELECT * FROM `mod_page` WHERE `lang` = '{$safeLang}' AND `seo` = '{$safeSlug}' AND `status` = 'y' AND `root` = 'n' LIMIT 1");
-                if ($this->db->getSize() > 0) {
-                    $rows = $this->db->toArray();
-                    if (!empty($rows[0]) && is_array($rows[0])) {
-                        return $rows[0];
-                    }
-                }
-            }
-        } catch (Exception $e) {
-            return null;
-        }
-
-        return null;
     }
 
     /**

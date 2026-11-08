@@ -1,8 +1,48 @@
+{% macro footer_menu_items(menu, parent_id) %}
+	{% import _self as navigation %}
+	{% if menu[parent_id] is defined %}
+		{% for item in menu[parent_id] %}
+			{% if item.id != parent_id and item.lang == site.lang and item.status == 'y' %}
+				{% if item.file is defined and item.file != '' %}
+				{% elseif item.url == '##' %}
+					{{ navigation.footer_menu_items(menu, item.id) }}
+				{% else %}
+					{% if item.url is empty or item.url == '#' %}
+						{% set clean_footer_url = '#' %}
+					{% else %}
+						{% set clean_footer_url = (item.url starts with 'http://' or item.url starts with 'https://' or item.url starts with '//' or item.url starts with 'mailto:' or item.url starts with 'tel:') ? item.url : (item.url starts with '/' ? item.url : (item.url starts with (site.lang ~ '/') ? site.address ~ item.url : site.saddress ~ item.url)) %}
+					{% endif %}
+					<li class="mb-2">
+						<a href="{{ clean_footer_url }}"{% if item.target == 'y' %} target="_blank" rel="noopener noreferrer"{% endif %} class="text-decoration-none transition-link d-inline-flex align-items-center gap-2">
+							{% if item.icon is defined and item.icon != '' %}<i class="{{ item.icon }}" aria-hidden="true"></i>{% endif %}
+							<span>{{ item.name }}</span>
+						</a>
+						{% if menu[item.id] is defined and menu[item.id] is iterable %}
+							<ul class="list-unstyled ms-3 mt-2">
+								{{ navigation.footer_menu_items(menu, item.id) }}
+							</ul>
+						{% endif %}
+					</li>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endmacro %}
+
+{% import _self as footer_navigation %}
+{% set footer_menu = ctx_get('menu_footer') %}
+{% set footer_menu_root_id = ctx_get('menu_footer_root_id') %}
+{% set footer_menu_markup %}
+	{% if footer_menu is not empty and footer_menu_root_id is not empty %}
+		{{ footer_navigation.footer_menu_items(footer_menu, footer_menu_root_id) }}
+	{% endif %}
+{% endset %}
+{% set has_footer_menu = footer_menu_markup|trim is not empty %}
 <footer class="site-footer mt-auto py-5">
 	<div class="container">
 		<div class="row gy-4">
 			<!-- Site Information -->
-			<div class="col-md-5 col-lg-4">
+			<div class="{% if has_footer_menu %}col-md-4 col-lg-4{% else %}col-md-5 col-lg-4{% endif %}">
 				{# === Footer Logo Options - 6 modes (Synced with Header) ===========
 				   square           -> Only Icon (site_icon), hide site title
 				   rectangle        -> Only Horizontal logo (logo_path), hide site title
@@ -135,12 +175,30 @@
                 </div>
 			</div>
             
-            <div class="col-md-1 col-lg-2 d-none d-md-block">
-                <!-- Spacer -->
-            </div>
+			{% if has_footer_menu %}
+				<div class="col-md-3 col-lg-3">
+					<div class="card contact-card border-0 shadow-sm overflow-hidden rounded-3 h-100">
+						<div class="card-body p-4">
+							<h3 class="h5 fw-bold mb-3 d-flex align-items-center">
+								<i class="bi bi-list-ul me-2 text-primary" aria-hidden="true"></i>
+								<span>{{ lang.index.menu.footer_links }}</span>
+							</h3>
+							<nav aria-label="{{ lang.index.menu.footer_links }}">
+								<ul class="list-unstyled mb-0 ps-1">
+									{{ footer_menu_markup|raw }}
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="col-md-1 col-lg-2 d-none d-md-block">
+					<!-- Spacer -->
+				</div>
+			{% endif %}
 
 			<!-- Contact & Social Information -->
-			<div class="col-md-6 col-lg-6">
+			<div class="{% if has_footer_menu %}col-md-5 col-lg-5{% else %}col-md-6 col-lg-6{% endif %}">
                 <div class="card contact-card border-0 shadow-sm overflow-hidden rounded-3 h-100">
                     <div class="card-body p-4">
                         <!-- Section: Contact Us -->
@@ -252,40 +310,12 @@
 
 		<!-- Legal & Policy Links -->
 		<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 gap-md-3 pt-4 mt-4 border-top footer-policies-area small opacity-75">
-			<a href="{{ site.address }}legal" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_masthead }}
+			<a href="{{ site.saddress }}legal" class="text-decoration-none transition-link">
+				{{ lang.index.legal_info }}
 			</a>
 			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}editorial-policy" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_editorial }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}privacy-policy" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_privacy }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}cookie-policy" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_cookies }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}terms-of-service" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_terms }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}accessibility" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_accessibility }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}security-policy" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_security }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}compliance" class="text-decoration-none transition-link">
-				{{ lang.index.legal_nav_compliance }}
-			</a>
-			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
-			<a href="{{ site.address }}contact" class="text-decoration-none transition-link">
-				{{ lang.index.contact_us }}
+			<a href="{{ site.saddress }}cookie-policy" class="text-decoration-none transition-link">
+				{{ lang.index.cookie_policy }}
 			</a>
 		</div>
 
