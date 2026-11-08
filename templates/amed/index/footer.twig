@@ -313,6 +313,28 @@
 			<a href="{{ site.saddress }}legal" class="text-decoration-none transition-link">
 				{{ lang.index.legal_info }}
 			</a>
+			{% if site.lang == 'tr' %}
+				<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+				<a href="{{ site.saddress }}page/Yayın_İlkeleri" class="text-decoration-none transition-link">
+					Yayın İlkeleri
+				</a>
+				<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+				<a href="{{ site.saddress }}page/Basın_Etiği_ve_Uyum" class="text-decoration-none transition-link">
+					Basın Etiği
+				</a>
+				<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+				<a href="{{ site.saddress }}page/Doğrulama_ve_Teyit_Politikası" class="text-decoration-none transition-link">
+					Doğrulama ve Teyit
+				</a>
+				<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+				<a href="{{ site.saddress }}page/Düzeltme_ve_Tekzip_Politikası" class="text-decoration-none transition-link">
+					Düzeltme ve Tekzip
+				</a>
+				<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+				<a href="{{ site.saddress }}page/Mülkiyet_ve_Finansman_Yapısı" class="text-decoration-none transition-link">
+					Mülkiyet ve Finansman
+				</a>
+			{% endif %}
 			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
 			<a href="{{ site.saddress }}cookie-policy" class="text-decoration-none transition-link" rel="nofollow">
 				{{ lang.index.cookie_policy }}

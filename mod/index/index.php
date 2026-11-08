@@ -652,7 +652,21 @@ class index_mod extends indexBase
         $news->addWhere($this->getPublishedDateCondition(''));
         $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
-        $news->select(['name', 'title', 'summary', 'created_at', 'updated_at', 'seo', 'lang', 'image']);
+        $news->select([
+            'name',
+            'title',
+            'summary',
+            'content',
+            'category_name',
+            'u_name',
+            'u_last_name',
+            'username',
+            'created_at',
+            'updated_at',
+            'seo',
+            'lang',
+            'image',
+        ]);
         $news->limit(50);
         $news->gR();
 
@@ -665,16 +679,20 @@ class index_mod extends indexBase
                 $lastBuildDate = date(DATE_RSS, $newestTs);
             }
         }
-        
+
+        $channelTitle = !empty($this->site['site_name']) ? (string) $this->site['site_name'] : (string) ($this->site['title'] ?? 'Amed Bülten');
+        $rssSelfUrl = Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss.xml');
+
         echo '<?xml version="1.0" encoding="UTF-8"?>
-        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
         <channel>
-            <title>' . htmlspecialchars((string) $this->site['title']) . '</title>
+            <title>' . htmlspecialchars(html_entity_decode($channelTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</title>
             <link>' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/') . '</link>
-            <description>' . htmlspecialchars((string) $this->site['description']) . '</description>
-            <language>' . $this->site['lang'] . '</language>
+            <description>' . htmlspecialchars(html_entity_decode((string) $this->site['description'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</description>
+            <language>' . htmlspecialchars((string) $this->site['lang'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</language>
             <lastBuildDate>' . $lastBuildDate . '</lastBuildDate>
-            <atom:link href="' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss.xml') . '" rel="self" type="application/rss+xml" />';
+            <atom:link href="' . $rssSelfUrl . '" rel="self" type="application/rss+xml" />
+            <atom:link href="https://pubsubhubbub.appspot.com/" rel="hub" />';
 
         if (!empty($newsArray)) {
             foreach ($newsArray as $o) {
@@ -708,17 +726,53 @@ class index_mod extends indexBase
                 }
 
                 $headline = !empty($o['name']) ? $o['name'] : (!empty($o['title']) ? $o['title'] : '');
-                $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1, 'UTF-8');
-                $cleanSummary = html_entity_decode(strip_tags((string) $o['summary']), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $cleanSummary = mb_substr($cleanSummary, 0, 500);
-                
+                $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+                $cleanSummary = trim(html_entity_decode(strip_tags((string) $o['summary']), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                $shortSummary = mb_substr($cleanSummary, 0, 500);
+                $shortSummaryCdata = str_replace(']]>', ']]]]><![CDATA[>', $shortSummary);
+
+                $uName = trim((string) ($o['u_name'] ?? ''));
+                $uLastName = trim((string) ($o['u_last_name'] ?? ''));
+                $username = trim((string) ($o['username'] ?? ''));
+                if ($uName !== '' && $username !== 'habermerkezi') {
+                    $authorName = trim($uName . ' ' . $uLastName);
+                } else {
+                    $authorName = $channelTitle;
+                }
+                $authorCdata = str_replace(']]>', ']]]]><![CDATA[>', html_entity_decode($authorName, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+                $categoryName = trim(html_entity_decode(strip_tags((string) ($o['category_name'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                $categoryCdata = str_replace(']]>', ']]]]><![CDATA[>', $categoryName);
+
+                $rawBody = (string) ($o['content'] ?? '');
+                $sanitizedBody = preg_replace('#<(script|style|iframe|form|object|embed)\b[^>]*>.*?</\1>#is', '', $rawBody);
+                $sanitizedBody = strip_tags((string) $sanitizedBody, '<p><h2><h3><h4><blockquote><ul><ol><li><a><strong><b><em><i><figure><figcaption><img><br>');
+                $encodedParts = [];
+                if ($imageUrl !== '') {
+                    $encodedParts[] = '<figure><img src="' . $imageUrl . '" alt="' . $cleanHeadline . '" width="1280" height="720" /></figure>';
+                }
+                if ($cleanSummary !== '') {
+                    $encodedParts[] = '<p><strong>' . htmlspecialchars($cleanSummary, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</strong></p>';
+                }
+                if (trim($sanitizedBody) !== '') {
+                    $encodedParts[] = $sanitizedBody;
+                }
+                $fullEncodedHtml = str_replace(']]>', ']]]]><![CDATA[>', implode("\n", $encodedParts));
+
                 echo '
             <item>
                 <title>' . $cleanHeadline . '</title>
                 <link>' . $link . '</link>
-                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . $cleanSummary . '...]]></description>
+                <guid isPermaLink="true">' . $link . '</guid>
                 <pubDate>' . date(DATE_RSS, strtotime((string) $o['created_at'])) . '</pubDate>
-                <guid isPermaLink="true">' . $link . '</guid>';
+                <dc:creator><![CDATA[' . $authorCdata . ']]></dc:creator>';
+                if ($categoryCdata !== '') {
+                    echo '
+                <category><![CDATA[' . $categoryCdata . ']]></category>';
+                }
+                echo '
+                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . $shortSummaryCdata . ']]></description>
+                <content:encoded><![CDATA[' . $fullEncodedHtml . ']]></content:encoded>';
                 if ($imageUrl && $imageLength > 0) {
                     echo '
                 <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="1280" height="720" />
@@ -884,7 +938,7 @@ class index_mod extends indexBase
         }
 
         header("content-type: text/xml; charset=utf-8");
-        $page_limit = 50000;
+        $page_limit = 1000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
 
@@ -905,11 +959,13 @@ class index_mod extends indexBase
         $news->limit($page_limit, $offset);
         $news->gR();
 
-        $siteTitle = htmlspecialchars(html_entity_decode((string) ($this->site['title'] ?? 'Amed Bülten'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $rawPubName = !empty($this->site['site_name'])
+            ? (string) $this->site['site_name']
+            : (string) ($this->site['title'] ?? 'Amed Bülten');
+        $siteTitle = htmlspecialchars(html_entity_decode($rawPubName, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
         $langCode = htmlspecialchars((string) ($this->site['lang'] ?? 'tr'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
         
         $items = ($news->getSize() !== 0) ? $news->toArray() : [];
-        $isFallback = false;
 
         // Tier 1 Guard: If 0 published in last 48h, query 5 latest published news to prevent empty <urlset>
         if (empty($items)) {
@@ -924,7 +980,6 @@ class index_mod extends indexBase
             $fallbackNews->gR();
             if ($fallbackNews->getSize() !== 0) {
                 $items = $fallbackNews->toArray();
-                $isFallback = true;
             }
         }
 
@@ -943,9 +998,7 @@ class index_mod extends indexBase
 
                 echo '<url>
                           <loc>' . Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']) . '</loc>
-                          <lastmod>' . $lastmod . '</lastmod>';
-                if (!$isFallback) {
-                    echo '
+                          <lastmod>' . $lastmod . '</lastmod>
                           <news:news>
                             <news:publication>
                               <news:name>' . $siteTitle . '</news:name>
@@ -953,9 +1006,7 @@ class index_mod extends indexBase
                             </news:publication>
                             <news:publication_date>' . $pubDate . '</news:publication_date>
                             <news:title>' . $cleanTitle . '</news:title>
-                          </news:news>';
-                }
-                echo '
+                          </news:news>
                           <priority>0.80</priority>
                     </url>';
             }

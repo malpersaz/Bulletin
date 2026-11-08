@@ -59,7 +59,7 @@ class GoogleIndexingService
                 return $data;
             }
         }
-        return ['urls' => [], 'sitemaps' => [], 'quota_exhausted_until' => 0];
+        return ['urls' => [], 'sitemaps' => [], 'websub' => [], 'quota_exhausted_until' => 0];
     }
 
     /**
@@ -212,8 +212,74 @@ class GoogleIndexingService
     }
 
     /**
+     * Notify Google WebSub (PubSubHubbub) hub that the language RSS feed has been updated.
+     */
+    public function pingWebSubHub(?string $baseOrigin = null, ?string $lang = null): bool
+    {
+        if ($baseOrigin === null || $baseOrigin === '') {
+            $siteConfig = Registry::get('site_config');
+            $baseOrigin = is_array($siteConfig) && !empty($siteConfig['address'])
+                ? rtrim((string) $siteConfig['address'], '/')
+                : '';
+        } else {
+            $baseOrigin = rtrim($baseOrigin, '/');
+        }
+
+        if ($baseOrigin === '') {
+            return false;
+        }
+
+        $host = strtolower((string) parse_url($baseOrigin, PHP_URL_HOST));
+        if ($host === '' || str_contains($host, 'localhost') || $host === '127.0.0.1') {
+            return false;
+        }
+
+        if ($lang === null || $lang === '') {
+            $siteConfig = Registry::get('site_config');
+            $lang = (is_array($siteConfig) && !empty($siteConfig['default_lang']))
+                ? (string) $siteConfig['default_lang']
+                : 'tr';
+        }
+
+        $rssUrl = Helper::sitemap_url($baseOrigin . '/' . trim($lang, '/') . '/rss.xml');
+        $state = $this->loadState();
+        $now = time();
+        $lastWebSub = (int) ($state['websub'][$rssUrl] ?? 0);
+
+        // 60-second cooldown per language RSS feed
+        if (($now - $lastWebSub) < 60) {
+            return true;
+        }
+
+        if (!class_exists('HttpClient')) {
+            $httpPath = (defined('lib_dir') ? lib_dir : dirname(__DIR__) . '/lib/') . 'HttpClient.class.php';
+            if (file_exists($httpPath)) {
+                require_once $httpPath;
+            }
+        }
+
+        if (!class_exists('HttpClient')) {
+            return false;
+        }
+
+        $res = HttpClient::postForm('https://pubsubhubbub.appspot.com/', [
+            'hub.mode' => 'publish',
+            'hub.url' => $rssUrl,
+        ], [], 10);
+
+        if ($res['status'] >= 200 && $res['status'] < 300) {
+            $state['websub'][$rssUrl] = $now;
+            $this->saveState($state);
+            return true;
+        }
+
+        error_log("Google WebSub hub ping failed ({$res['status']}) for {$rssUrl}: {$res['error']}");
+        return false;
+    }
+
+    /**
      * When a content item URL is updated/deleted, resubmit the sitemaps
-     * for the affected language to Google Search Console.
+     * and ping the WebSub hub for the affected language.
      */
     private function dispatchCompanionNotifications(string $url): void
     {
@@ -242,6 +308,7 @@ class GoogleIndexingService
         $sitemapKey = $baseOrigin . '|' . ($lang ?? '');
         if (empty(self::$pingedSitemapLangs[$sitemapKey])) {
             self::$pingedSitemapLangs[$sitemapKey] = true;
+            $this->pingWebSubHub($baseOrigin, $lang);
             $this->pingSitemaps($baseOrigin, $lang);
         }
     }

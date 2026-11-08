@@ -131,6 +131,20 @@
 		  },
 		  "url": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }},
 		  "headline": {{ d.name|json_ld|raw }},
+		  {% if d.summary is defined and d.summary|striptags|trim is not empty %}"alternativeHeadline": {{ d.summary|striptags|trim|json_ld|raw }},{% endif %}
+		  "speakable": {
+		    "@type": "SpeakableSpecification",
+		    "cssSelector": [
+		      ".news-detail-title",
+		      ".news-detail-lead",
+		      ".news-body > p:first-of-type"
+		    ]
+		  },
+		  "copyrightHolder": {
+		    "@type": "NewsMediaOrganization",
+		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }}
+		  },
+		  "copyrightYear": {{ article_created_ts|date('Y') }},
 		  "inLanguage": "{{ site.lang }}",
 		  "isAccessibleForFree": true,
 		  {% if has_news_category %}"articleSection": {{ d.categoryname|json_ld|raw }},{% endif %}
@@ -204,8 +218,10 @@
 		    },
 		    "masthead": {{ (site.saddress ~ 'legal')|json_ld|raw }},
 		    "publishingPrinciples": {{ (site.saddress ~ 'page/Yayın_İlkeleri')|json_ld|raw }},
-		    "correctionsPolicy": {{ (site.saddress ~ 'page/Yayın_İlkeleri')|json_ld|raw }},
+		    "correctionsPolicy": {{ (site.saddress ~ 'page/Düzeltme_ve_Tekzip_Politikası')|json_ld|raw }},
 		    "ethicsPolicy": {{ (site.saddress ~ 'page/Basın_Etiği_ve_Uyum')|json_ld|raw }},
+		    "factCheckingPolicy": {{ (site.saddress ~ 'page/Doğrulama_ve_Teyit_Politikası')|json_ld|raw }},
+		    "ownershipFundingInfo": {{ (site.saddress ~ 'page/Mülkiyet_ve_Finansman_Yapısı')|json_ld|raw }},
 		    "actionableFeedbackPolicy": {{ (site.saddress ~ 'page/Hakkımızda')|json_ld|raw }}{% if pub_same_as is not empty %},
 		    "sameAs": {{ pub_same_as|json_ld|raw }}{% endif %}
 		  },

@@ -21,8 +21,9 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
    - **No `<h1>` inside content**: The article headline is rendered by the system template as `<h1>`. Content body must NEVER contain `<h1>`.
    - **Mandatory `<h2>` Subheadings**: Every thematic section (context, background, key developments, official statements, local impact) MUST begin with a descriptive, entity-rich `<h2>` tag.
    - **Nested `<h3>` Only**: If a subsection requires further breakdown, use `<h3>`. Never skip heading levels (e.g. no `<h4>` directly under `<h2>`).
-2. **Lead Paragraph (`<p>`)**:
+2. **Lead Paragraph (`<p>`) & Speakable TTS Alignment**:
    - The opening paragraph must answer the primary 5N1K (Kim, Ne, Nerede, Ne Zaman, Neden, Nasıl) within the first 30–45 words without filler phrases.
+   - Strictly aligns with Schema.org `SpeakableSpecification` (`.news-detail-title`, `.news-detail-lead`, `.news-body > p:first-of-type`) enabling Google Assistant and audio news surface read-aloud compatibility.
 3. **Paragraph Length & Chunking**:
    - Maximum 3 to 4 sentences per `<p>` tag to optimize for mobile viewports and Google News snippet extraction. Avoid dense walls of text.
 4. **Semantic Blockquotes & Excerpts (`<blockquote>`)**:

@@ -2,7 +2,7 @@
 {% set first_hero_img = (hero_slider|filter(s => s.image_url is defined and s.image_url is not empty))|first %}
 
 {% if hero_slider and hero_slider|length > 0 %}
-<section id="heroNewsSlider" class="hero-news-slider hero-slider-shell" aria-label="{{ lang.index.hero_slider.title }}">
+<section id="heroNewsSlider" class="hero-news-slider hero-slider-shell{% if hero_slider|length <= 1 %} is-single-slide{% endif %}" aria-label="{{ lang.index.hero_slider.title }}">
     <div class="swiper hero-news-swiper">
         <div class="swiper-wrapper">
             {% for item in hero_slider %}
@@ -115,13 +115,12 @@
             {% endfor %}
         </div>
 
+        {% if hero_slider|length > 1 %}
         <div class="hero-slider__dock" aria-label="{{ lang.index.hero_slider.title }}">
             <div class="hero-news-swiper-pagination">
-                {% if hero_slider|length > 1 %}
-                    {% for item in hero_slider %}
-                        <button type="button" class="swiper-pagination-bullet{% if loop.first %} swiper-pagination-bullet-active{% endif %}" aria-label="{{ lang.index.hero_slider.go_to_slide|format(loop.index) }}" data-slide-to="{{ loop.index0 }}"></button>
-                    {% endfor %}
-                {% endif %}
+                {% for item in hero_slider %}
+                    <button type="button" class="swiper-pagination-bullet{% if loop.first %} swiper-pagination-bullet-active{% endif %}" aria-label="{{ lang.index.hero_slider.go_to_slide|format(loop.index) }}" data-slide-to="{{ loop.index0 }}"></button>
+                {% endfor %}
             </div>
             <div class="hero-slider__counter" aria-live="polite">
                 <span class="hero-slider__counter-current">01</span>
@@ -137,6 +136,7 @@
                 </button>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 {% endif %}

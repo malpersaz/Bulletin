@@ -46,10 +46,17 @@
     <meta property="og:image" content="{{ author_share_image }}">
     <meta property="og:image:secure_url" content="{{ author_share_image }}">
     <meta property="og:site_name" content="{{ site.title }}">
-    {% set og_locale = site.lang ~ '_SE' %}
+    {% set og_locale = site.lang %}
     {% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
     {% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
     {% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+    {% elseif site.lang == 'fr' %}{% set og_locale = 'fr_FR' %}
+    {% elseif site.lang == 'sv' %}{% set og_locale = 'sv_SE' %}
+    {% elseif site.lang == 'ru' %}{% set og_locale = 'ru_RU' %}
+    {% elseif site.lang == 'ar' %}{% set og_locale = 'ar_AR' %}
+    {% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
+    {% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
+    {% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
     {% endif %}
     <meta property="og:locale" content="{{ og_locale }}">
 
@@ -62,6 +69,15 @@
 
 {% block schema %}
     {% set canonical_author_url = site.saddress ~ 'author/' ~ username %}
+    {% set author_same_as = [] %}
+    {% set raw_author_socials = ctx_get('author_social_links') %}
+    {% if raw_author_socials is not empty %}
+        {% for s in raw_author_socials %}
+            {% if s.url is defined and s.url starts with 'http' %}
+                {% set author_same_as = author_same_as|merge([s.url|trim]) %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -82,6 +98,12 @@
             "@id": {{ (canonical_author_url ~ '#person')|json_ld|raw }},
             "name": {{ author_name|json_ld|raw }},
             "url": {{ canonical_author_url|json_ld|raw }},
+            {% if author.role_label is defined and author.role_label is not empty %}
+            "jobTitle": {{ author.role_label|json_ld|raw }},
+            {% endif %}
+            {% if author_same_as is not empty %}
+            "sameAs": {{ author_same_as|json_ld|raw }},
+            {% endif %}
             {% if author.user_image is defined and author.user_image is not empty %}
             "image": {{ (site.iaddress ~ 'mod_user/' ~ author.user_image)|json_ld|raw }},
             {% endif %}

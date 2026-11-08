@@ -1,4 +1,41 @@
 # Amed Framework — Bulletin CMS Version History
+## v1.0.54 (2026-11-09)
+- **100% Google News Compliance, E-E-A-T Transparency, WebSub Hub Push, Publisher Center RSS 2.0 & Hero Slider Single-Item Parity (`mod/index/index.php`, `lib/GoogleIndexingService.class.php`, `templates/amed/index/mod_news/news.twig`, `templates/amed/index/mod_publication/author.twig`, `tasks/seed_google_news_policies.php`, `templates/amed/index/footer.twig`, `templates/amed/layouts/base.twig`, `templates/amed/index/hero_slider.twig`, `.agents/skills/kevseo/SKILL.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/plan/v1.0.54-google-news-100-percent-compliance-and-dominance-plan.md`, `docs/VERSION.md`)**:
+  - **Component 1: Google News Publisher Center Full-Content RSS 2.0 Engine**:
+    - Upgraded `index_mod::rss()` in `mod/index/index.php` with full Google News Publisher Center compliance: declared `xmlns:content="http://purl.org/rss/1.0/modules/content/"` and `xmlns:dc="http://purl.org/dc/elements/1.1/"`.
+    - Added `<content:encoded>` with sanitized, semantic HTML (retaining `<p>`, `<h2>`, `<h3>`, `<blockquote>`, `<ul>`, `<ol>`, `<li>`, `<a>`, `<strong>`, `<em>`, `<img>`), stripping scripts, forms, and unsafe elements.
+    - Added `<dc:creator>` with resolved author name and `<category>` with article category name.
+    - Declared `<atom:link href="https://pubsubhubbub.appspot.com/" rel="hub" />` in `<channel>` for real-time WebSub push ingestion.
+  - **Component 2: Google News Sitemap 1,000-URL Quota & Fallback Schema Parity**:
+    - Restricted `index_mod::newsSitemap()` to `$page_limit = 1000;`, adhering strictly to Google News sitemap specifications.
+    - Resolved `<news:publication><news:name>` with priority for `$this->site['site_name']` (`Amed Bülten`) to match Google News Publisher Center branding.
+    - Removed `if (!$isFallback)` wrapper around `<news:news>` so that Tier 1 fallback articles always emit valid `<news:news>` containers, preventing Google Search Console schema validation errors.
+  - **Component 3: NewsArticle Schema.org Speakable & Publisher Transparency Parity**:
+    - Added `SpeakableSpecification` schema (`.news-detail-title`, `.news-detail-lead`, `.news-body > p:first-of-type`) in `templates/amed/index/mod_news/news.twig` for Google Assistant and voice device news audio read-aloud.
+    - Added `alternativeHeadline` mapping to deck summaries, along with `copyrightHolder` and `copyrightYear`.
+    - Enriched `publisher` (`NewsMediaOrganization`) with full statutory E-E-A-T policy URLs: `correctionsPolicy`, `factCheckingPolicy`, and `ownershipFundingInfo`.
+  - **Component 4: Author E-E-A-T Schema & Multi-Locale Alignment**:
+    - In `templates/amed/index/mod_publication/author.twig`, fixed the `og:locale` bug by removing the `_SE` fallback and implementing standard 10-language locale mapping.
+    - Enriched `Person` schema with `jobTitle` (`author.role_label`) and `sameAs` array built from verified author social links (`author_social_links`).
+  - **Component 5: Dedicated E-E-A-T Transparency Pages & Footer Trust Bar**:
+    - Created `tasks/seed_google_news_policies.php` and seeded three dedicated statutory pages in `mod_page`:
+      - `Doğrulama ve Teyit Politikası` (`Doğrulama_ve_Teyit_Politikası`)
+      - `Düzeltme ve Tekzip Politikası` (`Düzeltme_ve_Tekzip_Politikası`)
+      - `Mülkiyet ve Finansman Yapısı` (`Mülkiyet_ve_Finansman_Yapısı`)
+    - Updated `templates/amed/index/footer.twig` to display the full editorial trust bar across all statutory policies with 0 code separation violations.
+  - **Component 6: Integrated Real-Time WebSub (PubSubHubbub) Push**:
+    - Added `pingWebSubHub(?string $baseOrigin, ?string $lang)` in `lib/GoogleIndexingService.class.php`.
+    - Integrated WebSub push into `dispatchCompanionNotifications()` alongside Search Console authenticated sitemap submission, pinging `https://pubsubhubbub.appspot.com/` on every news publish and update with 60-second cooldown protection.
+  - **Component 7: Multilingual Hreflang Tag & Canonical Integrity**:
+    - Added `hreflang` block in `templates/amed/layouts/base.twig` emitting `<link rel="alternate" hreflang="{{ site.lang }}" ...>` and `x-default`.
+  - **Component 8: Editorial Pipeline & Skill Alignment**:
+    - Updated `.agents/skills/kevseo/SKILL.md` to document `SpeakableSpecification` audio lead alignment.
+  - **Component 9: Hero News Slider Single-Item State & Dock Suppression**:
+    - In `templates/amed/index/hero_slider.twig`, conditionally added `.is-single-slide` on the slider container when `hero_slider|length <= 1`.
+    - Wrapped `.hero-slider__dock` (containing pagination dots, slide counter, and navigation arrows) in `{% if hero_slider|length > 1 %}`, preventing redundant pagination controls and counter flicker from displaying when only a single news article is featured.
+  - **Component 10: Framework Version Parity**:
+    - Bumped framework version to `1.0.54` in `config/site.config.php`, `config/site.config.example.php`, and `docs/VERSION.md`.
+
 ## v1.0.53 (2026-11-08)
 - **News Article SERP & Discover Remediation, SQL Hardening, Static HTTP Semantics & Admin Code Separation (`mod/index/helper/mod_news.helper.php`, `templates/amed/index/mod_news/news.twig`, `templates/amed/index/mod_announcements/announcement.twig`, `templates/amed/index/mod_publication/author.twig`, `templates/admin/assets/js/script.js`, `templates/admin/assets/js/mod_news.js`, `mod/mod_news/validator/add.validator.php`, `mod/mod_news/validator/edit.validator.php`, `mod/mod_news/index.php`, `lib/McpNewsTools.class.php`, `lib/AIService.class.php`, `templates/amed/static/css/detail-foundation.css`, `static/.htaccess`, `templates/.htaccess`, `.htaccess`, `mod/image/index.php`, `tasks/recompress_news_images.php`, `.deployignore`, `mod/mod_news/lang/`, `templates/admin/mod_imagecategories/list.twig`, `templates/admin/mod_imagecategories/_form.twig`, `templates/admin/mod_imagecategories/add.twig`, `templates/admin/mod_imagecategories/edit.twig`, `templates/admin/assets/css/mod_imagecategories.css`, `templates/admin/assets/js/mod_imagecategories.js`, `config/site.config.php`, `config/site.config.example.php`, `docs/plan/post-v1.0.52-audit-remediation-plan.md`, `docs/plan/v1.0.53-local-verification-and-deployment-gate-plan.md`, `docs/VERSION.md`)**:
   - **Component 1: Fatal SQL Crash Fix & Author JSON-LD `@id` Parity**:

@@ -17,6 +17,10 @@
 		{% endblock %}
 		{% block canonical %}<link rel="canonical" href="{{ site.saddress|default(site.address) }}"/>
 		{% endblock %}
+		{% block hreflang %}
+			<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress|default(site.address) }}"/>
+			<link rel="alternate" hreflang="x-default" href="{{ site.address }}{{ site.default_lang|default('tr') }}/"/>
+		{% endblock %}
 		<link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.saddress|default(site.address) }}rss.xml">
 		{% block head_preload %}{% endblock %}
 
