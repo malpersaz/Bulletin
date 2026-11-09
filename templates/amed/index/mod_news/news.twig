@@ -36,6 +36,10 @@
 {% block canonical %}
 	<link rel="canonical" href="{{ site.saddress }}news/{{ d.seo }}"/>
 {% endblock %}
+{% block hreflang %}
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}news/{{ d.seo }}"/>
+	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}news/{{ d.seo }}"/>
+{% endblock %}
 
 {% block title %}
 	<title>{{ d.title|default(d.name) }} - {{ site.title }}</title>

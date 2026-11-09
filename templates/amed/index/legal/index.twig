@@ -13,9 +13,13 @@
 {% block canonical %}
 	<link rel="canonical" href="{{ site.saddress }}legal"/>
 {% endblock %}
+{% block hreflang %}
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}legal"/>
+	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}legal"/>
+{% endblock %}
 
 {% block title %}
-	<title>{{ page_meta_title }} - {{ site.name }}</title>
+	<title>{{ page_meta_title }} - {{ site.title }}</title>
 {% endblock %}
 
 {% block description %}

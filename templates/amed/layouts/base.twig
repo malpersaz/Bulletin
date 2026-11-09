@@ -17,6 +17,7 @@
 		{% endblock %}
 		{% block canonical %}<link rel="canonical" href="{{ site.saddress|default(site.address) }}"/>
 		{% endblock %}
+		{# Homepage default hreflang. Non-home views overriding canonical MUST override hreflang. #}
 		{% block hreflang %}
 			<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress|default(site.address) }}"/>
 			<link rel="alternate" hreflang="x-default" href="{{ site.address }}{{ site.default_lang|default('tr') }}/"/>

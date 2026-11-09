@@ -8,6 +8,10 @@
 {% block canonical %}
     <link rel="canonical" href="{{ site.saddress }}event-calendar">
 {% endblock %}
+{% block hreflang %}
+    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}event-calendar"/>
+    <link rel="alternate" hreflang="x-default" href="{{ site.saddress }}event-calendar"/>
+{% endblock %}
 
 {% block title %}
     <title>{{ lang.index.mod_event.event_calendar }} - {{ site.title }}</title>

@@ -29,6 +29,10 @@
 {% block canonical %}
     <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}" />
 {% endblock %}
+{% block hreflang %}
+    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}"/>
+    <link rel="alternate" hreflang="x-default" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}"/>
+{% endblock %}
 
 {% block title %}
     <title>{{ author_name }} - {{ site.title }}</title>

@@ -324,17 +324,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- Google Analytics (GA4) Auto-Init ---
+    // --- Google Analytics (GA4) Auto-Init with Consent Mode v2 ---
     const gaScript = document.querySelector('script[data-ga-id]');
     if (gaScript) {
         const gaId = gaScript.getAttribute('data-ga-id');
         if (gaId) {
             window.dataLayer = window.dataLayer || [];
-            const pushAnalyticsCommand = function () {
+            window.gtag = window.gtag || function () {
                 window.dataLayer.push(arguments);
             };
-            pushAnalyticsCommand('js', new Date());
-            pushAnalyticsCommand('config', gaId);
+
+            const hasStoredConsent = (function () {
+                try {
+                    if (window.localStorage && window.localStorage.getItem('cookie_consent_accepted') === 'true') {
+                        return true;
+                    }
+                } catch (e) {}
+                return document.cookie.indexOf('cookie_consent_accepted=true') !== -1;
+            })();
+
+            window.gtag('consent', 'default', {
+                'analytics_storage': 'granted',
+                'ad_storage': hasStoredConsent ? 'granted' : 'denied',
+                'ad_user_data': hasStoredConsent ? 'granted' : 'denied',
+                'ad_personalization': hasStoredConsent ? 'granted' : 'denied'
+            });
+
+            window.gtag('js', new Date());
+            window.gtag('config', gaId);
         }
     }
 });

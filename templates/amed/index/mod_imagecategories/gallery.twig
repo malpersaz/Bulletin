@@ -58,6 +58,10 @@
 {% block canonical %}
 	<link rel="canonical" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
 {% endblock %}
+{% block hreflang %}
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
+	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
+{% endblock %}
 
 {% block description %}
 	<meta name="description" content="{{ d.name is not empty ? (d.name ~ ' - ' ~ lang.index.mod_pictures.title ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description) }}">

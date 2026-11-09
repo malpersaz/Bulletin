@@ -680,7 +680,7 @@ class index_mod extends indexBase
             }
         }
 
-        $channelTitle = !empty($this->site['site_name']) ? (string) $this->site['site_name'] : (string) ($this->site['title'] ?? 'Amed Bülten');
+        $channelTitle = !empty($this->site['title']) ? (string) $this->site['title'] : (string) ($this->site['site_name'] ?? 'Amed Bülten');
         $rssSelfUrl = Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss.xml');
 
         echo '<?xml version="1.0" encoding="UTF-8"?>
@@ -959,9 +959,9 @@ class index_mod extends indexBase
         $news->limit($page_limit, $offset);
         $news->gR();
 
-        $rawPubName = !empty($this->site['site_name'])
-            ? (string) $this->site['site_name']
-            : (string) ($this->site['title'] ?? 'Amed Bülten');
+        $rawPubName = !empty($this->site['title'])
+            ? (string) $this->site['title']
+            : (string) ($this->site['site_name'] ?? 'Amed Bülten');
         $siteTitle = htmlspecialchars(html_entity_decode($rawPubName, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
         $langCode = htmlspecialchars((string) ($this->site['lang'] ?? 'tr'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
         
@@ -1484,7 +1484,7 @@ class index_mod extends indexBase
         $llmsService = Load::lib('LlmsService');
         header('Content-Type: text/plain; charset=utf-8');
         header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
-        header('X-Robots-Tag: all');
+        header('X-Robots-Tag: noindex, follow');
         echo $llmsService->render($this->site['lang'] ?? '', false);
         exit;
     }
@@ -1495,7 +1495,7 @@ class index_mod extends indexBase
         $llmsService = Load::lib('LlmsService');
         header('Content-Type: text/plain; charset=utf-8');
         header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
-        header('X-Robots-Tag: all');
+        header('X-Robots-Tag: noindex, follow');
         echo $llmsService->render($this->site['lang'] ?? '', true);
         exit;
     }

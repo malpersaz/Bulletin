@@ -28,6 +28,10 @@
 {% block canonical %}
     <link rel="canonical" href="{{ site.saddress }}event/{{ d.seo }}">
 {% endblock %}
+{% block hreflang %}
+    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}event/{{ d.seo }}"/>
+    <link rel="alternate" hreflang="x-default" href="{{ site.saddress }}event/{{ d.seo }}"/>
+{% endblock %}
 
 {% block title %}
     <title>{{ d.name }} - {{ site.title }}</title>

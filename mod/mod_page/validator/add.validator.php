@@ -160,7 +160,15 @@ class add_validator
         if ($this->_check() === True) {
             return True;
         }
-        // title Required
+
+        // title Required with brand suffix stripping
+        $rawTitle = trim((string) Req::Post('title'));
+        $strippedTitle = trim((string) preg_replace('/\s*[|–—-]\s*Amed\s*B[üu]lten(?:i)?\s*$/iu', '', $rawTitle));
+        if ($strippedTitle === '') {
+            $strippedTitle = trim((string) Req::Post('name'));
+        }
+        $_POST['title'] = $strippedTitle;
+
         $this->valid->add(
             [
                 'name' => 'title',
@@ -327,11 +335,11 @@ class add_validator
             return True;
         }
 
-        #Check Email
+        // Check email
 
-        #Check Tcno
+        // Check national ID
 
-        #Check Unique
+        // Check unique
 
         #Check Unique with column
         $this->mod_page_model = Load::model('mod_page');

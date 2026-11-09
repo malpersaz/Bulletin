@@ -12,9 +12,13 @@
 {% block canonical %}
 	<link rel="canonical" href="{{ site.saddress }}cookie-policy"/>
 {% endblock %}
+{% block hreflang %}
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}cookie-policy"/>
+	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}cookie-policy"/>
+{% endblock %}
 
 {% block title %}
-	<title>{{ page_meta_title }} - {{ site.name }}</title>
+	<title>{{ page_meta_title }} - {{ site.title }}</title>
 {% endblock %}
 
 {% block description %}
