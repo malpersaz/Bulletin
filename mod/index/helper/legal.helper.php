@@ -135,7 +135,6 @@ class legal_helper extends indexBase
         $this->theme->set('policy_title', $title);
         $this->theme->set('policy_description', $description);
 
-        $this->site['title'] = $title;
         if (!empty($description)) {
             $this->site['description'] = $description;
         }

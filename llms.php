@@ -21,10 +21,11 @@ try {
 
     header('Content-Type: text/plain; charset=utf-8');
     header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
-    header('X-Robots-Tag: all');
+    header('X-Robots-Tag: noindex, follow');
 
     echo $output;
 } catch (\Throwable $e) {
     header('Content-Type: text/plain; charset=utf-8', true, 500);
+    header('X-Robots-Tag: noindex, follow');
     echo "# Error Generating llms.txt\n\n> An unexpected error occurred while generating the AI index.\n";
 }

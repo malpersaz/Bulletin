@@ -166,3 +166,6 @@ Via SSH (`ssh ssh-w02232db@w02232db.kasserver.com`):
    - Removed unauthenticated `clear_cache.php` and `modules.php`.
    - Routed cache management to authenticated `/clear-cache` controller.
    - Suppressed public PHP error dumps in production.
+5. **Dotfile Security Shield & AI Index Discovery (`/.well-known/llms.txt`):**
+   - The root `.htaccess` multi-layer security shield (`<FilesMatch "^\."> Require all denied`) and host-level Apache policies deliberately deny direct access to dot-prefixed paths like `/.well-known/` (HTTP 403 Forbidden).
+   - Canonical AI/LLM ingestion standard on Bulletin CMS operates via `/llms.txt` and `/llms-full.txt` (HTTP 200 with `X-Robots-Tag: noindex, follow`).
