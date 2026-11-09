@@ -1,4 +1,41 @@
 # Amed Framework — Bulletin CMS Version History
+
+## v1.0.59 (2026-11-10)
+- **Strict Language Prefix Routing, `<base>` & Schema Canonical Unification, and Google SERP Duplicate Remediation (`lib/Amed.class.php`, `templates/amed/`, `mod/index/index.php`, `mod/index/helper/legal.helper.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, `docs/plan/v1.0.59-strict-language-prefix-and-root-serp-remediation-plan.md`, `docs/VERSION.md`)**:
+  - **Component 1: Post-`mod_redirect`, Post-`410` Single-Hop 301 Language Prefix Gate (`lib/Amed.class.php`)**:
+    - Introduced route-verified single-hop 301 redirection gate for bare public routes in `lib/Amed.class.php` executing strictly after `mod_redirect` and inactive language (`410 Gone`) filters.
+    - Public index routes (`index_mod`) and user auth routes (`mod_user`: `login`, `register`, `activation`, `forgot_password`, `password_reset`, etc.) accessed without language prefix 301-redirect to `/{lang}/<route>` preserving query strings in a single hop.
+    - Integrated self-redirect guard against infinite loops (`currentFullUrl !== normalizedTarget`).
+    - Non-existent bare routes and probes immediately fall through to single-step `404 Not Found` with `X-Robots-Tag: noindex, nofollow` (zero `301 → 404` soft-404 chains).
+    - Preserved root discovery endpoints (`/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/llms-full.txt`, `/cron`, `/clear-cache`) and legacy redirects (`/nuce/(:any)`, `/tekst/(:any)`).
+  - **Component 2: `<base href>`, Relative Auth Links, and Form `action` Hygiene (`templates/amed/`)**:
+    - Updated `templates/amed/layouts/base.twig` to emit `<base href="{{ site.saddress|default(site.address) }}">`, eliminating bare-root reference signals on language-prefixed pages.
+    - Updated relative auth links in `templates/amed/mod_user/login.twig` to explicit `{{ site.saddress }}forgot-password`, `{{ site.saddress }}activation`, `{{ site.saddress }}register`.
+    - Sanitized 7 public forms (`announcements.twig`, `mod_news/archive.twig`, `mod_publication/archive.twig`, `activation.twig`, `password_reset.twig`, `forgot-password.twig`, `resend_activation.twig`) to use explicit `action="{{ site.saddress }}..."`.
+    - Added trailing slash to language switcher links in `top_menu.twig` and updated bare links in `register.twig` and user mail templates (`email_new_password.twig`, `email_activation.twig`, `email_password_reset.twig`, `email_admin_activation.twig`).
+  - **Component 3: JSON-LD Schema `site.saddress` Unification Across All Remaining Templates**:
+    - Replaced all remaining occurrences of `site.address` with `site.saddress` and added `@id` nodes (`#website` / `#organization`) in `page.twig`, `announcement.twig`, `event.twig`, and `gallery.twig` structured data blocks.
+  - **Component 4: Multi-Language `pageSitemap()` Parity & `legal.helper.php` RFC 3986 Hygiene**:
+    - Removed `default_lang` restriction in `mod/index/index.php` (`pageSitemap()`) so every active language sitemap lists its localized homepage and section indexes.
+    - Added statutory `cookie-policy` endpoint to `pageSitemap()`.
+    - Wrapped `Location:` header in `mod/index/helper/legal.helper.php` with `Helper::sitemap_url()`.
+  - **Component 5: Fact Verification Link Pattern Hardening (`.agents/skills/kevrast/scripts/verify_facts_and_links.py`)**:
+    - Extended single-segment article permalink regular expression to allow trailing letter markers (e.g. `173864h.htm`), ensuring regional and national deep news links are properly recognized as content permalinks instead of section fronts.
+  - **Component 6: Framework Version Parity**:
+    - Synchronized version `1.0.59` across `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`.
+
+## v1.0.58 (2026-11-09)
+- **MCP `create_news`/`update_news` Featured Image Optionality (`lib/McpNewsTools.class.php`, `tasks/mcp_smoke.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, `docs/VERSION.md`)**:
+  - **Component 1: Optional Featured Image on `create_news`**:
+    - Removed the hard "news articles cannot be created without an image" gate from `createNews()`: the `image` argument is now optional in the tool schema; omitting it creates an imageless record, aligning MCP behavior with the admin panel and the `mod_news` schema (`image` varchar(255) DEFAULT NULL).
+    - Image validation (object shape, MIME whitelist, upload resolution) is unchanged when `image` is provided; the save-failure cleanup now no-ops for imageless records via the `null` `$imageUrl` guard.
+  - **Component 2: `update_news` Imageless-Record Parity**:
+    - `updateNews()` no longer rejects updates that omit `image` on records without a featured image (the "must provide an image argument" branch was removed) and treats an explicit `image: null` the same as omission (keep current image); image replacement when `image` is provided is unchanged.
+  - **Component 3: Smoke Contract Re-Pinning (`tasks/mcp_smoke.php`)**:
+    - The image gate now asserts the new contract: `create_news` without `image` succeeds as a draft (`status: n`), persists with an empty featured image, and is cleaned up via `delete_news`.
+  - **Component 4: Framework Version Parity**:
+    - Bumped framework version to `1.0.58` in `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`.
+
 ## v1.0.57 (2026-11-09)
 - **Google Indexing API Reality Documentation, Read-Only Diagnostic Tool & SERP Residual Monitoring (`docs/SERVER.md`, `lib/GoogleIndexingService.class.php`, `tools/google_indexing_diagnose.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/plan/v1.0.57-indexing-api-reality-diagnostics-and-serp-residual-monitoring-plan.md`, `docs/VERSION.md`)**:
   - **Component 1: Server & Indexing API Reality Documentation (`docs/SERVER.md`)**:

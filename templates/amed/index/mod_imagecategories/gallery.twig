@@ -101,8 +101,9 @@
 		  "url": {{ current_gallery_url|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
+		    "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
 		    "name": {{ site.title|json_ld|raw }},
-		    "url": {{ site.address|json_ld|raw }}
+		    "url": {{ site.saddress|json_ld|raw }}
 		  },
 		  "breadcrumb": {
 		    "@type": "BreadcrumbList",

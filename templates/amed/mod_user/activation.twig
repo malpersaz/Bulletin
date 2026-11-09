@@ -28,7 +28,7 @@
                 {% endfor %}
                 <!--[if !IE]>Hata Mesajı Varsa<![endif]-->
             {% endif %}
-            <form method="post" action="" id="activation">
+            <form method="post" action="{{ site.saddress }}activation{% if code is defined and code is not empty %}/{{ code }}{% endif %}" id="activation">
                 <!-- İnputlar Kısım Başlar-->
                 <div class="inputlar">
                     <p>

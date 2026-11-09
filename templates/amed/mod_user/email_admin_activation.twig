@@ -1,3 +1,3 @@
 {{ lang.mod_user.admin.active.hello|format(name, last_name)|raw }}
 <br /><br />
-{{ lang.mod_user.admin.active.account_activated|format(site.address)|raw }}
+{{ lang.mod_user.admin.active.account_activated|format(site.saddress|default(site.address))|raw }}

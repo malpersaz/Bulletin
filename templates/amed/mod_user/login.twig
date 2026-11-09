@@ -95,11 +95,11 @@
 
                     <hr>
                     <div class="text-center">
-                        <a href="forgot-password" class="btn btn-link p-0">{{ forgot_password_label }}</a>
+                        <a href="{{ site.saddress }}forgot-password" class="btn btn-link p-0">{{ forgot_password_label }}</a>
                         <span class="mx-2">|</span>
-                        <a href="activation" class="btn btn-link p-0">{{ account_activation_label }}</a>
+                        <a href="{{ site.saddress }}activation" class="btn btn-link p-0">{{ account_activation_label }}</a>
                         <span class="mx-2">|</span>
-                        <a href="register" class="btn btn-link p-0">{{ register_label }}</a>
+                        <a href="{{ site.saddress }}register" class="btn btn-link p-0">{{ register_label }}</a>
                     </div>
                 {% endif %}
             </div>

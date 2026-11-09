@@ -1395,13 +1395,11 @@ class index_mod extends indexBase
             }
         }
 
-        if ($this->site['lang'] == Registry::get('default_lang')) {
-            echo '<url>
-                      <loc>' . Helper::sitemap_url($this->site['saddress']) . '</loc>
-                      <lastmod>' . $homeLastmod . '</lastmod>
-                      <priority>1.0</priority>
-                </url>';
-        }
+        echo '<url>
+                  <loc>' . Helper::sitemap_url($this->site['saddress']) . '</loc>
+                  <lastmod>' . $homeLastmod . '</lastmod>
+                  <priority>1.0</priority>
+            </url>';
         
         if ($pages->getSize() != 0) {
             foreach ($pages->toArray() as $o) {
@@ -1412,9 +1410,13 @@ class index_mod extends indexBase
             }
         }
 
-        if ($page === 1 && $this->site['lang'] == Registry::get('default_lang')) {
+        if ($page === 1) {
             echo '<url>
                       <loc>' . Helper::sitemap_url($this->site['saddress'] . 'legal') . '</loc>
+                      <priority>0.70</priority>
+                </url>';
+            echo '<url>
+                      <loc>' . Helper::sitemap_url($this->site['saddress'] . 'cookie-policy') . '</loc>
                       <priority>0.70</priority>
                 </url>';
             if ($this->isFeatureReady('news.front')) {

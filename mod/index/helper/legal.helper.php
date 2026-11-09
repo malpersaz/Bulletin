@@ -65,7 +65,7 @@ class legal_helper extends indexBase
                 $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/' . $policy['canonical_slug'];
                 $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
                 header("HTTP/1.1 301 Moved Permanently");
-                header("Location: " . $targetUrl . $queryString);
+                header("Location: " . Helper::sitemap_url($targetUrl . $queryString));
                 exit;
             }
         }

@@ -544,7 +544,7 @@ runRpc(['jsonrpc' => '2.0', 'id' => 26, 'method' => 'tools/call', 'params' => ['
 // 6.1 Protocol Hardening & Target Pinning (v1.0.12)
 // =========================================================================
 
-// Image Enforcement Gate: create_news without image fails
+// Image Optionality Gate (v1.0.58): create_news without image succeeds
 $resNoImg = runRpc(['jsonrpc' => '2.0', 'id' => 30, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
     'name' => 'MCP Smoke Image Gate Test',
     'lang' => $testLang,
@@ -552,12 +552,19 @@ $resNoImg = runRpc(['jsonrpc' => '2.0', 'id' => 30, 'method' => 'tools/call', 'p
     'summary' => 'This is a valid summary between 90 and 160 characters long for testing image contract validation gate.',
     'content' => '<p>Valid content body for image test.</p>',
     'seo' => 'smoke_image_gate_test_slug',
+    'status' => 'n',
 ]]], $plaintextKey);
-check('Contract[Image]: create_news without image fails with editorial error',
-    ($resNoImg['result']['isError'] ?? false) === true
-    && str_contains($resNoImg['result']['content'][0]['text'] ?? '', 'image'),
+$noImgCreated = json_decode($resNoImg['result']['content'][0]['text'] ?? 'null', true);
+check('Contract[Image]: create_news without image succeeds with empty featured image',
+    ($resNoImg['result']['isError'] ?? true) === false
+    && (int) ($noImgCreated['id'] ?? 0) > 0
+    && empty($noImgCreated['item']['image']),
     json_encode($resNoImg)
 );
+$noImgId = (int) ($noImgCreated['id'] ?? 0);
+if ($noImgId > 0) {
+    runRpc(['jsonrpc' => '2.0', 'id' => 36, 'method' => 'tools/call', 'params' => ['name' => 'delete_news', 'arguments' => ['id' => $noImgId]]], $plaintextKey);
+}
 
 // MCP 2026-07-28: server/discover returns capabilities
 $resDiscover = runRpc(['jsonrpc' => '2.0', 'id' => 31, 'method' => 'server/discover'], $plaintextKey);

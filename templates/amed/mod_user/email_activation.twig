@@ -1,9 +1,9 @@
 {{ lang.mod_user.email_templates.greeting|format(name, last_name)|raw }}
 <br /><br />
-{{ lang.mod_user.email_templates.account_activation_intro|format(site.address) }}
+{{ lang.mod_user.email_templates.account_activation_intro|format(site.saddress|default(site.address)) }}
 <br /><br />
-{{ lang.mod_user.email_templates.click_here }}: <a href="{{ site.address }}activation/{{ code }}">{{ lang.mod_user.email_templates.click_here }}</a>
+{{ lang.mod_user.email_templates.click_here }}: <a href="{{ site.saddress|default(site.address) }}activation/{{ code }}">{{ lang.mod_user.email_templates.click_here }}</a>
 <br /><br />
 {{ lang.mod_user.email_templates.copy_link_notice }}
 <br />
-"{{ site.address }}activation/{{ code }}"
+"{{ site.saddress|default(site.address) }}activation/{{ code }}"

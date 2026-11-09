@@ -102,15 +102,17 @@
 		  "image": {{ announcement_share_image|json_ld|raw }},
 		  "author": {
 		    "@type": "Organization",
+		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
 		    "name": {{ site.title|json_ld|raw }}
 		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_ld|raw }}{% endif %}
-		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_ld|raw }}{% endif %}
+		    {% if site.saddress is defined and site.saddress is not empty %}, "url": {{ site.saddress|json_ld|raw }}{% endif %}
 		  },
 		  "publisher": {
 		    "@type": "Organization",
+		    "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
 		    "name": {{ site.title|json_ld|raw }},
 		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_ld|raw }},{% endif %}
-		    "url": {{ site.address|json_ld|raw }},
+		    "url": {{ site.saddress|json_ld|raw }},
 		    "logo": {
 		      "@type": "ImageObject",
 		      "url": {{ announcement_logo_asset|json_ld|raw }}

@@ -555,6 +555,7 @@ class Amed
             }
         }
 
+        $matchedUrlConfig = false;
         if (is_array($url_config)) {
             foreach ($url_config as $key => $val) {
                 $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key));
@@ -562,12 +563,73 @@ class Amed
                     if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
                         $val = preg_replace('#^' . $key . '$#', $val, $this->url->link);
                     }
-                    return $this->parseRoute($val);
+                    $matchedUrlConfig = true;
+                    $this->parseRoute($val);
+                    break;
                 }
             }
         }
         unset($url_config);
-        $this->parseRoute($this->url->link);
+        if (!$matchedUrlConfig) {
+            $this->parseRoute($this->url->link);
+        }
+
+        // Enforce strict language prefix (/<lang>/...) via single-hop 301 for bare public routes
+        if (Registry::get('i18n') === true && $isSafeMethod && !$isAjax && PHP_SAPI !== 'cli' && !headers_sent()) {
+            $activeLangs = (array) Registry::get('active_langs');
+            $rawPath0 = isset($this->url->path[0]) ? (string) $this->url->path[0] : '';
+            if ($rawPath0 !== '' && !in_array($rawPath0, $activeLangs, true)) {
+                $rootExemptIndexMethods = [
+                    'sitemapIndex',
+                    'llms',
+                    'llmsFull',
+                    'cron',
+                    'clear_cache',
+                    'legacyRedirect',
+                    'legacyRedirectPublication',
+                ];
+                $publicUserAuthMethods = [
+                    'login',
+                    'logout',
+                    'register',
+                    'activation',
+                    'resend_activation',
+                    'forgot_password',
+                    'password_reset',
+                ];
+
+                $isPublicIndexRoute = (
+                    $this->class === 'index'
+                    && !in_array($this->method, $rootExemptIndexMethods, true)
+                    && substr((string) $this->method, 0, 1) !== '_'
+                    && ($matchedUrlConfig || method_exists('index_mod', (string) $this->method))
+                );
+                $isPublicUserRoute = (
+                    $this->class === 'mod_user'
+                    && in_array($this->method, $publicUserAuthMethods, true)
+                );
+
+                if ($isPublicIndexRoute || $isPublicUserRoute) {
+                    $cleanBareLink = ltrim((string) $this->url->link, '/');
+                    $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
+                    $targetUrl = rtrim((string) $this->site['saddress'], '/') . '/' . $cleanBareLink . $queryString;
+
+                    // Self-redirect guard (mirrors mod_redirect guard at lines 522-537)
+                    $forwardedProtocol = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+                    $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+                        || strtolower(trim(explode(',', $forwardedProtocol)[0])) === 'https';
+                    $currentFullUrl = ($isHttps ? "https" : "http") .
+                        "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
+                    $normalizedTarget = Helper::sitemap_url($targetUrl);
+
+                    if (rtrim(rawurldecode($currentFullUrl), '/') !== rtrim(rawurldecode($normalizedTarget), '/')) {
+                        header("HTTP/1.1 301 Moved Permanently");
+                        header("Location: " . $normalizedTarget);
+                        exit;
+                    }
+                }
+            }
+        }
     }
 
 

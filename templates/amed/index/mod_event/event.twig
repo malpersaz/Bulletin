@@ -83,8 +83,9 @@
       "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_ld|raw }},
       "organizer": {
         "@type": "Organization",
+        "@id": {{ (site.saddress ~ '#organization')|json_ld|raw }},
         "name": {{ site.title|json_ld|raw }},
-        "url": {{ site.address|json_ld|raw }}
+        "url": {{ site.saddress|json_ld|raw }}
       }
     }
     </script>

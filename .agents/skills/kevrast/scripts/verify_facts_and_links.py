@@ -71,10 +71,10 @@ SOFT_404_TITLE_RE = re.compile(
 
 QUERY_ID_PARAMS = ("id", "p", "post", "art", "article", "story", "haber", "news")
 
-# Flat single-segment article permalinks that end in a numeric ID + extension
-# (e.g. internethaber.com/...-foto-galerisi-2467480.htm) are deep content
-# pages, not rubric fronts.
-FLAT_ARTICLE_RE = re.compile(r"\d+\.html?$", re.I)
+# Flat single-segment article permalinks that end in a numeric ID (+ optional
+# outlet letter marker) + extension (e.g. internethaber.com/...-2467480.htm,
+# tigrishaber.com/...-173864h.htm) are deep content pages, not rubric fronts.
+FLAT_ARTICLE_RE = re.compile(r"\d+[a-z]?\.html?$", re.I)
 
 
 def strip_tags(text: str) -> str:
