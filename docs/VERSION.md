@@ -1,4 +1,16 @@
 # Amed Framework — Bulletin CMS Version History
+## v1.0.57 (2026-11-09)
+- **Google Indexing API Reality Documentation, Read-Only Diagnostic Tool & SERP Residual Monitoring (`docs/SERVER.md`, `lib/GoogleIndexingService.class.php`, `tools/google_indexing_diagnose.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/plan/v1.0.57-indexing-api-reality-diagnostics-and-serp-residual-monitoring-plan.md`, `docs/VERSION.md`)**:
+  - **Component 1: Server & Indexing API Reality Documentation (`docs/SERVER.md`)**:
+    - Added `§7. Google Indexing Diagnostics & Indexing API Reality` in `docs/SERVER.md`, documenting with live production evidence that Google's `urlNotifications:publish` endpoint returns HTTP 200 for any URL but only registers `JobPosting` and `BroadcastEvent` pages (`urlNotifications/metadata` returns 404 NOT_FOUND for news articles).
+    - Recorded verified Google Publisher Center status (`publication=CAowv8TNDA`, active under Google's March 2025 automatic publication page generation policy) and updated `/ku/*` historical status notes (`410 Gone` + `noindex, nofollow`).
+  - **Component 2: `GoogleIndexingService` Policy Docblock Annotation (`lib/GoogleIndexingService.class.php`)**:
+    - Extended class-level and `publishNotification()` docblocks in `lib/GoogleIndexingService.class.php` with policy warnings clarifying that HTTP 200 does not indicate Google-side registration for non-`JobPosting`/`BroadcastEvent` content, with zero changes to executable runtime logic.
+  - **Component 3: Read-Only CLI Diagnostic Probe (`tools/google_indexing_diagnose.php`)**:
+    - Created CLI-only, strictly read-only diagnostic script `tools/google_indexing_diagnose.php` that reuses `GoogleIndexingService` OAuth2 JWT token minting to verify `/webmasters/v3/sites` ownership (`sc-domain:amedbulten.com`), inspect all 6 sitemaps (`lastSubmitted`, `lastDownloaded`, `errors`), probe `urlNotifications/metadata` against `data/indexing_state.json`, and output 28-day `searchAnalytics` top queries and pages.
+  - **Component 4: Framework Version Parity**:
+    - Bumped framework version to `1.0.57` in `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`.
+
 ## v1.0.56 (2026-11-09)
 - **LLM Entrypoint Noindex Parity & Legal Page Brand-Title Restoration (`llms.php`, `mod/index/helper/legal.helper.php`, `docs/SERVER.md`, `config/site.config.php`, `config/site.config.example.php`, `docs/plan/v1.0.56-llms-noindex-entrypoint-and-legal-title-parity-plan.md`, `docs/VERSION.md`)**:
   - **Component 1: LLM Public Entrypoint `X-Robots-Tag: noindex, follow` Parity**:

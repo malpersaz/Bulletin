@@ -2,6 +2,12 @@
 /**
  * GoogleIndexingService - Helper to notify Google Search Console of URL updates and deletions
  * Native JWT OpenSSL implementation with zero Google\Client composer dependencies.
+ *
+ * POLICY NOTE (verified 2026-11-09): Google's Indexing API registers
+ * notifications ONLY for JobPosting / BroadcastEvent pages. For all other
+ * URLs publish returns HTTP 200 but the notification is silently discarded
+ * (urlNotifications/metadata => 404). A 200 here does NOT mean delivery.
+ * See docs/SERVER.md §7 and tools/google_indexing_diagnose.php.
  * 
  * Amed Framework
  * @author Antigravity AI
@@ -385,7 +391,13 @@ class GoogleIndexingService
     }
 
     /**
-     * Publish notification to Google Indexing API endpoint
+     * Publish notification to Google Indexing API endpoint.
+     *
+     * POLICY NOTE (verified 2026-11-09): Google's Indexing API registers
+     * notifications ONLY for JobPosting / BroadcastEvent pages. For all other
+     * URLs publish returns HTTP 200 but the notification is silently discarded
+     * (urlNotifications/metadata => 404). A 200 here does NOT mean delivery.
+     * See docs/SERVER.md §7 and tools/google_indexing_diagnose.php.
      */
     private function publishNotification(string $url, string $type): bool
     {

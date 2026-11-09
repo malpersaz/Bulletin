@@ -1,6 +1,6 @@
 # Bulletin CMS Production Server Guide (SERVER.md)
 
-- **Version:** `v1.0.20` (2026-11-03)
+- **Version:** `v1.0.57` (2026-11-09)
 - **Domain:** `amedbulten.com`
 - **Host:** `ssh-w02232db@w02232db.kasserver.com` (ALL-INKL KAS)
 - **Document Root:** `/www/htdocs/w02232db/amedbulten.com/`
@@ -159,7 +159,7 @@ Via SSH (`ssh ssh-w02232db@w02232db.kasserver.com`):
 1. **Database `view_count` Column Deficiency (`mod_page`, `mod_publication`):**
    - Added column `view_count INT(11) NOT NULL DEFAULT 0` and wrapped `_update_view_count()` in `try ... catch` blocks to prevent uncaught PDO exceptions.
 2. **Kurmanji Localization Routing Issue (`https://amedbulten.com/ku/`):**
-   - Set `status = 'y'` for language code `ku` in the `lang` database table, enabling flawless HTTP 200 responses on Kurdish pages.
+   - Initially set `status = 'y'` in v1.0.20; subsequently deactivated (`HTTP 410 Gone` + `X-Robots-Tag: noindex, nofollow`) when the site consolidated onto the `tr` locale.
 3. **Module Alias 404 Remediation (`/news`, `/publication`, `/event`):**
    - Configured route aliases in `config/url.config.php` resolving shortened URLs cleanly.
 4. **Information Disclosure & Unauthenticated Cache Stampede (v1.0.20):**
@@ -169,3 +169,36 @@ Via SSH (`ssh ssh-w02232db@w02232db.kasserver.com`):
 5. **Dotfile Security Shield & AI Index Discovery (`/.well-known/llms.txt`):**
    - The root `.htaccess` multi-layer security shield (`<FilesMatch "^\."> Require all denied`) and host-level Apache policies deliberately deny direct access to dot-prefixed paths like `/.well-known/` (HTTP 403 Forbidden).
    - Canonical AI/LLM ingestion standard on Bulletin CMS operates via `/llms.txt` and `/llms-full.txt` (HTTP 200 with `X-Robots-Tag: noindex, follow`).
+
+---
+
+## 7. Google Indexing Diagnostics & Indexing API Reality
+
+### 7.1 Indexing API Is a Silent No-Op for News Content (verified 2026-11-09)
+- `urlNotifications:publish` returns HTTP 200 for ANY URL, but Google only
+  registers notifications for `JobPosting` / `BroadcastEvent` pages (policy).
+- Evidence: `data/indexing_state.json` recorded successful publishes on
+  2026-11-06/08, while `urlNotifications/metadata` returns 404 NOT_FOUND for
+  the same URL strings — Google never recorded them.
+- Consequence: news indexing relies solely on sitemap submission (verified
+  healthy: submitted & downloaded within ~1.5 s) + WebSub RSS push + organic crawl.
+  1–2 day index latency on a young domain is EXPECTED, not a defect.
+- Google Publisher Center status (verified 2026-11-09): `Amed Bulten`
+  (`publication=CAowv8TNDA`) is registered and active. Under Google's March 2025
+  policy update, Google News automatically generates publication pages without
+  manual RSS/sitemap review submission.
+- Do NOT interpret a 200 from the Indexing API as delivery. Verify receipt
+  only via `urlNotifications/metadata` (tool: §7.2).
+- The pipeline is intentionally kept: `pingSitemaps()` / `pingWebSubHub()`
+  work, and the publish path becomes valid again for future
+  JobPosting/BroadcastEvent content.
+
+### 7.2 Diagnostic Protocol (repeatable)
+- Run locally (tools/ is NOT deployed — see .deployignore):
+  `php tools/google_indexing_diagnose.php`
+- Expected healthy output: webmasters token OK; `/sites` lists
+  `sc-domain:amedbulten.com` with `siteOwner`; 6 sitemaps with
+  `errors=0` and fresh `lastDownloaded`; sitemap `indexed=0` counters are a
+  known GSC API artifact (v1.0.55 §6) — ignore them.
+- Expected for `urlNotifications/metadata` on news URLs: 404 NOT_FOUND
+  (this confirms §7.1, not a fault).
