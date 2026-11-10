@@ -344,6 +344,11 @@ class McpPublicationTools extends McpCrudToolsBase
             throw new McpToolException("Publication record not found.");
         }
 
+        $auditMeta = $this->getRecordAuditMeta('mod_publication', (int) $row['id'], (string) ($row['lang'] ?? 'tr'));
+        $row['lang_status'] = $auditMeta['lang_status'];
+        $row['faq_count'] = $auditMeta['faq_count'];
+        $row['faq_items'] = $auditMeta['faq_items'];
+
         $row['item'] = $row;
         return $row;
     }

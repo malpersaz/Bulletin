@@ -374,15 +374,32 @@ if ($sharedNewsCategoryId === 0) {
     $sharedNewsCategoryId = (int) ($catPayload['id'] ?? 0);
 }
 
-// MCP-1: 145-char summary accepted + HTML sanitization
-$longSummary145 = str_pad('Curator SERP summary within 90-160 chars window for Google snippet parity and meta description synchronization ', 145, 'x');
+// MCP-1: 90-120 char deck summary accepted + HTML sanitization
+$validDeckSummary105 = 'Curator SERP summary within 90-120 chars deck window for Google snippet parity and description sync.';
+$tooLongSummary145 = str_pad('Curator SERP summary exceeding 120 chars deck window for Google snippet parity ', 145, 'x');
+
+// Dedicated negative test: 145 chars must throw McpToolException (90-120 deck standard)
+$resTooLong = runRpc(['jsonrpc' => '2.0', 'id' => 15, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
+    'name' => 'MCP Smoke Too Long Summary',
+    'lang' => $testLang,
+    'category_id' => $sharedNewsCategoryId,
+    'summary' => $tooLongSummary145,
+    'content' => '<p>Valid body content.</p>',
+    'seo' => 'too_long_summary_slug',
+]]], $plaintextKey);
+check('Curator[MCP-1]: >120 char summary rejected by assertSummaryLength',
+    ($resTooLong['result']['isError'] ?? false) === true
+    && str_contains($resTooLong['result']['content'][0]['text'] ?? '', 'between 90 and 120 characters'),
+    json_encode($resTooLong)
+);
+
 $dirtyHtmlInput = '<h1>Main Heading</h1><p sty' . 'le="color:red" on' . 'click="alert(1)">Clean paragraph text.</p><scr' . 'ipt>evil()</scr' . 'ipt>';
 $dummyBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 $resCurator = runRpc(['jsonrpc' => '2.0', 'id' => 16, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
     'name' => 'MCP Smoke Curator Hardening Item',
     'lang' => $testLang,
     'category_id' => $sharedNewsCategoryId,
-    'summary' => $longSummary145,
+    'summary' => $validDeckSummary105,
     'content' => $dirtyHtmlInput,
     'seo' => 'curator_smoke_slug_v1',
     'image' => [
@@ -393,10 +410,10 @@ $resCurator = runRpc(['jsonrpc' => '2.0', 'id' => 16, 'method' => 'tools/call', 
 $curatorCreated = json_decode($resCurator['result']['content'][0]['text'] ?? 'null', true);
 $curatorId = (int) ($curatorCreated['id'] ?? 0);
 $curatorItem = $curatorCreated['item'] ?? [];
-check('Curator[MCP-1]: 145-char summary accepted and auto-synced to description',
+check('Curator[MCP-1]: 90-120 char summary accepted and auto-synced to description',
     ($resCurator['result']['isError'] ?? true) === false
-    && ($curatorItem['summary'] ?? '') === $longSummary145
-    && ($curatorItem['description'] ?? '') === $longSummary145,
+    && ($curatorItem['summary'] ?? '') === $validDeckSummary105
+    && ($curatorItem['description'] ?? '') === $validDeckSummary105,
     json_encode($curatorItem)
 );
 check('Curator[MCP-1]: sanitizeBodyHtml strips inline style/script/onclick and downgrades h1 to h2',
@@ -469,12 +486,12 @@ check('Curator[LangGate]: list_site_settings returns active_languages, default_l
 // Language Parity Gate: assertContentMatchesLang rejects cross-language contamination
 $mismatchedProse = !in_array($testLang, ['ku', 'ckb', 'zza'], true)
     ? [
-        'name' => 'Rojeva Werzîşê ya Amedê: Daxuyaniyên Besnik Hasi û Şampiyoniya Nehir Aytulun',
-        'summary' => 'Li Amedê rojeva werzîşê bi daxuyaniyên teknîk dîrektorê Amedsporê Besnik Hasi û şampiyoniya cîhanê ya Nehir Aytulun derket pêş.',
+        'name' => 'Rojeva Werzîşê ya Amedê: Daxuyaniyên Nû',
+        'summary' => 'Li Amedê rojeva werzîşê bi daxuyaniyên teknîk dîrektorê Amedsporê û şampiyoniya Nehir Aytulun derket pêş.',
         'content' => '<p>Di civîna çapemeniyê ya derbarê maça Samsunsporê de ji bo lîstikvanên nû yên tîmê daxuyanî hatiye dayîn.</p>',
     ]
     : [
-        'name' => 'Diyarbakır Spor Gündemi: Amedspor Hazırlıkları ve Dünya Şampiyonluğu',
+        'name' => 'Diyarbakır Spor Gündemi: Amedspor Hazırlıkları',
         'summary' => 'Diyarbakır temsilcisi Amedspor tarafından yapılan açıklamada yeni karşılaşma öncesinde hazırlıkların tamamlandığı bildirildi.',
         'content' => '<p>Kulüp yönetimi tarafından yapılan değerlendirmede oyuncuların durumu hakkında kapsamlı bilgiler paylaşıldı.</p>',
     ];
@@ -650,7 +667,40 @@ check('Audit[v1.0.13]: mod/mod_mcp/index.php contains zero calls to undefined Da
 );
 
 // =========================================================================
-// 7. Cleanup
+// 7. Environment Identity Verification (v1.0.61 Component A)
+// =========================================================================
+$initRes = runRpc(['jsonrpc' => '2.0', 'id' => 990, 'method' => 'initialize', 'params' => ['protocolVersion' => '2025-03-26']], $plaintextKey);
+check('Environment[v1.0.61]: initialize response includes _meta.environment',
+    isset($initRes['result']['_meta']['environment']['name'])
+    && $initRes['result']['_meta']['environment']['name'] === 'development'
+    && in_array($initRes['result']['_meta']['environment']['site_status'], ['open', 'closed', 'unknown'], true),
+    json_encode($initRes['result']['_meta'] ?? [])
+);
+
+$siteRes = runRpc(['jsonrpc' => '2.0', 'id' => 991, 'method' => 'tools/call', 'params' => ['name' => 'list_site_settings', 'arguments' => ['active_only' => 'y']]], $plaintextKey);
+check('Environment[v1.0.61]: tools/call response includes environment in _meta, structuredContent, and text payload',
+    ($siteRes['result']['_meta']['environment']['name'] ?? '') === 'development'
+    && ($siteRes['result']['structuredContent']['environment']['name'] ?? '') === 'development'
+    && str_contains($siteRes['result']['content'][0]['text'] ?? '', '"environment"'),
+    json_encode([
+        '_meta' => $siteRes['result']['_meta'] ?? null,
+        'structuredContent' => $siteRes['result']['structuredContent'] ?? null,
+    ])
+);
+
+// Verify host switching in-process
+$oldHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$_SERVER['HTTP_HOST'] = 'amedbulten.com';
+$prodRes = runRpc(['jsonrpc' => '2.0', 'id' => 992, 'method' => 'initialize', 'params' => ['protocolVersion' => '2025-03-26']], $plaintextKey);
+$_SERVER['HTTP_HOST'] = $oldHost;
+check('Environment[v1.0.61]: amedbulten.com host resolves dynamically to production environment',
+    ($prodRes['result']['_meta']['environment']['name'] ?? '') === 'production'
+    && ($prodRes['result']['_meta']['environment']['endpoint_host'] ?? '') === 'amedbulten.com',
+    json_encode($prodRes['result']['_meta'] ?? [])
+);
+
+// =========================================================================
+// 8. Cleanup
 // =========================================================================
 $db->query("DELETE FROM mod_mcp_api_key WHERE id = " . $keyId);
 check('Cleanup: smoke test key deleted', true);

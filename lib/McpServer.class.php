@@ -78,6 +78,87 @@ class McpServer
         return rtrim((string) ($site['address'] ?? ''), '/');
     }
 
+    private static ?array $resolvedEnvironmentCache = null;
+
+    /**
+     * Resolves runtime environment identity.
+     * Precedence:
+     * 1. Environment variable AF_MCP_ENVIRONMENT
+     * 2. Local untracked configuration $site['mcp_environment']
+     * 3. Host classification via HTTP_HOST / site address
+     */
+    public static function resolveEnvironment(): array
+    {
+        $envVar = getenv('AF_MCP_ENVIRONMENT');
+        if (is_string($envVar) && trim($envVar) !== '') {
+            $envName = trim($envVar);
+        } else {
+            $site = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+            $configured = trim((string) ($site['mcp_environment'] ?? ''));
+            if ($configured !== '' && $configured !== 'auto') {
+                $envName = $configured;
+            } else {
+                $httpHost = $_SERVER['HTTP_HOST'] ?? '';
+                $rawHost = strtolower((string) preg_replace('/:\d+$/', '', trim((string) $httpHost)));
+                if ($rawHost === '') {
+                    $rawHost = strtolower((string) parse_url((string) ($site['address'] ?? ''), PHP_URL_HOST));
+                }
+
+                if ($rawHost === 'amedbulten.com' || str_ends_with($rawHost, '.amedbulten.com')) {
+                    $envName = 'production';
+                } elseif (
+                    $rawHost === 'localhost' ||
+                    $rawHost === '127.0.0.1' ||
+                    $rawHost === '::1' ||
+                    $rawHost === '[::1]' ||
+                    $rawHost === 'bulletin_app' ||
+                    str_ends_with($rawHost, '.local') ||
+                    str_ends_with($rawHost, '.test') ||
+                    str_ends_with($rawHost, '.pinggy.link')
+                ) {
+                    $envName = 'development';
+                } else {
+                    $envName = $rawHost !== '' ? 'staging' : 'unknown';
+                }
+            }
+        }
+
+        $endpointHost = strtolower((string) preg_replace('/:\d+$/', '', trim((string) ($_SERVER['HTTP_HOST'] ?? ''))));
+        if ($endpointHost === '') {
+            $site = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+            $endpointHost = strtolower((string) parse_url((string) ($site['address'] ?? ''), PHP_URL_HOST));
+        }
+
+        $siteStatus = 'unknown';
+        try {
+            if (class_exists('Load')) {
+                /** @var Database $db */
+                $db = Load::lib('Database');
+                if ($db && method_exists($db, 'query')) {
+                    $row = $db->query("SELECT site_status FROM mod_settings LIMIT 1")->fetch();
+                    if (is_array($row) && isset($row['site_status'])) {
+                        $rawStatus = strtolower(trim((string) $row['site_status']));
+                        if ($rawStatus === 'closed' || $rawStatus === 'offline') {
+                            $siteStatus = 'closed';
+                        } elseif ($rawStatus === 'open' || $rawStatus === 'online') {
+                            $siteStatus = 'open';
+                        } else {
+                            $siteStatus = $rawStatus !== '' ? $rawStatus : 'unknown';
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable) {
+            $siteStatus = 'unknown';
+        }
+
+        return [
+            'name' => $envName,
+            'endpoint_host' => $endpointHost,
+            'site_status' => $siteStatus,
+        ];
+    }
+
     public const TOOLSET_GROUPS = [
         'content' => ['news', 'page', 'publication', 'announcement', 'headline'],
         'media' => ['gallery', 'video', 'attachment', 'document', 'imagecategories'],
@@ -377,12 +458,18 @@ class McpServer
             return $this->handleToolsCall(['name' => $name, 'arguments' => $args]);
         } catch (McpToolException $e) {
             return [
+                '_meta' => [
+                    'environment' => self::resolveEnvironment(),
+                ],
                 'content' => [['type' => 'text', 'text' => $e->getMessage()]],
                 'isError' => true,
             ];
         } catch (\Throwable $e) {
             error_log('MCP tool execution error (' . $name . '): ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return [
+                '_meta' => [
+                    'environment' => self::resolveEnvironment(),
+                ],
                 'content' => [['type' => 'text', 'text' => 'An internal error occurred while executing tool \'' . htmlspecialchars($name, ENT_QUOTES) . '\'.']],
                 'isError' => true,
             ];
@@ -641,13 +728,14 @@ class McpServer
         if (!headers_sent()) {
             header('Access-Control-Allow-Methods: POST, OPTIONS');
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, Mcp-Session-Id, MCP-Protocol-Version, Last-Event-ID, X-MCP-Expected-Server, X-MCP-Expected-Resource, Mcp-Method, Mcp-Name');
-            header('Access-Control-Expose-Headers: Mcp-Session-Id, MCP-Protocol-Version, X-MCP-Server-Name, X-MCP-Resource');
+            header('Access-Control-Expose-Headers: Mcp-Session-Id, MCP-Protocol-Version, X-MCP-Server-Name, X-MCP-Resource, X-MCP-Environment');
         }
         return true;
     }
 
     protected function sendJson($payload, int $statusCode): void
     {
+        $env = self::resolveEnvironment();
         if (!headers_sent()) {
             http_response_code($statusCode);
             header('Content-Type: application/json; charset=utf-8');
@@ -655,17 +743,20 @@ class McpServer
             header('MCP-Protocol-Version: ' . $this->negotiatedProtocolVersion);
             header('X-MCP-Server-Name: ' . self::resolveServerName());
             header('X-MCP-Resource: ' . self::resolveCanonicalResource());
+            header('X-MCP-Environment: ' . $env['name']);
         }
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     protected function sendEmptyStatus(int $statusCode): void
     {
+        $env = self::resolveEnvironment();
         if (!headers_sent()) {
             http_response_code($statusCode);
             header('MCP-Protocol-Version: ' . $this->negotiatedProtocolVersion);
             header('X-MCP-Server-Name: ' . self::resolveServerName());
             header('X-MCP-Resource: ' . self::resolveCanonicalResource());
+            header('X-MCP-Environment: ' . $env['name']);
         }
     }
 
@@ -1102,6 +1193,9 @@ class McpServer
         } catch (McpToolException $e) {
             if ($method === 'tools/call') {
                 $result = [
+                    '_meta' => [
+                        'environment' => self::resolveEnvironment(),
+                    ],
                     'content' => [['type' => 'text', 'text' => $e->getMessage()]],
                     'isError' => true,
                 ];
@@ -1170,6 +1264,9 @@ class McpServer
         $this->negotiatedProtocolVersion = $protocolVersion;
 
         return [
+            '_meta' => [
+                'environment' => self::resolveEnvironment(),
+            ],
             'protocolVersion' => $protocolVersion,
             'capabilities' => [
                 'tools' => ['listChanged' => false],
@@ -1300,7 +1397,15 @@ class McpServer
             $domainTools = $this->getToolInstance($domain);
             $payload = $domainTools->{$tool['handler']}($arguments);
 
+            $envMeta = self::resolveEnvironment();
+            if (is_array($payload) && !array_key_exists('environment', $payload)) {
+                $payload['environment'] = $envMeta;
+            }
+
             return [
+                '_meta' => [
+                    'environment' => $envMeta,
+                ],
                 'content' => [[
                     'type' => 'text',
                     'text' => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),

@@ -1,0 +1,44 @@
+{
+  "topic": "Diyarbakır Surları ve Hevsel Bahçeleri Tarihi ve Koruma Rehberi",
+  "date": "2026-05-15",
+  "type": "evergreen",
+  "evergreen_rationale": "UNESCO Dünya Kültür Mirası listesinde yer alan Diyarbakır Surları ve Hevsel Bahçeleri tarihi koruma süreçlerini inceleyen kapsamlı kültürel rehber.",
+  "summary_of_event": "Diyarbakır Surları ve Hevsel Bahçeleri'nin tarihsel mimarisi ve koruma süreçleri.",
+  "key_entities": [
+    "Diyarbakır Surları",
+    "Hevsel Bahçeleri",
+    "UNESCO"
+  ],
+  "timeline": [],
+  "verified_facts": {
+    "numbers_and_metrics": [
+      "5800"
+    ],
+    "dates_and_times": [
+      "2015"
+    ],
+    "official_statements_and_quotes": []
+  },
+  "sources": [
+    {
+      "url": "https://www.diyarbakir.bel.tr/sur-ve-hevsel-koruma-plani-rehberi-8921.html",
+      "role": "primary",
+      "outlet": "Diyarbakır Büyükşehir Belediyesi",
+      "pub_date": "2026-05-15",
+      "claims": [
+        "Diyarbakır Surları yaklaşık 5 bin 800 metre uzunluğundadır."
+      ]
+    },
+    {
+      "url": "https://whc.unesco.org/en/list/1488/documents",
+      "role": "supplementary",
+      "outlet": "UNESCO World Heritage Centre",
+      "pub_date": "2015-07-04",
+      "claims": [
+        "Diyarbakır Fortress and Hevsel Gardens Cultural Landscape inscribed on World Heritage List."
+      ]
+    }
+  ],
+  "contradictions": [],
+  "status": "ready_for_kevrast_stage_1"
+}

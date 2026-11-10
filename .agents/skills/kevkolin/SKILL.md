@@ -11,9 +11,17 @@ Keep this skill as a short ordered execution checklist. Follow multi-source inve
 
 ## Sequence
 
-### 1. Topic Ingestion & Scope Definition
-- Identify the news event from user instruction or autonomous breaking news scan.
-- Determine the scope: Diyarbakır (Amed) local/municipal/civic coverage, regional coverage, international diplomacy, technology, conflicts, or economics.
+### 1. Topic Ingestion & Content Classification
+- Identify the news or cultural topic from user instruction or autonomous scan.
+- Determine content classification:
+  - `type: "news"` (default): breaking or daily reporting requiring Europe/Istanbul same-day freshness.
+  - `type: "evergreen"`: historical, cultural, civic, or analytical guides without a breaking-news peg. Requires `evergreen_rationale` (minimum 20 characters).
+- Initialize or scaffold the dossier template:
+  ```bash
+  python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --init-dossier /tmp/dossier_<slug>.json
+  # or generate template from source catalog:
+  python3 .agents/skills/kevkolin/scripts/source_catalog.py --new-dossier "<Topic Title>" > /tmp/dossier_<slug>.json
+  ```
 
 ### 2. Multi-Source Investigation against Authoritative Registry
 Search and cross-reference verified outlets using `.agents/skills/kevkolin/scripts/source_catalog.py`:
@@ -63,7 +71,7 @@ Search and cross-reference verified outlets using `.agents/skills/kevkolin/scrip
   - Never select one arbitrary figure over another.
 
 ### 4. Compile Structured Research Dossier
-Compile the verified findings into a standardized Research Dossier containing:
+Compile the verified findings into a standardized Research Dossier conforming to `dossier.schema.json`:
 1. **Event Overview**: What happened, who was involved, when, and where.
 2. **Verified Key Facts**:
    - Exact numbers, quantities, metrics, and units.
@@ -79,23 +87,23 @@ Compile the verified findings into a standardized Research Dossier containing:
    - Dossier schema:
      ```json
      {
-       "event": "...",
+       "topic": "...",
+       "date": "2026-11-10",
+       "type": "news",
        "sources": [
-         {"url": "https://...", "outlet": "BBC", "role": "primary", "claims": ["..."]},
+         {"url": "https://...", "outlet": "BBC", "role": "primary", "pub_date": "2026-11-10", "claims": ["..."]},
          {"url": "https://...", "outlet": "Gallup", "role": "supplementary", "claims": ["..."]}
-       ]
+       ],
+       "contradictions": []
      }
      ```
-4. **Contradictions & Nuances**:
-   - Explicitly listed discrepancies between sources.
-5. **Visual Assets & Media Identification**:
-   - Inspect verified sources for authentic editorial photographs or graphics.
-   - If present: Record original image URL and source outlet attribution credit (`$Source`).
-   - If absent: Explicitly note `Image: None (requires downstream representative generation)`.
+4. **Offline Schema Validation**:
+   ```bash
+   python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --validate-dossier /tmp/dossier_<slug>.json
+   ```
 
 ### 5. Hand-off to Kevrast (Stage 1 Pre-Verification)
 - Run `kevrast` Stage 1 against the persisted dossier JSON (liveness, deep-link precision, and claim anchoring for every dossier URL):
   ```bash
   python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier /tmp/dossier_<slug>.json
   ```
-- Once `kevrast` Stage 1 passes, hand the verified dossier file path to `kevanger`. `kevanger` may only copy URLs from this file.

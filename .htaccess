@@ -24,6 +24,9 @@ RewriteRule ^\.well-known/llms\.txt$ llms.php [L]
 RewriteRule ^([a-z]{2,3})/llms\.txt$ llms.php?lang=$1 [L]
 RewriteRule ^([a-z]{2,3})/llms-full\.txt$ llms.php?lang=$1&mode=full [L]
 
+# OAuth 2.1 & RFC 8414 / RFC 9728 Discovery Rewrites
+RewriteRule ^\.well-known/oauth-(authorization-server|protected-resource)$ index.php [L]
+
 # Your existing rewrite rules
 RewriteRule ^cache/js/(.*).js$ js.php?cachefile=$1 [L]
 RewriteRule ^cache/css/(.*).css$ css.php?cachefile=$1 [L]

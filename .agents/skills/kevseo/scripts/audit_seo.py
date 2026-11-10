@@ -150,8 +150,9 @@ class KevseoAuditor:
         critical_count = sum(1 for i in arch_issues if i.get("severity") == "CRITICAL")
         has_failed_length = (length_res.get("status") == "FAILED")
         has_failed_deck = (not meta_res.get("deck_valid") if summary else False)
+        has_failed_headline = (meta_res.get("headline_status") == "FAILED" if headline else False)
 
-        passed = (critical_count == 0 and not has_failed_length and not has_failed_deck)
+        passed = (critical_count == 0 and not has_failed_length and not has_failed_deck and not has_failed_headline)
 
         return {
             "status": "PASSED" if passed else "ATTENTION NEEDED",

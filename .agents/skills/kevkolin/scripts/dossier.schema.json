@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amedbulten.com/schemas/dossier.schema.json",
+  "title": "Amed Bulletin Research Dossier",
+  "description": "Schema definition for investigative research and fact dossiers used across Kevkolin, Kevtemen, Kevrast, and Kevanger editorial pipeline.",
+  "type": "object",
+  "required": ["sources"],
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "Topic headline or subject under investigation."
+    },
+    "event": {
+      "type": "string",
+      "description": "Alias for topic or news event name."
+    },
+    "slug": {
+      "type": "string",
+      "description": "Recommended article SEO slug."
+    },
+    "created": {
+      "type": "string",
+      "description": "Creation timestamp or date (YYYY-MM-DD or ISO 8601)."
+    },
+    "date": {
+      "type": "string",
+      "description": "Creation date alias."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["news", "evergreen"],
+      "default": "news",
+      "description": "Content-type classification: 'news' enforces Europe/Istanbul same-day freshness; 'evergreen' bypasses same-day gate while delegating link verification."
+    },
+    "evergreen_rationale": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Mandatory editorial rationale when type is evergreen (minimum 20 characters)."
+    },
+    "contradictions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Recorded cross-source variances or contradictions."
+    },
+    "contradictions_or_variances": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Alias for contradictions."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of primary, supplementary, or historical sources.",
+      "items": {
+        "type": "object",
+        "required": ["url", "role"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://[^/\\s]+/.+"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["primary", "supplementary", "historical"]
+          },
+          "outlet": {
+            "type": "string"
+          },
+          "pub_date": {
+            "type": "string"
+          },
+          "claims": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

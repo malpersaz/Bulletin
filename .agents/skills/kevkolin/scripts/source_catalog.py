@@ -130,6 +130,7 @@ def create_dossier_template(topic: str, date: str) -> Dict[str, Any]:
     return {
         "topic": topic,
         "date": date,
+        "type": "news",
         "summary_of_event": "",
         "key_entities": [],
         "timeline": [],
@@ -138,8 +139,16 @@ def create_dossier_template(topic: str, date: str) -> Dict[str, Any]:
             "dates_and_times": [],
             "official_statements_and_quotes": []
         },
-        "source_evidence": [],
-        "contradictions_or_variances": [],
+        "sources": [
+            {
+                "url": "https://example.com/REPLACE_WITH_PRIMARY_URL",
+                "role": "primary",
+                "outlet": "",
+                "pub_date": date or "",
+                "claims": []
+            }
+        ],
+        "contradictions": [],
         "status": "ready_for_kevrast_stage_1"
     }
 

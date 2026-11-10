@@ -52,12 +52,14 @@ register_shutdown_function(static function () use ($reqId, $isNotification, $isL
 
     $serverName = class_exists('McpServer') ? McpServer::resolveServerName() : ($site['mcp_server_name'] ?? 'amed-mcp');
     $resource = class_exists('McpServer') ? McpServer::resolveCanonicalResource() : rtrim((string) ($site['address'] ?? ''), '/');
+    $envName = class_exists('McpServer') ? (McpServer::resolveEnvironment()['name'] ?? 'unknown') : 'unknown';
 
     if ($buffer === '') {
         // Notification response (HTTP 202, empty body): ensure identity headers are present
         if (!headers_sent()) {
             header('X-MCP-Server-Name: ' . $serverName);
             header('X-MCP-Resource: ' . $resource);
+            header('X-MCP-Environment: ' . $envName);
         }
         return;
     }
@@ -73,6 +75,7 @@ register_shutdown_function(static function () use ($reqId, $isNotification, $isL
             http_response_code(202);
             header('X-MCP-Server-Name: ' . $serverName);
             header('X-MCP-Resource: ' . $resource);
+            header('X-MCP-Environment: ' . $envName);
         }
         return;
     }
@@ -84,6 +87,7 @@ register_shutdown_function(static function () use ($reqId, $isNotification, $isL
         header('Cache-Control: no-store');
         header('X-MCP-Server-Name: ' . $serverName);
         header('X-MCP-Resource: ' . $resource);
+        header('X-MCP-Environment: ' . $envName);
     }
     $errorPayload = [
         'jsonrpc' => '2.0',
@@ -109,12 +113,14 @@ try {
 
     $serverName = class_exists('McpServer') ? McpServer::resolveServerName() : ($site['mcp_server_name'] ?? 'amed-mcp');
     $resource = class_exists('McpServer') ? McpServer::resolveCanonicalResource() : rtrim((string) ($site['address'] ?? ''), '/');
+    $envName = class_exists('McpServer') ? (McpServer::resolveEnvironment()['name'] ?? 'unknown') : 'unknown';
 
     if ($isNotification) {
         if (!headers_sent()) {
             http_response_code(202);
             header('X-MCP-Server-Name: ' . $serverName);
             header('X-MCP-Resource: ' . $resource);
+            header('X-MCP-Environment: ' . $envName);
         }
         return;
     }
@@ -125,6 +131,7 @@ try {
         header('Cache-Control: no-store');
         header('X-MCP-Server-Name: ' . $serverName);
         header('X-MCP-Resource: ' . $resource);
+        header('X-MCP-Environment: ' . $envName);
     }
     $errorPayload = [
         'jsonrpc' => '2.0',

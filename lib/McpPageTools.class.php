@@ -468,7 +468,14 @@ class McpPageTools extends McpCrudToolsBase
             throw new McpToolException("Page record not found.");
         }
 
-        return ['item' => $row];
+        $auditMeta = $this->getRecordAuditMeta('mod_page', (int) $row['id'], (string) ($row['lang'] ?? 'tr'));
+
+        return [
+            'item' => $row,
+            'lang_status' => $auditMeta['lang_status'],
+            'faq_count' => $auditMeta['faq_count'],
+            'faq_items' => $auditMeta['faq_items'],
+        ];
     }
 
     /**

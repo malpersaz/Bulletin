@@ -412,7 +412,7 @@ abstract class McpCrudToolsBase
     /**
      * Sanitizes rich HTML body content:
      * - Applies Helper::clear_html()
-     * - Strips inline style="..." attributes and <style>/<script> tags (AGENTS.md Rule 2)
+     * - Strips inline style="..." attributes and <style>/<script> tags (AGENTS.md Rule 1)
      * - Downgrades stray <h1> tags in body content to <h2> to preserve single-H1 page hierarchy
      */
     protected function sanitizeBodyHtml(string $html): string
@@ -770,5 +770,54 @@ abstract class McpCrudToolsBase
             $sub = mb_substr($sub, 0, $lastSpace);
         }
         return rtrim($sub, " \t\n\r\0\x0B.,:;!?") . '...';
+    }
+
+    /**
+     * Resolves audit metadata (lang_status, faq_count, faq_items) for a given record.
+     * Enriches MCP get_* responses so environment-agnostic audit tooling receives identical
+     * data whether checking local DB or MCP-bridge-sourced records.
+     */
+    protected function getRecordAuditMeta(string $modName, int $recordId, string $lang): array
+    {
+        $langStatus = 'n';
+        $faqCount = 0;
+        $faqItems = [];
+
+        try {
+            if (class_exists('Load')) {
+                /** @var Database $db */
+                $db = Load::lib('Database');
+                if ($db && method_exists($db, 'query')) {
+                    $safeLang = addslashes($lang);
+                    $langRow = $db->query("SELECT status FROM lang WHERE seo = '{$safeLang}' LIMIT 1")->fetch();
+                    if (is_array($langRow) && isset($langRow['status'])) {
+                        $langStatus = (string) $langRow['status'];
+                    }
+
+                    $safeMod = addslashes($modName);
+                    $faqRes = $db->query("SELECT id, question, answer FROM mod_faq WHERE mod_name = '{$safeMod}' AND vid = {$recordId} AND lang = '{$safeLang}' AND status = 'y'");
+                    if ($faqRes && method_exists($faqRes, 'fetchAll')) {
+                        $rows = $faqRes->fetchAll();
+                        if (is_array($rows)) {
+                            $faqItems = $rows;
+                            $faqCount = count($rows);
+                        }
+                    } elseif ($faqRes && method_exists($faqRes, 'fetch')) {
+                        while ($r = $faqRes->fetch()) {
+                            $faqItems[] = $r;
+                        }
+                        $faqCount = count($faqItems);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Non-blocking audit metadata enrichment
+        }
+
+        return [
+            'lang_status' => $langStatus,
+            'faq_count' => $faqCount,
+            'faq_items' => $faqItems,
+        ];
     }
 }

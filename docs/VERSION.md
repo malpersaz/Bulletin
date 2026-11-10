@@ -1,9 +1,45 @@
 # Amed Framework — Bulletin CMS Version History
 
-## v1.0.61 (Planned)
+## v1.0.61 (2026-11-10)
 - **Editorial Pipeline Tooling Hardening: Environment Identity, Environment-Agnostic Rubric, Dossier Contracts & Draft-Time Diagnostics (`docs/plan/v1.0.61-editorial-pipeline-tooling-hardening-plan.md`)**:
-  - Planned 7-component hardening package (A–G) from the 2026-11-10 kevanger production run retrospective: MCP response environment identity (`lib/McpCrudToolsBase.class.php`, `tasks/mcp_smoke.php`), environment-agnostic 100-point rubric (`tools/audit_content_seo.py --record-json`), dossier JSON schema + `--init-dossier` template (kevkolin/kevrast), content-type-aware freshness gate `news`/`evergreen` (kevtemen/kevkolin/kevanger skills), single-command image intake (`process_news_image.py --from-article`), executable pre-flight + `verify_news_pipeline.sh` verification chain (`tools/mcp_health_check.py`), and `kevrast --explain` paragraph-level draft diagnostics.
-  - Explicitly out of scope: conversational language protocol clarification (dangling `AGENTS.md` Rule 8 reference), local↔production DB synchronization, direct-to-production DB audit access, hosted CI.
+  - **Component A: MCP Response Environment Identity & Security Headers (`lib/McpServer.class.php`, `mcp.php`, `tasks/mcp_smoke.php`)**:
+    - Implemented `McpServer::resolveEnvironment()` resolving environment metadata (`name: "development"|"production"`, `domain`, `is_production`, `site_status`) with deterministic precedence: `AF_MCP_ENVIRONMENT` env var -> `$site['mcp_environment']` in `site.config.local.php` -> dynamic `$_SERVER['HTTP_HOST']`.
+    - Injected `_meta.environment` across `initialize`, `server/discover`, and `tools/call` JSON-RPC responses (both success and error envelopes).
+    - Enriched `tools/call` result payloads with `$payload['environment']` for direct client agent inspection.
+    - Emitted `X-MCP-Environment` response header across `sendCorsHeaders()` (plus `Access-Control-Expose-Headers: X-MCP-Server-Name, X-MCP-Resource, X-MCP-Environment`), `sendJson()`, `sendEmptyStatus()`, and `mcp.php` shutdown/exception handlers.
+    - Added 6 environment tests in `tasks/mcp_smoke.php` (totaling 67 passing smoke tests) verifying environment resolution, payload enrichment, and in-process host switching.
+  - **Component B: Environment-Agnostic 100-Point Audit Rubric & `--record-json` (`lib/McpCrudToolsBase.class.php`, `lib/Mcp{News,Publication,Page,Announcement}Tools.class.php`, `tools/audit_content_seo.py`)**:
+    - Added `McpCrudToolsBase::getRecordAuditMeta()` to return `lang_status`, `faq_count`, and `faq_items` for audit consumers without bypassing the bridge.
+    - Enriched `getNews()`, `getPublication()`, `getPage()`, and `getAnnouncement()` return payloads with audit metadata.
+    - Added `--record-json <path>` 6-shape JSON envelope unwrapper (`load_record_from_json()`) in `tools/audit_content_seo.py`, enabling complete offline and cross-environment auditing of MCP-staged records without local database dependencies or credentials.
+    - Introduced `--profile {editorial,curator}`: editorial profile accepts daily news articles (`>= 1200` chars, 3 `<h2>` headings, photo attribution, and `>= 2` authoritative source links) scoring `>= 85/100 (PASSED)`. Preserved 100% backward compatibility for curator profile on local records (`#88` scored `58/100`).
+  - **Component C: Unified Dossier JSON Schema, `--init-dossier` & `--validate-dossier` (`.agents/skills/kevkolin/scripts/dossier.schema.json`, `.agents/skills/kevkolin/scripts/source_catalog.py`, `.agents/skills/kevrast/scripts/verify_facts_and_links.py`, `tests/fixtures/editorial/`)**:
+    - Authored canonical JSON Schema (`dossier.schema.json`) unifying research schemas across `kevkolin`, `kevrast`, and `kevtemen`.
+    - Updated `source_catalog.py` to emit standard `sources` array with role tags (`primary`, `supplementary`, `historical`) instead of legacy `source_evidence`.
+    - Added `--init-dossier <path>` and `--validate-dossier <path>` in `verify_facts_and_links.py`.
+    - Fixed empty-claims URL-digit bug in `verify_facts_and_links.py:376` (passing `None` instead of `url` when claims list is empty, preventing URL numbers from triggering false R3 digit mismatches).
+    - Committed reproducible test fixtures under `tests/fixtures/editorial/` (`sample_news_dossier.json`, `sample_evergreen_dossier.json`, `sample_draft.html`).
+  - **Component D: Content-Type-Aware Freshness Gate (`news` / `evergreen`) & Anti-Laundering (`.agents/skills/kevtemen/scripts/check_freshness.py`, `.agents/skills/{kevtemen,kevkolin,kevanger}/SKILL.md`)**:
+    - Supported standalone `--dossier <path>` intake mode and positional URL dossier mapping in `check_freshness.py`.
+    - Added content-type handling: `type: "news"` strictly enforces same-day freshness (Europe/Istanbul); `type: "evergreen"` bypasses same-day gate with `PASSED (EVERGREEN)` while delegating liveness to `kevrast` Stage 1, guarded by anti-laundering checks (`evergreen_rationale >= 20` chars, all draft links in dossier, zero breaking-news temporal markers).
+    - Added `--no-network` mode for offline dates verification via dossier metadata.
+    - Standardized all CLI help, exceptions, and status output strings to 100% English.
+    - Updated `SKILL.md` files for `kevtemen`, `kevkolin`, and `kevanger`.
+  - **Component E: Single-Command De-Branded Image Intake (`.agents/skills/kevanger/scripts/process_news_image.py`)**:
+    - Implemented `--from-article <url>` with modern DOM candidate extraction (HTMLParser for `<article>` lead `<picture><source srcset>`, `<img srcset>`, JSON-LD, and `og:image`).
+    - Added unbranded hero ranking prioritizing clean 1536w WebP variants (`cpsprodpb`) over watermarked `1024x576` `branded_news` `og:image` social cards.
+    - Implemented SSRF protection resolving public IPs on every hop and redirect, verified TLS, Pillow EXIF orientation correction, 16:9 center-cropping, and quality stepping ensuring WebP output `<= 100 KB`.
+    - Enforced mandatory attribution (`--source <name>` or `--representative`), exit code 0 warning contract for upscaled candidates, and generated `mcp_image_payload` feeding directly into MCP `create_news`.
+  - **Component F: Executable Pre-Flight & 4-Stage Editorial Verification Suite (`tools/mcp_health_check.py`, `.agents/skills/kevseo/scripts/audit_seo.py`, `.htaccess`, `tools/verify_news_pipeline.sh`)**:
+    - Hardened `tools/mcp_health_check.py`: bridge auto-discovery from `.gemini/settings.json`, single bridge handling, synchronized stdio bridge scripts, aligned `create_news` image contract with `v1.0.58` server schema, redacted API key string output, scoped Stage 7 remote dotfile checks, and added `--preflight` / `--json` mode.
+    - Added `.well-known/oauth-...` rewrite rule in root `.htaccess`.
+    - Fixed `audit_seo.py` lines 150-155 so invalid headline lengths (`< 40` or `> 70` chars) correctly fail with exit 1.
+    - Created single executable bash runner `tools/verify_news_pipeline.sh` orchestrating all 4 editorial stages (`kevtemen` -> `kevseo` -> `kevrast` -> `audit_content_seo`).
+  - **Component G: `kevrast --explain` Draft-Time Diagnostics (`.agents/skills/kevrast/scripts/verify_facts_and_links.py`)**:
+    - Added in-memory URL page cache (`_page_cache`) inside `KevrastAuditor` ensuring `<= 1` HTTP request per unique URL across draft audit and explain diagnostics.
+    - Implemented `--explain` diagnostic analysis across all paragraphs `[P1]..[Pn]` identifying unlinked attribution phrases, undeclared dossier links, link health failures, claim anchoring number/entity mismatches, and multi-link collisions with actionable English remediation.
+    - Standardized all CLI strings, error notes, and reports in `verify_facts_and_links.py` to 100% English.
+  - **Framework Version Parity**: Synchronized release version baseline `1.0.61` across `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`.
 
 ## v1.0.60.4 (2026-11-10)
 - **Image Upload Directory Provisioning, Multi-Module Upload Error Localization, Phone-First Admin Wizard Resilience & Completed Plan Cleanup (`lib/File.class.php`, `mod/image/index.php`, `lib/BaseModuleController.class.php`, `mod/*/lang/*.php`, `templates/admin/`, `lib/GoogleIndexingService.class.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, `docs/plan/`)**:

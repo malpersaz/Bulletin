@@ -1,0 +1,34 @@
+{
+  "topic": "Diyarbakır'da Tarımsal Sulama Oranı Yüzde 42 Seviyesine Ulaştı",
+  "date": "2026-11-10",
+  "type": "news",
+  "summary_of_event": "Diyarbakır'da modern sulama yatırımları ile sulama oranı yüzde 42 seviyesine ulaştı.",
+  "key_entities": [
+    "Diyarbakır",
+    "Tigris Haber"
+  ],
+  "timeline": [],
+  "verified_facts": {
+    "numbers_and_metrics": [
+      "yüzde 42",
+      "yüzde 25"
+    ],
+    "dates_and_times": [
+      "2026-11-10"
+    ],
+    "official_statements_and_quotes": []
+  },
+  "sources": [
+    {
+      "url": "https://www.tigrishaber.com/diyarbakir-tarim-raporu-173864h.htm",
+      "role": "primary",
+      "outlet": "Tigris Haber",
+      "pub_date": "2026-11-10",
+      "claims": [
+        "Diyarbakır genelinde tarımsal sulama oranı yüzde 42 seviyesine ulaştı."
+      ]
+    }
+  ],
+  "contradictions": [],
+  "status": "ready_for_kevrast_stage_1"
+}
