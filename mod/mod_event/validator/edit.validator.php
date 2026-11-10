@@ -216,6 +216,34 @@ class edit_validator
             }
         }
 
+        if (Req::Post_Safe('is_official_holiday') !== null && Req::Post_Safe('is_official_holiday') !== '') {
+            $this->valid->add(
+                [
+                    'name' => 'is_official_holiday',
+                    'func' => 'array',
+                    'arg' => ['y', 'n'],
+                    'message' => sprintf($this->lang['mod_event']['validator']['inarray'], $this->lang['mod_event']['admin']['columns']['is_official_holiday'], 'y,n')
+                ]
+            );
+            if ($this->_check() === true) {
+                return true;
+            }
+        }
+
+        if (Req::Post_Safe('is_recurring') !== null && Req::Post_Safe('is_recurring') !== '') {
+            $this->valid->add(
+                [
+                    'name' => 'is_recurring',
+                    'func' => 'array',
+                    'arg' => ['y', 'n'],
+                    'message' => sprintf($this->lang['mod_event']['validator']['inarray'], $this->lang['mod_event']['admin']['columns']['is_recurring'], 'y,n')
+                ]
+            );
+            if ($this->_check() === true) {
+                return true;
+            }
+        }
+
         // Validate active language
         $requestedLang = (string) Req::Post_Safe('lang');
         if (!$this->validateLanguage($requestedLang, 'mod_event')) {

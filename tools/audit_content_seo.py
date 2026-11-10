@@ -103,7 +103,12 @@ def fetch_record_via_php(module: str, record_id: Optional[int], slug: Optional[s
                 if isinstance(data, dict) and "item" in data:
                     if data.get("item"):
                         return data
-                    raise RuntimeError(f"Record not found in {module} (query args: id={record_id}, slug={slug}, lang={lang})")
+                    raise RuntimeError(
+                        f"Record not found in {module} on the LOCAL docker dev DB 'bulletin' "
+                        f"(query args: id={record_id}, slug={slug}, lang={lang}). Hint: the mounted "
+                        "amed-bulletin MCP bridge writes to PRODUCTION amedbulten.com; verify "
+                        "MCP-staged records via the bridge (get_news by id) instead of this local audit."
+                    )
             else:
                 last_err = proc.stderr.strip() or proc.stdout.strip()
         except RuntimeError:

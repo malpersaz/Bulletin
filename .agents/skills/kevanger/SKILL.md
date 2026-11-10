@@ -17,7 +17,7 @@ In this repository (`amed-bulletin`), `kevanger` drafts news articles exclusivel
 ## Sequence
 
 ### 1. Pre-Flight Verification of MCP Connectivity & Active Language Gate
-- Verify that the local `amed-bulletin` (`amed-bulletin-mcp` via `http://localhost:8080/mcp.php`) MCP bridge is functional and authenticated. Never call sibling servers (e.g. `amed-rojname` or `amidakurd`).
+- Verify that the `amed-bulletin` MCP server is functional and authenticated. **Environment truth (verified 2026-11-10): the mounted `amed-bulletin` MCP bridge (`~/.gemini/antigravity-cli/bin/amed_bulletin_mcp.py`) proxies to PRODUCTION `https://amedbulten.com/mcp.php` — every MCP write touches the live amedbulten.com database. The `http://localhost:8080` docker stack (db `bulletin`) is a stale local dev copy; it never receives MCP writes and MUST NOT be used to verify MCP-staged records.** Never call sibling servers (e.g. `amed-rojname` or `amidakurd`).
 - Call `list_site_settings(active_only='y')` to inspect `active_languages`, `default_language`, and `lang_status === 'y'`. Never infer active site languages from `site_status` or unverified category rows (`lang_status === 'n'`).
 - Strictly separate **Conversational Language** (Kurmanji Kurdish with the user per `AGENTS.md` Rule 8) from **Target CMS Record Language (`record.lang`)**: every database field (`name`, `summary`, `content`, `title`, `description`, `keywords`, `seo`, and `mod_faq` `question`/`answer`) MUST be written 100% in the active target `record.lang`.
 - Perform a lightweight liveness check (e.g. `list_news_categories` with `lang: "tr"`).
@@ -93,7 +93,7 @@ Whenever `kevanger` brings or drafts a news article from any source:
   ```bash
   python3 .agents/skills/kevseo/scripts/audit_seo.py --content "$DRAFT_HTML" --summary "$SUMMARY" --headline "$HEADLINE" --seo "$SEO_SLUG"
   ```
-- After staging or updating via MCP, verify the persisted database record against the 100-point rubric (`tools/audit_content_seo.py --module mod_news --id <id>`) to confirm active language status, zero cross-language prose contamination, metadata synchronization, and strict code separation.
+- After staging or updating via MCP, verify the persisted record (active language status, zero cross-language prose contamination, metadata synchronization, strict code separation). **`tools/audit_content_seo.py --module mod_news --id <id>` reads ONLY the local docker dev DB (`db 'bulletin'`) and cannot see MCP-staged production records: for production records verify via the bridge itself (`get_news` by id + HTTP 200 check of the uploaded image URL on amedbulten.com); run the audit script only for local-dev records.**
 - Address any flagged HTML architecture issues, deck length violations (must be 90–120 chars; 90–160 chars accepted by MCP SERP parity), or invalid URL slugs before proceeding.
 
 ### 7. Fact-Checking & Anti-Hallucination Gate (`kevrast` Stage 2)

@@ -11,6 +11,9 @@ class events_model extends ORM
     public $start_date;
     public $end_date;
     public $status;
+    public $is_official_holiday;
+    public $holiday_duration;
+    public $is_recurring;
     public $slider;
     public $deck;
     public $summary;
@@ -52,7 +55,7 @@ class events_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('events') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn()) {
+        if ($this->viewExists('events') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasOfficialHolidayColumn()) {
             return;
         }
 
@@ -68,6 +71,9 @@ SELECT
   mod_event.start_date,
   mod_event.end_date,
   mod_event.status,
+  mod_event.is_official_holiday,
+  mod_event.holiday_duration,
+  mod_event.is_recurring,
   mod_event.slider,
   mod_event.deck,
   mod_event.summary,
@@ -126,6 +132,11 @@ LEFT JOIN mod_event_category ON mod_event.category_id = mod_event_category.id;";
     private function hasCategoryAclIdColumn()
     {
         return $this->hasViewColumn('category_acl_id');
+    }
+
+    private function hasOfficialHolidayColumn()
+    {
+        return $this->hasViewColumn('is_official_holiday');
     }
 
     private function hasViewColumn($columnName)

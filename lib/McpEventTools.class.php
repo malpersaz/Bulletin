@@ -29,6 +29,7 @@ class McpEventTools extends McpCrudToolsBase
                         'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by publish status: y (published) or n (draft).'],
                         'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by deck flag.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by slider flag.'],
+                        'is_official_holiday' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by statutory official holiday flag (y/n).'],
                         'search' => ['type' => 'string', 'description' => 'Search term matched against event names, summaries, or topics.'],
                         'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 50, 'default' => 10, 'description' => 'Page size (1-50, default 10).'],
                         'offset' => ['type' => 'integer', 'minimum' => 0, 'default' => 0, 'description' => 'Number of items to skip for pagination.'],
@@ -90,6 +91,9 @@ class McpEventTools extends McpCrudToolsBase
                         'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Publish status: y (published) or n (draft).'],
                         'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show in deck: y or n.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show in hero slider: y or n.'],
+                        'is_official_holiday' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Official statutory holiday flag under Law No. 2429 (y/n).'],
+                        'holiday_duration' => ['type' => 'number', 'default' => 0.0, 'description' => 'Official holiday duration in days (e.g. 0.0, 0.5, 1.0, 3.0, 4.0).'],
+                        'is_recurring' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Annual recurring calendar event flag (y/n).'],
                         'gallery_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related gallery ID.'],
                         'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related attachment file ID.'],
                         'video' => ['type' => 'string', 'description' => 'Video embed or serialized array.'],
@@ -134,6 +138,9 @@ class McpEventTools extends McpCrudToolsBase
                         'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New publish status.'],
                         'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New deck status.'],
                         'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New slider status.'],
+                        'is_official_holiday' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New official statutory holiday flag (y/n).'],
+                        'holiday_duration' => ['type' => 'number', 'description' => 'New official holiday duration in days (e.g. 0.0, 0.5, 1.0, 3.0, 4.0).'],
+                        'is_recurring' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New annual recurring calendar event flag (y/n).'],
                         'gallery_id' => ['type' => 'integer', 'description' => 'New gallery ID.'],
                         'file_id' => ['type' => 'integer', 'description' => 'New attachment file ID.'],
                         'video' => ['type' => 'string', 'description' => 'New video info.'],
@@ -313,7 +320,7 @@ class McpEventTools extends McpCrudToolsBase
         $offset = $this->normalizeOffset($args);
 
         $model = $this->freshModel('mod_event');
-        $model->select('id, lang, name, category_id, status, deck, slider, start_date, end_date, location, seo, created_at');
+        $model->select('id, lang, name, category_id, status, deck, slider, is_official_holiday, holiday_duration, is_recurring, start_date, end_date, location, seo, created_at');
         $this->applyEventFilters($model, $args);
         $model->order('start_date', 'DESC')->limit($limit, $offset)->getResult(true, true);
         $items = $model->toArray();
@@ -397,6 +404,9 @@ class McpEventTools extends McpCrudToolsBase
         $model->status = $this->optionalEnum($args, 'status', 'y', ['y', 'n']);
         $model->deck = $this->optionalEnum($args, 'deck', 'n', ['y', 'n']);
         $model->slider = $this->optionalEnum($args, 'slider', 'n', ['y', 'n']);
+        $model->is_official_holiday = $this->optionalEnum($args, 'is_official_holiday', 'n', ['y', 'n']);
+        $model->holiday_duration = isset($args['holiday_duration']) ? round(max(0.0, min(99.9, (float) $args['holiday_duration'])), 1) : ($model->is_official_holiday === 'y' ? 1.0 : 0.0);
+        $model->is_recurring = $this->optionalEnum($args, 'is_recurring', 'n', ['y', 'n']);
         $model->gallery_id = (int) ($args['gallery_id'] ?? 0);
         $model->file_id = (int) ($args['file_id'] ?? 0);
         $model->acl_id = (int) ($args['acl_id'] ?? 0);
@@ -499,10 +509,14 @@ class McpEventTools extends McpCrudToolsBase
             }
         }
 
-        foreach (['status', 'deck', 'slider'] as $field) {
+        foreach (['status', 'deck', 'slider', 'is_official_holiday', 'is_recurring'] as $field) {
             if (isset($args[$field])) {
                 $model->{$field} = $this->optionalEnum($args, $field, (string) $model->{$field}, ['y', 'n']);
             }
+        }
+
+        if (isset($args['holiday_duration'])) {
+            $model->holiday_duration = round(max(0.0, min(99.9, (float) $args['holiday_duration'])), 1);
         }
 
         if (isset($args['gallery_id'])) $model->gallery_id = (int) $args['gallery_id'];
@@ -727,6 +741,9 @@ class McpEventTools extends McpCrudToolsBase
         }
         if (!empty($args['slider'])) {
             $model->addWhere("slider = '" . addslashes((string) $args['slider']) . "'");
+        }
+        if (!empty($args['is_official_holiday']) && in_array($args['is_official_holiday'], ['y', 'n'], true)) {
+            $model->addWhere("is_official_holiday = '" . $args['is_official_holiday'] . "'");
         }
         if (!empty($args['search'])) {
             $safeSearch = addslashes((string) $args['search']);

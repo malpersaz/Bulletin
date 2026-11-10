@@ -44,10 +44,18 @@ class mod_event_helper extends indexBase
         $row['has_file'] = (isset($row['file_id']) && (int) $row['file_id'] !== 0);
         $row['has_deck'] = (isset($row['deck']) && $row['deck'] === 'y');
         $row['has_slider'] = (isset($row['slider']) && $row['slider'] === 'y');
+        $row['is_official_holiday'] = (isset($row['is_official_holiday']) && $row['is_official_holiday'] === 'y') ? 'y' : 'n';
+        $row['is_holiday_flag'] = ($row['is_official_holiday'] === 'y');
+        $row['holiday_duration'] = isset($row['holiday_duration']) ? round((float) $row['holiday_duration'], 1) : 0.0;
+        $row['is_half_day_holiday'] = ($row['is_holiday_flag'] && abs($row['holiday_duration'] - 0.5) < 0.05);
+        $row['is_recurring'] = (isset($row['is_recurring']) && $row['is_recurring'] === 'y') ? 'y' : 'n';
 
         if (isset($row['start_date']) && !empty($row['start_date'])) {
             $startTs = strtotime($row['start_date']);
-            $endTs = !empty($row['end_date']) ? strtotime($row['end_date']) : $startTs;
+            $endTs = !empty($row['end_date']) ? strtotime($row['end_date']) : strtotime(date('Y-m-d 23:59:59', $startTs));
+            if ($endTs < $startTs) {
+                $endTs = $startTs;
+            }
             $now = time();
 
             // Duration in days (e.g. multi-day holidays)
@@ -58,7 +66,6 @@ class mod_event_helper extends indexBase
             $row['start_time'] = date('H:i', $startTs);
             $row['start_date_only'] = date('d.m.Y', $startTs);
             $row['start_date_formatted'] = date('d.m.Y H:i', $startTs);
-            $row['is_upcoming'] = ($startTs >= $now);
 
             // Localized Month Map
             $langCode = strtolower((string) ($this->site['lang'] ?? 'tr'));
@@ -77,28 +84,34 @@ class mod_event_helper extends indexBase
             ];
             $row['start_month_localized'] = $monthsMap[$langCode][$monthNum] ?? date('M', $startTs);
 
-            // Relative date calculations
+            // Relative date calculations (active throughout the entire day / multi-day span)
+            $todayStartTs = strtotime(date('Y-m-d 00:00:00', $now));
+            $todayEndTs = strtotime(date('Y-m-d 23:59:59', $now));
             $startDateStr = date('Y-m-d', $startTs);
-            $todayStr = date('Y-m-d', $now);
             $tomorrowStr = date('Y-m-d', strtotime('+1 day', $now));
-            $row['is_today'] = ($startDateStr === $todayStr);
-            $row['is_tomorrow'] = ($startDateStr === $tomorrowStr);
+
+            $row['is_today'] = ($startTs <= $todayEndTs && $endTs >= $todayStartTs);
+            $row['is_tomorrow'] = (!$row['is_today'] && $startDateStr === $tomorrowStr);
+            $row['is_upcoming'] = ($endTs >= $now || $row['is_today']);
 
             $endOfWeekTs = strtotime('sunday this week 23:59:59', $now);
-            $row['is_this_week'] = ($startTs >= $now && $startTs <= $endOfWeekTs);
+            $row['is_this_week'] = ($row['is_today'] || ($startTs >= $now && $startTs <= $endOfWeekTs));
 
-            $diffDays = (int) floor(($startTs - $now) / 86400);
+            $diffDays = (int) floor((strtotime(date('Y-m-d 00:00:00', $startTs)) - $todayStartTs) / 86400);
             $row['days_until'] = max(0, $diffDays);
 
-            // Calendar integration fields
+            // Calendar and Schema ISO-8601 integration fields
             $row['iso_start'] = date('Ymd\THis', $startTs);
+            $row['schema_start_date'] = date('c', $startTs);
             if (!empty($row['end_date'])) {
-                $endTs = strtotime($row['end_date']);
-                $row['iso_end'] = date('Ymd\THis', $endTs);
-                $row['end_date_only'] = date('d.m.Y', $endTs);
-                $row['end_date_formatted'] = date('d.m.Y H:i', $endTs);
+                $rawEndTs = strtotime($row['end_date']);
+                $row['iso_end'] = date('Ymd\THis', $rawEndTs);
+                $row['schema_end_date'] = date('c', $rawEndTs);
+                $row['end_date_only'] = date('d.m.Y', $rawEndTs);
+                $row['end_date_formatted'] = date('d.m.Y H:i', $rawEndTs);
             } else {
-                $row['iso_end'] = date('Ymd\THis', $startTs + 7200); // 2 hours default
+                $row['iso_end'] = date('Ymd\THis', $startTs + 7200);
+                $row['schema_end_date'] = date('c', $endTs);
                 $row['end_date_only'] = '';
                 $row['end_date_formatted'] = '';
             }
@@ -122,6 +135,8 @@ class mod_event_helper extends indexBase
             $row['days_until'] = 0;
             $row['iso_start'] = '';
             $row['iso_end'] = '';
+            $row['schema_start_date'] = '';
+            $row['schema_end_date'] = '';
             $row['google_calendar_url'] = '';
             $row['map_search_url'] = '';
             $row['start_date_only'] = '';
@@ -199,10 +214,10 @@ class mod_event_helper extends indexBase
     private function _resolveCategoryTemplateKey(array $cat): string
     {
         $rawSeo = rawurldecode((string) ($cat['seo'] ?? ''));
-        $seoNorm = strtolower(trim(str_replace(['-', ' '], '_', $rawSeo)));
-        $nameNorm = strtolower(trim((string) ($cat['name'] ?? '')));
+        $seoNorm = mb_strtolower(trim(str_replace(['-', ' '], '_', $rawSeo)), 'UTF-8');
+        $nameNorm = mb_strtolower(trim((string) ($cat['name'] ?? '')), 'UTF-8');
 
-        if (strpos($seoNorm, 'kultur_sanat') !== false || strpos($nameNorm, 'kültür') !== false || strpos($nameNorm, 'çand') !== false) {
+        if (strpos($seoNorm, 'kultur_sanat') !== false || strpos($seoNorm, 'kültür_sanat') !== false || strpos($nameNorm, 'kültür') !== false || strpos($nameNorm, 'çand') !== false) {
             return 'culture_art';
         }
         if (strpos($seoNorm, 'edebiyat_soylesi') !== false || strpos($seoNorm, 'edebiyat_söyleşi') !== false || strpos($nameNorm, 'edebiyat') !== false) {
@@ -216,6 +231,24 @@ class mod_event_helper extends indexBase
         }
         if (strpos($seoNorm, 'sinavlar') !== false || strpos($seoNorm, 'sınavlar') !== false || strpos($nameNorm, 'sınav') !== false || strpos($nameNorm, 'azmûn') !== false || strpos($nameNorm, 'ezmûn') !== false) {
             return 'exams';
+        }
+        if (strpos($seoNorm, 'milli_bayram') !== false || strpos($nameNorm, 'milli bayram') !== false || strpos($nameNorm, 'millî bayram') !== false) {
+            return 'national_holidays';
+        }
+        if (strpos($seoNorm, 'dini_gun') !== false || strpos($seoNorm, 'dini_gün') !== false || strpos($nameNorm, 'dini gün') !== false) {
+            return 'religious_holidays';
+        }
+        if (strpos($seoNorm, 'genel_tatil') !== false || strpos($nameNorm, 'genel tatil') !== false) {
+            return 'public_holidays';
+        }
+        if (strpos($seoNorm, 'anma_gun') !== false || strpos($seoNorm, 'anma_gün') !== false || strpos($nameNorm, 'anma gün') !== false) {
+            return 'memorial_days';
+        }
+        if (strpos($seoNorm, 'mesleki_gun') !== false || strpos($seoNorm, 'mesleki_gün') !== false || strpos($nameNorm, 'mesleki gün') !== false) {
+            return 'professional_days';
+        }
+        if (strpos($seoNorm, 'onemli_gun') !== false || strpos($seoNorm, 'önemli_gün') !== false || strpos($nameNorm, 'önemli gün') !== false) {
+            return 'special_observances';
         }
         if (strpos($seoNorm, 'resmi_tatil') !== false || strpos($nameNorm, 'resmi tatil') !== false || strpos($nameNorm, 'bêhnvedan') !== false) {
             return 'official_holidays';
@@ -392,7 +425,7 @@ class mod_event_helper extends indexBase
             $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
 
             // Batch fetch all published events for active language
-            $db->fetch_array("SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`, `participants`, `guests`
+            $db->fetch_array("SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`, `participants`, `guests`, `is_official_holiday`, `holiday_duration`, `is_recurring`
                               FROM `mod_event`
                               WHERE `status` = 'y' AND `lang` = '{$safeLang}' AND {$aclCondition} AND `category_id` IN ({$allowedCatList})
                               ORDER BY `start_date` ASC, `id` ASC");
@@ -428,9 +461,10 @@ class mod_event_helper extends indexBase
                 // Sort: Upcoming events first (ASC), followed by past events (DESC)
                 $upcoming = [];
                 $past = [];
+                $todayFloor = date('Y-m-d 00:00:00');
                 foreach ($tEvents as $ev) {
                     $rawEndDate = !empty($ev['end_date']) ? $ev['end_date'] : $ev['start_date'];
-                    if ($rawEndDate >= $now) {
+                    if ($rawEndDate >= $todayFloor) {
                         $upcoming[] = $ev;
                     } else {
                         $past[] = $ev;
@@ -443,7 +477,17 @@ class mod_event_helper extends indexBase
 
                 $templateKey = $this->_resolveCategoryTemplateKey($tCat);
                 $templatePath = 'index/mod_event/sections/section_' . $templateKey . '.twig';
-                $isCivic = in_array($templateKey, ['exams', 'official_holidays', 'holidays'], true);
+                $isCivic = in_array($templateKey, [
+                    'exams',
+                    'official_holidays',
+                    'holidays',
+                    'public_holidays',
+                    'national_holidays',
+                    'religious_holidays',
+                    'memorial_days',
+                    'professional_days',
+                    'special_observances',
+                ], true);
 
                 $section = [
                     'id' => $topId,
@@ -490,6 +534,21 @@ class mod_event_helper extends indexBase
         if ($catModel->getSize() === 0) {
             // Inbound legacy ASCII category matching
             $requestedCategoryKey = Helper::ascii_slug_key($decodedSeo);
+            $legacyCategoryAliasMap = [
+                'resmi_tatil' => 'Genel_Tatiller',
+                'bayramlar'   => 'Milli_Bayramlar',
+            ];
+            if (isset($legacyCategoryAliasMap[$requestedCategoryKey])) {
+                $targetUrl = rtrim((string)$this->site['saddress'], '/') . '/events/' . $legacyCategoryAliasMap[$requestedCategoryKey];
+                if ($page > 1) {
+                    $targetUrl .= '/' . $page;
+                }
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    header("HTTP/1.1 301 Moved Permanently");
+                    header("Location: " . Helper::sitemap_url($targetUrl));
+                    exit;
+                }
+            }
             if ($requestedCategoryKey !== '') {
                 $db = Load::lib('Database');
                 $safeLang = addslashes($lang);
@@ -637,6 +696,8 @@ class mod_event_helper extends indexBase
             return $this->_404();
         }
 
+        $eventModel->sync();
+
         // Strict canonical slug comparison
         if (PHP_SAPI !== 'cli' && !headers_sent() && (string)$eventModel->seo !== $cleanSeo) {
             $canonicalUrl = rtrim((string)$this->site['saddress'], '/') . '/event/' . $eventModel->seo;
@@ -775,6 +836,7 @@ class mod_event_helper extends indexBase
                 $catLookup->where_id_and_lang_and_root((int) $catFilter, $lang, 'n')->limit(1)->gRo();
             }
             if ($catLookup->getSize() > 0) {
+                $catLookup->sync();
                 $filterCatId = (int) $catLookup->id;
                 $filterCatIds = $this->getCategoryDescendantIds($filterCatId, $lang, 'mod_event_category');
                 $allowedCatIds = $this->getAllowedCategoryIds('mod_event_category', $lang);
@@ -827,6 +889,9 @@ class mod_event_helper extends indexBase
                     'is_today' => !empty($cleaned['is_today']),
                     'is_tomorrow' => !empty($cleaned['is_tomorrow']),
                     'is_upcoming' => !empty($cleaned['is_upcoming']),
+                    'is_official_holiday' => $cleaned['is_official_holiday'] ?? 'n',
+                    'holiday_duration' => (float) ($cleaned['holiday_duration'] ?? 0.0),
+                    'is_recurring' => $cleaned['is_recurring'] ?? 'n',
                     'location' => $cleaned['location'] ?? '',
                     'image' => !empty($cleaned['image']) ? $this->site['iaddress'] . 'mod_event/thumb/' . $cleaned['image'] : '',
                     'summary' => $cleaned['summary'] ?? ''
@@ -855,7 +920,7 @@ class mod_event_helper extends indexBase
         $limit = max(1, intval($limit));
         $lang = (string) $this->site['lang'];
         $safeLang = addslashes($lang);
-        $now = date('Y-m-d H:i:s');
+        $todayStart = date('Y-m-d 00:00:00');
         $aclCondition = $this->getAllowedAclCondition('');
 
         $allowedCatIds = $this->getAllowedCategoryIds('mod_event_category', $lang);
@@ -867,12 +932,12 @@ class mod_event_helper extends indexBase
 
         $db = Load::lib('Database');
 
-        // 1. Fetch upcoming events (start_date >= now) ordered ascending
-        $queryUpcoming = "SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`
+        // 1. Fetch active-today or upcoming events ordered ascending
+        $queryUpcoming = "SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`, `is_official_holiday`, `holiday_duration`, `is_recurring`
                           FROM `mod_event`
                           WHERE `status` = 'y'
                             AND `lang` = '{$safeLang}'
-                            AND `start_date` >= '{$now}'
+                            AND COALESCE(`end_date`, `start_date`) >= '{$todayStart}'
                             AND {$aclCondition}
                             {$catFilter}
                           ORDER BY `start_date` ASC
@@ -882,14 +947,20 @@ class mod_event_helper extends indexBase
         $upcomingRows = $db->toArray();
         $agenda = is_array($upcomingRows) ? $upcomingRows : [];
 
-        // 2. If fewer than limit, backfill with most recent past events (start_date < now) ordered descending
+        // 2. If fewer than limit, backfill with most recent past events excluding already-fetched IDs
         $remaining = $limit - count($agenda);
         if ($remaining > 0) {
-            $queryPast = "SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`
+            $excludeSql = '';
+            if (!empty($agenda)) {
+                $excludeIds = implode(',', array_map('intval', array_column($agenda, 'id')));
+                $excludeSql = "AND `id` NOT IN ({$excludeIds})";
+            }
+            $queryPast = "SELECT `id`, `name`, `seo`, `lang`, `image`, `subject`, `start_date`, `end_date`, `location`, `summary`, `deck`, `category_id`, `is_official_holiday`, `holiday_duration`, `is_recurring`
                           FROM `mod_event`
                           WHERE `status` = 'y'
                             AND `lang` = '{$safeLang}'
-                            AND `start_date` < '{$now}'
+                            AND COALESCE(`end_date`, `start_date`) < '{$todayStart}'
+                            {$excludeSql}
                             AND {$aclCondition}
                             {$catFilter}
                           ORDER BY `start_date` DESC

@@ -58,6 +58,7 @@
                     data-is-upcoming="{{ ev.is_upcoming ? '1' : '0' }}"
                     data-is-this-week="{{ ev.is_this_week ? '1' : '0' }}"
                     data-is-today="{{ ev.is_today ? '1' : '0' }}"
+                    data-is-holiday="{{ ev.is_official_holiday is defined and ev.is_official_holiday == 'y' ? '1' : '0' }}"
                     data-title="{{ ev.name|e('html_attr') }}"
                     data-location="{{ ev.location|default('')|e('html_attr') }}"
                     data-summary="{{ ev.summary|default('')|e('html_attr') }}"
@@ -91,6 +92,12 @@
                         <div class="event-agenda-meta-top">
                             {% if ev_cat is not empty %}
                                 <span class="event-agenda-cat-badge">{{ ev_cat }}</span>
+                            {% endif %}
+
+                            {% if ev.is_official_holiday is defined and ev.is_official_holiday == 'y' %}
+                                <span class="event-agenda-status-pill status-today">
+                                    <span>{{ ev.is_half_day_holiday is defined and ev.is_half_day_holiday ? lang.index.mod_event.half_day_holiday : lang.index.mod_event.official_holiday_badge }}</span>
+                                </span>
                             {% endif %}
 
                             {% if ev.is_today %}

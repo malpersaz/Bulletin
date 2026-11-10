@@ -259,6 +259,7 @@ trait PublicHelperTrait
             }
             $model->limit(1)->gRo();
             if ($model->getSize() > 0) {
+                $model->sync();
                 return $model;
             }
         }
@@ -271,6 +272,7 @@ trait PublicHelperTrait
             }
             $model->limit(1)->gRo();
             if ($model->getSize() > 0) {
+                $model->sync();
                 return $model;
             }
         }

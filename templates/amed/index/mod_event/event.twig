@@ -68,8 +68,10 @@
       "@context": "https://schema.org",
       "@type": "Event",
       "name": {{ d.name|json_ld|raw }},
-      "startDate": {{ d.start_date|json_ld|raw }},
-      {% if d.end_date is defined and d.end_date is not empty %}
+      "startDate": {{ (d.schema_start_date ?: d.start_date)|json_ld|raw }},
+      {% if d.schema_end_date is defined and d.schema_end_date is not empty %}
+      "endDate": {{ d.schema_end_date|json_ld|raw }},
+      {% elseif d.end_date is defined and d.end_date is not empty %}
       "endDate": {{ d.end_date|json_ld|raw }},
       {% endif %}
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
@@ -149,6 +151,12 @@
                                 <a href="{{ site.saddress }}events/{{ d.category_seo }}" class="event-category-badge d-inline-block">
                                     {{ d.category_name }}
                                 </a>
+                            {% endif %}
+
+                            {% if d.is_official_holiday is defined and d.is_official_holiday == 'y' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle py-1 px-2">
+                                    <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>{{ d.is_half_day_holiday is defined and d.is_half_day_holiday ? lang.index.mod_event.half_day_holiday : lang.index.mod_event.official_holiday_badge }}
+                                </span>
                             {% endif %}
 
                             {# Prominent Status & Countdown Badge #}

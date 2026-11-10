@@ -92,6 +92,13 @@ class mod_event_mod extends BaseModuleController
         $model->guests = Req::Post_Safe('guests');
         $model->subject = Req::Post_Safe('subject');
 
+        $isOfficialHoliday = Req::Post_Safe('is_official_holiday');
+        $model->is_official_holiday = ($isOfficialHoliday === 'y') ? 'y' : 'n';
+        $holidayDuration = Req::Post_Safe('holiday_duration');
+        $model->holiday_duration = ($holidayDuration !== null && $holidayDuration !== '') ? round(max(0.0, min(99.9, (float) $holidayDuration)), 1) : ($model->is_official_holiday === 'y' ? 1.0 : 0.0);
+        $isRecurring = Req::Post_Safe('is_recurring');
+        $model->is_recurring = ($isRecurring === 'y') ? 'y' : 'n';
+
         if (empty($model->seo) && !empty($model->name)) {
             $model->seo = Helper::legacy_seo($model->name);
         }
@@ -128,6 +135,16 @@ class mod_event_mod extends BaseModuleController
         }
         if (Req::is_Post('subject')) {
             $model->subject = Req::Post_Safe('subject');
+        }
+
+        if (Req::is_Post('is_official_holiday')) {
+            $model->is_official_holiday = (Req::Post_Safe('is_official_holiday') === 'y') ? 'y' : 'n';
+        }
+        if (Req::is_Post('holiday_duration')) {
+            $model->holiday_duration = round(max(0.0, min(99.9, (float) Req::Post_Safe('holiday_duration'))), 1);
+        }
+        if (Req::is_Post('is_recurring')) {
+            $model->is_recurring = (Req::Post_Safe('is_recurring') === 'y') ? 'y' : 'n';
         }
 
         if (empty($model->seo) && !empty($model->name)) {

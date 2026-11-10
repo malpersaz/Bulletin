@@ -12,6 +12,9 @@ class mod_event_model extends ORM
     public $start_date;
     public $end_date;
     public $status;
+    public $is_official_holiday;
+    public $holiday_duration;
+    public $is_recurring;
     public $slider;
     public $deck;
     public $summary;
@@ -43,6 +46,9 @@ class mod_event_model extends ORM
         return [
             'category_id' => 0,
             'status' => 'y',
+            'is_official_holiday' => 'n',
+            'holiday_duration' => 0.0,
+            'is_recurring' => 'n',
             'slider' => 'n',
             'deck' => 'n',
             'gallery_id' => 0,

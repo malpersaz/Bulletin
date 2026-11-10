@@ -7,6 +7,9 @@ CREATE TABLE `mod_event` (
   `start_date` datetime NOT NULL,
   `end_date` datetime DEFAULT NULL,
   `status` enum('y','n') NOT NULL DEFAULT 'y',
+  `is_official_holiday` enum('y','n') NOT NULL DEFAULT 'n',
+  `holiday_duration` decimal(3,1) NOT NULL DEFAULT 0.0,
+  `is_recurring` enum('y','n') NOT NULL DEFAULT 'n',
   `slider` enum('y','n') NOT NULL DEFAULT 'n',
   `deck` enum('y','n') NOT NULL DEFAULT 'n',
   `summary` text DEFAULT NULL,
@@ -32,6 +35,8 @@ CREATE TABLE `mod_event` (
   INDEX `idx_event_lang_status` (`lang`, `status`),
   INDEX `idx_event_start_date` (`start_date`),
   INDEX `idx_event_category` (`category_id`),
+  INDEX `idx_event_official_holiday` (`is_official_holiday`, `start_date`),
+  INDEX `idx_event_recurring` (`is_recurring`),
   INDEX `idx_event_slider` (`slider`),
   INDEX `idx_event_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

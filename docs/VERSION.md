@@ -1,5 +1,50 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.61 (Planned)
+- **Editorial Pipeline Tooling Hardening: Environment Identity, Environment-Agnostic Rubric, Dossier Contracts & Draft-Time Diagnostics (`docs/plan/v1.0.61-editorial-pipeline-tooling-hardening-plan.md`)**:
+  - Planned 7-component hardening package (A–G) from the 2026-11-10 kevanger production run retrospective: MCP response environment identity (`lib/McpCrudToolsBase.class.php`, `tasks/mcp_smoke.php`), environment-agnostic 100-point rubric (`tools/audit_content_seo.py --record-json`), dossier JSON schema + `--init-dossier` template (kevkolin/kevrast), content-type-aware freshness gate `news`/`evergreen` (kevtemen/kevkolin/kevanger skills), single-command image intake (`process_news_image.py --from-article`), executable pre-flight + `verify_news_pipeline.sh` verification chain (`tools/mcp_health_check.py`), and `kevrast --explain` paragraph-level draft diagnostics.
+  - Explicitly out of scope: conversational language protocol clarification (dangling `AGENTS.md` Rule 8 reference), local↔production DB synchronization, direct-to-production DB audit access, hosted CI.
+
+## v1.0.60 (2026-11-10)
+- **`mod_event` Semantic Taxonomy Disentanglement, Professional Days & Official Holiday Attribute Architecture (`mod/mod_event/`, `mod/mod_event_category/`, `lib/Traits/PublicHelperTrait.php`, `mod/index/helper/mod_event.helper.php`, `lib/McpEventTools.class.php`, `templates/amed/index/mod_event/`, `templates/admin/`, `tasks/seed_mod_event_taxonomy_v1060.php`, `docs/plan/v1.0.60-mod-event-taxonomy-and-official-holiday-attribute-refactor-plan.md`)**:
+  - **Component 1: Semantic Taxonomy & Functional Holiday Attribute Disentanglement (`mod_event`, `mod_event_category`)**:
+    - Disentangled thematic event content categories from statutory holiday legal statuses. Introduced dedicated functional columns in `mod_event`: `is_official_holiday` (`ENUM('y','n')`), `holiday_duration` (`DECIMAL(3,1)` supporting multi-day and administrative bridge holidays up to 99.9 days), and `is_recurring` (`ENUM('y','n')`).
+    - Established an 11-category mutually exclusive editorial taxonomy: `Milli Bayramlar` (`id = 7`), `Dini Günler & Bayramlar` (`id = 8`), `Genel Tatiller` (`id = 6`), `Anma Günleri` (`id = 9`), `Önemli Günler & Haftalar` (`id = 10`), `Mesleki Günler` (`id = 11`), `Sınavlar` (`id = 5`), and Arts/Culture categories (`id = 1..4`).
+    - Updated `mod/mod_event/mod_event.sql`, `installer/mod_event/mod_event.sql`, `mod/mod_event/events.sql`, and `installer/mod_event/events.sql` to maintain strict schema parity and installer compatibility.
+  - **Component 2: ORM Model Parity & SQL View Auto-Recreation (`mod/mod_event/model/`)**:
+    - Declared `$is_official_holiday`, `$holiday_duration`, and `$is_recurring` properties and defaults in `mod_event_model` and `events_model`.
+    - Added `hasOfficialHolidayColumn()` to `events_model::ensureViewExists()` and updated inline view creation SQL to guarantee views automatically upgrade without dropping columns.
+  - **Component 3: Detail Page ORM Hydration & Active-Day Timing Remediation (`mod/index/helper/mod_event.helper.php`, `lib/Traits/PublicHelperTrait.php`)**:
+    - Resolved critical ORM hydration bug in `findItemBySeoOrIdStrict()` and `event($seo)` by invoking `$model->sync()`, preventing unhydrated properties from triggering erroneous 301 canonical redirects to `/tr/event/`.
+    - Fixed active-day timing in `_cleanEventRow()` and `_event_agenda()` so single-day commemorations and multi-day events remain `is_today = true` and `is_upcoming = true` across the entire day.
+    - Resolved category filter lookup hydration in `calendar_json()` (`$catLookup->sync()`) and added official holiday attributes to JSON output.
+    - Implemented multibyte-safe `_resolveCategoryTemplateKey()` with explicit category slug order, preventing `'bayram'` substring collisions.
+    - Added legacy category slug alias 301 redirect mapping (`Resmi_Tatil` → `Genel_Tatiller`, `Bayramlar` → `Milli_Bayramlar`).
+  - **Component 4: Public Civic Twig Templates & Google Event JSON-LD ISO-8601 Parity (`templates/amed/index/mod_event/`)**:
+    - Created 6 dedicated civic section templates under `templates/amed/index/mod_event/sections/` (`section_public_holidays.twig`, `section_national_holidays.twig`, `section_religious_holidays.twig`, `section_memorial_days.twig`, `section_professional_days.twig`, `section_special_observances.twig`) complying with strict code separation (zero inline styles or scripts).
+    - Updated Google Event JSON-LD schema in `event.twig` to emit strict ISO-8601 timestamps with timezone offset (`schema_start_date` and `schema_end_date`).
+    - Added statutory official holiday badges to `event.twig` and `event_agenda.twig`.
+  - **Component 5: Admin Controllers, Validators & MCP Event Tools Hardening (`mod/mod_event/`, `lib/McpEventTools.class.php`, `templates/admin/`)**:
+    - Normalized `is_official_holiday`, `holiday_duration`, and `is_recurring` in `beforeSave()` and `beforeUpdate()` in `mod/mod_event/index.php`.
+    - Added validation for `is_official_holiday` and `is_recurring` in `add.validator.php` and `edit.validator.php`.
+    - Preserved attributes in admin mobile forms (`wizard_event.twig`, `edit.twig`).
+    - Enhanced MCP tools (`list_events`, `create_event`, `update_event`, `applyEventFilters`) with full holiday attribute read/write/filter support.
+    - Propagated translation keys across all 10 frontend and 11 admin language files with 100% `i18n-guard` cleanliness.
+  - **Component 6: Production Seeding & Migration Automation (`tasks/seed_mod_event_taxonomy_v1060.php`)**:
+    - Authored 5-phase idempotent migration task executing schema alterations, view recreation, category taxonomy update, reclassification of existing 44 production records, and seeding 27 missing memorial, religious, professional, and special records.
+    - Updated framework version parser regex in `config/site.config.php` and `config/site.config.example.php` to skip `(Planned)` and `(In Progress)` headings.
+- **Production Environment Truth Disambiguation & Verification Hardening (`tools/audit_content_seo.py`, `.agents/skills/kevanger/SKILL.md`)**:
+  - **Component 7: MCP Bridge Production Target Disambiguation (`.agents/skills/kevanger/SKILL.md`)**:
+    - Formally documented operational environment truth: the mounted `amed-bulletin` MCP bridge communicates with the live production environment (`https://amedbulten.com/mcp.php`), whereas the local Docker stack (`http://localhost:8080`, database `bulletin`) is a local development instance.
+    - Updated `kevanger` skill pre-flight checklists and verification workflows to require verifying MCP-staged records via MCP bridge methods (`get_news` by ID, HTTP 200 checks on `amedbulten.com` image URLs) rather than local database queries.
+  - **Component 8: SEO Audit Diagnostic Error Handling (`tools/audit_content_seo.py`)**:
+    - Updated record lookup failure error handling in `fetch_record_via_php()` to provide clear, actionable diagnostic context distinguishing between records in the local Docker `bulletin` database and records staged to production via the MCP bridge.
+- **National Examination & Statutory Holiday Seeding Specifications (`docs/plan/`)**:
+  - **Component 9: Turkey Official & Statutory Holiday Seeding Specification (`docs/plan/turkey-official-holidays-mod-event-seeding-plan.md`)**:
+    - Designed comprehensive mapping of statutory public holidays under Law No. 2429 and Diyanet religious calendars across 2026 and 2027.
+  - **Component 10: ÖSYM & MEB Nationwide Examination Schedule Specification (`docs/plan/osym-meb-exams-mod-event-seeding-plan.md`)**:
+    - Standardized ingestion master schedule for Category 5 (`Sınavlar`) based on the official ÖSYM 2027 calendar (announced 28 October 2026) and MEB examination dates.
+
 ## v1.0.59 (2026-11-10)
 - **Strict Language Prefix Routing, `<base>` & Schema Canonical Unification, and Google SERP Duplicate Remediation (`lib/Amed.class.php`, `templates/amed/`, `mod/index/index.php`, `mod/index/helper/legal.helper.php`, `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, `docs/plan/v1.0.59-strict-language-prefix-and-root-serp-remediation-plan.md`, `docs/VERSION.md`)**:
   - **Component 1: Post-`mod_redirect`, Post-`410` Single-Hop 301 Language Prefix Gate (`lib/Amed.class.php`)**:
