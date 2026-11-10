@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
@@ -340,17 +341,15 @@
                                 {% for v in video %}
                                     <div class="col-12 mb-4">
                                         {% if v.embed is defined and v.embed is not empty %}
-                                            <div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
-                                                {{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
-                                            </div>
+                                            {% include 'partials/_video_embed_player.twig' with {'video': v} %}
                                         {% else %}
                                             <a href="{{ site.saddress }}tools/videoFlv/mod_publication/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
                                                 <div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative btn-gradient-primary d-flex align-items-center justify-content-center">
                                                     <i class="bi bi-play-circle-fill play-icon"></i>
                                                 </div>
                                             </a>
+                                            <p class="fw-bold mt-3 text-center">{{ v.name }}</p>
                                         {% endif %}
-                                        <p class="fw-bold mt-3 text-center">{{ v.name }}</p>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -433,4 +432,8 @@
             </article>
         </div>
     </div>
+{% endblock %}
+
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
 {% endblock %}

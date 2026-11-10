@@ -10,7 +10,7 @@
 
 {% block styles %}
     {% if not is_ajax %}{{ parent() }}{% endif %}
-    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.1">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.2">
 {% endblock %}
 
 {% macro select_nested_category_id_function(parent_id, level, allowed_langs) %}
@@ -113,6 +113,22 @@
         {# Card 1: Embed Code + Live Preview + Textless Loading Indicator #}
         <div class="m3-card" id="embedCard">
             <div class="form-group mb-2">
+                <div class="embed-smart-toolbar d-flex align-items-center justify-content-between mb-2 gap-2">
+                    <span class="embed-provider-badge badge" id="embedProviderBadge">
+                        <i class="bi bi-link-45deg"></i> <span class="badge-text">{{ lang.mod_video_embed.autofill.provider_custom|default('Link / Embed') }}</span>
+                    </span>
+                    <div class="embed-toolbar-actions d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm m3-btn-tonal btn-paste-clipboard" id="btnPasteClipboard" title="{{ lang.mod_video_embed.autofill.paste_button|default('Paste Link') }}">
+                            <i class="bi bi-clipboard-plus me-1"></i><span>{{ lang.mod_video_embed.autofill.paste_button|default('Paste') }}</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-icon btn-clear-embed" id="btnClearEmbedSource" title="{{ lang.mod_video_embed.autofill.clear_button|default('Clear') }}" aria-label="{{ lang.mod_video_embed.autofill.clear_button|default('Clear') }}">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-icon btn-toggle-raw" id="btnToggleRawEmbed" title="{{ lang.mod_video_embed.autofill.toggle_raw_code|default('Toggle Code') }}" aria-label="{{ lang.mod_video_embed.autofill.toggle_raw_code|default('Toggle Code') }}">
+                            <i class="bi bi-code-slash"></i>
+                        </button>
+                    </div>
+                </div>
                 <label class="form-label" for="embedInput">{{ lang.mod_video_embed.admin.columns.embed }}</label>
                 <textarea name="embed" id="embedInput" rows="3" class="form-input embed-code-input" required>{{ embed|default('') }}</textarea>
             </div>
@@ -236,7 +252,7 @@
                 <div class="image-upload-area" id="imageUploadArea">
                     {% if autofill_image is defined and autofill_image != '' %}
                         <div class="current-image-wrapper">
-                            <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ autofill_image }}" class="current-image" alt="{{ name|default('Video Image') }}">
+                            <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ autofill_image }}" class="current-image" alt="{{ name|default(lang.mod_video_embed.autofill.image_alt_fallback|default('Video Image')) }}">
                             <button type="button" class="remove-img-btn" id="btnRemoveExistingImage" aria-label="{{ lang.mod_video_embed.remove_image }}">
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -306,5 +322,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.6"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.7"></script>
 {% endblock %}

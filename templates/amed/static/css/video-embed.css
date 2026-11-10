@@ -1,0 +1,212 @@
+/**
+ * video-embed.css
+ * Public theme styling for modern multi-provider video embeds (X, YouTube, HTML5)
+ * Strict Code Separation: Pure external stylesheet, logical CSS properties.
+ */
+
+.video-embed-figure {
+    margin-block: 1rem 1.75rem;
+    width: 100%;
+}
+
+.video-embed-stage {
+    position: relative;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #0b0f19;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.25s ease;
+}
+
+.video-embed-stage:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+}
+
+.video-embed-stage--16x9 {
+    aspect-ratio: 16 / 9;
+}
+
+.video-embed-stage--4x3 {
+    aspect-ratio: 4 / 3;
+}
+
+.video-embed-stage--1x1 {
+    aspect-ratio: 1 / 1;
+    max-inline-size: 540px;
+    margin-inline: auto;
+}
+
+.video-embed-stage--vertical {
+    aspect-ratio: 9 / 16;
+    max-inline-size: 380px;
+    margin-inline: auto;
+}
+
+.video-embed-stage--x {
+    max-inline-size: 550px;
+    margin-inline: auto;
+    aspect-ratio: auto;
+    min-height: 480px;
+    background-color: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.video-embed-stage--x:hover {
+    box-shadow: none;
+}
+
+.video-embed-stage--x iframe {
+    width: 100%;
+    min-height: 480px;
+    border: 0;
+    border-radius: 16px;
+}
+
+.video-embed-facade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    outline: none;
+}
+
+.video-embed-facade:focus-visible {
+    box-shadow: inset 0 0 0 3px #3b82f6;
+}
+
+.video-embed-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.video-embed-poster-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 3.5rem;
+}
+
+.video-embed-facade:hover .video-embed-poster {
+    transform: scale(1.03);
+}
+
+.video-embed-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+}
+
+.video-embed-badges {
+    position: absolute;
+    top: 14px;
+    inset-inline-start: 14px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.video-embed-badge {
+    display: inline-flex;
+    align-items: center;
+    padding-block: 4px;
+    padding-inline: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 9999px;
+    backdrop-filter: blur(8px);
+}
+
+.badge-x {
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.badge-youtube {
+    background-color: rgba(239, 68, 68, 0.95);
+    color: #ffffff;
+}
+
+.badge-duration {
+    background-color: rgba(17, 24, 39, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-embed-play-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background-color: rgba(17, 24, 39, 0.85);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    z-index: 3;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease;
+    cursor: pointer;
+}
+
+.video-embed-facade:hover .video-embed-play-btn {
+    transform: scale(1.12);
+    background-color: rgba(220, 38, 38, 0.95);
+    border-color: #ffffff;
+}
+
+.video-embed-play-btn i {
+    transform: translateX(2px);
+}
+
+[dir="rtl"] .video-embed-play-btn i {
+    transform: translateX(-2px) scaleX(-1);
+}
+
+.video-embed-caption {
+    font-size: 0.825rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.video-embed-attribution a {
+    color: var(--bs-body-color, #212529);
+    text-decoration: none;
+}
+
+.video-embed-attribution a:hover {
+    color: var(--bs-primary, #0d6efd);
+    text-decoration: underline;
+}
+
+.video-embed-notice {
+    font-size: 0.775rem;
+}
+
+.video-embed-mounted-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: inherit;
+    display: block;
+}
+
+.video-embed-stage--x .video-embed-mounted-frame {
+    min-height: 480px;
+}

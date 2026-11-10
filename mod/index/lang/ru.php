@@ -187,6 +187,14 @@ $lang['index']['mod_video_embed'] = [
     '6' => '%s',
     '7' => 'Это видео было опубликовано %s в категории <a href="%s" title="%s">%s</a>',
     '8' => 'Пагинация',
+
+    'load_video' => 'Воспроизвести видео',
+    'load_x_video' => 'Воспроизвести видео из X',
+    'view_on_x' => 'Посмотреть в X',
+    'view_original_source' => 'Посмотреть первоисточник',
+    'external_media_notice_x' => 'При нажатии на воспроизведение будет установлено соединение с X (Twitter) для загрузки медиа.',
+    'external_media_notice_youtube' => 'При нажатии на воспроизведение будет установлено соединение с YouTube для загрузки медиа.',
+    'source_attribution' => 'Источник',
 ];
 
 $lang['index']['mod_video_embed']['latest_videos'] = [

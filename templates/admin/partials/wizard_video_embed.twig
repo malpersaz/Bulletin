@@ -3,17 +3,17 @@
 <div id="videoEmbedWizard" class="wizard-overlay">
     <!-- Wizard Header -->
     <header class="wizard-header">
-        <button type="button" class="icon-btn" onclick="closeVideoEmbedWizard()"><i class="bi bi-x-lg"></i></button>
+        <button type="button" class="icon-btn" id="btnVideoEmbedWizardClose"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
             <span id="videoEmbedWizardStepTitle">{{ lang.mod_video_embed.wizard.step.language }}</span>
             <span id="videoEmbedWizardStepCounter">1/8</span>
         </div>
-        <button type="button" onclick="prepareAndSubmitVideoEmbedWizard()" class="m3-btn-text">{{ lang.mod_video_embed.wizard.button.save }}</button>
+        <button type="button" id="btnVideoEmbedWizardSave" class="m3-btn-text">{{ lang.mod_video_embed.wizard.button.save }}</button>
     </header>
 
     <!-- Progress Bar -->
     <div class="wizard-progress-bar">
-        <div class="wizard-progress-fill" id="videoEmbedWizardProgressFill" style="width: 12.5%;"></div>
+        <div class="wizard-progress-fill" id="videoEmbedWizardProgressFill"></div>
     </div>
 
     <!-- Wizard Content Scrollable -->
@@ -35,7 +35,7 @@
             <p class="step-subhead" id="videoEmbedWizardStepSubhead1">{{ lang.mod_video_embed.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" data-wizard-lang="{{ item.seo|lower }}">
                     <div class="selection-icon">{{ item.seo|upper }}</div>
                     <div class="selection-label">{{ item.name }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
@@ -50,7 +50,7 @@
             <p class="step-subhead" id="videoEmbedWizardStepSubhead2">{{ lang.mod_video_embed.wizard.subtitle.category }}</p>
 
             <div class="m3-input-wrapper">
-                <div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
+                <div class="m3-fake-select" id="btnVideoEmbedWizardCategoryToggle">
                     <span id="videoEmbedWizardSelectedCategory">{{ lang.mod_video_embed.wizard.label.category_select }}</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
@@ -64,12 +64,12 @@
 
             <div class="input-wrapper-lg">
                 <textarea class="m3-input-lg" name="embed" id="videoEmbedInput" rows="4" placeholder=" " required></textarea>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.embed }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.embed }}</label>
             </div>
 
-            <div class="input-wrapper-lg" style="margin-top: 16px;">
+            <div class="input-wrapper-lg mt-3">
                 <input type="text" class="m3-input-lg" name="original" id="videoOriginalTitleInput" placeholder=" " autocomplete="off">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.original }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.original }}</label>
             </div>
         </div>
 
@@ -80,22 +80,22 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="videoNameInput" placeholder=" " autocomplete="off" required>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.name }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
             </div>
 
-            <div class="input-wrapper-lg" style="margin-top: 16px;">
+            <div class="input-wrapper-lg mt-3">
                 <input type="text" class="m3-input-lg" name="sure" id="videoDurationInput" placeholder=" " autocomplete="off" required>
                 <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.duration }}</label>
             </div>
 
-            <div class="input-wrapper-lg" style="margin-top: 16px;">
+            <div class="input-wrapper-lg mt-3">
                 <input type="datetime-local" class="m3-input-lg" name="created_at" id="videoDateInput" value="{{ 'now'|date('Y-m-d') }}T{{ 'now'|date('H:i') }}" required>
             </div>
             
-            <div class="form-group" style="margin-top: 16px;">
-                <label class="form-label">{{ lang.mod_video_embed.columns.acl_id }}</label>
+            <div class="form-group mt-3">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
                 <div class="select-wrapper">
-                    <select name="acl_id_dynamic" id="videoEmbedWizardAclSelect" class="form-select" onchange="document.getElementById('videoEmbedWizardHiddenAcl').value = this.value">
+                    <select name="acl_id_dynamic" id="videoEmbedWizardAclSelect" class="form-select">
                         <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
                         {% for item in mod_acl_acl_id %}
                             <option value="{{ item.id }}">{{ item.name }}</option>
@@ -110,8 +110,8 @@
             <h2 class="step-headline" id="videoEmbedWizardStepHeadline5">{{ lang.mod_video_embed.wizard.step.content }}</h2>
             <p class="step-subhead" id="videoEmbedWizardStepSubhead5">{{ lang.mod_video_embed.wizard.subtitle.content }}</p>
             
-            <div style="margin-top: 12px;">
-                <textarea name="content" id="videoEmbedWizardContentTextarea" rows="8" class="m3-input-lg" style="width:100%; border-radius:12px; padding:12px;"></textarea>
+            <div class="mt-3">
+                <textarea name="content" id="videoEmbedWizardContentTextarea" rows="8" class="m3-input-lg wizard-textarea"></textarea>
             </div>
         </div>
 
@@ -120,12 +120,12 @@
             <h2 class="step-headline" id="videoEmbedWizardStepHeadline6">{{ lang.mod_video_embed.wizard.step.image }}</h2>
             <p class="step-subhead" id="videoEmbedWizardStepSubhead6">{{ lang.mod_video_embed.wizard.subtitle.image }}</p>
 
-            <div class="image-upload-area" onclick="document.getElementById('videoEmbedWizardImgInput').click()">
+            <div class="image-upload-area" id="btnVideoEmbedWizardUploadArea">
                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
                 <p id="videoEmbedWizardUploadText">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
-                <input type="file" name="image" id="videoEmbedWizardImgInput" hidden onchange="previewVideoEmbedWizardImage(this)">
+                <input type="file" name="image" id="videoEmbedWizardImgInput" class="d-none">
             </div>
-            <img id="videoEmbedWizardImgPreview" class="wizard-img-preview" style="display:none; max-width:100%; border-radius:12px; margin-top:12px;">
+            <img id="videoEmbedWizardImgPreview" class="wizard-img-preview d-none" alt="Cover Preview">
         </div>
 
         <!-- Step 7: SEO -->
@@ -135,15 +135,15 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" id="videoEmbedWizardSeoTitleInput" placeholder=" ">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.title }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
             </div>
-            <div class="input-wrapper-lg" style="margin-top: 16px;">
+            <div class="input-wrapper-lg mt-3">
                 <input type="text" class="m3-input-lg" id="videoEmbedWizardSeoKeywordsInput" placeholder=" ">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.keywords }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
             </div>
-            <div class="input-wrapper-lg" style="margin-top: 16px;">
+            <div class="input-wrapper-lg mt-3">
                 <textarea class="m3-input-lg" id="videoEmbedWizardSeoDescriptionInput" rows="3" placeholder=" "></textarea>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.description }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.description }}</label>
             </div>
         </div>
 
@@ -159,7 +159,7 @@
                         <small>{{ lang.mod_video_embed.wizard.label.published_desc }}</small>
                     </div>
                     <label class="m3-switch">
-                        <input type="checkbox" checked id="videoEmbedWizardPublishSwitch" onchange="document.getElementById('videoEmbedWizardHiddenPublish').value = this.checked ? 'y' : 'n'">
+                        <input type="checkbox" checked id="videoEmbedWizardPublishSwitch">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -183,9 +183,9 @@
 
     <!-- Wizard Footer -->
     <div class="wizard-footer">
-        <button type="button" class="m3-btn-outlined" id="btnVideoEmbedWizardPrev" onclick="prevVideoEmbedWizardStep()" disabled>{{ lang.mod_video_embed.wizard.button.prev }}</button>
-        <button type="button" class="m3-btn-filled" id="btnVideoEmbedWizardNext" onclick="nextVideoEmbedWizardStep()">{{ lang.mod_video_embed.wizard.button.next }}</button>
-        <button type="button" class="m3-btn-filled success" id="btnVideoEmbedWizardFinish" onclick="prepareAndSubmitVideoEmbedWizard()" style="display:none;">{{ lang.mod_video_embed.wizard.button.finish }}</button>
+        <button type="button" class="m3-btn-outlined" id="btnVideoEmbedWizardPrev" disabled>{{ lang.mod_video_embed.wizard.button.prev }}</button>
+        <button type="button" class="m3-btn-filled" id="btnVideoEmbedWizardNext">{{ lang.mod_video_embed.wizard.button.next }}</button>
+        <button type="button" class="m3-btn-filled success d-none" id="btnVideoEmbedWizardFinish">{{ lang.mod_video_embed.wizard.button.finish }}</button>
     </div>
 </div>
 </form>

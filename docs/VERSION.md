@@ -1,5 +1,53 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.62 (2026-11-11)
+- **X (Twitter) & Multi-Provider Video Embed Architecture (`docs/plan/x-video-embed-mod-video-embed-provider-plan.md`)**:
+  - **Component 1: Production CSP `frame-src` Whitelisting (`docker/nginx/prod.conf`)**:
+    - Added `https://platform.twitter.com` to `frame-src` Content-Security-Policy directive in `docker/nginx/prod.conf` alongside `https://www.youtube.com`, `https://www.youtube-nocookie.com`, and `https://player.vimeo.com`.
+    - Tested and validated via Nginx configuration syntax tests.
+  - **Component 2: HTMLPurifier Safe-Iframe & Element Policy (`lib/Helper.class.php`)**:
+    - Extended HTMLPurifier custom definition to explicitly permit `<iframe>`, `<time>`, and `<bdi>` elements.
+    - Whitelisted critical security attributes on `<iframe>`: `loading`, `allow`, `referrerpolicy`, `allowfullscreen`, `sandbox`, `data-provider`, `data-status-id`, `data-aspect-ratio`.
+    - Configured strict HTTPS-only `URI.SafeIframeRegexp` matching YouTube, Vimeo, and X/Twitter (`platform.twitter.com/embed/Tweet.html`).
+  - **Component 3: Shared Multi-Provider Video Embed Service (`lib/VideoEmbedProviderService.class.php`, `config/autoload.config.php`)**:
+    - Built canonical, shared `VideoEmbedProviderService` handling multi-provider video embeds (X/Twitter, YouTube, Vimeo, HTML5).
+    - Implemented `detectProvider(?string $input)` resolving X status URLs/iframes, YouTube URLs (shorts, watch, live, embed, youtu.be), and Vimeo.
+    - Implemented `computeXSyndicationToken(string $statusId)` providing deterministic JavaScript/V8 base-36 syndication token parity for X CDN syndication queries.
+    - Implemented `fetchMetadata(string $provider, string $id, string $lang)` with caching (TTL 3600s), tombstone/private post detection, video-existence validation, poster resolution, aspect ratio normalization, and provenance snapshot construction.
+    - Implemented `buildEmbedHtml()` and `sanitizeOrRebuildEmbed()` guaranteeing strict HTML5 iframes with zero inline styles and scripts.
+    - Implemented `enrichVideoRowForFrontend()` augmenting database records with provider flags (`is_x`, `is_youtube`), embed sources, aspect ratios, author handles, and ISO 8601 durations (`schema_duration`).
+    - Integrated SSRF-safe HTTP client (`httpRequest()`) with DNS validation, private IP blocking, content-length limits, and redirect controls.
+    - Registered service in `config/autoload.config.php`.
+  - **Component 4: Controller & Validator Sanitization (`mod/mod_video_embed/index.php`, `validator/{add,edit}.validator.php`, `model/datatable.model.php`, `model/videos.model.php`)**:
+    - Upgraded `autofill_metadata()`, `_add()`, and `_edit()` in `mod/mod_video_embed/index.php` to leverage `VideoEmbedProviderService` for multi-provider metadata extraction and iframe sanitization.
+    - Updated `mod_video_embed` add and edit validators enforcing embed sanitization.
+    - Sanitized `datatable.model.php` and `videos.model.php` replacing legacy Turkish identifiers (`$colom`, `$groupad`, `Tcno`) with English architectural standards.
+  - **Component 5: MCP Server-Side 1-Call Ingestion & Canonical URL Route Parity (`lib/McpVideoTools.class.php`)**:
+    - Updated `create_video_embed` schema narrowing required fields to `['lang', 'category_id', 'embed']`, allowing agents to ingest an X or YouTube URL in 1 call with auto-title, auto-duration, auto-description, and auto-thumbnail import.
+    - Fixed Google Indexing route in `McpVideoTools`: corrected `/videos/embed/{id}-{seo}` to `/video/{id}-{seo}` matching `config/url.config.php`.
+  - **Component 6: Phone-Only Admin UX, Smart Toolbar & Wizard Code Separation (`templates/admin/mod_video_embed/`, `templates/admin/partials/wizard_video_embed.twig`, `templates/admin/assets/js/mod_video_embed_edit.js`, `templates/admin/assets/css/mod_video_embed.css`, `templates/admin/assets/js/script.js`, `templates/admin/layout.twig`)**:
+    - Added smart toolbar in admin embed views: provider detection badge (`#embedProviderBadge`), clipboard paste (`#btnPasteClipboard`), clear input (`#btnClearEmbedSource`), and raw code toggle (`#btnToggleRawEmbed`).
+    - Enforced 44x44px touch targets on image removal buttons for mobile viewport compliance.
+    - Refactored `wizard_video_embed.twig` eliminating all 22 code separation violations (inline styles and inline event handlers), migrating all event handling to external `script.js`.
+    - Corrected language dictionary references in `wizard_video_embed.twig` and `layout.twig` to use `lang.mod_video_embed.admin.columns.*`.
+    - Bumped admin cache busters: `mod_video_embed.css?v=2.2`, `mod_video_embed_edit.js?v=2.7`, and `script.js?v=2.04`.
+  - **Component 7 & 8: Facade Player, Dynamic Aspect Ratio, JSON-LD & Content Integration (`templates/amed/partials/_video_embed_player.twig`, `templates/amed/static/css/video-embed.css`, `templates/amed/static/js/video-embed.js`, `mod/index/indexBase.php`, `mod/index/helper/mod_video_embed.helper.php`, `templates/amed/index/mod_{news,publication,event}/`, `templates/amed/index/mod_video_embed/`)**:
+    - Created zero-network click-to-mount facade player (`_video_embed_player.twig`) with custom play button, provider and duration badges, `<figcaption>` attribution with `<bdi dir="ltr">`, and `<noscript>` fallback.
+    - Created `video-embed.css` using logical CSS properties, dark/light theme styling, and adaptive aspect ratio stages (`--16x9`, `--4x3`, `--1x1`, `--vertical`, `--x`).
+    - Created `video-embed.js` managing click-to-play iframe mounting, Twitter iframe resize synchronization (`twttr.private.resize`), and live theme switching observer (`data-bs-theme`).
+    - Enriched `_mod_video` in `indexBase.php` selecting full columns with `where_status('y')` filtering and frontend data enrichment.
+    - Integrated facade player across `mod_news/news.twig`, `mod_publication/publication.twig`, and `mod_event/event.twig`.
+    - Enriched JSON-LD `VideoObject` schemas with `embedUrl`, `thumbnailUrl`, and ISO 8601 `duration`.
+    - Updated `videos.twig` fixing pagination (`pagination`), categories loop, and localized text.
+    - Guarded duration badge in `latest_videos.twig` against `00:00`.
+  - **Component 9: 11-Locale Localization, RTL BDI & Legal Compliance (`mod/mod_video_embed/lang/*.php`, `mod/index/lang/*.php`, `templates/amed/layouts/base.twig`, `mod/index/helper/legal.helper.php`, `tools/i18n_guard.py`)**:
+    - Added RTL direction attribute `dir="{{ site.lang in ['ar', 'ckb'] ? 'rtl' : 'ltr' }}"` in `templates/amed/layouts/base.twig`.
+    - Updated 11 admin language files in `mod/mod_video_embed/lang/*.php` with provider-neutral and toolbar keys (`paste_button`, `clear_button`, `toggle_raw_code`, `provider_youtube`, `provider_x`, `tombstone_error`, `no_video_in_post`).
+    - Added video player localization keys (`load_video`, `load_x_video`, `view_on_x`, `view_original_source`, `external_media_notice_x`, `external_media_notice_youtube`, `source_attribution`) across all 10 public language files in `mod/index/lang/*.php`.
+    - Added external media cookie disclosure across all 10 locales in `legal.helper.php`.
+    - Updated `tools/i18n_guard.py` technical whitelist with standard day and networking tokens (`tue`, `thu`, `dns`, `dnt`, `utc`).
+  - **Framework Version Parity**: Synchronized release version baseline `1.0.62` across `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`.
+
 ## v1.0.61 (2026-11-10)
 - **Editorial Pipeline Tooling Hardening: Environment Identity, Environment-Agnostic Rubric, Dossier Contracts & Draft-Time Diagnostics (`docs/plan/v1.0.61-editorial-pipeline-tooling-hardening-plan.md`)**:
   - **Component A: MCP Response Environment Identity & Security Headers (`lib/McpServer.class.php`, `mcp.php`, `tasks/mcp_smoke.php`)**:

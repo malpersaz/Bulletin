@@ -4208,12 +4208,12 @@ function updateVideoEmbedWizardUI() {
     if (btnPrev) btnPrev.disabled = (videoEmbedWizardCurrentStep === 1);
 
     if (videoEmbedWizardCurrentStep === videoEmbedWizardTotalSteps) {
-        if (btnNext) btnNext.style.display = 'none';
-        if (btnFinish) btnFinish.style.display = 'block';
+        if (btnNext) btnNext.classList.add('d-none');
+        if (btnFinish) btnFinish.classList.remove('d-none');
         updateVideoEmbedSummary();
     } else {
-        if (btnNext) btnNext.style.display = 'block';
-        if (btnFinish) btnFinish.style.display = 'none';
+        if (btnNext) btnNext.classList.remove('d-none');
+        if (btnFinish) btnFinish.classList.add('d-none');
     }
 
     // Auto-fill SEO when entering SEO step (Step 7)
@@ -4303,7 +4303,7 @@ function previewVideoEmbedWizardImage(input) {
             const img = document.getElementById('videoEmbedWizardImgPreview');
             if (img) {
                 img.src = e.target.result;
-                img.style.display = 'block';
+                img.classList.remove('d-none');
             }
             const label = document.getElementById('videoEmbedWizardUploadText');
             if (label) label.innerText = safeAdminLang?.video_embed?.wizard?.label?.change_image || '';
@@ -4586,8 +4586,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aclSelect) {
             aclSelect.addEventListener('change', () => {
                 videoEmbedWizardData.acl_id = aclSelect.value;
+                const hiddenAcl = document.getElementById('videoEmbedWizardHiddenAcl');
+                if (hiddenAcl) hiddenAcl.value = aclSelect.value;
                 saveVideoEmbedWizardState();
             });
+        }
+
+        // Wizard button and interaction bindings
+        document.getElementById('btnVideoEmbedWizardClose')?.addEventListener('click', closeVideoEmbedWizard);
+        document.getElementById('btnVideoEmbedWizardSave')?.addEventListener('click', prepareAndSubmitVideoEmbedWizard);
+        document.getElementById('btnVideoEmbedWizardPrev')?.addEventListener('click', prevVideoEmbedWizardStep);
+        document.getElementById('btnVideoEmbedWizardNext')?.addEventListener('click', nextVideoEmbedWizardStep);
+        document.getElementById('btnVideoEmbedWizardFinish')?.addEventListener('click', prepareAndSubmitVideoEmbedWizard);
+        document.getElementById('btnVideoEmbedWizardCategoryToggle')?.addEventListener('click', toggleWizardCategorySheet);
+
+        document.querySelectorAll('#videoEmbedWizard .selection-card[data-wizard-lang]').forEach(card => {
+            card.addEventListener('click', () => {
+                selectVideoEmbedWizardLang(card, card.dataset.wizardLang);
+            });
+        });
+
+        const uploadArea = document.getElementById('btnVideoEmbedWizardUploadArea');
+        const imgInput = document.getElementById('videoEmbedWizardImgInput');
+        if (uploadArea && imgInput) {
+            uploadArea.addEventListener('click', () => imgInput.click());
+            imgInput.addEventListener('change', () => previewVideoEmbedWizardImage(imgInput));
         }
     }
 });

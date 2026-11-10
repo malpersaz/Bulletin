@@ -248,7 +248,8 @@ class legal_helper extends indexBase
                 'consent' => 'Hilbijartin û pejirandina komên kulîçeyan di bîrê de dihêle.',
                 'sidebar' => 'Rewşa vebûn/girtinê ya pêkhateyên rûpelê tomar dike.',
                 'analytics' => 'Amarên anonîm ên serdanvanan û leza rûpelan dipîve.',
-                'marketing' => 'Bandor û têkiliyên reklam û agahdarkirinê dipîve.'
+                'marketing' => 'Bandor û têkiliyên reklam û agahdarkirinê dipîve.',
+                'external_media' => 'Medyaya derve û lîstina vîdyoyan ji platformên wekî YouTube û X (Twitter) bi rê ve dibe.'
             ],
             'en' => [
                 'session' => 'Preserves authenticated user state and request security token across requests.',
@@ -256,7 +257,8 @@ class legal_helper extends indexBase
                 'consent' => 'Stores cookie category consent approvals and visitor privacy preferences.',
                 'sidebar' => 'Preserves navigational state and interface element visibility preferences.',
                 'analytics' => 'Measures anonymized visitor statistics, page render speeds, and traffic trends.',
-                'marketing' => 'Measures outreach and advertising campaign effectiveness and audience engagement.'
+                'marketing' => 'Measures outreach and advertising campaign effectiveness and audience engagement.',
+                'external_media' => 'Manages external media playback and preferences for embedded content from platforms like YouTube and X (Twitter).'
             ],
             'tr' => [
                 'session' => 'Kullanıcı oturum kimliğini ve istek güvenliğini oturum süresince korur.',
@@ -264,7 +266,8 @@ class legal_helper extends indexBase
                 'consent' => 'Çerez onay tercihlerini ve gizlilik izinlerini tarayıcıda saklar.',
                 'sidebar' => 'Arayüz gezinme durumunu ve panel görünüm tercihlerini korur.',
                 'analytics' => 'Anonim ziyaretçi istatistiklerini, sayfa hızını ve trafik verilerini analiz eder.',
-                'marketing' => 'Tanıtım ve duyuru kampanyalarının etkileşim oranlarını ölçer.'
+                'marketing' => 'Tanıtım ve duyuru kampanyalarının etkileşim oranlarını ölçer.',
+                'external_media' => 'YouTube ve X (Twitter) gibi harici platformlardan gömülü video oynatımını ve tercihlerini yönetir.'
             ],
             'de' => [
                 'session' => 'Speichert die Benutzersitzung und Authentifizierungstoken während des Besuchs.',
@@ -272,7 +275,8 @@ class legal_helper extends indexBase
                 'consent' => 'Speichert die erteilten Cookie-Einwilligungen und Datenschutzeinstellungen.',
                 'sidebar' => 'Speichert den Navigationsstatus und Benutzeroberflächen-Einstellungen.',
                 'analytics' => 'Erfasst anonymisierte Besucherstatistiken und Seitenladezeiten.',
-                'marketing' => 'Misst die Wirksamkeit von Informations- und Kommunikationskampagnen.'
+                'marketing' => 'Misst die Wirksamkeit von Informations- und Kommunikationskampagnen.',
+                'external_media' => 'Verwaltet die Wiedergabe externer Medien und Einstellungen für eingebettete Inhalte von YouTube und X (Twitter).'
             ],
             'fr' => [
                 'session' => 'Conserve la session utilisateur et le jeton de sécurité durant la navigation.',
@@ -280,7 +284,8 @@ class legal_helper extends indexBase
                 'consent' => 'Enregistre les consentements de cookies et les préférences de confidentialité.',
                 'sidebar' => 'Conserve l’état des menus et des éléments de l’interface.',
                 'analytics' => 'Mesure les statistiques de fréquentation anonymisées et la rapidité des pages.',
-                'marketing' => 'Mesure l’efficacité des campagnes et l’engagement des visiteurs.'
+                'marketing' => 'Mesure l’efficacité des campagnes et l’engagement des visiteurs.',
+                'external_media' => 'Gère la lecture des médias externes et les préférences pour les contenus intégrés depuis YouTube et X (Twitter).'
             ],
             'ar' => [
                 'session' => 'يحفظ جلسة المستخدم النشطة ورموز الأمان طوال فترة التصفح.',
@@ -288,7 +293,8 @@ class legal_helper extends indexBase
                 'consent' => 'يحفظ موافقات المستخدم على فئات ملفات تعريف الارتباط.',
                 'sidebar' => 'يحفظ حالة التنقل وتفضيلات واجهة المستخدم.',
                 'analytics' => 'يقيس إحصاءات الزوار المجهولة وسرعة استجابة الصفحات.',
-                'marketing' => 'يقيس مدى فاعلية الحملات التوعوية والتفاعلات الرقمية.'
+                'marketing' => 'يقيس مدى فاعلية الحملات التوعوية والتفاعلات الرقمية.',
+                'external_media' => 'يدير تشغيل الوسائط الخارجية والتفضيلات للمحتوى المضمّن من منصات مثل يوتيوب وإكس (تويتر).'
             ],
             'ckb' => [
                 'session' => 'ناسنامەی دانیشتنی بەکارهێنەر و پاراستنی ئاسایش لە کاتی سەرداندا دەپارێزێت.',
@@ -296,7 +302,8 @@ class legal_helper extends indexBase
                 'consent' => 'هەڵبژاردن و ڕەزامەندییەکانی تایبەت بە کووکی پاشەکەوت دەکات.',
                 'sidebar' => 'دۆخی کردنەوە و داخستنی بەشەکانی ڕووکار دەپارێزێت.',
                 'analytics' => 'ئاماری نەناسراوی سەردانکەران و خێرایی پەڕەکان دەپێوێت.',
-                'marketing' => 'کاریگەری کەمپینەکانی ناساندن و کارلێکەکان دەپێوێت.'
+                'marketing' => 'کاریگەری کەمپینەکانی ناساندن و کارلێکەکان دەپێوێت.',
+                'external_media' => 'لێدانی میدیای دەرەکی و هەڵبژاردنەکان بۆ ناوەڕۆکی دابینکراو لە پلاتفۆرمەکانی وەک یوتیوب و ئێکس بەڕێوەدەبات.'
             ],
             'sv' => [
                 'session' => 'Behåller användarsessionen och säkerhetstoken under webbplatsbesöket.',
@@ -304,7 +311,8 @@ class legal_helper extends indexBase
                 'consent' => 'Sparar godkända samtycken för cookie-kategorier och integritetsval.',
                 'sidebar' => 'Behåller navigeringsläge och gränssnittsinställningar.',
                 'analytics' => 'Mäter anonymiserad besökarstatistik och sidladdningstider.',
-                'marketing' => 'Mäter räckvidd och interaktioner för informationskampanjer.'
+                'marketing' => 'Mäter räckvidd och interaktioner för informationskampanjer.',
+                'external_media' => 'Hanterar uppspelning av extern media och inställningar för inbäddat innehåll från YouTube och X (Twitter).'
             ],
             'zza' => [
                 'session' => 'Nasnameyê roniştişî û ewleyîya şuxulnayoxî wextê gêrayîşî de paweno.',
@@ -312,7 +320,8 @@ class legal_helper extends indexBase
                 'consent' => 'Tercihanê sîyasetê çerezan û destûranê xisûsîyan qeyd keno.',
                 'sidebar' => 'Wextê gêrayîşî de rewşa menuyan û tercihanê rîyê peli paweno.',
                 'analytics' => 'Amaranê anonîman ê zîyaretkeran û lezîya pelan pîyeno.',
-                'marketing' => 'Karîgerîya kampanyayanê şınasnayîşî û têkilîyan pîyeno.'
+                'marketing' => 'Karîgerîya kampanyayanê şınasnayîşî û têkilîyan pîyeno.',
+                'external_media' => 'Giredayîşê medyaya teberi û vîdyoyanê YouTube û X (Twitter) îdare keno.'
             ],
             'ru' => [
                 'session' => 'Сохраняет идентификатор сеанса пользователя и обеспечивает безопасность запросов.',
@@ -320,7 +329,8 @@ class legal_helper extends indexBase
                 'consent' => 'Сохраняет согласия пользователя на категории файлов cookie и параметры конфиденциальности.',
                 'sidebar' => 'Сохраняет состояние навигации и видимость элементов интерфейса.',
                 'analytics' => 'Анализирует анонимную статистику посещаемости и скорость загрузки страниц.',
-                'marketing' => 'Оценивает эффективность информационных кампаний и охват аудитории.'
+                'marketing' => 'Оценивает эффективность информационных кампаний и охват аудитории.',
+                'external_media' => 'Управляет воспроизведением внешних медиа и настройками для встроенного содержимого YouTube и X (Twitter).'
             ]
         ];
 
@@ -388,6 +398,14 @@ class legal_helper extends indexBase
                 'purpose' => $p['marketing'],
                 'duration' => $d['6_months'],
                 'display_order' => 6
+            ],
+            [
+                'cookie_name' => 'personalization_id, VISITOR_INFO1_LIVE',
+                'category' => 'functional',
+                'provider' => 'X (Twitter), YouTube',
+                'purpose' => $p['external_media'] ?? $p['consent'],
+                'duration' => $d['6_months'],
+                'display_order' => 7
             ]
         ];
     }

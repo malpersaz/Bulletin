@@ -18,21 +18,21 @@ class datatable_model
     {
         $valid_sort = ["asc", "desc"];
 
-        $colom = ['id', 'name', 'image', 'duration', 'lang', 'created_at', 'status'];
+        $columns = ['id', 'name', 'image', 'duration', 'lang', 'created_at', 'status'];
 
         $rp = Req::is_Post('rp') === TRUE ? Req::Post_Safe('rp') : 10;
 
         $sortorder = Req::is_Post('sortorder') === TRUE ? Req::Post_Safe('sortorder') : $valid_sort['0'];
 
-        // ORDER BY ID ASC Gibi
+        // Example: ORDER BY ID ASC
         if (in_array($sortorder, $valid_sort) === False) {
             $sortorder = $valid_sort['0'];
         }
 
-        $sortname = Req::is_Post('sortname') === TRUE ? Req::Post_Safe('sortname') : $colom['0'];
+        $sortname = Req::is_Post('sortname') === TRUE ? Req::Post_Safe('sortname') : $columns['0'];
 
-        if (in_array($sortname, $colom) === False) {
-            $sortname = $colom['0'];
+        if (in_array($sortname, $columns) === False) {
+            $sortname = $columns['0'];
         }
 
         $unique = 'id';
@@ -90,30 +90,21 @@ class datatable_model
 
         foreach ($this->mod_video_embed_model->toArray() as $v) {
             $array['id'] = $v[$unique];
-            $array['cell'] = $this->format($v, $colom);
+            $array['cell'] = $this->format($v, $columns);
             $this->json['rows'][] = $array;
         }
         echo json_encode($this->json);
     }
 
 
-    private function format($value, $colom)
+    private function format($value, $columns)
     {
         $new = [];
-        foreach ($colom as $c) {
+        foreach ($columns as $c) {
             if (isset($value[$c])) {
                 $new[] = $value[$c];
             }
         }
         return $new;
-
-        /*if ($value['durum'] === 'y') {
-            $value['durum'] = $this->lang['mod_user']['grid']['active'];
-        } elseif ($value['durum'] === 'n') {
-            $value['durum'] = $this->lang['mod_user']['grid']['waiting_email_activation'];
-        } elseif ($value['durum'] === 'a') {
-            $value['durum'] = $this->lang['mod_user']['grid']['waiting_admin_activation'];
-        }*/
-        //return array_values($value);
     }
 }

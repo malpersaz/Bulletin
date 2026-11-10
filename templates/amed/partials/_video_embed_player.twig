@@ -1,0 +1,96 @@
+{#
+  _video_embed_player.twig
+  Shared Multi-Provider Facade Video Player
+  Supports X (Twitter), YouTube, Vimeo, and HTML5 video.
+  Complies strictly with AGENTS.md Rule 1 (Zero Inline CSS/JS) and RTL BDI.
+#}
+{% set vid = video|default(v|default(d)) %}
+{% if vid is defined and vid is not empty %}
+    {% set aspect_cls = 'video-embed-stage--16x9' %}
+    {% if vid.aspect_ratio is defined and vid.aspect_ratio == '4:3' %}
+        {% set aspect_cls = 'video-embed-stage--4x3' %}
+    {% elseif vid.aspect_ratio is defined and vid.aspect_ratio == '1:1' %}
+        {% set aspect_cls = 'video-embed-stage--1x1' %}
+    {% elseif (vid.aspect_ratio is defined and vid.aspect_ratio == '9:16') or (vid.is_vertical is defined and vid.is_vertical) %}
+        {% set aspect_cls = 'video-embed-stage--vertical' %}
+    {% elseif vid.is_x is defined and vid.is_x %}
+        {% set aspect_cls = 'video-embed-stage--x' %}
+    {% endif %}
+
+    {% set poster = vid.poster_url|default(vid.image is defined and vid.image is not empty ? (site.iaddress ~ 'mod_video_embed/thumb/' ~ vid.image) : '') %}
+
+    <figure class="video-embed-figure mb-4" data-video-figure>
+        <div class="video-embed-stage {{ aspect_cls }}{% if vid.is_x is defined and vid.is_x %} video-embed-stage--x{% endif %}"
+             data-video-embed-facade
+             data-provider="{{ vid.provider|default(vid.is_x is defined and vid.is_x ? 'x' : 'youtube') }}"
+             data-aspect-ratio="{{ vid.aspect_ratio|default('16:9') }}"
+             data-embed-src="{{ vid.embed_src|default('')|e('html_attr') }}"
+             data-title="{{ vid.name|default('')|e('html_attr') }}">
+            <div class="video-embed-facade" role="button" tabindex="0" aria-label="{{ lang.index.mod_video_embed.load_video|default('Play Video') }}: {{ vid.name|default('')|e('html_attr') }}">
+                {% if poster is not empty %}
+                    <img src="{{ poster }}"
+                         alt="{{ vid.name|default('')|e('html_attr') }}"
+                         class="video-embed-poster"
+                         loading="lazy"
+                         decoding="async"
+                         width="640"
+                         height="360">
+                {% else %}
+                    <div class="video-embed-poster-placeholder">
+                        <i class="bi bi-camera-reels" aria-hidden="true"></i>
+                    </div>
+                {% endif %}
+                <div class="video-embed-overlay" aria-hidden="true"></div>
+                <div class="video-embed-badges">
+                    {% if vid.is_x is defined and vid.is_x %}
+                        <span class="video-embed-badge badge-x">
+                            <i class="bi bi-twitter-x me-1" aria-hidden="true"></i><span>X</span>
+                        </span>
+                    {% elseif vid.is_youtube is defined and vid.is_youtube %}
+                        <span class="video-embed-badge badge-youtube">
+                            <i class="bi bi-youtube me-1" aria-hidden="true"></i><span>YouTube</span>
+                        </span>
+                    {% endif %}
+                    {% if vid.duration is defined and vid.duration is not empty and vid.duration != '00:00' %}
+                        <span class="video-embed-badge badge-duration">
+                            <i class="bi bi-clock-fill me-1" aria-hidden="true"></i><span>{{ vid.duration }}</span>
+                        </span>
+                    {% endif %}
+                </div>
+                <button type="button" class="video-embed-play-btn" aria-hidden="true" tabindex="-1">
+                    <i class="bi bi-play-fill"></i>
+                </button>
+            </div>
+            <noscript>
+                {% if vid.embed_html is defined and vid.embed_html is not empty %}
+                    {{ vid.embed_html|raw }}
+                {% elseif vid.embed is defined and vid.embed is not empty %}
+                    {{ vid.embed|raw }}
+                {% else %}
+                    <a href="{{ vid.canonical_url|default(vid.original|default('#')) }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                        {{ lang.index.mod_video_embed.view_original_source|default('View Video') }}
+                    </a>
+                {% endif %}
+            </noscript>
+        </div>
+        <figcaption class="video-embed-caption mt-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="video-embed-attribution">
+                <span class="text-muted">{{ lang.index.mod_video_embed.source_attribution|default('Source') }}:</span>
+                {% if vid.canonical_url is defined and vid.canonical_url is not empty %}
+                    <a href="{{ vid.canonical_url }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">
+                        <bdi dir="ltr">{% if vid.author_handle is defined and vid.author_handle is not empty %}@{{ vid.author_handle }}{% elseif vid.is_x is defined and vid.is_x %}X (Twitter){% elseif vid.is_youtube is defined and vid.is_youtube %}YouTube{% else %}{{ vid.name }}{% endif %}</bdi>
+                    </a>
+                {% elseif vid.original is defined and vid.original is not empty %}
+                    <a href="{{ vid.original }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">
+                        <bdi dir="ltr">{% if vid.is_x is defined and vid.is_x %}X (Twitter){% elseif vid.is_youtube is defined and vid.is_youtube %}YouTube{% else %}{{ vid.name }}{% endif %}</bdi>
+                    </a>
+                {% else %}
+                    <span class="fw-semibold">{{ vid.is_x is defined and vid.is_x ? 'X (Twitter)' : (vid.is_youtube is defined and vid.is_youtube ? 'YouTube' : site.title) }}</span>
+                {% endif %}
+            </span>
+            <small class="video-embed-notice text-muted">
+                {{ (vid.is_x is defined and vid.is_x) ? (lang.index.mod_video_embed.external_media_notice_x|default('Click to load media from X')) : (lang.index.mod_video_embed.external_media_notice_youtube|default('Click to load media from YouTube')) }}
+            </small>
+        </figcaption>
+    </figure>
+{% endif %}

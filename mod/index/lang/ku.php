@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Ev vîdyo di roja %s de di kategoriya <a href="%s" title="%s">%s</a> de hate weşandin',
         8 => 'Rûpelkirin',
+        
+        'load_video' => 'Vîdyoyê Lê Bide',
+        'load_x_video' => 'Vîdyoya X Lê Bide',
+        'view_on_x' => 'Li ser X bibîne',
+        'view_original_source' => 'Çavkaniya Resen Bibîne',
+        'external_media_notice_x' => 'Tikandina lêdanê dê rasterast bi X (Twitter) ve were girêdan û medyaya derve bar bike.',
+        'external_media_notice_youtube' => 'Tikandina lêdanê dê rasterast bi YouTube ve were girêdan û medyaya derve bar bike.',
+        'source_attribution' => 'Çavkanî',
         'latest_videos' => [
             'title' => 'Vîdyo',
             'all_items' => 'Hemû Vîdyo',

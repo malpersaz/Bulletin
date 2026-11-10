@@ -51,7 +51,7 @@
                                 <i class="bi bi-play-fill"></i>
                             </span>
 
-                            {% if video.duration is defined and video.duration is not empty %}
+                            {% if video.duration is defined and video.duration is not empty and video.duration != '00:00' %}
                                 <span class="latest-video-duration">
                                     <i class="bi bi-clock-fill" aria-hidden="true"></i>
                                     <span>{{ video.duration }}</span>

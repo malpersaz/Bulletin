@@ -216,6 +216,16 @@ class add_validator
             return True;
         }
 
+        $embedInput = trim((string) Req::Post('embed'));
+        $originalInput = trim((string) Req::Post_Safe('original'));
+        if ($embedInput !== '') {
+            $sanitized = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embedInput, $originalInput);
+            if ($sanitized === '') {
+                $this->errors['embed'] = $this->lang['mod_video_embed']['errors']['invalid_embed'] ?? 'Invalid video embed code or URL.';
+                return True;
+            }
+        }
+
         #Check inarray
         // status in Array
         $this->valid->add(
@@ -232,7 +242,7 @@ class add_validator
 
         #Check Email
 
-        #Check Tcno
+        #Check National ID
 
         #Check Unique
 

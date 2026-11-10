@@ -2,14 +2,14 @@
 
 {% set category_seo = ctx_get('category_seo') %}
 {% set categoryname = ctx_get('categoryname') %}
-{% set kategoriler = ctx_get('categories') %}
+{% set categories = ctx_get('categories') %}
 {% set videos = ctx_get('videos') %}
-{% set sayfalama = ctx_get('sayfalama') %}
-{% set sayfa = ctx_get('sayfa') %}
+{% set pagination = ctx_get('pagination')|default(ctx_get('sayfalama')) %}
+{% set current_page = ctx_get('page')|default(ctx_get('sayfa'))|default(1) %}
 
 {% set is_filtered = category_seo is not empty and category_seo != 'all' %}
 {% set current_page_title = is_filtered ? categoryname : lang.index.mod_video_embed.1 %}
-{% set page_canonical = site.saddress ~ 'videos' ~ (is_filtered ? '/' ~ category_seo : '') ~ (sayfa is defined and sayfa > 1 ? '/' ~ sayfa : '') %}
+{% set page_canonical = site.saddress ~ 'videos' ~ (is_filtered ? '/' ~ category_seo : '') ~ (current_page is defined and current_page > 1 ? '/' ~ current_page : '') %}
 {% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 
 {% block canonical %}
@@ -81,6 +81,7 @@
 
 {% block css_custom %}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
@@ -93,8 +94,10 @@
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">Tüm Videolar</a>
-                {% for kat in kategoriler %}
+                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">
+                    {{ lang.index.mod_video_embed.latest_videos.all_items|default(lang.index.mod_video_embed.1) }}
+                </a>
+                {% for kat in categories %}
                     <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
                         {{ kat.name }}
                     </a>
@@ -117,39 +120,39 @@
             </ol>
         </nav>
 
-                {% if videos is not empty %}
-                    <div class="row">
-                        {% for video in videos %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card video-card h-100">
-                                    <a href="{{ video.youtube_url }}" 
-                                       class="video-poster-link"
-                                       data-bs-toggle="lightbox"
-                                       data-gallery="videos"
-                                       data-title="{{ video.name }}">
-                                        <div class="video-poster">
-                                            <img src="{{ site.iaddress }}mod_video_embed/thumb/{{ video.image }}" alt="{{ video.name }}" class="w-100 h-100 object-fit-cover" width="480" height="270" loading="lazy" decoding="async">
-                                            <i class="bi bi-play-circle-fill play-icon"></i>
-                                        </div>
-                                    </a>
-                                    <div class="card-body">
-                                        <p class="card-text fw-bold">
-                                            <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}" title="{{ video.name }}">
-                                                {{ video.name }}
-                                            </a>
-                                        </p>
-                                    </div>
+        {% if videos is not empty %}
+            <div class="row">
+                {% for video in videos %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card video-card h-100">
+                            <a href="{{ video.embed_src|default(video.youtube_url) }}" 
+                               class="video-poster-link"
+                               data-bs-toggle="lightbox"
+                               data-gallery="videos"
+                               data-title="{{ video.name }}">
+                                <div class="video-poster">
+                                    <img src="{{ video.poster_url|default(site.iaddress ~ 'mod_video_embed/thumb/' ~ video.image) }}" alt="{{ video.name }}" class="w-100 h-100 object-fit-cover" width="480" height="270" loading="lazy" decoding="async">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
                                 </div>
+                            </a>
+                            <div class="card-body">
+                                <p class="card-text fw-bold">
+                                    <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}" title="{{ video.name }}">
+                                        {{ video.name }}
+                                    </a>
+                                </p>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-            {% if sayfalama is not empty %}
+                {% endfor %}
+            </div>
+            {% if pagination is not empty %}
                 <nav aria-label="{{ lang.index.mod_video_embed.8 }}" class="mt-4">
                     <ul class="pagination justify-content-center">
-                        {% for s in sayfalama %}
+                        {% for s in pagination %}
                             {% if s == '...' %}
                                 <li class="page-item disabled"><span class="page-link">...</span></li>
-                            {% elseif s == sayfa %}
+                            {% elseif s == current_page %}
                                 <li class="page-item active" aria-current="page"><span class="page-link">{{ s }}</span></li>
                             {% else %}
                                 <li class="page-item"><a class="page-link" href="{{ site.saddress }}videos/{{ category_seo|default('all') }}/{{ s }}">{{ s }}</a></li>

@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Cette video a ete publiee le %s dans la categorie <a href="%s" title="%s">%s</a>',
         8 => 'Pagination',
+        
+        'load_video' => 'Lire la vidéo',
+        'load_x_video' => 'Lire la vidéo X',
+        'view_on_x' => 'Voir sur X',
+        'view_original_source' => 'Voir la source originale',
+        'external_media_notice_x' => 'En cliquant sur lecture, vous vous connectez à X (Twitter) et chargez des médias externes.',
+        'external_media_notice_youtube' => 'En cliquant sur lecture, vous vous connectez à YouTube et chargez des médias externes.',
+        'source_attribution' => 'Source',
         'latest_videos' => [
             'title' => 'Vidéos',
             'all_items' => 'Toutes les Vidéos',

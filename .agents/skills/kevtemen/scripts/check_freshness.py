@@ -216,7 +216,11 @@ def extract_pub_date(html: str, url: str) -> Optional[Dict[str, Any]]:
 
 
 def fetch_html(url: str, timeout: int) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "tr,en;q=0.8",
+    })
     with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
         return resp.read().decode("utf-8", errors="replace")
 

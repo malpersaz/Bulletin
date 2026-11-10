@@ -154,8 +154,8 @@
             video_embed: {
                 messages: {
                     success: {{ lang.mod_video_embed.message.success.add|json_encode|raw }},
-                    embed_error: {{ (lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.columns.embed}))|json_encode|raw }},
-                    title_error: {{ (lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.columns.name, "%s": 3, "%s": 255}))|json_encode|raw }}
+                    embed_error: {{ (lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.admin.columns.embed}))|json_encode|raw }},
+                    title_error: {{ (lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.admin.columns.name, "%s": 3, "%s": 255}))|json_encode|raw }}
                 },
                 label: {
                     change_image: {{ lang.mod_video_embed.wizard.label.change_image|json_encode|raw }}
@@ -286,7 +286,7 @@
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_newsletter.js?v=1.05"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_profile.js?v=1.08"></script>
     <script src="{{ site.address }}templates/admin/assets/js/mod_user.js?v=2.0"></script>
-    <script src="{{ site.address }}templates/admin/assets/js/script.js?v=2.03"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/script.js?v=2.04"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

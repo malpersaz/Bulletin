@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
@@ -236,15 +237,18 @@
 	</script>
     {% if video is not empty %}
         {% for v in video %}
+        {% set v_thumb = v.poster_url|default(v.image is defined and v.image is not empty ? (site.iaddress ~ 'mod_video_embed/thumb/' ~ v.image) : (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg')) %}
         <script type="application/ld+json">
             {
               "@context": "https://schema.org",
               "@type": "VideoObject",
               "name": {{ v.name|json_ld|raw }},
               "description": {{ (d.name ~ ' - ' ~ v.name)|json_ld|raw }},
-              "thumbnailUrl": {{ (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg')|json_ld|raw }},
-              "uploadDate": "{{ d.created_at ? d.created_at|date('Y-m-d') : "now"|date('Y-m-d') }}",
-              "contentUrl": {{ (site.saddress ~ 'tools/videoFlv/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.mp4')|json_ld|raw }}
+              "thumbnailUrl": {{ v_thumb|json_ld|raw }},
+              "uploadDate": "{{ d.created_at ? d.created_at|date('c') : "now"|date('c') }}"{% if v.embed_src is defined and v.embed_src is not empty %},
+              "embedUrl": {{ v.embed_src|json_ld|raw }}{% else %},
+              "contentUrl": {{ (site.saddress ~ 'tools/videoFlv/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.mp4')|json_ld|raw }}{% endif %}{% if v.schema_duration is defined and v.schema_duration is not empty %},
+              "duration": {{ v.schema_duration|json_ld|raw }}{% endif %}
             }
         </script>
         {% endfor %}
@@ -437,9 +441,7 @@
 									{% for v in video %}
 										<div class="col-12 mb-4">
 											{% if v.embed is defined and v.embed is not empty %}
-												<div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
-													{{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
-												</div>
+												{% include 'partials/_video_embed_player.twig' with {'video': v} %}
 											{% else %}
 												<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
 													<div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
@@ -447,8 +449,8 @@
 														<i class="bi bi-play-circle-fill play-icon"></i>
 													</div>
 												</a>
+												<p class="fw-bold mt-3 text-center">{{ v.name }}</p>
 											{% endif %}
-											<p class="fw-bold mt-3 text-center">{{ v.name }}</p>
 										</div>
 									{% endfor %}
 								</div>
@@ -653,4 +655,8 @@
 			</aside>
 		{% endif %}
 	</div>
+{% endblock %}
+
+{% block js_custom %}
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
 {% endblock %}

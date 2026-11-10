@@ -25,7 +25,7 @@ class videos_model extends ORM
     public $username;
     public $u_name;
     public $u_last_name;
-    public $groupad;
+    public $groupname;
 
     public function __construct()
     {

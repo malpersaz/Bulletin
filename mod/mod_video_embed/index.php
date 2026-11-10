@@ -194,8 +194,8 @@ class mod_video_embed_mod extends BaseModuleController
             return;
         }
 
-        $videoId = $this->_extractYouTubeVideoId($source);
-        if ($videoId === null) {
+        $detected = VideoEmbedProviderService::detectProvider($source);
+        if ($detected === null) {
             $this->_jsonResponse([
                 'status' => 'error',
                 'message' => $this->_autofillMessage('invalid_source'),
@@ -203,8 +203,11 @@ class mod_video_embed_mod extends BaseModuleController
             return;
         }
 
+        $provider = $detected['provider'];
+        $videoId = $detected['id'];
+
         try {
-            $metadata = $this->_fetchYouTubeMetadata($videoId);
+            $metadata = VideoEmbedProviderService::fetchMetadata($provider, $videoId, $this->site['lang'] ?? 'tr');
             $imageFile = '';
             $imageUrl = '';
             $missingFields = [];
@@ -231,11 +234,18 @@ class mod_video_embed_mod extends BaseModuleController
                 $missingFields[] = 'description';
             }
 
-            $isPartial = !empty($missingFields);
+            $isPartial = !empty($missingFields) || !empty($metadata['is_partial']);
             $responseMessage = $isPartial ? $this->_autofillMessage('partial') : $this->_autofillMessage('success');
 
-            $safeTitle = $this->_stripEmojiAndUnsupportedChars($metadata['title'] ?? '');
-            $safeDescription = $this->_stripEmojiAndUnsupportedChars($metadata['description'] ?? '');
+            $safeTitle = VideoEmbedProviderService::stripEmojiAndUnsupportedChars($metadata['title'] ?? '');
+            $safeDescription = VideoEmbedProviderService::stripEmojiAndUnsupportedChars($metadata['description'] ?? '');
+            $content = !empty($metadata['content_html']) ? $metadata['content_html'] : $safeDescription;
+
+            $embedCode = VideoEmbedProviderService::buildEmbedHtml($provider, $videoId, [
+                'title' => $safeTitle,
+                'aspect_ratio' => $metadata['aspect_ratio'] ?? '16:9',
+                'lang' => $this->site['lang'] ?? 'tr',
+            ]);
 
             $this->_jsonResponse([
                 'status' => 'success',
@@ -245,22 +255,31 @@ class mod_video_embed_mod extends BaseModuleController
                 'message' => $responseMessage,
                 'data' => [
                     'video_id' => $videoId,
+                    'provider' => $provider,
+                    'aspect_ratio' => $metadata['aspect_ratio'] ?? '16:9',
+                    'author_handle' => $metadata['author_handle'] ?? '',
                     'name' => $safeTitle,
                     'title' => $safeTitle,
                     'description' => $safeDescription,
-                    'content' => $safeDescription,
-                    'duration' => $metadata['duration'] ?? '',
+                    'content' => $content,
+                    'duration' => $metadata['duration'] ?? ($provider === 'x' ? '00:00' : ''),
                     'keywords' => $this->_makeKeywordString($safeTitle),
-                    'original' => 'https://www.youtube.com/watch?v=' . $videoId,
-                    'embed' => $this->_buildEmbedCode($videoId),
+                    'original' => $metadata['canonical_url'] ?? $detected['canonical_url'],
+                    'embed' => $embedCode,
                     'image' => $imageFile,
                     'image_url' => $imageUrl,
-                    'source' => $metadata['source'] ?? 'youtube',
-                    'duration_available' => !empty($metadata['duration']),
+                    'source' => $metadata['source'] ?? $provider,
+                    'duration_available' => !empty($metadata['duration']) && $metadata['duration'] !== '00:00',
                 ],
             ]);
         } catch (Throwable $e) {
-            $message = $this->_autofillThrowableMessage($e);
+            $msgKey = $e->getMessage();
+            if (str_starts_with($msgKey, 'autofill.')) {
+                $subKey = substr($msgKey, 9);
+                $message = $this->lang['mod_video_embed']['autofill'][$subKey] ?? $this->_autofillThrowableMessage($e);
+            } else {
+                $message = $this->_autofillThrowableMessage($e);
+            }
             $this->_jsonResponse([
                 'status' => 'error',
                 'message' => $message,
@@ -407,7 +426,11 @@ class mod_video_embed_mod extends BaseModuleController
             $this->mod_video_embed_model->duration = Req::Post_Safe('sure');
             $this->mod_video_embed_model->created_at = date('Y-m-d H:i:s');
             $this->mod_video_embed_model->status = Req::Post_Safe('status');
-            $this->mod_video_embed_model->embed = Req::Post('embed');
+            $this->mod_video_embed_model->embed = VideoEmbedProviderService::sanitizeOrRebuildEmbed(
+                Req::Post('embed'),
+                Req::Post_Safe('original'),
+                ['title' => $this->mod_video_embed_model->name, 'lang' => $this->mod_video_embed_model->lang]
+            );
             $this->mod_video_embed_model->content = Req::Post('content');
             $this->mod_video_embed_model->content = Helper::clear_html($this->mod_video_embed_model->content);
             $this->mod_video_embed_model->title = Req::Post_Safe('title');
@@ -539,7 +562,11 @@ class mod_video_embed_mod extends BaseModuleController
             $this->mod_video_embed_model->duration = Req::Post_Safe('sure');
             $this->mod_video_embed_model->created_at = Req::Post_Safe('created_at');
             $this->mod_video_embed_model->status = Req::Post_Safe('status');
-            $this->mod_video_embed_model->embed = Req::Post('embed');
+            $this->mod_video_embed_model->embed = VideoEmbedProviderService::sanitizeOrRebuildEmbed(
+                Req::Post('embed'),
+                Req::Post_Safe('original'),
+                ['title' => $this->mod_video_embed_model->name, 'lang' => $this->mod_video_embed_model->lang]
+            );
             $this->mod_video_embed_model->content = Req::Post('content');
             $this->mod_video_embed_model->content = Helper::clear_html($this->mod_video_embed_model->content);
             $this->mod_video_embed_model->title = Req::Post_Safe('title');
@@ -631,7 +658,7 @@ class mod_video_embed_mod extends BaseModuleController
             if ($this->_delete(Req::Post('delete'))) {
                 echo 'Success';
             } else {
-                echo 'HATA';
+                echo 'ERROR';
             }
         } else {
             exit($this->lang['mod_video_embed']['errors']['record']);

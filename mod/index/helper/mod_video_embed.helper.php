@@ -139,15 +139,7 @@ class mod_video_embed_helper extends indexBase
             $video->limit($page_limit, $offset)->order('created_at', 'DESC')->gR();
 
             if ($video->getSize() != 0) {
-                $videos = $video->toArray();
-                foreach ($videos as &$v) {
-                    if (isset($v['embed'])) {
-                        preg_match('/<iframe.*?src="([^"]+)"/', $v['embed'], $matches);
-                        $v['youtube_url'] = $matches[1] ?? '';
-                    }
-                }
-                unset($v);
-                $this->tema->ctx_set('videos', $this->normalizeVideoRows($videos));
+                $this->tema->ctx_set('videos', $this->normalizeVideoRows($video->toArray()));
             }
             $category_seo = 'all';
             $categoryname = $this->lang['index']['mod_video_embed']['2'];
@@ -183,6 +175,7 @@ class mod_video_embed_helper extends indexBase
 
         if ($p->Result() !== FALSE) {
             $this->tema->ctx_set('pagination', $p->Result());
+            $this->tema->ctx_set('sayfalama', $p->Result());
         }
 
         if ($page != '1') {
@@ -204,6 +197,7 @@ class mod_video_embed_helper extends indexBase
         $this->tema->ctx_set('categoryname', $categoryname);
         $this->tema->ctx_set('category_seo', $category_seo);
         $this->tema->ctx_set('page', $page);
+        $this->tema->ctx_set('sayfa', $page);
         $this->tema->tpl('index/mod_video_embed/videos');
         $this->_index();
     }
@@ -239,6 +233,14 @@ class mod_video_embed_helper extends indexBase
             if (isset($row[$field]) && is_string($row[$field])) {
                 $row[$field] = html_entity_decode($row[$field], ENT_QUOTES, 'UTF-8');
             }
+        }
+
+        if (class_exists('VideoEmbedProviderService')) {
+            $row = VideoEmbedProviderService::enrichVideoRowForFrontend($row);
+        }
+
+        if (isset($row['embed_src']) && !isset($row['youtube_url'])) {
+            $row['youtube_url'] = $row['embed_src'];
         }
 
         return $row;

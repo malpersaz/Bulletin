@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Bu Video %s Tarihinde <a href="%s" title="%s">%s</a> Kategorisinde Yayınlanmıştır',
         8 => 'Sayfalama',
+        
+        'load_video' => 'Videoyu Oynat',
+        'load_x_video' => 'X Videosunu Oynat',
+        'view_on_x' => 'X üzerinde gör',
+        'view_original_source' => 'Orijinal Kaynağı Gör',
+        'external_media_notice_x' => 'Oynat butonuna tıklandığında X (Twitter) sunucularına bağlanılarak harici medya yüklenecektir.',
+        'external_media_notice_youtube' => 'Oynat butonuna tıklandığında YouTube sunucularına bağlanılarak harici medya yüklenecektir.',
+        'source_attribution' => 'Kaynak',
         'latest_videos' => [
             'title' => 'Videolar',
             'all_items' => 'Tüm Videolar',

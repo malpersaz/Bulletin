@@ -1,7 +1,7 @@
 {% extends "layouts/base.twig" %}
 
 {% set d = ctx_get('d') %}
-{% set kategoriler = ctx_get('categories') %}
+{% set categories = ctx_get('categories') %}
 {% set video_url = site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo) %}
 {% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set video_image = (d.image is defined and d.image is not empty) ? site.iaddress ~ 'mod_video_embed/' ~ d.image : video_logo_asset %}
@@ -12,6 +12,11 @@
 {% block hreflang %}
     <link rel="alternate" hreflang="{{ site.lang }}" href="{{ video_url }}"/>
     <link rel="alternate" hreflang="x-default" href="{{ video_url }}"/>
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
 {% endblock %}
 
 {% block title %}
@@ -28,12 +33,12 @@
     <meta property="og:url" content="{{ video_url }}">
     <meta property="og:title" content="{{ d.name }} - {{ site.title }}">
     <meta property="og:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
-    <meta property="og:image" content="{{ video_image }}">
+    <meta property="og:image" content="{{ d.poster_url|default(video_image) }}">
     <meta property="og:site_name" content="{{ site.title }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ d.name }} - {{ site.title }}">
     <meta name="twitter:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
-    <meta name="twitter:image" content="{{ video_image }}">
+    <meta name="twitter:image" content="{{ d.poster_url|default(video_image) }}">
 {% endblock %}
 
 {% block schema %}
@@ -69,20 +74,36 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": {{ d.name|json_ld|raw }},
+      "description": {{ (d.summary ?: (d.description ?: (d.content ?: d.name)))|striptags|slice(0, 300)|json_ld|raw }},
+      "thumbnailUrl": [{{ (d.poster_url|default(video_image))|json_ld|raw }}],
+      "uploadDate": {{ (d.created_at ? d.created_at|date('c') : 'now'|date('c'))|json_ld|raw }},
+      {% if d.schema_duration is defined and d.schema_duration is not empty %}
+      "duration": {{ d.schema_duration|json_ld|raw }},
+      {% endif %}
+      "embedUrl": {{ (d.embed_src ?: video_url)|json_ld|raw }}
+    }
+    </script>
 {% endblock %}
 
 {% block content %}
 <div class="row mt-4" id="mod_video_embed_detail">
 
-    <!-- Sol Sütun: Kategoriler -->
+    <!-- Left Column: Categories -->
     <aside class="col-lg-3 order-lg-1 mb-4">
         <div class="card position-sticky sticky-top" aria-labelledby="video-categories-title">
             <div class="card-header">
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action">Tüm Videolar</a>
-                {% for kat in kategoriler %}
+                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action">
+                    {{ lang.index.mod_video_embed.latest_videos.all_items|default(lang.index.mod_video_embed.1) }}
+                </a>
+                {% for kat in categories %}
                     <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if d.category_seo == kat.seo %} active{% endif %}">
                         {{ kat.name }}
                     </a>
@@ -91,7 +112,7 @@
         </div>
     </aside>
 
-    <!-- Sağ Sütun: Video İçeriği -->
+    <!-- Right Column: Video Content -->
     <div class="col-lg-9 order-lg-2">
         <article class="card">
             <div class="card-header bg-light">
@@ -111,10 +132,14 @@
                     <p class="lead mb-4">{{ d.summary }}</p>
                 {% endif %}
 
-                {# Responsive Video Embed #}
-                <div class="ratio ratio-16x9 mb-4">
-                    {{ d.embed|raw }}
-                </div>
+                {# Video Embed Player or Local Video Player #}
+                {% if d.is_local is defined and d.is_local %}
+                    <div class="ratio ratio-16x9 mb-4">
+                        {{ d.embed|raw }}
+                    </div>
+                {% else %}
+                    {% include 'partials/_video_embed_player.twig' with {'video': d} %}
+                {% endif %}
 
                 {# Video Description #}
                 {% if d.content is not empty %}
@@ -125,10 +150,14 @@
 
                 <hr>
                 <p class="text-muted small">
-                    Yayınlanma Tarihi: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time> / Kategori: <a href="{{ site.saddress }}videos/{{ d.category_seo }}" title="{{ d.categoryname }}">{{ d.categoryname }}</a>
+                    {{ sprintf(lang.index.mod_video_embed.7|default('Published on %s in %s'), d.created_at|date('d.m.Y'), site.saddress ~ 'videos/' ~ d.category_seo, d.categoryname, d.categoryname)|raw }}
                 </p>
             </div>
         </article>
     </div>
 </div>
+{% endblock %}
+
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
 {% endblock %}

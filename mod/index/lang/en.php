@@ -188,6 +188,14 @@ $lang['index']['mod_video_embed'] = [
     '6' => '%s',
     '7' => 'This Video was published on %s in <a href="%s" title="%s">%s</a> Category',
     '8' => 'Pagination',
+
+    'load_video' => 'Play Video',
+    'load_x_video' => 'Play X Video',
+    'view_on_x' => 'View on X',
+    'view_original_source' => 'View Original Source',
+    'external_media_notice_x' => 'Clicking play connects directly to X (Twitter) and loads external media.',
+    'external_media_notice_youtube' => 'Clicking play connects directly to YouTube and loads external media.',
+    'source_attribution' => 'Source',
 ];
 
 $lang['index']['mod_video_embed']['latest_videos'] = [

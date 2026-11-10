@@ -372,11 +372,9 @@ class Helper
 
     public static function clear_html($html)
     {
+        $element = 'a,abbr,acronym,b,blockquote,br,caption,cite,code,dd,del,dfn,div,dl,dt,em,font,h1,h2,h3,h4,h5,h6,i,img,ins,kbd,li,ol,p,pre,s,span,strike,strong,sub,sup,table,tbody,td,tfoot,th,thead,tr,tt,u,ul,var,object,param,embed,hr,iframe,time,bdi';
+        $attr = 'a.name,a.href,a.rev,a.title,a.target,a.rel,abbr.title,acronym.title,blockquote.cite,div.align,div.style,div.class,div.id,font.size,font.color,h1.style,h2.style,h3.style,h4.style,h5.style,h6.style,img.src,img.alt,img.title,img.class,img.align,img.style,img.height,img.width,ol.style,p.class,p.style,span.style,span.class,span.id,span.dir,table.align,table.class,table.id,table.border,table.cellpadding,table.cellspacing,table.style,table.width,td.abbr,td.align,td.class,td.id,td.colspan,td.rowspan,td.style,td.valign,tr.align,tr.class,tr.id,tr.style,tr.valign,th.abbr,th.align,th.class,th.id,th.colspan,th.rowspan,th.style,th.valign,ul.style,object.style,object.data,object.width,object.height,param.name,param.value,embed.src,embed.type,embed.wmode,embed.width,embed.height,iframe.src,iframe.width,iframe.height,iframe.title,iframe.class,iframe.loading,iframe.allow,iframe.referrerpolicy,iframe.allowfullscreen,iframe.sandbox,iframe.data-provider,iframe.data-status-id,iframe.data-aspect-ratio,time.datetime,bdi.dir';
 
-        $element = 'a,abbr,acronym,b,blockquote,br,caption,cite,code,dd,del,dfn,div,dl,dt,em,font,h1,h2,h3,h4,h5,h6,i,img,ins,kbd,li,ol,p,pre,s,span,strike,strong,sub,sup,table,tbody,td,tfoot,th,thead,tr,tt,u,ul,var,object,param,embed,hr';
-        $attr = 'a.name,a.href,a.rev,a.title,a.target,a.rel,abbr.title,acronym.title,blockquote.cite,div.align,div.style,div.class,div.id,font.size,font.color,h1.style,h2.style,h3.style,h4.style,h5.style,h6.style,img.src,img.alt,img.title,img.class,img.align,img.style,img.height,img.width,ol.style,p.class,p.style,span.style,span.class,span.id,table.align,table.class,table.id,table.border,table.cellpadding,table.cellspacing,table.style,table.width,td.abbr,td.align,td.class,td.id,td.colspan,td.rowspan,td.style,td.valign,tr.align,tr.class,tr.id,tr.style,tr.valign,th.abbr,th.align,th.class,th.id,th.colspan,th.rowspan,th.style,th.valign,ul.style,object.style,object.data,object.width,object.height,param.name,param.value,embed.src,embed.type,embed.wmode,embed.width,embed.height';
-
-        $purifier = new HTMLPurifier();
         $config = HTMLPurifier_Config::createDefault();
         $config->set('Cache.DefinitionImpl', null); // disables cache
         $config->set('HTML.AllowedElements', $element); // sets allowed html elements that can be used.
@@ -387,15 +385,30 @@ class Helper
         // Allow the iframe tag
         $config->set('HTML.SafeIframe', true);
 
-        // Set allowed iframe sources using regular expression (VERY IMPORTANT!)
-        $config->set('URI.SafeIframeRegexp', '%^(https?:)?//(www\.youtube\.com/embed/|player\.vimeo\.com/video/)%');
+        // Set allowed iframe sources using HTTPS-only exact provider paths
+        $config->set('URI.SafeIframeRegexp', '%^https://(www\.youtube\.com/embed/|www\.youtube-nocookie\.com/embed/|player\.vimeo\.com/video/|platform\.twitter\.com/embed/Tweet\.html)%');
         $config->set('AutoFormat.Linkify', true);
         $config->set('AutoFormat.RemoveEmpty', false);
 
-        //Flash
+        // Flash
         $config->set('HTML.SafeObject', true);
         $config->set('HTML.SafeEmbed', true);
         $config->set('Output.FlashCompat', true);
+
+        $config->set('HTML.DefinitionID', 'af-clear-html');
+        $config->set('HTML.DefinitionRev', 1);
+        if ($def = $config->maybeGetRawHTMLDefinition()) {
+            $def->addElement('time', 'Inline', 'Inline', 'Common', ['datetime' => 'Text']);
+            $def->addElement('bdi', 'Inline', 'Inline', 'Common', ['dir' => 'Enum#ltr,rtl,auto']);
+            $def->addAttribute('iframe', 'loading', 'Enum#lazy,eager');
+            $def->addAttribute('iframe', 'allow', 'Text');
+            $def->addAttribute('iframe', 'referrerpolicy', 'Text');
+            $def->addAttribute('iframe', 'allowfullscreen', 'Bool');
+            $def->addAttribute('iframe', 'sandbox', 'Text');
+            $def->addAttribute('iframe', 'data-provider', 'Text');
+            $def->addAttribute('iframe', 'data-status-id', 'Text');
+            $def->addAttribute('iframe', 'data-aspect-ratio', 'Text');
+        }
 
         $purifier = new HTMLPurifier($config);
         return $purifier->purify($html);

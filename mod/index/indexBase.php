@@ -252,10 +252,13 @@ abstract class indexBase
 
         if (!empty($vid_ids)) {
             $vid_model = Load::model('mod_video_embed');
-            $vid_model->select('id, name, embed, image');
-            $vid_model->where_id($vid_ids)->gR();
+            $vid_model->select('id, name, original, duration, created_at, embed, content, description, image');
+            $vid_model->where_id($vid_ids)->where_status('y')->gR();
             if ($vid_model->getSize() > 0) {
-                $results = array_merge($results, $vid_model->toArray());
+                $rawRows = $vid_model->toArray();
+                foreach ($rawRows as $vRow) {
+                    $results[] = VideoEmbedProviderService::enrichVideoRowForFrontend($vRow);
+                }
             }
         }
 

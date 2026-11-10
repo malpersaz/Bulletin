@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Denna video publicerades den %s i kategorin <a href="%s" title="%s">%s</a>',
         8 => 'Paginering',
+        
+        'load_video' => 'Spela video',
+        'load_x_video' => 'Spela X-video',
+        'view_on_x' => 'Visa på X',
+        'view_original_source' => 'Visa ursprungskälla',
+        'external_media_notice_x' => 'Genom att klicka på spela ansluts du till X (Twitter) och extern media läses in.',
+        'external_media_notice_youtube' => 'Genom att klicka på spela ansluts du till YouTube och extern media läses in.',
+        'source_attribution' => 'Källa',
         'latest_videos' => [
             'title' => 'Videor',
             'all_items' => 'Alla Videor',

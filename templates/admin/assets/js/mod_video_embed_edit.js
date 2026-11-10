@@ -159,9 +159,9 @@ function initVideoEmbedForm() {
     }
 
     /**
-     * Parse YouTube Video ID from embed iframe or watch/short/share URL
+     * Parse video source (X, YouTube, Vimeo) from embed iframe or watch/short/share URL
      */
-    function extractYouTubeVideoId(input) {
+    function detectVideoSource(input) {
         let raw = (input || '').toString().trim();
         if (!raw) return null;
 
@@ -172,32 +172,68 @@ function initVideoEmbedForm() {
             raw = txt.value;
         }
 
-        // Standard embed format
+        // X (Twitter)
+        const xMatch = raw.match(/(?:(?:x|twitter)\.com\/(?:([A-Za-z0-9_]{1,15})\/status(?:es)?|i\/(?:web\/)?status)\/(\d{5,25})|platform\.twitter\.com\/embed\/Tweet\.html\?(?:[^"'\s<>]*&)?id=(\d{5,25}))/i);
+        if (xMatch) {
+            const statusId = xMatch[2] || xMatch[3] || '';
+            const handle = xMatch[1] && xMatch[1].toLowerCase() !== 'i' ? xMatch[1] : null;
+            if (statusId) {
+                return {
+                    provider: 'x',
+                    id: statusId,
+                    cacheKey: 'x_' + statusId,
+                    handle: handle,
+                    canonicalUrl: 'https://x.com/' + (handle || 'i') + '/status/' + statusId
+                };
+            }
+        }
+
+        // YouTube
         const embedMatch = raw.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/i);
-        if (embedMatch) return embedMatch[1];
+        if (embedMatch) return { provider: 'youtube', id: embedMatch[1], cacheKey: 'yt_' + embedMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + embedMatch[1] };
 
-        // Shorts format
         const shortsMatch = raw.match(/youtube(?:-nocookie)?\.com\/shorts\/([A-Za-z0-9_-]{11})/i);
-        if (shortsMatch) return shortsMatch[1];
+        if (shortsMatch) return { provider: 'youtube', id: shortsMatch[1], cacheKey: 'yt_' + shortsMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + shortsMatch[1] };
 
-        // Live stream format
         const liveMatch = raw.match(/youtube(?:-nocookie)?\.com\/live\/([A-Za-z0-9_-]{11})/i);
-        if (liveMatch) return liveMatch[1];
+        if (liveMatch) return { provider: 'youtube', id: liveMatch[1], cacheKey: 'yt_' + liveMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + liveMatch[1] };
 
-        // Short domain format
         const shortUrlMatch = raw.match(/youtu\.be\/([A-Za-z0-9_-]{11})/i);
-        if (shortUrlMatch) return shortUrlMatch[1];
+        if (shortUrlMatch) return { provider: 'youtube', id: shortUrlMatch[1], cacheKey: 'yt_' + shortUrlMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + shortUrlMatch[1] };
 
-        // Standard watch parameter: [?&]v={id}
         const watchMatch = raw.match(/[?&]v=([A-Za-z0-9_-]{11})/i);
-        if (watchMatch) return watchMatch[1];
+        if (watchMatch) return { provider: 'youtube', id: watchMatch[1], cacheKey: 'yt_' + watchMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + watchMatch[1] };
 
-        // Pure 11-char ID
         if (/^[A-Za-z0-9_-]{11}$/.test(raw)) {
-            return raw;
+            return { provider: 'youtube', id: raw, cacheKey: 'yt_' + raw, canonicalUrl: 'https://www.youtube.com/watch?v=' + raw };
         }
 
         return null;
+    }
+
+    /**
+     * Updates the live provider badge
+     */
+    function updateProviderBadge(sourceInfo) {
+        const badge = document.getElementById('embedProviderBadge');
+        if (!badge) return;
+        badge.classList.remove('is-x', 'is-youtube');
+
+        if (!sourceInfo) {
+            badge.innerHTML = '<i class="bi bi-link-45deg"></i> <span class="badge-text">' + (i18n.providerCustom || 'Link / Embed') + '</span>';
+            if (embedPreview) embedPreview.classList.remove('is-provider-x');
+            return;
+        }
+
+        if (sourceInfo.provider === 'x') {
+            badge.classList.add('is-x');
+            badge.innerHTML = '<i class="bi bi-twitter-x"></i> <span class="badge-text">' + (i18n.providerX || 'X (Twitter)') + '</span>';
+            if (embedPreview) embedPreview.classList.add('is-provider-x');
+        } else if (sourceInfo.provider === 'youtube') {
+            badge.classList.add('is-youtube');
+            badge.innerHTML = '<i class="bi bi-youtube"></i> <span class="badge-text">' + (i18n.providerYoutube || 'YouTube') + '</span>';
+            if (embedPreview) embedPreview.classList.remove('is-provider-x');
+        }
     }
 
     /**
@@ -398,19 +434,22 @@ function initVideoEmbedForm() {
         const rawVal = embedInput ? embedInput.value.trim() : '';
         if (!rawVal) {
             lastFetchedVideoId = '';
+            updateProviderBadge(null);
             return;
         }
 
-        const detectedId = extractYouTubeVideoId(rawVal);
-        if (detectedId) {
-            if (detectedId !== lastFetchedVideoId) {
+        const detected = detectVideoSource(rawVal);
+        updateProviderBadge(detected);
+
+        if (detected) {
+            if (detected.cacheKey !== lastFetchedVideoId) {
                 const delay = (e && e.type === 'paste') ? 80 : 350;
                 embedInputDebounceTimer = setTimeout(() => {
-                    triggerAutoFetchMetadata(detectedId, rawVal);
+                    triggerAutoFetchMetadata(detected.cacheKey, rawVal);
                 }, delay);
             }
         } else {
-            // If the user entered a substantial string (like an iframe or http) that cannot be parsed as YouTube
+            // If the user entered a substantial string (like an iframe or http) that cannot be parsed
             if (rawVal.length > 20 && (rawVal.includes('<iframe') || rawVal.startsWith('http'))) {
                 embedInputDebounceTimer = setTimeout(() => {
                     showAutofillAjaxAlert(i18n.information, i18n.autofillInvalid, [], true);
@@ -426,14 +465,55 @@ function initVideoEmbedForm() {
         embedInput.addEventListener('change', handleEmbedInputChange);
     }
 
+    // Smart Toolbar buttons
+    const btnPaste = document.getElementById('btnPasteClipboard');
+    if (btnPaste && embedInput) {
+        btnPaste.addEventListener('click', async () => {
+            try {
+                if (navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        embedInput.value = text.trim();
+                        handleEmbedInputChange({ type: 'paste' });
+                        embedInput.focus();
+                    }
+                } else {
+                    embedInput.focus();
+                    embedInput.select();
+                }
+            } catch (clipErr) {
+                embedInput.focus();
+                embedInput.select();
+            }
+        });
+    }
+
+    const btnClear = document.getElementById('btnClearEmbedSource');
+    if (btnClear && embedInput) {
+        btnClear.addEventListener('click', () => {
+            embedInput.value = '';
+            handleEmbedInputChange();
+            embedInput.focus();
+        });
+    }
+
+    const btnToggleRaw = document.getElementById('btnToggleRawEmbed');
+    if (btnToggleRaw && embedInput) {
+        btnToggleRaw.addEventListener('click', () => {
+            const isCollapsed = embedInput.classList.toggle('is-collapsed-raw');
+            btnToggleRaw.classList.toggle('is-active', !isCollapsed);
+        });
+    }
+
     if (originalInput) {
         originalInput.addEventListener('input', () => {
             const rawVal = originalInput.value.trim();
-            const detectedId = extractYouTubeVideoId(rawVal);
-            if (detectedId && detectedId !== lastFetchedVideoId && (!embedInput || !embedInput.value.trim())) {
+            const detected = detectVideoSource(rawVal);
+            if (detected && detected.cacheKey !== lastFetchedVideoId && (!embedInput || !embedInput.value.trim())) {
+                updateProviderBadge(detected);
                 if (embedInputDebounceTimer) clearTimeout(embedInputDebounceTimer);
                 embedInputDebounceTimer = setTimeout(() => {
-                    triggerAutoFetchMetadata(detectedId, rawVal);
+                    triggerAutoFetchMetadata(detected.cacheKey, rawVal);
                 }, 350);
             }
         });
@@ -768,6 +848,10 @@ function initVideoEmbedForm() {
     }
 
     // Initial runs
+    if (embedInput && embedInput.value.trim()) {
+        const initialDetected = detectVideoSource(embedInput.value.trim());
+        updateProviderBadge(initialDetected);
+    }
     updateEmbedPreview();
     updateSeoPreview();
 }

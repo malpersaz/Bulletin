@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Dieses Video wurde am %s in der Kategorie <a href="%s" title="%s">%s</a> veröffentlicht',
         8 => 'Seitennavigation',
+        
+        'load_video' => 'Video abspielen',
+        'load_x_video' => 'X-Video abspielen',
+        'view_on_x' => 'Auf X ansehen',
+        'view_original_source' => 'Originalquelle ansehen',
+        'external_media_notice_x' => 'Durch Klicken auf Abspielen wird eine Verbindung zu X (Twitter) hergestellt und externe Medien geladen.',
+        'external_media_notice_youtube' => 'Durch Klicken auf Abspielen wird eine Verbindung zu YouTube hergestellt und externe Medien geladen.',
+        'source_attribution' => 'Quelle',
         'latest_videos' => [
             'title' => 'Videos',
             'all_items' => 'Alle Videos',

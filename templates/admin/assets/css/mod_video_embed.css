@@ -87,6 +87,14 @@ select.form-select {
     color: #ffffff;
 }
 
+.embed-preview.is-provider-x {
+    aspect-ratio: auto;
+    min-height: 420px;
+    max-height: 560px;
+    overflow-y: auto;
+    background: transparent;
+}
+
 .embed-preview.has-content {
     background: #000;
 }
@@ -96,6 +104,62 @@ select.form-select {
     flex-direction: column;
     align-items: center;
     color: #ffffff;
+}
+
+/* Smart Source Toolbar */
+.embed-smart-toolbar {
+    min-height: 44px;
+    flex-wrap: wrap;
+}
+
+.embed-provider-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--m3-tonal);
+    color: var(--m3-primary);
+    border: 1px solid var(--m3-outline);
+    transition: all 0.2s ease;
+}
+
+.embed-provider-badge.is-x {
+    background: #000000;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.embed-provider-badge.is-youtube {
+    background: #ff0000;
+    color: #ffffff;
+    border-color: #cc0000;
+}
+
+.embed-toolbar-actions .btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.embed-toolbar-actions .btn-icon {
+    padding: 8px;
+    border: 1px solid var(--m3-outline);
+    background: var(--m3-surface);
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.embed-toolbar-actions .btn-icon:hover {
+    background: var(--m3-tonal);
+    color: var(--m3-primary);
 }
 
 /* Modern Image Upload Styles */
@@ -140,8 +204,10 @@ select.form-select {
     background: var(--m3-error) !important;
     color: white !important;
     border: none;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -579,4 +645,24 @@ select.form-select {
     .form-group {
         margin-bottom: 18px;
     }
+}
+
+/* Raw Embed Input Collapsed State */
+.embed-code-input.is-collapsed-raw {
+    max-height: 44px;
+    overflow: hidden;
+    opacity: 0.75;
+}
+
+/* Wizard Modal Utility Classes (Zero-Inline-Style Contract) */
+.wizard-textarea {
+    width: 100%;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.wizard-img-preview {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 12px;
 }

@@ -192,6 +192,14 @@ $lang['index'] = [
         6 => '%s',
         7 => 'Ev vîdyo di roja %s de di kategoriya <a href="%s" title="%s">%s</a> de hate weşandin',
         8 => 'Rûpelkirin',
+        
+        'load_video' => 'Vîdyo Bide Cı',
+        'load_x_video' => 'Vîdyoya X Bide Cı',
+        'view_on_x' => 'X ser de bıvêne',
+        'view_original_source' => 'Çımeyo Xam Bıvêne',
+        'external_media_notice_x' => 'Tiknayîşê dayîşî de eynî wext de bi X (Twitter) re girêdayîş virazîyeno û medyaya teberi bar bena.',
+        'external_media_notice_youtube' => 'Tiknayîşê dayîşî de eynî wext de bi YouTube re girêdayîş virazîyeno û medyaya teberi bar bena.',
+        'source_attribution' => 'Çıme',
         'latest_videos' => [
             'title' => 'Vîdyoyî',
             'all_items' => 'Pêro Vîdyoyî',

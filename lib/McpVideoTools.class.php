@@ -418,56 +418,56 @@ class McpVideoTools extends McpCrudToolsBase
                 'role' => 'add',
                 'domain' => 'video',
                 'handler' => 'createVideoEmbed',
-                'description' => 'Create an embedded video record (e.g. YouTube). The category must exist and match the video language. The content field is sanitized through the same HTML purifier as the admin form. Emoji in name, content, title, keywords, or description are rejected, mirroring the admin validator.',
+                'description' => 'Create an embedded video record (YouTube, X / Twitter, Vimeo, or custom embed). The category must exist and match the video language. If a raw URL is passed in embed, metadata (title, duration, description, poster image) is automatically fetched and a compliant HTML5 iframe is constructed.',
                 'schema' => [
                     'type' => 'object',
                     'properties' => [
                         'name' => [
                             'type' => 'string',
                             'maxLength' => 255,
-                            'description' => 'Video name (2-255 characters).',
+                            'description' => 'Video name (2-255 characters). Optional when embed URL provides metadata.',
                         ],
                         'lang' => [
                             'type' => 'string',
-                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr). Required.',
                         ],
                         'category_id' => [
                             'type' => 'integer',
-                            'description' => 'ID of an existing video embed category with the same language.',
+                            'description' => 'ID of an existing video embed category with the same language. Required.',
                         ],
                         'duration' => [
                             'type' => 'string',
                             'minLength' => 5,
                             'maxLength' => 8,
-                            'description' => 'Video duration (5-8 characters, e.g. HH:MM:SS).',
+                            'description' => 'Video duration (5-8 characters, e.g. HH:MM:SS or MM:SS). Optional when embed URL provides metadata.',
                         ],
                         'embed' => [
                             'type' => 'string',
-                            'description' => 'Embed code or URL (e.g. a YouTube iframe embed). Required.',
+                            'description' => 'Embed code (iframe) or raw video URL (e.g. YouTube link or X/Twitter status link; server constructs compliant HTML5 iframe and auto-fills metadata). Required.',
                         ],
                         'content' => [
                             'type' => 'string',
-                            'description' => 'Full HTML body of the video description. Required; sanitized like the admin form.',
+                            'description' => 'Full HTML body of the video description. Optional when embed URL provides metadata; sanitized like the admin form.',
                         ],
                         'title' => [
                             'type' => 'string',
                             'maxLength' => 255,
-                            'description' => 'SEO title (1-255 characters). Required.',
+                            'description' => 'SEO title (1-255 characters). Optional when embed URL provides metadata.',
                         ],
                         'keywords' => [
                             'type' => 'string',
                             'maxLength' => 255,
-                            'description' => 'SEO keywords (1-255 characters). Required.',
+                            'description' => 'SEO keywords (1-255 characters). Optional when embed URL provides metadata.',
                         ],
                         'description' => [
                             'type' => 'string',
                             'maxLength' => 255,
-                            'description' => 'SEO description (1-255 characters). Required.',
+                            'description' => 'SEO description (1-255 characters). Optional when embed URL provides metadata.',
                         ],
                         'original' => [
                             'type' => 'string',
                             'maxLength' => 255,
-                            'description' => 'Original video URL (e.g. the YouTube watch URL). Optional.',
+                            'description' => 'Original video URL (e.g. YouTube watch URL or X status URL). Optional.',
                         ],
                         'status' => [
                             'type' => 'string',
@@ -501,7 +501,7 @@ class McpVideoTools extends McpCrudToolsBase
                                 'object',
                                 'null',
                             ],
-                            'description' => 'Upload a thumbnail image (base64-encoded) or null to skip. On create: absent = no image.',
+                            'description' => 'Upload a thumbnail image (base64-encoded) or null to skip. Auto-imported from video provider if omitted.',
                             'properties' => [
                                 'data_base64' => [
                                     'type' => 'string',
@@ -524,15 +524,9 @@ class McpVideoTools extends McpCrudToolsBase
                         ],
                     ],
                     'required' => [
-                        'name',
                         'lang',
                         'category_id',
-                        'duration',
                         'embed',
-                        'content',
-                        'title',
-                        'keywords',
-                        'description',
                     ],
                 ],
                 'title' => 'Create Video Embed',
@@ -576,7 +570,7 @@ class McpVideoTools extends McpCrudToolsBase
                         ],
                         'embed' => [
                             'type' => 'string',
-                            'description' => 'New embed code or URL. Cannot be empty.',
+                            'description' => 'New embed code (iframe) or raw video URL (e.g. YouTube or X/Twitter link; server constructs compliant HTML5 iframe). Cannot be empty.',
                         ],
                         'content' => [
                             'type' => 'string',
@@ -1280,7 +1274,44 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException("Video embed record '{$id}' not found.");
         }
 
+        $detected = VideoEmbedProviderService::detectProvider((string) ($row['embed'] ?? ''))
+            ?? (VideoEmbedProviderService::detectProvider((string) ($row['original'] ?? '')));
+        $row['provider'] = $detected['provider'] ?? 'custom';
+
         return ['item' => $row];
+    }
+
+    /**
+     * Downloads a remote thumbnail from an approved host and stores it through the image module pipeline.
+     */
+    protected function importRemoteThumbnailToImage(string $module, string $url, array $sizes): ?string
+    {
+        $resp = VideoEmbedProviderService::httpRequest($url, 8, 5242880);
+        if ($resp['status'] < 200 || $resp['status'] >= 300 || empty($resp['body'])) {
+            return null;
+        }
+
+        $imageInfo = @getimagesizefromstring($resp['body']);
+        if (!$imageInfo || empty($imageInfo['mime']) || !isset(self::ALLOWED_IMAGE_MIMES[$imageInfo['mime']])) {
+            return null;
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'mcpthumb_');
+        if ($tmp === false) {
+            return null;
+        }
+        file_put_contents($tmp, $resp['body']);
+
+        try {
+            return $this->storeUploadedImage($module, [
+                'file_path' => $tmp,
+                'mime' => $imageInfo['mime'],
+            ], $sizes);
+        } catch (Throwable) {
+            return null;
+        } finally {
+            @unlink($tmp);
+        }
     }
 
     /**
@@ -1288,11 +1319,6 @@ class McpVideoTools extends McpCrudToolsBase
      */
     public function createVideoEmbed(array $args): array
     {
-        $name = trim((string) ($args['name'] ?? ''));
-        if (mb_strlen($name) < 2 || mb_strlen($name) > 255) {
-            throw new McpToolException("Field 'name' is required (2-255 characters).");
-        }
-
         $lang = $this->requireActiveLang($args);
 
         $categoryId = (int) ($args['category_id'] ?? 0);
@@ -1301,31 +1327,85 @@ class McpVideoTools extends McpCrudToolsBase
         }
         $this->assertRecordMatchesLang('mod_video_embed_category', $categoryId, $lang, 'Video embed category');
 
-        $duration = $this->requireDuration($args);
-
         $embed = trim((string) ($args['embed'] ?? ''));
         if ($embed === '') {
             throw new McpToolException("Field 'embed' is required.");
         }
 
-        $content = (string) ($args['content'] ?? '');
-        if (trim(strip_tags($content)) === '') {
-            throw new McpToolException("Field 'content' is required.");
+        $original = trim((string) ($args['original'] ?? ''));
+
+        // Provider auto-detection & metadata resolution
+        $detected = VideoEmbedProviderService::detectProvider($embed) ?? (VideoEmbedProviderService::detectProvider($original));
+        $meta = null;
+        if ($detected !== null) {
+            try {
+                $meta = VideoEmbedProviderService::fetchMetadata($detected['provider'], $detected['id'], $lang);
+            } catch (Throwable) {
+                $meta = null;
+            }
         }
 
-        $title = trim((string) ($args['title'] ?? ''));
+        $name = trim((string) ($args['name'] ?? ($meta['name'] ?? '')));
+        if (mb_strlen($name) < 2 || mb_strlen($name) > 255) {
+            throw new McpToolException("Field 'name' is required (2-255 characters).");
+        }
+
+        $title = trim((string) ($args['title'] ?? ($meta['title'] ?? $name)));
         if (mb_strlen($title) < 1 || mb_strlen($title) > 255) {
             throw new McpToolException("Field 'title' is required (1-255 characters).");
         }
 
+        $description = trim((string) ($args['description'] ?? ($meta['description'] ?? '')));
+        if (mb_strlen($description) < 1 || mb_strlen($description) > 255) {
+            throw new McpToolException("Field 'description' is required (1-255 characters).");
+        }
+
         $keywords = trim((string) ($args['keywords'] ?? ''));
+        if ($keywords === '') {
+            $keywords = Helper::truncateWords($name, 60);
+        }
         if (mb_strlen($keywords) < 1 || mb_strlen($keywords) > 255) {
             throw new McpToolException("Field 'keywords' is required (1-255 characters).");
         }
 
-        $description = trim((string) ($args['description'] ?? ''));
-        if (mb_strlen($description) < 1 || mb_strlen($description) > 255) {
-            throw new McpToolException("Field 'description' is required (1-255 characters).");
+        $content = (string) ($args['content'] ?? ($meta['content_html'] ?? $description));
+        if (trim(strip_tags($content)) === '') {
+            throw new McpToolException("Field 'content' is required.");
+        }
+
+        // Duration resolution
+        $duration = trim((string) ($args['duration'] ?? ''));
+        if ($duration === '') {
+            if (!empty($meta['duration'])) {
+                $duration = $meta['duration'];
+            } elseif ($detected !== null && $detected['provider'] === 'x') {
+                $duration = '00:00';
+            }
+        }
+        $durationLen = mb_strlen($duration);
+        if ($durationLen < 5 || $durationLen > 8) {
+            throw new McpToolException("Field 'duration' is required (5-8 characters, e.g. HH:MM:SS or MM:SS).");
+        }
+
+        if ($original === '') {
+            $original = $meta['canonical_url'] ?? ($detected['canonical_url'] ?? '');
+        }
+
+        // Build clean embed code
+        if ($detected !== null) {
+            $embed = VideoEmbedProviderService::buildEmbedHtml($detected['provider'], $detected['id'], [
+                'title' => $name,
+                'aspect_ratio' => $meta['aspect_ratio'] ?? '16:9',
+                'lang' => $lang,
+            ]);
+        } else {
+            $embed = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embed, $original, [
+                'title' => $name,
+                'lang' => $lang,
+            ]);
+            if ($embed === '') {
+                throw new McpToolException("Field 'embed' must be a valid iframe or URL from an approved provider (YouTube, X, Vimeo).");
+            }
         }
 
         $this->assertNoUnsupportedCharacters([
@@ -1340,7 +1420,7 @@ class McpVideoTools extends McpCrudToolsBase
         $model->lang = $lang;
         $model->category_id = $categoryId;
         $model->name = $name;
-        $model->original = $this->optionalString($args, 'original', '', 255);
+        $model->original = $this->optionalString(['original' => $original], 'original', '', 255);
         $model->duration = $duration;
         $model->created_at = $this->optionalDateTime($args, 'created_at', date('Y-m-d H:i:s'));
         $model->status = $this->optionalEnum($args, 'status', 'y', ['y', 'n']);
@@ -1357,6 +1437,12 @@ class McpVideoTools extends McpCrudToolsBase
         if (array_key_exists('image', $args)) {
             $imageUrl = $this->resolveImageArgument('mod_video_embed', $args, self::EMBED_IMAGE_SIZES, null);
             $model->image = (string) $imageUrl;
+        } elseif (!empty($meta['thumbnail_url'])) {
+            $autoImage = $this->importRemoteThumbnailToImage('mod_video_embed', (string) $meta['thumbnail_url'], self::EMBED_IMAGE_SIZES);
+            if ($autoImage !== null && $autoImage !== '') {
+                $imageUrl = $autoImage;
+                $model->image = (string) $imageUrl;
+            }
         }
 
         if (!$model->save(true)) {
@@ -1367,7 +1453,7 @@ class McpVideoTools extends McpCrudToolsBase
         }
 
         if ($model->status === 'y') {
-            $this->notifyGoogleIndexing($model->lang . '/videos/embed/' . (int) $model->id . '-' . Helper::legacy_seo($model->name), 'update');
+            $this->notifyGoogleIndexing($model->lang . '/video/' . (int) $model->id . '-' . Helper::legacy_seo($model->name), 'update');
         }
 
         return [
@@ -1388,7 +1474,7 @@ class McpVideoTools extends McpCrudToolsBase
         $this->assertModerateEdit('mod_video_embed', (int) $model->user_id);
 
         $previousStatus = (string) $model->status;
-        $previousRelUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+        $previousRelUrl = $model->lang . '/video/' . $id . '-' . Helper::legacy_seo((string) $model->name);
 
         $lang = isset($args['lang']) ? $this->requireActiveLang($args) : (string) $model->lang;
         $categoryId = isset($args['category_id']) ? (int) $args['category_id'] : (int) $model->category_id;
@@ -1428,7 +1514,24 @@ class McpVideoTools extends McpCrudToolsBase
             if ($embed === '') {
                 throw new McpToolException("Field 'embed' cannot be empty.");
             }
-            $model->embed = $embed;
+            $detected = VideoEmbedProviderService::detectProvider($embed)
+                ?? (VideoEmbedProviderService::detectProvider(isset($args['original']) ? (string) $args['original'] : (string) $model->original));
+            if ($detected !== null) {
+                $name = isset($args['name']) ? (string) $args['name'] : (string) $model->name;
+                $model->embed = VideoEmbedProviderService::buildEmbedHtml($detected['provider'], $detected['id'], [
+                    'title' => $name,
+                    'lang' => $lang,
+                ]);
+            } else {
+                $sanitized = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embed, isset($args['original']) ? (string) $args['original'] : (string) $model->original, [
+                    'title' => (string) $model->name,
+                    'lang' => $lang,
+                ]);
+                if ($sanitized === '') {
+                    throw new McpToolException("Field 'embed' must be a valid iframe or URL from an approved provider (YouTube, X, Vimeo).");
+                }
+                $model->embed = $sanitized;
+            }
         }
 
         if (isset($args['content'])) {
@@ -1476,7 +1579,7 @@ class McpVideoTools extends McpCrudToolsBase
             throw new McpToolException('Failed to update the video embed record.');
         }
 
-        $newRelUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+        $newRelUrl = $model->lang . '/video/' . $id . '-' . Helper::legacy_seo((string) $model->name);
         if ((string) $model->status === 'y') {
             if ($previousStatus === 'y' && $previousRelUrl !== $newRelUrl) {
                 $this->notifyGoogleIndexing($previousRelUrl, 'delete');
@@ -1504,7 +1607,7 @@ class McpVideoTools extends McpCrudToolsBase
         $this->assertModerateDelete('mod_video_embed', (int) $model->user_id);
 
         $wasPublished = ((string) $model->status === 'y');
-        $relUrl = $model->lang . '/videos/embed/' . $id . '-' . Helper::legacy_seo((string) $model->name);
+        $relUrl = $model->lang . '/video/' . $id . '-' . Helper::legacy_seo((string) $model->name);
 
         $this->removeBridgeRelations('mod_video_embed', $id);
 
