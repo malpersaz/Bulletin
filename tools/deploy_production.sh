@@ -63,7 +63,7 @@ rsync "${RSYNC_OPTS[@]}" "${ROOT_DIR}/" "${SERVER_USER}@${SERVER_HOST}:${REMOTE_
 
 if [[ "${DRY_RUN}" == "false" ]]; then
     echo "[3/4] Purging server-side Twig cache, bumping PHP mtimes (OPcache revalidation) & securing local configs..."
-    ssh -o BatchMode=yes "${SERVER_USER}@${SERVER_HOST}" "rm -rf ${REMOTE_DOCROOT}cache/twig/* 2>/dev/null || true; find ${REMOTE_DOCROOT}lib ${REMOTE_DOCROOT}mod ${REMOTE_DOCROOT}tasks ${REMOTE_DOCROOT}index.php ${REMOTE_DOCROOT}init.php -name '*.php' -exec touch {} + 2>/dev/null || true; chmod 640 ${REMOTE_DOCROOT}config/*.local.php ${REMOTE_DOCROOT}data/*.json ${REMOTE_DOCROOT}data/*.sqlite 2>/dev/null || true"
+    ssh -o BatchMode=yes "${SERVER_USER}@${SERVER_HOST}" "rm -rf ${REMOTE_DOCROOT}cache/twig/* 2>/dev/null || true; find ${REMOTE_DOCROOT}config ${REMOTE_DOCROOT}lib ${REMOTE_DOCROOT}mod ${REMOTE_DOCROOT}tasks ${REMOTE_DOCROOT}index.php ${REMOTE_DOCROOT}init.php ${REMOTE_DOCROOT}mcp.php -name '*.php' -exec touch {} + 2>/dev/null || true; chmod 640 ${REMOTE_DOCROOT}config/*.local.php ${REMOTE_DOCROOT}data/*.json ${REMOTE_DOCROOT}data/*.sqlite 2>/dev/null || true"
 
     echo "[4/4] Verifying site health..."
     HTTP_STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" https://amedbulten.com/ || echo "000")

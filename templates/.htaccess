@@ -5,6 +5,16 @@
 # Disable directory browsing
 Options -Indexes
 
+# Prevent script and template execution or download
+<FilesMatch "\.(?i:php[0-9]?|phtml|phar|pl|py|cgi|sh|twig)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
 # Leverage browser caching with mod_expires
 <IfModule mod_expires.c>
   ExpiresActive On
@@ -29,7 +39,8 @@ Options -Indexes
   <FilesMatch "\.(ico|webp|jpe?g|png|gif|svg|woff2?|ttf|otf|eot|css|js)$">
     Header set Cache-Control "max-age=31536000, public, immutable"
   </FilesMatch>
-  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css|webmanifest|json)$">
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css|webmanifest|json|ico|webp|jpe?g|png|gif|svg)$">
     Header set Access-Control-Allow-Origin "*"
+    Header set Cross-Origin-Resource-Policy "cross-origin"
   </FilesMatch>
 </IfModule>

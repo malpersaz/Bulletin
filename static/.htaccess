@@ -39,7 +39,8 @@ Options -Indexes
   <FilesMatch "\.(ico|webp|jpe?g|png|gif|svg|woff2?|ttf|otf|eot|css|js)$">
     Header set Cache-Control "max-age=31536000, public, immutable"
   </FilesMatch>
-  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css|webmanifest|json)$">
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css|webmanifest|json|ico|webp|jpe?g|png|gif|svg)$">
     Header set Access-Control-Allow-Origin "*"
+    Header set Cross-Origin-Resource-Policy "cross-origin"
   </FilesMatch>
 </IfModule>
