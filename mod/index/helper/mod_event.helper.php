@@ -760,11 +760,11 @@ class mod_event_helper extends indexBase
             if ($searchToken !== '') {
                 $newsAclCondition = $this->getAllowedAclCondition('', 'acl_id');
                 $newsSafeLang = addslashes($lang);
-                $newsQuery = "SELECT `id`, `name`, `seo`, `image`, `summary`, `start_date`, `view_count`, `lang`
+                $newsQuery = "SELECT `id`, `name`, `seo`, `image`, `summary`, `created_at`, `view_count`, `lang`
                               FROM `mod_news`
                               WHERE `status` = 'y' AND `lang` = '{$newsSafeLang}' AND {$newsAclCondition}
-                                AND (`name` LIKE '%{$searchToken}%' OR `summary` LIKE '%{$searchToken}%' OR `subject` LIKE '%{$searchToken}%')
-                              ORDER BY `start_date` DESC
+                                AND (`name` LIKE '%{$searchToken}%' OR `summary` LIKE '%{$searchToken}%' OR `deck` LIKE '%{$searchToken}%')
+                              ORDER BY `created_at` DESC
                               LIMIT 4";
                 $newsDb->fetch_array($newsQuery);
                 $nRows = $newsDb->toArray();

@@ -20,6 +20,7 @@
     - Resolved category filter lookup hydration in `calendar_json()` (`$catLookup->sync()`) and added official holiday attributes to JSON output.
     - Implemented multibyte-safe `_resolveCategoryTemplateKey()` with explicit category slug order, preventing `'bayram'` substring collisions.
     - Added legacy category slug alias 301 redirect mapping (`Resmi_Tatil` → `Genel_Tatiller`, `Bayramlar` → `Milli_Bayramlar`).
+    - Fixed related news bridging query in `event($seo)`: corrected column projection from non-existent `start_date` to `created_at` and keyword search predicate from `subject` to `deck`, eliminating hidden SQL exceptions on detail pages.
   - **Component 4: Public Civic Twig Templates & Google Event JSON-LD ISO-8601 Parity (`templates/amed/index/mod_event/`)**:
     - Created 6 dedicated civic section templates under `templates/amed/index/mod_event/sections/` (`section_public_holidays.twig`, `section_national_holidays.twig`, `section_religious_holidays.twig`, `section_memorial_days.twig`, `section_professional_days.twig`, `section_special_observances.twig`) complying with strict code separation (zero inline styles or scripts).
     - Updated Google Event JSON-LD schema in `event.twig` to emit strict ISO-8601 timestamps with timezone offset (`schema_start_date` and `schema_end_date`).
