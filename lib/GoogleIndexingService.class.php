@@ -174,9 +174,9 @@ class GoogleIndexingService
             $langPrefix = trim($lang, '/');
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/newsArchiveSitemap.xml';
+            $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/eventSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/pageSitemap.xml';
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/categorySitemap.xml';
-
             $sitemaps[] = $baseOrigin . '/' . $langPrefix . '/gallerySitemap.xml';
         }
 

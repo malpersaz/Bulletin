@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Téléverser / Changer l\'image',
     'local' => 'Local',
     'embed' => 'Intégrer',
+    'image_writable' => 'Impossible d\'écrire l\'image dans le répertoire. Le répertoire n\'est pas accessible en écriture.',
+    'image_exist' => 'Impossible d\'écrire l\'image dans le répertoire. Le répertoire n\'existe pas.',
+    'image_invalid_ext' => 'Extension de fichier invalide : %s',
+    'image_save_failed' => 'Le fichier image n\'a pas pu être enregistré (%s).',
 
     // === Filter Menu ===
     'filter' => [

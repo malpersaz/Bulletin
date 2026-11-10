@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Ladda upp/Ändra bild',
     'local' => 'Lokal',
     'embed' => 'Bädda in',
+    'image_writable' => 'Kan inte skriva bild till katalogen. Katalogen är inte skrivbar.',
+    'image_exist' => 'Kan inte skriva bild till katalogen. Katalogen finns inte.',
+    'image_invalid_ext' => 'Ogiltig filändelse: %s',
+    'image_save_failed' => 'Bildfilen kunde inte sparas (%s).',
 
     // === Filter Menu ===
     'filter' => [

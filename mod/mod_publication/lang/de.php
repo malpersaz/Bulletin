@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Upload/Change Image',
     'local' => 'Local',
     'embed' => 'Embed',
+    'image_writable' => 'Bild kann nicht in das Verzeichnis geschrieben werden. Verzeichnis ist nicht beschreibbar.',
+    'image_exist' => 'Bild kann nicht in das Verzeichnis geschrieben werden. Verzeichnis existiert nicht.',
+    'image_invalid_ext' => 'Ungültige Dateiendung: %s',
+    'image_save_failed' => 'Bilddatei konnte nicht gespeichert werden (%s).',
 
     // === Filter Menu ===
     'filter' => [

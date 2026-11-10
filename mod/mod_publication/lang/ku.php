@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Wêne Lê Bar Bike/Biguherîne',
     'local' => 'Lokal',
     'embed' => 'Embed',
+    'image_writable' => 'Wêne li peldankê nayê tomarkirin. Destûra nivîsandinê ya peldankê nîne.',
+    'image_exist' => 'Wêne li peldankê nayê tomarkirin. Peldank tune ye.',
+    'image_invalid_ext' => 'Pêveka pelê nederbasdar e: %s',
+    'image_save_failed' => 'Pelê wêneyê nehate tomarkirin (%s).',
 
     // === Filter Menu ===
     'filter' => [

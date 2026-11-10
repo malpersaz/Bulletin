@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Wêne Lê Bar Bike/Biguherîne',
     'local' => 'Lokal',
     'embed' => 'Embed',
+    'image_writable' => 'Resim nêşeno qeydê poldorî bibo. Destûrê nuştişî yê poldorî çino.',
+    'image_exist' => 'Resim nêşeno qeydê poldorî bibo. Poldor çino.',
+    'image_invalid_ext' => 'Qedêna dosyaye ya nêvêrde: %s',
+    'image_save_failed' => 'Dosyaya resimî nêameye qeydkerdiş (%s).',
 
     // === Filter Menu ===
     'filter' => [

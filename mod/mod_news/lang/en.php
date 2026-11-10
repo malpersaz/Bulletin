@@ -40,6 +40,10 @@ $lang['mod_news'] = [
     'upload_image' => 'Upload/Change Image',
     'local' => 'Local',
     'embed' => 'Embed',
+    'image_writable' => 'Cannot write image to upload directory. Directory is not writable.',
+    'image_exist' => 'Cannot write image to upload directory. Directory does not exist.',
+    'image_invalid_ext' => 'Invalid file extension: %s',
+    'image_save_failed' => 'Image file could not be saved (%s).',
 
     // === Filter Menu ===
     'filter' => [

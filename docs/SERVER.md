@@ -1,6 +1,6 @@
 # Bulletin CMS Production Server Guide (SERVER.md)
 
-- **Version:** `v1.0.60.2` (2026-11-10)
+- **Version:** `v1.0.60.4` (2026-11-10)
 - **Domain:** `amedbulten.com`
 - **Host:** `ssh-w02232db@w02232db.kasserver.com` (ALL-INKL KAS)
 - **Document Root:** `/www/htdocs/w02232db/amedbulten.com/`

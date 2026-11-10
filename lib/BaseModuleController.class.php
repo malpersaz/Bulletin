@@ -334,9 +334,28 @@ abstract class BaseModuleController
      */
     public function add()
     {
-        // Check permission
-        if ($this->user->hasPermission($this->module_name, 'add', $this->getRoleErrorMessage('add'), 1) === false) {
-            return false;
+        if ($this->isAjaxRequest()) {
+            if ($this->user->hasPermission($this->module_name, 'add', $this->getRoleErrorMessage('add'), 0) === false) {
+                if ($this->user->checklogin() === false) {
+                    $targetUrl = (!empty($this->site['saddress']) ? $this->site['saddress'] : $this->site['address']) . '?login=modal&session_expired=1';
+                    header('HTTP/1.1 401 Unauthorized');
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'code' => 'session_expired',
+                        'message' => $this->getRoleErrorMessage('add'),
+                        'redirect' => $targetUrl
+                    ]);
+                }
+                $this->jsonResponse([
+                    'status' => 'error',
+                    'message' => $this->getRoleErrorMessage('add')
+                ]);
+            }
+        } else {
+            // Check permission
+            if ($this->user->hasPermission($this->module_name, 'add', $this->getRoleErrorMessage('add'), 1) === false) {
+                return false;
+            }
         }
 
         if (Req::is_Post('add')) {
@@ -360,9 +379,28 @@ abstract class BaseModuleController
      */
     public function edit($id = null)
     {
-        // Check permission
-        if ($this->user->hasPermission($this->module_name, 'edit', $this->getRoleErrorMessage('edit'), 1) === false) {
-            return false;
+        if ($this->isAjaxRequest()) {
+            if ($this->user->hasPermission($this->module_name, 'edit', $this->getRoleErrorMessage('edit'), 0) === false) {
+                if ($this->user->checklogin() === false) {
+                    $targetUrl = (!empty($this->site['saddress']) ? $this->site['saddress'] : $this->site['address']) . '?login=modal&session_expired=1';
+                    header('HTTP/1.1 401 Unauthorized');
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'code' => 'session_expired',
+                        'message' => $this->getRoleErrorMessage('edit'),
+                        'redirect' => $targetUrl
+                    ]);
+                }
+                $this->jsonResponse([
+                    'status' => 'error',
+                    'message' => $this->getRoleErrorMessage('edit')
+                ]);
+            }
+        } else {
+            // Check permission
+            if ($this->user->hasPermission($this->module_name, 'edit', $this->getRoleErrorMessage('edit'), 1) === false) {
+                return false;
+            }
         }
 
         $model = Load::model($this->model_name);
@@ -708,15 +746,17 @@ abstract class BaseModuleController
                     if (ob_get_level() > 0) {
                         ob_clean();
                     }
+                    $errorMsg = $this->translateErrorMessage($image->error ?: 'Unknown image processing error');
                     header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['status' => 'error', 'message' => $image->error]);
+                    echo json_encode(['status' => 'error', 'error_field' => 'image', 'message' => $errorMsg], JSON_UNESCAPED_UNICODE);
                 }
             } catch (Exception $e) {
                 if (ob_get_level() > 0) {
                     ob_clean();
                 }
+                $errorMsg = $this->translateErrorMessage($e->getMessage());
                 header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                echo json_encode(['status' => 'error', 'error_field' => 'image', 'message' => $errorMsg], JSON_UNESCAPED_UNICODE);
             }
         } else {
             if (ob_get_level() > 0) {
@@ -1260,27 +1300,35 @@ abstract class BaseModuleController
      */
     protected function translateErrorMessage($message)
     {
+        $sharedLang = Load::lang('management')['management'] ?? [];
+        $modLang = $this->lang[$this->module_name] ?? [];
+
+        $resolveKey = function ($key, $default) use ($modLang, $sharedLang) {
+            return $modLang[$key] ?? ($this->lang[$key] ?? ($sharedLang[$key] ?? $default));
+        };
+
         $t = [
-            'writable'    => $this->lang['image_writable'] ?? 'Can\'t write image to path. Directory is not writable.',
-            'exist'       => $this->lang['image_exist'] ?? 'Can\'t write image to path. Directory does not exist.',
-            'invalid'     => $this->lang['image_invalid_ext'] ?? 'Invalid file extension: %s',
-            'save_failed' => $this->lang['image_save_failed'] ?? 'File could not be saved to: %s',
+            'writable'    => $resolveKey('image_writable', 'Cannot write image to upload directory. Directory is not writable.'),
+            'exist'       => $resolveKey('image_exist', 'Cannot write image to upload directory. Directory does not exist.'),
+            'invalid'     => $resolveKey('image_invalid_ext', 'Invalid file extension: %s'),
+            'save_failed' => $resolveKey('image_save_failed', 'Image file could not be saved (%s).'),
         ];
 
         if (strpos($message, 'Directory is not writable') !== false) {
             return $t['writable'];
         }
-        if (strpos($message, 'Directory does not exist') !== false) {
+        if (strpos($message, 'Directory does not exist') !== false || strpos($message, 'Directory could not be created') !== false) {
             return $t['exist'];
         }
-        if (strpos($message, 'invalid_extension|') === 0) {
-            $parts = explode('|', $message);
-            $ext = isset($parts[1]) ? $parts[1] : '';
+        if (preg_match('/invalid_extension\|([a-z0-9_.-]*)/i', $message, $matches)) {
+            $ext = $matches[1] ?? '';
             return sprintf($t['invalid'], $ext);
         }
-        if (strpos($message, 'File could not be saved to:') !== false) {
-            $dir = str_replace('File could not be saved to: ', '', $message);
-            return sprintf($t['save_failed'], $dir);
+        if (strpos($message, 'image_save_failed') !== false || strpos($message, 'File could not be saved to:') !== false) {
+            if (strpos($t['save_failed'], '%s') !== false) {
+                return sprintf($t['save_failed'], $this->module_name);
+            }
+            return $t['save_failed'];
         }
 
         return $message;
@@ -1299,6 +1347,7 @@ abstract class BaseModuleController
         if ($this->isAjaxRequest()) {
             $this->jsonResponse([
                 'status' => 'error',
+                'error_field' => 'image',
                 'message' => $translated
             ]);
         }
@@ -1634,8 +1683,11 @@ abstract class BaseModuleController
 
     protected function jsonResponse(array $payload)
     {
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($payload);
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE);
         exit;
     }
 

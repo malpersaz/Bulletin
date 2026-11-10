@@ -40,6 +40,10 @@ $lang['mod_news'] = [
     'upload_image' => 'Bild hochladen/ändern',
     'local' => 'Lokal',
     'embed' => 'Einbetten',
+    'image_writable' => 'Bild kann nicht in das Verzeichnis geschrieben werden. Verzeichnis ist nicht beschreibbar.',
+    'image_exist' => 'Bild kann nicht in das Verzeichnis geschrieben werden. Verzeichnis existiert nicht.',
+    'image_invalid_ext' => 'Ungültige Dateiendung: %s',
+    'image_save_failed' => 'Bilddatei konnte nicht gespeichert werden (%s).',
 
     // === Filter Menu ===
     'filter' => [

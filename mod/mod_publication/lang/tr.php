@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'Resim Yükle/Değiştir',
     'local' => 'Lokal',
     'embed' => 'Embed',
+    'image_writable' => 'Görsel dizinine yazılamıyor. Dizin yazılabilir değil.',
+    'image_exist' => 'Görsel dizinine yazılamıyor. Dizin mevcut değil.',
+    'image_invalid_ext' => 'Geçersiz dosya uzantısı: %s',
+    'image_save_failed' => 'Görsel dosyası kaydedilemedi (%s).',
 
     // === Filter Menu ===
     'filter' => [

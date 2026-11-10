@@ -40,6 +40,10 @@ $lang['mod_publication'] = [
     'upload_change_image' => 'رفع / تغيير الصورة',
     'local' => 'محلي',
     'embed' => 'تضمين',
+    'image_writable' => 'تعذر حفظ الصورة في الدليل. الدليل غير قابل للكتابة.',
+    'image_exist' => 'تعذر حفظ الصورة في الدليل. الدليل غير موجود.',
+    'image_invalid_ext' => 'امتداد الملف غير صالح: %s',
+    'image_save_failed' => 'تعذر حفظ ملف الصورة (%s).',
 
     // === Filter Menu ===
     'filter' => [

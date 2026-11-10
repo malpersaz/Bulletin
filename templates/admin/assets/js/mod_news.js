@@ -2208,6 +2208,23 @@ class NewsEditManager {
                 }
             });
         }
+
+        if (this.form) {
+            this.form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.submitForm();
+            });
+
+            this.form.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT') {
+                    const inputType = (e.target.type || '').toLowerCase();
+                    if (inputType !== 'button' && inputType !== 'submit' && inputType !== 'checkbox' && inputType !== 'radio') {
+                        e.preventDefault();
+                        this.submitForm();
+                    }
+                }
+            });
+        }
     }
 
     openLangSheet() {
@@ -2247,6 +2264,25 @@ class NewsEditManager {
         openLangSheet();
     }
 
+    setSubmittingState(isSubmitting) {
+        const submitBtn = document.querySelector('[data-action="submit-edit-form"]');
+        if (submitBtn) {
+            submitBtn.disabled = isSubmitting;
+            if (isSubmitting) {
+                submitBtn.classList.add('is-loading');
+                if (!submitBtn.dataset.originalHtml) {
+                    submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                }
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ...';
+            } else {
+                submitBtn.classList.remove('is-loading');
+                if (submitBtn.dataset.originalHtml) {
+                    submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+                }
+            }
+        }
+    }
+
     submitForm() {
         if (typeof tinymce !== 'undefined') {
             tinymce.triggerSave();
@@ -2255,55 +2291,131 @@ class NewsEditManager {
         const introInput = document.getElementById('editIntroInput');
         if (introInput) {
             const introVal = (introInput.value || '').trim();
-            if (introVal.length < 90 || introVal.length > 120) {
+            const introLen = introVal.length;
+            if (introLen < 90 || introLen > 120) {
                 introInput.focus();
-                introInput.reportValidity();
+                const alertMsg = (typeof safeAdminLang !== 'undefined' ? (safeAdminLang?.active_module?.validator?.deck_length || safeAdminLang?.validator?.deck_length) : null) || 'Please enter an introductory text between 90 and 120 characters.';
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(alertMsg, 'warning');
+                } else {
+                    introInput.reportValidity();
+                }
+                const counter = document.getElementById('editIntroCounter');
+                if (counter) {
+                    counter.classList.add('is-error');
+                }
                 return;
             }
         }
 
         if (!this.form.checkValidity()) {
             this.form.reportValidity();
+            const firstInvalid = this.form.querySelector(':invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
             return;
         }
 
-        const submitBtn = document.querySelector('[data-action="submit-edit-form"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.classList.add('is-loading');
+        this.setSubmittingState(true);
+
+        const formData = new FormData(this.form);
+        formData.set('ajax_request', '1');
+
+        if (typeof tinymce !== 'undefined' && tinymce.get('editContentTextarea')) {
+            formData.set('content', tinymce.get('editContentTextarea').getContent());
         }
 
-        this.form.submit();
+        const genericError = (typeof safeAdminLang !== 'undefined' ? (safeAdminLang?.active_module?.ajax?.error || safeAdminLang?.active_module?.error_occurred) : null) || 'Error';
+
+        fetch(this.form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                let result;
+                try {
+                    result = JSON.parse(data);
+                } catch (e) {
+                    console.error("JSON parse error:", e, "Raw data:", data);
+                    const shortData = data.substring(0, 300);
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(genericError + ': ' + shortData, 'error', 8000);
+                    }
+                    this.setSubmittingState(false);
+                    return;
+                }
+
+                if (result.status === 'success') {
+                    const successMsg = result.message || 'Updated successfully';
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(successMsg, 'success');
+                    }
+                    setTimeout(() => {
+                        if (result.redirect) {
+                            window.location.href = result.redirect;
+                        } else {
+                            window.location.reload();
+                        }
+                    }, 1500);
+                } else {
+                    if (result.code === 'session_expired' && result.redirect) {
+                        if (typeof showSnackbar === 'function') {
+                            showSnackbar(result.message || 'Session expired', 'error', 4000);
+                        }
+                        setTimeout(() => {
+                            window.location.href = result.redirect;
+                        }, 1200);
+                        return;
+                    }
+
+                    let errorMsg = result.message || genericError;
+                    if (result.errors && Array.isArray(result.errors)) {
+                        errorMsg = result.errors.join('\n');
+                    }
+
+                    const imageAction = (result.error_field === 'image') ? {
+                        label: (typeof safeAdminLang !== 'undefined' && safeAdminLang?.wizard?.step?.image) || 'Görsel',
+                        onClick: () => {
+                            const shell = document.getElementById('editImageShell');
+                            if (shell) {
+                                shell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    } : null;
+
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(errorMsg, 'error', 7000, imageAction);
+                    }
+                    this.setSubmittingState(false);
+                }
+            })
+            .catch(err => {
+                console.error("Edit form submit error:", err);
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(genericError + ': ' + err, 'error', 6000);
+                }
+                this.setSubmittingState(false);
+            });
     }
 
     initAlerts() {
-        if (this.config.errors && this.config.errors.length > 0 && typeof Swal !== 'undefined') {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'swal-error-wrapper';
-
-            const titleRow = document.createElement('div');
-            titleRow.className = 'swal-error-title';
-            titleRow.innerHTML = '<i class="bi bi-exclamation-triangle-fill swal-error-icon"></i> <b></b>';
-            titleRow.querySelector('b').textContent = this.config.errorMessage || 'Error';
-            wrapper.appendChild(titleRow);
-
-            const list = document.createElement('ul');
-            list.className = 'swal-error-list';
-
-            this.config.errors.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.className = 'swal-error-item';
-                listItem.textContent = item;
-                list.appendChild(listItem);
-            });
-            wrapper.appendChild(list);
-
-            Swal.fire({
-                icon: 'warning',
-                html: wrapper.outerHTML,
-                confirmButtonText: this.config.okText || 'OK',
-                confirmButtonColor: '#ba1a1a'
-            });
+        if (this.config.errors && this.config.errors.length > 0) {
+            const errorMsg = this.config.errors.join('\n') || this.config.errorMessage || 'Error';
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(errorMsg, 'error', 6000);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    text: errorMsg,
+                    confirmButtonText: this.config.okText || 'OK',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            }
         }
 
         if (this.config.successUrl) {
@@ -2420,6 +2532,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewsQualityMeters();
     const addShell = document.getElementById('newsAddShell');
     if (addShell) {
+        if (addShell.dataset.serverError && typeof showSnackbar === 'function') {
+            showSnackbar(addShell.dataset.serverError, 'error', 6000);
+        }
+
         if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
             adminLang.languages = adminLang.languages.filter((item) => item.status === 'y');
         }

@@ -180,57 +180,42 @@ if (typeof Swal !== 'undefined' && Swal.fire && !Swal.__targetIntercepted) {
  * @param {string} type - 'success', 'error', 'info', 'warning'
  * @param {number} duration - How long to show the message in ms (default: 4000)
  */
-function showSnackbar(message, type = 'info', duration = 4000) {
-    // Check or create snackbar container
+/**
+ * Show a snackbar notification (phone-first, accessible, zero inline styles)
+ * @param {string} message - Message text
+ * @param {string} type - 'success', 'error', 'info', 'warning'
+ * @param {number} duration - How long to show the message in ms (default: 4000)
+ * @param {Object|null} action - Optional action button { label: string, onClick: function }
+ */
+function showSnackbar(message, type = 'info', duration = 4000, action = null) {
+    const root = document.querySelector('.mobile-wrapper') || document.body;
     let container = document.getElementById('snackbar-container');
     if (!container) {
         container = document.createElement('div');
         container.id = 'snackbar-container';
-        container.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            pointer-events: none;
-        `;
-        document.body.appendChild(container);
+        root.appendChild(container);
+    } else if (container.parentElement !== root) {
+        root.appendChild(container);
     }
 
-    // Create snackbar element
+    const icons = {
+        success: 'bi-check-circle-fill',
+        error: 'bi-x-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info: 'bi-info-circle-fill'
+    };
+    const iconClass = icons[type] || icons.info;
+
     const snackbar = document.createElement('div');
     snackbar.className = 'snackbar snackbar-' + type;
 
-    // Colors based on type
-    const colors = {
-        success: { bg: '#1B5E20', color: '#fff', icon: 'bi-check-circle-fill' },
-        error: { bg: '#B71C1C', color: '#fff', icon: 'bi-x-circle-fill' },
-        warning: { bg: '#E65100', color: '#fff', icon: 'bi-exclamation-triangle-fill' },
-        info: { bg: '#0D47A1', color: '#fff', icon: 'bi-info-circle-fill' }
-    };
-    const style = colors[type] || colors.info;
-
-    snackbar.style.cssText = `
-        background: ${style.bg};
-        color: ${style.color};
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        pointer-events: auto;
-        max-width: 90vw;
-    `;
+    if (type === 'error' || type === 'warning') {
+        snackbar.setAttribute('role', 'alert');
+        snackbar.setAttribute('aria-live', 'assertive');
+    } else {
+        snackbar.setAttribute('role', 'status');
+        snackbar.setAttribute('aria-live', 'polite');
+    }
 
     // Extract clean plain text if message contains HTML (e.g. server error pages)
     let cleanMessage = message;
@@ -244,21 +229,55 @@ function showSnackbar(message, type = 'info', duration = 4000) {
         }
     }
 
-    snackbar.innerHTML = `<i class="bi ${style.icon}"></i><span>${cleanMessage}</span>`;
+    const iconEl = document.createElement('i');
+    iconEl.className = 'bi ' + iconClass;
+    iconEl.setAttribute('aria-hidden', 'true');
+    snackbar.appendChild(iconEl);
+
+    const spanEl = document.createElement('span');
+    spanEl.textContent = cleanMessage;
+    snackbar.appendChild(spanEl);
+
+    let removeTimer = null;
+    const dismiss = () => {
+        if (removeTimer) {
+            clearTimeout(removeTimer);
+            removeTimer = null;
+        }
+        snackbar.classList.remove('is-visible');
+        setTimeout(() => {
+            if (snackbar.parentNode) {
+                snackbar.remove();
+            }
+        }, 260);
+    };
+
+    if (action && typeof action.label === 'string' && action.label.trim() !== '' && typeof action.onClick === 'function') {
+        const actionBtn = document.createElement('button');
+        actionBtn.type = 'button';
+        actionBtn.className = 'snackbar-action';
+        actionBtn.textContent = action.label;
+        actionBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+                action.onClick();
+            } finally {
+                dismiss();
+            }
+        });
+        snackbar.appendChild(actionBtn);
+    }
+
     container.appendChild(snackbar);
 
-    // Animate in
+    // Animate in via class
     requestAnimationFrame(() => {
-        snackbar.style.opacity = '1';
-        snackbar.style.transform = 'translateY(0)';
+        snackbar.classList.add('is-visible');
     });
 
     // Remove after duration
-    setTimeout(() => {
-        snackbar.style.opacity = '0';
-        snackbar.style.transform = 'translateY(-20px)';
-        setTimeout(() => snackbar.remove(), 300);
-    }, duration);
+    removeTimer = setTimeout(dismiss, duration);
 }
 
 const safeAdminLang = (typeof adminLang !== 'undefined' && adminLang) ? adminLang : {};
@@ -918,6 +937,7 @@ function openWizard() {
     const wizard = document.getElementById('contentWizard');
     if (wizard) {
         wizard.classList.add('active');
+        document.body.classList.add('has-active-wizard');
 
         // Read saved state (if exists)
         const hasState = loadWizardState();
@@ -943,6 +963,7 @@ function openWizard() {
 function closeWizard() {
     const wizard = document.getElementById('contentWizard');
     if (wizard) wizard.classList.remove('active');
+    document.body.classList.remove('has-active-wizard');
 
     // Restore FAB
     const fab = document.getElementById('fabContainer');
@@ -1109,6 +1130,17 @@ function nextWizardStep() {
 
                 const msg = document.getElementById('introValidationMsg');
                 if (msg) msg.style.display = 'block';
+            }
+        }
+        // Step 6 Content Error Feedback
+        if (wizardCurrentStep === 6) {
+            const stepEl = document.getElementById('wizardStep' + wizardCurrentStep);
+            if (stepEl) {
+                const sub = stepEl.querySelector('.step-subhead') || stepEl.querySelector('p');
+                if (sub) {
+                    sub.classList.add('text-error');
+                    setTimeout(() => sub.classList.remove('text-error'), 1000);
+                }
             }
         }
         return; // DATA INVALID, STOP.
@@ -2967,25 +2999,48 @@ function updateSummary() {
     if (catSum) catSum.innerText = wizardData.category ? wizardData.category.name : (safeAdminLang?.wizard?.summary?.selected_none || '');
 }
 
+// Helper to set wizard submitting state on both footer finish and header save buttons
+function setWizardSubmittingState(isSubmitting) {
+    const btnFinish = document.getElementById('btnWizardFinish');
+    const headerBtns = document.querySelectorAll('[data-action="submit-content-wizard"]');
+    const finishText = safeAdminLang?.wizard?.button?.finish || safeAdminLang?.wizard?.step?.finish || 'Finish';
+
+    if (btnFinish) {
+        btnFinish.disabled = isSubmitting;
+        if (isSubmitting) {
+            btnFinish.classList.add('is-loading');
+            btnFinish.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ...';
+        } else {
+            btnFinish.classList.remove('is-loading');
+            btnFinish.innerText = finishText;
+        }
+    }
+
+    headerBtns.forEach(btn => {
+        btn.disabled = isSubmitting;
+        if (isSubmitting) {
+            btn.classList.add('is-loading');
+        } else {
+            btn.classList.remove('is-loading');
+        }
+    });
+}
+
 // Wizard Submission Logic
 function prepareAndSubmitWizard() {
     console.log('prepareAndSubmitWizard() called');
 
-    const btnFinish = document.getElementById('btnWizardFinish');
     const introInput = document.getElementById('wizardIntroInput');
     const introVal = introInput ? introInput.value.trim() : (wizardData.intro ? wizardData.intro.trim() : '');
     const introLen = introVal.length;
 
     // Validate intro / deck length (must be between 90 and 120 characters)
     if (introLen < 90 || introLen > 120) {
-        if (btnFinish) {
-            btnFinish.disabled = false;
-            btnFinish.innerText = safeAdminLang?.wizard?.step?.finish || 'Finish';
-        }
+        setWizardSubmittingState(false);
         const msg = document.getElementById('introValidationMsg');
         if (msg) msg.style.display = 'block';
         if (typeof showSnackbar === 'function') {
-            const alertMsg = safeAdminLang?.validator?.deck_length || 'Please enter an introductory text between 90 and 120 characters.';
+            const alertMsg = safeAdminLang?.active_module?.validator?.deck_length || safeAdminLang?.validator?.deck_length || 'Please enter an introductory text between 90 and 120 characters.';
             showSnackbar(alertMsg, 'warning');
         }
         if (typeof wizardCurrentStep !== 'undefined' && wizardCurrentStep !== 5) {
@@ -2996,10 +3051,7 @@ function prepareAndSubmitWizard() {
         return;
     }
 
-    if (btnFinish) {
-        btnFinish.disabled = true;
-        btnFinish.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ...';
-    }
+    setWizardSubmittingState(true);
 
     const formData = new FormData();
     // Use wizardData to get language and category which are state-managed
@@ -3085,6 +3137,8 @@ function prepareAndSubmitWizard() {
         console.log('  ', pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
     }
 
+    const genericError = safeAdminLang?.active_module?.ajax?.error || safeAdminLang?.active_module?.error_occurred || 'Error';
+
     fetch(url, {
         method: 'POST',
         body: formData,
@@ -3103,11 +3157,8 @@ function prepareAndSubmitWizard() {
             } catch (e) {
                 console.error("JSON parse error:", e, "Raw data:", data);
                 const shortData = data.substring(0, 300);
-                showSnackbar('Error: Invalid JSON response: ' + shortData, 'error', 8000);
-                if (btnFinish) {
-                    btnFinish.disabled = false;
-                    btnFinish.innerText = safeAdminLang?.wizard?.step?.finish || 'Finish';
-                }
+                showSnackbar(genericError + ': ' + shortData, 'error', 8000);
+                setWizardSubmittingState(false);
                 return;
             }
 
@@ -3137,30 +3188,80 @@ function prepareAndSubmitWizard() {
                     }
                 }, 1500);
             } else {
+                // Error - session expired check
+                if (result.code === 'session_expired' && result.redirect) {
+                    showSnackbar(result.message || 'Session expired', 'error', 4000);
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 1200);
+                    return;
+                }
+
                 // Error - show message
-                let errorMsg = result.message || safeAdminLang?.wizard?.messages?.error || 'Error';
+                let errorMsg = result.message || genericError;
                 if (result.errors && Array.isArray(result.errors)) {
                     errorMsg = result.errors.join('\n');
                 }
-                showSnackbar(errorMsg, 'error', 6000);
-                if (btnFinish) {
-                    btnFinish.disabled = false;
-                    btnFinish.innerText = safeAdminLang?.wizard?.step?.finish || 'Finish';
-                }
+
+                // If error is related to image, provide action button jumping directly to Step 7 (Image Selection)
+                const imageStepAction = (result.error_field === 'image') ? {
+                    label: safeAdminLang?.wizard?.step?.image || 'Image',
+                    onClick: () => {
+                        if (typeof wizardCurrentStep !== 'undefined') {
+                            wizardCurrentStep = 7;
+                            updateWizardUI();
+                            if (typeof saveWizardState === 'function') {
+                                saveWizardState();
+                            }
+                        }
+                    }
+                } : null;
+
+                showSnackbar(errorMsg, 'error', 7000, imageStepAction);
+                setWizardSubmittingState(false);
             }
         })
         .catch(error => {
             console.error("Wizard error:", error);
-            showSnackbar(safeAdminLang?.wizard?.messages?.error || 'Error: ' + error, 'error', 6000);
-            if (btnFinish) {
-                btnFinish.disabled = false;
-                btnFinish.innerText = safeAdminLang?.wizard?.step?.finish || 'Finish';
-            }
+            showSnackbar(genericError + ': ' + error, 'error', 6000);
+            setWizardSubmittingState(false);
         });
 }
 
 // Add Listeners dynamically if needed
 document.addEventListener('DOMContentLoaded', () => {
+    // Prevent implicit synchronous form submission
+    const addForm = document.getElementById('addForm');
+    if (addForm) {
+        addForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+        });
+    }
+
+    // Intercept Enter key inside wizard inputs
+    const contentWizard = document.getElementById('contentWizard');
+    if (contentWizard) {
+        contentWizard.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT') {
+                const inputType = (e.target.type || '').toLowerCase();
+                if (inputType !== 'button' && inputType !== 'submit' && inputType !== 'checkbox' && inputType !== 'radio') {
+                    e.preventDefault();
+                    if (typeof wizardCurrentStep !== 'undefined') {
+                        if (wizardCurrentStep < 8) {
+                            if (typeof nextWizardStep === 'function') {
+                                nextWizardStep();
+                            }
+                        } else {
+                            if (typeof prepareAndSubmitWizard === 'function') {
+                                prepareAndSubmitWizard();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     initializeWizardImageInteractions();
 
     // Validation Listeners

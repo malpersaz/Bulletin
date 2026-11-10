@@ -40,6 +40,10 @@ $lang['mod_news'] = [
     'upload_image' => 'Wêne Lê Bar Bike/Biguherîne',
     'local' => 'Lokal',
     'embed' => 'Embed',
+    'image_writable' => 'وێنەکە لە بوخچەکە پاشەکەوت ناکرێت. مۆڵەتی نووسینی بوخچەکە نییە.',
+    'image_exist' => 'وێنەکە لە بوخچەکە پاشەکەوت ناکرێت. بوخچەکە بوونی نییە.',
+    'image_invalid_ext' => 'پاشگری پەڕگەی نادروست: %s',
+    'image_save_failed' => 'پەڕگەی وێنەکە پاشەکەوت نەکرا (%s).',
 
     // === Filter Menu ===
     'filter' => [

@@ -5,49 +5,20 @@ class FileException extends Exception
     public function show()
     {
         $last = current($this->getTrace());
-        $error = "
-          <style>
-            .dexception {
-                background: #FFFFCC;
-                font-size: 14px;
-                color: #000000;
-            }
-            .dexception h4 {
-                padding: 8px;
-                background: #eee;
-                font: 'Courier New', Courier, mono;
-                font-weight: bold;
-            }
-            .dexception h3{
-                margin-bottom:2px;
-            }
-            .e {
-                font-size: 12px;
-                padding: 2px 8px;
-
-                font: 'Courier New', Courier, mono;
-            }
-
-            .e_red {
-                color: red;
-                font-weight: bold;
-            }
-        </style>";
-        $error .= "<div class='dexception'>";
-        $error .= '<div class="e"><pre>';
+        $error = "<div class='file-exception'>";
+        $error .= '<div class="file-exception-body"><pre>';
         $error .= "<h1>FileException</h1>";
-        $error .= "<h4>" . $this->getMessage() . "</h4>";
+        $error .= "<h4>" . htmlspecialchars($this->getMessage(), ENT_QUOTES, 'UTF-8') . "</h4>";
         $error .= "<h3>Error</h3>\n";
-        $error .= "<b class='e_red'>File:</b>" . $this->getFile() . "\n";
-        $error .= "<b class='e_red'>Line:</b>" . $this->getLine() . "\n";
+        $error .= "<b>File:</b>" . htmlspecialchars($this->getFile(), ENT_QUOTES, 'UTF-8') . "\n";
+        $error .= "<b>Line:</b>" . (int) $this->getLine() . "\n";
         $error .= "<h3>Calling Files</h3>\n";
-        $error .= "<b class='e_red'>File:</b>" . $last['file'] . "\n";
-        $error .= "<b class='e_red'>Line:</b>" . $last['line'] . "\n";
-        $error .= "<b class='e_red'>Class:</b>" . $last['class'] . "\n";
-        $error .= "<b class='e_red'>Function:</b>" . $last['function'] . "\n";
-        $error .= "<b class='e_red'>Args:</b>" . print_r($last['args'], TRUE) . "\n";
-        $error .= "<h3>Trac String</h3>\n";
-        $error .= $this->getTraceAsString() . "\n";
+        $error .= "<b>File:</b>" . htmlspecialchars($last['file'] ?? '', ENT_QUOTES, 'UTF-8') . "\n";
+        $error .= "<b>Line:</b>" . (int) ($last['line'] ?? 0) . "\n";
+        $error .= "<b>Class:</b>" . htmlspecialchars($last['class'] ?? '', ENT_QUOTES, 'UTF-8') . "\n";
+        $error .= "<b>Function:</b>" . htmlspecialchars($last['function'] ?? '', ENT_QUOTES, 'UTF-8') . "\n";
+        $error .= "<h3>Trace String</h3>\n";
+        $error .= htmlspecialchars($this->getTraceAsString(), ENT_QUOTES, 'UTF-8') . "\n";
         $error .= "</pre></div>";
         $error .= "</div>";
         echo $error;
@@ -58,28 +29,37 @@ class File
 {
     public function newdir($file, $chmod = 0777)
     {
-        if (file_exists($file)) {
-            return TRUE;
+        $target = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $file), DIRECTORY_SEPARATOR);
+        if (is_dir($target)) {
+            return true;
         }
-        mkdir($file,$chmod,true);
-        /*
-        $dir = '';
-        $d = explode(DS, $file);
-        foreach ($d AS $a) {
-            $dir = $dir . DS . $a;
-            if (!file_exists($dir)) {
-                if (mkdir($dir, $chmod)) {
-                    continue;
-                } else {
-                    throw new FileException($dir . " directory is not created!");
+
+        $segments = [];
+        $current = $target;
+        while (!empty($current) && !is_dir($current)) {
+            $segments[] = $current;
+            $parent = dirname($current);
+            if ($parent === $current) {
+                break;
+            }
+            $current = $parent;
+        }
+
+        $segments = array_reverse($segments);
+        foreach ($segments as $segment) {
+            if (!is_dir($segment)) {
+                if (!@mkdir($segment, $chmod) && !is_dir($segment)) {
+                    throw new FileException("Directory could not be created");
                 }
+                @chmod($segment, $chmod);
             }
         }
-*/
-        if (file_exists($file)) {
-            return TRUE;
+
+        if (is_dir($target)) {
+            return true;
         }
-        throw new FileException($file . " directory is not created!");
+
+        throw new FileException("Directory could not be created");
     }
 
     public function newfile($file)

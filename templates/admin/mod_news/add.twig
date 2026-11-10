@@ -14,7 +14,8 @@
 {% block content %}
     <div class="wizard-page-loader" id="newsAddShell"
         data-list-url="{{ site.saddress }}mod_news/list"
-        data-active-lang="{{ site.lang|lower }}">
+        data-active-lang="{{ site.lang|lower }}"
+        data-server-error="{{ errors is defined and errors ? errors|join(', ') : (error is defined and error and message is defined ? message : '') }}">
         <div class="spinner-track wizard-page-spinner">
             <div class="spinner-fill"></div>
         </div>
