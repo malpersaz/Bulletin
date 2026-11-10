@@ -267,60 +267,70 @@ foreach ($redirects as $oldUrl => $newUrl) {
 // =============================================================================
 echo "\n[Phase 4] Re-classifying existing production records (id IN 1..44)...\n";
 
-// 1. Religious Feasts -> Category 8
-// Ramadan Feast (id IN 7, 19) -> 3.0 days
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 8,
-    `is_official_holiday` = 'y',
-    `holiday_duration` = 3.0,
-    `is_recurring` = 'y'
-WHERE `id` IN (7, 19)");
-echo " -> Reclassified Ramazan Bayramı records (id 7, 19) to Cat 8 (duration 3.0).\n";
+// Guard: skip destructive id-range reclassification when the v1.0.60 taxonomy is
+// already populated. Production ids shifted after the post-v1.0.60 re-seeding, so
+// the historical id map (1..44) no longer identifies the rows it was written for.
+$db->fetch_array("SELECT `id` FROM `mod_event` WHERE `category_id` IN (8, 9, 10, 11) LIMIT 1");
+$taxonomyApplied = ($db->getSize() > 0);
 
-// Sacrifice Feast (id IN 10, 21) -> 4.0 days
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 8,
-    `is_official_holiday` = 'y',
-    `holiday_duration` = 4.0,
-    `is_recurring` = 'y'
-WHERE `id` IN (10, 21)");
-echo " -> Reclassified Kurban Bayramı records (id 10, 21) to Cat 8 (duration 4.0).\n";
+if ($taxonomyApplied) {
+    echo " -> [SKIP] New-taxonomy categories (8-11) already populated; id-range reclassification skipped (protects re-seeded data).\n";
+} else {
+    // 1. Religious Feasts -> Category 8
+    // Ramadan Feast (id IN 7, 19) -> 3.0 days
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 8,
+        `is_official_holiday` = 'y',
+        `holiday_duration` = 3.0,
+        `is_recurring` = 'y'
+    WHERE `id` IN (7, 19)");
+    echo " -> Reclassified Ramazan Bayramı records (id 7, 19) to Cat 8 (duration 3.0).\n";
 
-// 2. National Holidays (id IN 8, 9, 11, 12, 20, 22, 23, 24) -> Category 7 (1.0 day)
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 7,
-    `is_official_holiday` = 'y',
-    `holiday_duration` = 1.0,
-    `is_recurring` = 'y'
-WHERE `id` IN (8, 9, 11, 12, 20, 22, 23, 24)");
-echo " -> Reclassified National Holidays (id 8, 9, 11, 12, 20, 22, 23, 24) in Cat 7 (duration 1.0).\n";
+    // Sacrifice Feast (id IN 10, 21) -> 4.0 days
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 8,
+        `is_official_holiday` = 'y',
+        `holiday_duration` = 4.0,
+        `is_recurring` = 'y'
+    WHERE `id` IN (10, 21)");
+    echo " -> Reclassified Kurban Bayramı records (id 10, 21) to Cat 8 (duration 4.0).\n";
 
-// 3. General Holidays full-day (id IN 1, 3, 5, 13, 15, 17) -> Category 6 (1.0 day)
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 6,
-    `is_official_holiday` = 'y',
-    `holiday_duration` = 1.0,
-    `is_recurring` = 'y'
-WHERE `id` IN (1, 3, 5, 13, 15, 17)");
-echo " -> Reclassified General Holidays full-day (id 1, 3, 5, 13, 15, 17) in Cat 6 (duration 1.0).\n";
+    // 2. National Holidays (id IN 8, 9, 11, 12, 20, 22, 23, 24) -> Category 7 (1.0 day)
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 7,
+        `is_official_holiday` = 'y',
+        `holiday_duration` = 1.0,
+        `is_recurring` = 'y'
+    WHERE `id` IN (8, 9, 11, 12, 20, 22, 23, 24)");
+    echo " -> Reclassified National Holidays (id 8, 9, 11, 12, 20, 22, 23, 24) in Cat 7 (duration 1.0).\n";
 
-// 4. Eve Half-Days (id IN 2, 4, 6, 14, 16, 18) -> Category 6 (0.5 day)
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 6,
-    `is_official_holiday` = 'y',
-    `holiday_duration` = 0.5,
-    `is_recurring` = 'y'
-WHERE `id` IN (2, 4, 6, 14, 16, 18)");
-echo " -> Reclassified Arife half-days (id 2, 4, 6, 14, 16, 18) in Cat 6 (duration 0.5).\n";
+    // 3. General Holidays full-day (id IN 1, 3, 5, 13, 15, 17) -> Category 6 (1.0 day)
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 6,
+        `is_official_holiday` = 'y',
+        `holiday_duration` = 1.0,
+        `is_recurring` = 'y'
+    WHERE `id` IN (1, 3, 5, 13, 15, 17)");
+    echo " -> Reclassified General Holidays full-day (id 1, 3, 5, 13, 15, 17) in Cat 6 (duration 1.0).\n";
 
-// 5. Nationwide Exams (id IN 25..44) -> Category 5 (is_official_holiday = 'n', duration 0.0)
-$db->query("UPDATE `mod_event` SET
-    `category_id` = 5,
-    `is_official_holiday` = 'n',
-    `holiday_duration` = 0.0,
-    `is_recurring` = 'y'
-WHERE `id` BETWEEN 25 AND 44");
-echo " -> Standardized Nationwide Exams (id 25..44) in Cat 5 (is_official_holiday = 'n').\n";
+    // 4. Eve Half-Days (id IN 2, 4, 6, 14, 16, 18) -> Category 6 (0.5 day)
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 6,
+        `is_official_holiday` = 'y',
+        `holiday_duration` = 0.5,
+        `is_recurring` = 'y'
+    WHERE `id` IN (2, 4, 6, 14, 16, 18)");
+    echo " -> Reclassified Arife half-days (id 2, 4, 6, 14, 16, 18) in Cat 6 (duration 0.5).\n";
+
+    // 5. Nationwide Exams (id IN 25..44) -> Category 5 (is_official_holiday = 'n', duration 0.0)
+    $db->query("UPDATE `mod_event` SET
+        `category_id` = 5,
+        `is_official_holiday` = 'n',
+        `holiday_duration` = 0.0,
+        `is_recurring` = 'y'
+    WHERE `id` BETWEEN 25 AND 44");
+    echo " -> Standardized Nationwide Exams (id 25..44) in Cat 5 (is_official_holiday = 'n').\n";
+}
 
 // =============================================================================
 // PHASE 5: Seed Missing Memorial, Religious, Professional & Special Records

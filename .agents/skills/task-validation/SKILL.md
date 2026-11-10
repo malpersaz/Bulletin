@@ -17,8 +17,8 @@ This skill defines the checks required before completing a task in the repositor
 ## Step-by-Step Sequence
 
 1. **Execute Local Quality Guards:**
-   * Run `comment-guard` to clean Turkish/Kurdish comments in touched files.
-   * Run `i18n-guard` (`python3 tools/i18n_guard.py`) to check for hard-coded visible strings and missing language keys.
+   * Run `comment-guard` (`python3 tools/i18n_guard.py --path <touched files>` or `.agents/quality/prompts/comment-guard.md`) to verify absence of Turkish/Kurdish/non-English comments in touched files.
+   * Run `i18n-guard` (`python3 tools/i18n_guard.py --path <touched files>` or `--all`) to check for hard-coded visible strings and missing language keys (bare run audits only dirty git files).
    * Run `code-separation-guard` (`python3 tools/code_separation_guard.py`) to enforce strict code separation (no inline styles or event handlers).
    * Run `min-css-guard` (`python3 tools/min_css_guard.py`) to verify `.min.css` bundle rule-set parity and absence of orphan `.min.css` artifacts.
    * Run `policy-gate` to consolidate final findings.

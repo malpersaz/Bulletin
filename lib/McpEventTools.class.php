@@ -530,7 +530,7 @@ class McpEventTools extends McpCrudToolsBase
         }
 
         $model->updated_at = date('Y-m-d H:i:s');
-        if (!$model->save(true)) {
+        if (!$model->update('id')) {
             throw new McpToolException("Failed to update event record #{$id}.");
         }
 
@@ -688,7 +688,7 @@ class McpEventTools extends McpCrudToolsBase
             $model->image = (string) $newImage;
         }
 
-        if (!$model->save(true)) {
+        if (!$model->update('id')) {
             throw new McpToolException("Failed to update event category record #{$id}.");
         }
 
