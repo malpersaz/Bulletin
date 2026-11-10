@@ -94,6 +94,11 @@ class McpSettingsTools extends McpCrudToolsBase
                             'maxLength' => 255,
                             'description' => 'Public site name.',
                         ],
+                        'app_template' => [
+                            'type' => 'string',
+                            'maxLength' => 64,
+                            'description' => 'Active frontend template directory name (e.g. amed). Synchronized across all languages.',
+                        ],
                         'description' => [
                             'type' => 'string',
                             'description' => 'Site meta description.',
@@ -855,6 +860,7 @@ class McpSettingsTools extends McpCrudToolsBase
     private const SETTINGS_STRING_FIELDS = [
         'title' => 255,
         'site_name' => 255,
+        'app_template' => 64,
         'description' => null,
         'owner_name' => 255,
         'phone' => 50,
@@ -906,6 +912,7 @@ class McpSettingsTools extends McpCrudToolsBase
     private const COOKIE_CATEGORIES = ['necessary', 'functional', 'analytics', 'marketing'];
 
     private const GLOBAL_LEGAL_FIELDS = [
+        'app_template',
         'managing_director',
         'editor_in_chief',
         'press_code_license',

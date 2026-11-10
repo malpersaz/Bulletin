@@ -5,6 +5,11 @@
   - Planned 7-component hardening package (A–G) from the 2026-11-10 kevanger production run retrospective: MCP response environment identity (`lib/McpCrudToolsBase.class.php`, `tasks/mcp_smoke.php`), environment-agnostic 100-point rubric (`tools/audit_content_seo.py --record-json`), dossier JSON schema + `--init-dossier` template (kevkolin/kevrast), content-type-aware freshness gate `news`/`evergreen` (kevtemen/kevkolin/kevanger skills), single-command image intake (`process_news_image.py --from-article`), executable pre-flight + `verify_news_pipeline.sh` verification chain (`tools/mcp_health_check.py`), and `kevrast --explain` paragraph-level draft diagnostics.
   - Explicitly out of scope: conversational language protocol clarification (dangling `AGENTS.md` Rule 8 reference), local↔production DB synchronization, direct-to-production DB audit access, hosted CI.
 
+## v1.0.60.3 (2026-11-10)
+- **MCP Settings Template Synchronization & Health Diagnostics Parity (`lib/McpSettingsTools.class.php`, `config/site.config.php`, `docs/VERSION.md`)**:
+  - Added `app_template` to `update_site_settings` schema, string fields validation (max 64 chars), and global synchronized legal fields list in `lib/McpSettingsTools.class.php`. This enables administrative and automated MCP callers to synchronize the active frontend theme (`amed`) across all language settings rows.
+  - Completed 40-step site health check across Google Search Console crawl errors, subdomains robots.txt fetch coverage, and canonical 301 redirect consolidation for legacy news slugs.
+
 ## v1.0.60.2 (2026-11-10)
 - **Subdomain Crawlability, Asset Security Hardening, Deploy OPcache Revalidation & Live MCP Verification (`static/robots.txt`, `templates/robots.txt`, `static/.htaccess`, `templates/.htaccess`, `tools/deploy_production.sh`, `config/site.config.php`, `docs/plan/v1.0.60.2-production-health-negative-findings-and-remediation-plan.md`)**:
   - **Asset Subdomain Crawlability (`static/robots.txt`, `templates/robots.txt`)**: Provisioned universal allow-all `robots.txt` policy (`User-agent: *`, `Allow: /`) for asset and static serving subdomains (`static.amedbulten.com` and `assets.amedbulten.com`), preventing search engine asset crawl restrictions.
