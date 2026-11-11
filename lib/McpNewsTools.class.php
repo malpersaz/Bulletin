@@ -222,6 +222,14 @@ class McpNewsTools extends McpCrudToolsBase
                             'default' => 'habermerkezi',
                             'description' => 'Optional author username (defaults to habermerkezi; admin is prohibited as author).',
                         ],
+                        'image_alt' => [
+                            'type' => 'string',
+                            'description' => 'Optional descriptive alt text for featured image (max 255 chars). Defaults to article name if omitted.',
+                        ],
+                        'image_credit' => [
+                            'type' => 'string',
+                            'description' => 'Optional photo credit or provenance attribution (max 255 chars, e.g. "Fotoğraf: Rûdaw / Arşiv").',
+                        ],
                         'image' => [
                             'type' => 'object',
                             'nullable' => false,
@@ -340,6 +348,16 @@ class McpNewsTools extends McpCrudToolsBase
                         'username' => [
                             'type' => 'string',
                             'description' => 'Author username (e.g. deryawelat).',
+                        ],
+                        'image_alt' => [
+                            'type' => 'string',
+                            'nullable' => true,
+                            'description' => 'Descriptive alt text for featured image (max 255 chars). Pass null or empty string to clear.',
+                        ],
+                        'image_credit' => [
+                            'type' => 'string',
+                            'nullable' => true,
+                            'description' => 'Photo credit or provenance attribution (max 255 chars). Pass null or empty string to clear.',
                         ],
                         'image' => [
                             'type' => 'object',
@@ -627,6 +645,58 @@ class McpNewsTools extends McpCrudToolsBase
                     'idempotentHint' => false,
                 ],
             ],
+            'check_duplicate_news' => [
+                'module' => 'mod_news',
+                'role' => 'list',
+                'domain' => 'news',
+                'handler' => 'checkDuplicateNews',
+                'description' => 'Pre-staging duplicate check within the last 48 hours for a given language. Compares headline token similarity (Jaccard index >= threshold) and exact SEO slug matches.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'description' => 'Proposed news headline to check against recent stories.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of active site language (e.g. tr, ku, en).',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'description' => 'Optional proposed SEO slug to check for exact slug collision.',
+                        ],
+                        'hours' => [
+                            'type' => 'integer',
+                            'default' => 48,
+                            'minimum' => 1,
+                            'maximum' => 168,
+                            'description' => 'Lookback window in hours (default 48).',
+                        ],
+                        'threshold' => [
+                            'type' => 'number',
+                            'default' => 0.55,
+                            'minimum' => 0.1,
+                            'maximum' => 1.0,
+                            'description' => 'Jaccard similarity threshold for headline tokens (default 0.55).',
+                        ],
+                        'exclude_id' => [
+                            'type' => 'integer',
+                            'description' => 'Optional news ID to exclude from comparison (e.g. when updating).',
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'lang',
+                    ],
+                ],
+                'title' => 'Check Duplicate News',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
         ];
     }
 
@@ -676,13 +746,74 @@ class McpNewsTools extends McpCrudToolsBase
             throw new McpToolException('News record not found.');
         }
 
-        $auditMeta = $this->getRecordAuditMeta('mod_news', (int) $row['id'], (string) ($row['lang'] ?? 'tr'));
+        $auditMeta = $this->getRecordAuditMeta('mod_news', (int) $row['id'], (string) ($row['lang'] ?? 'tr'), (string) ($row['status'] ?? 'y'));
         $row['lang_status'] = $auditMeta['lang_status'];
         $row['faq_count'] = $auditMeta['faq_count'];
         $row['faq_items'] = $auditMeta['faq_items'];
+        $row['faq_published_count'] = $auditMeta['faq_published_count'] ?? $auditMeta['faq_count'];
+        $row['faq_draft_count'] = $auditMeta['faq_draft_count'] ?? 0;
 
-        $row['item'] = $row;
+        // Author attribution enrichment from mod_user
+        $userId = (int) ($row['user_id'] ?? 0);
+        $row['username'] = '';
+        $row['author_fullname'] = '';
+        if ($userId > 0) {
+            $db = Load::lib('Database');
+            $db->fetch_array("SELECT username, name, last_name FROM mod_user WHERE id = {$userId} LIMIT 1");
+            $uRows = $db->toArray();
+            if (is_array($uRows) && isset($uRows[0])) {
+                $uRow = $uRows[0];
+                $row['username'] = (string) ($uRow['username'] ?? '');
+                $fullName = trim(((string) ($uRow['name'] ?? '')) . ' ' . ((string) ($uRow['last_name'] ?? '')));
+                $row['author_fullname'] = ($fullName !== '') ? $fullName : $row['username'];
+            }
+        }
+
+        // Category enrichment from mod_news_category
+        $categoryId = (int) ($row['category_id'] ?? 0);
+        $row['category_name'] = '';
+        $row['category_seo'] = '';
+        if ($categoryId > 0) {
+            $catModel = $this->freshModel('mod_news_category');
+            $catModel->where_id($categoryId)->limit(1)->getResultOne(true, true);
+            if ($catModel->getSize() > 0) {
+                $catRow = $catModel->toArray();
+                $row['category_name'] = (string) ($catRow['name'] ?? '');
+                $row['category_seo'] = (string) ($catRow['seo'] ?? '');
+            }
+        }
+
+        $item = $row;
+        $row['item'] = $item;
         return $row;
+    }
+
+    /**
+     * Asserts that a category exists, matches content language, and is not a root container
+     */
+    protected function assertSelectableNewsCategory(int $categoryId, string $lang): object
+    {
+        $category = $this->assertRecordMatchesLang('mod_news_category', $categoryId, $lang, 'Category');
+        if (((string) ($category->root ?? 'n')) === 'y') {
+            $childModel = $this->freshModel('mod_news_category');
+            $childModel->where_parent_id_and_lang($categoryId, $lang);
+            $childModel->addWhere("root != 'y'");
+            $childModel->order('`order`', 'ASC')->getResult(true, true);
+            $children = $childModel->toArray();
+            $childHints = [];
+            if (is_array($children)) {
+                foreach ($children as $c) {
+                    if (isset($c['id'], $c['name'])) {
+                        $childHints[] = "ID {$c['id']} ({$c['name']})";
+                    }
+                }
+            }
+            $hintStr = !empty($childHints)
+                ? ' Selectable child categories: ' . implode(', ', $childHints) . '.'
+                : ' Please select a leaf category (root != \'y\').';
+            throw new McpToolException("Category '{$categoryId}' ('{$category->name}') is a structural root container (root='y') and cannot contain news directly.{$hintStr}");
+        }
+        return $category;
     }
 
     /**
@@ -707,7 +838,7 @@ class McpNewsTools extends McpCrudToolsBase
         if ($categoryId <= 0) {
             throw new McpToolException("Field 'category_id' is required.");
         }
-        $this->assertRecordMatchesLang('mod_news_category', $categoryId, $lang, 'Category');
+        $this->assertSelectableNewsCategory($categoryId, $lang);
 
         $content = $this->sanitizeBodyHtml((string) ($args['content'] ?? ''));
         if (trim(strip_tags($content)) === '') {
@@ -722,10 +853,8 @@ class McpNewsTools extends McpCrudToolsBase
 
         $this->assertContentMatchesLang($lang, $name, $summary, $content);
 
-        $seo = trim((string) ($args['seo'] ?? ''));
-        if ($seo === '') {
-            $seo = self::makeSeo($name, $lang);
-        }
+        $rawSeo = trim((string) ($args['seo'] ?? ''));
+        $seo = self::makeSeo($rawSeo !== '' ? $rawSeo : $name, $lang);
         if ($seo === '' || mb_strlen($seo) > 255) {
             throw new McpToolException("Field 'seo' must be 1-255 characters.");
         }
@@ -757,6 +886,12 @@ class McpNewsTools extends McpCrudToolsBase
         $model->gallery_id = (int) ($args['gallery_id'] ?? 0);
         $model->file_id = (int) ($args['file_id'] ?? 0);
         $model->acl_id = (int) ($args['acl_id'] ?? 0);
+        $model->image_alt = isset($args['image_alt']) && trim((string) $args['image_alt']) !== ''
+            ? mb_substr(trim(strip_tags((string) $args['image_alt'])), 0, 255)
+            : null;
+        $model->image_credit = isset($args['image_credit']) && trim((string) $args['image_credit']) !== ''
+            ? mb_substr(trim(strip_tags((string) $args['image_credit'])), 0, 255)
+            : null;
 
         $db = Load::lib('Database');
         $targetUsername = trim((string) ($args['username'] ?? ''));
@@ -867,8 +1002,8 @@ class McpNewsTools extends McpCrudToolsBase
         $lang = isset($args['lang']) ? $this->requireActiveLang($args) : (string) $model->lang;
         $categoryId = isset($args['category_id']) ? (int) $args['category_id'] : (int) $model->category_id;
 
-        if ($categoryId !== (int) $model->category_id || $lang !== (string) $model->lang) {
-            $this->assertRecordMatchesLang('mod_news_category', $categoryId, $lang, 'Category');
+        if (isset($args['category_id']) || $lang !== (string) $model->lang) {
+            $this->assertSelectableNewsCategory($categoryId, $lang);
         }
 
         if (isset($args['name'])) {
@@ -892,10 +1027,8 @@ class McpNewsTools extends McpCrudToolsBase
         }
 
         if (isset($args['seo'])) {
-            $seo = trim((string) $args['seo']);
-            if ($seo === '') {
-                $seo = self::makeSeo((string) $model->name, $lang);
-            }
+            $rawSeo = trim((string) $args['seo']);
+            $seo = self::makeSeo($rawSeo !== '' ? $rawSeo : (string) $model->name, $lang);
             if ($seo === '' || mb_strlen($seo) > 255) {
                 throw new McpToolException("Field 'seo' must be 1-255 characters.");
             }
@@ -996,6 +1129,17 @@ class McpNewsTools extends McpCrudToolsBase
         );
         $model->updated_at = date('Y-m-d H:i:s');
 
+        if (array_key_exists('image_alt', $args)) {
+            $model->image_alt = $args['image_alt'] !== null && trim((string) $args['image_alt']) !== ''
+                ? mb_substr(trim(strip_tags((string) $args['image_alt'])), 0, 255)
+                : null;
+        }
+        if (array_key_exists('image_credit', $args)) {
+            $model->image_credit = $args['image_credit'] !== null && trim((string) $args['image_credit']) !== ''
+                ? mb_substr(trim(strip_tags((string) $args['image_credit'])), 0, 255)
+                : null;
+        }
+
         if (array_key_exists('image', $args) && $args['image'] !== null) {
             if (!is_array($args['image'])) {
                 throw new McpToolException("Field 'image' must be an object containing 'data_base64' (or 'file_path') and 'mime'.");
@@ -1061,6 +1205,100 @@ class McpNewsTools extends McpCrudToolsBase
         $model->delete();
 
         return ['deleted' => true, 'id' => $id];
+    }
+
+    /**
+     * Pre-staging duplicate check within lookback hours (default 48).
+     * Compares headline token `Jaccard` similarity and exact SEO match.
+     */
+    public function checkDuplicateNews(array $args): array
+    {
+        $name = $this->cleanTextEntities($args['name'] ?? '');
+        if ($name === '') {
+            throw new McpToolException("Field 'name' is required.");
+        }
+        $lang = $this->requireActiveLang($args);
+        $hours = isset($args['hours']) ? max(1, min(168, (int) $args['hours'])) : 48;
+        $threshold = isset($args['threshold']) ? max(0.1, min(1.0, (float) $args['threshold'])) : 0.55;
+        $excludeId = isset($args['exclude_id']) ? (int) $args['exclude_id'] : 0;
+
+        $rawSeo = trim((string) ($args['seo'] ?? ''));
+        $proposedSeo = self::makeSeo($rawSeo !== '' ? $rawSeo : $name, $lang);
+
+        $cutoff = date('Y-m-d H:i:s', time() - ($hours * 3600));
+
+        $db = Load::lib('Database');
+        $safeLang = Obuilder::cc($lang);
+        $safeCutoff = Obuilder::cc($cutoff);
+        $excludeSql = $excludeId > 0 ? " AND id != {$excludeId}" : '';
+
+        $db->fetch_array("SELECT id, name, seo, status, category_id, created_at FROM mod_news WHERE lang = '{$safeLang}' AND created_at >= '{$safeCutoff}'{$excludeSql} ORDER BY id DESC");
+        $candidates = $db->toArray();
+
+        $proposedTokens = $this->tokenizeHeadline($name);
+
+        $duplicates = [];
+        if (is_array($candidates)) {
+            foreach ($candidates as $candidate) {
+                $candidateName = (string) ($candidate['name'] ?? '');
+                $candidateSeo = (string) ($candidate['seo'] ?? '');
+                $candidateTokens = $this->tokenizeHeadline($candidateName);
+
+                $intersection = count(array_intersect($proposedTokens, $candidateTokens));
+                $union = count(array_unique(array_merge($proposedTokens, $candidateTokens)));
+                $similarity = $union > 0 ? ($intersection / $union) : 0.0;
+
+                $isSeoMatch = ($proposedSeo !== '' && $candidateSeo === $proposedSeo);
+                $isTitleMatch = ($similarity >= $threshold);
+
+                if ($isSeoMatch || $isTitleMatch) {
+                    $reasons = [];
+                    if ($isSeoMatch) {
+                        $reasons[] = 'exact_seo_match';
+                    }
+                    if ($isTitleMatch) {
+                        $reasons[] = 'title_similarity';
+                    }
+                    $duplicates[] = [
+                        'id' => (int) $candidate['id'],
+                        'name' => $candidateName,
+                        'seo' => $candidateSeo,
+                        'status' => (string) ($candidate['status'] ?? 'y'),
+                        'category_id' => (int) ($candidate['category_id'] ?? 0),
+                        'similarity' => round($similarity, 3),
+                        'created_at' => (string) ($candidate['created_at'] ?? ''),
+                        'match_reasons' => $reasons,
+                    ];
+                }
+            }
+        }
+
+        return [
+            'has_duplicate' => !empty($duplicates),
+            'duplicate_count' => count($duplicates),
+            'duplicates' => $duplicates,
+            'hours_window' => $hours,
+            'threshold' => $threshold,
+            'proposed_tokens' => array_values($proposedTokens),
+        ];
+    }
+
+    private function tokenizeHeadline(string $text): array
+    {
+        $normalized = mb_strtolower($text, 'UTF-8');
+        $clean = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $normalized) ?? '';
+        $words = preg_split('/\s+/u', trim($clean));
+        if (!is_array($words)) {
+            return [];
+        }
+        $tokens = [];
+        foreach ($words as $w) {
+            $w = trim($w);
+            if (mb_strlen($w, 'UTF-8') >= 2) {
+                $tokens[] = $w;
+            }
+        }
+        return array_values(array_unique($tokens));
     }
 
     // ------------------------------------------------------------------
@@ -1252,22 +1490,22 @@ class McpNewsTools extends McpCrudToolsBase
     private function applyNewsFilters($model, array $args): void
     {
         if (isset($args['category_id']) && (int) $args['category_id'] > 0) {
-            $model->where_category_id((int) $args['category_id']);
+            $this->addEqFilter($model, 'category_id', (int) $args['category_id']);
         }
         if (isset($args['lang']) && trim((string) $args['lang']) !== '') {
-            $model->where_lang(trim((string) $args['lang']));
+            $this->addEqFilter($model, 'lang', trim((string) $args['lang']));
         }
         if (isset($args['status']) && in_array($args['status'], ['y', 'n'], true)) {
-            $model->where_status($args['status']);
+            $this->addEqFilter($model, 'status', $args['status']);
         }
         if (isset($args['show_on_homepage']) && in_array($args['show_on_homepage'], ['y', 'n'], true)) {
-            $model->where_show_on_homepage($args['show_on_homepage']);
+            $this->addEqFilter($model, 'show_on_homepage', $args['show_on_homepage']);
         }
         if (isset($args['seo']) && trim((string) $args['seo']) !== '') {
-            $model->where_seo(trim((string) $args['seo']));
+            $this->addEqFilter($model, 'seo', trim((string) $args['seo']));
         }
         if (isset($args['search']) && trim((string) $args['search']) !== '') {
-            $model->where('name LIKE \'%' . Obuilder::cc(trim((string) $args['search'])) . '%\'');
+            $this->addLikeSearchFilter($model, ['name'], trim((string) $args['search']));
         }
     }
 

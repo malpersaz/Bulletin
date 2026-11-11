@@ -17,26 +17,28 @@ Keep this skill as a short ordered execution checklist. All factual assertions, 
 ### 2. Automated Fact & Link Audit
 Stage 2 (draft verification against the dossier):
 ```bash
-.agents/skills/kevrast/scripts/verify_facts_and_links.py --text "$CONTENT" --dossier "$DOSSIER_JSON"
+python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --file "$FILE_PATH" --dossier "$DOSSIER_JSON"
 ```
-Or when auditing an existing file:
+When diagnosing failures or reviewing paragraph-level provenance, run with `--explain`:
 ```bash
-.agents/skills/kevrast/scripts/verify_facts_and_links.py --file "$FILE_PATH" --dossier "$DOSSIER_JSON"
+python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --file "$FILE_PATH" --dossier "$DOSSIER_JSON" --explain
 ```
+Emits paragraph-by-paragraph diagnostics (`[P1]..[Pn]`), pinpointing unlinked attribution phrases, missing numeric matches, and multi-link collisions with actionable remedies.
+
 Stage 1 (dossier pre-verification, before drafting):
 ```bash
-.agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier "$DOSSIER_JSON"
+python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier "$DOSSIER_JSON"
 ```
 
 ### 3. Verification Criteria Checklist
 The audit evaluates five core journalistic safeguards:
 
 1. **Link Provenance Verification (Zero Fabricated, Shortened, or Broken URLs)**:
-   - **R1 Liveness**: Every embedded link (`<a href="...">`) MUST be fetched with a full GET over verified TLS and resolve to the real article page. Soft-404 pages (HTTP 200 with error markup), redirect-to-home, and 4xx/5xx all count as FAILED.
-   - **R2 Deep-Link Precision**: A citation href MUST be the content page carrying the cited data. Domain roots and section/rubric fronts (e.g. `bbc.com`, `bbc.com/news`) ALWAYS FAIL — there is no root-domain fallback.
-   - **R3 Claim Anchoring**: For each linked citation, the distinctive figures in the citing paragraph (normalized: `yüzde 71` ↔ `71%`, `1 trilyon dolar` ↔ `$1 trillion`) MUST appear in the fetched target page text. A number mismatch → BLOCK with a manual-review note. When the paragraph has no distinctive figure, at least one cited named entity must appear; if neither can be evaluated, the link is flagged for manual review.
-   - **R4 Citation Completeness & Chain of Custody**: Every attribution phrase (`$Name haberine göre`, `$Name tarafından aktarılan bilgilere göre`, ...) must sit in a paragraph carrying a live link; the draft's URL set must be a subset of the kevkolin dossier URL set; and the draft must contain at least one verified outbound citation link (zero-link drafts FAIL).
-   - **R5 Dossier Modes**: `--dossier file.json` alone audits every dossier URL (Stage 1); `--dossier` combined with `--text`/`--file` audits the draft against the dossier (Stage 2). Source roles (`primary` / `supplementary` / `historical`) are carried from the dossier; only `kevtemen` consumes them for same-day enforcement.
+   - **R1 Liveness & Hardened Transport**: Every embedded link (`<a href="...">`) MUST be fetched with a full GET over verified TLS via `editorial_http.py` (SSRF guard on all redirects, `Retry-After` bounded retry for 429/503, and 10-minute cache). Soft-404 pages, redirect-to-home, and 4xx/5xx all count as FAILED.
+   - **R2 Deep-Link Precision & Vendor Pages**: Citation href MUST be the content page carrying cited data. Domain roots and rubric fronts ALWAYS FAIL. Defined single-segment vendor download/release pages (`/download`, `/releases`, `/changelog`) are permitted under strict version/anchor matching.
+   - **R3 Claim Anchoring & Morphology**: Distinctive figures in citing paragraphs must match the target page. Features exact normalized numeric matching (removing loose substring matches), Turkish case-folding (`tr_fold()`), institutional suffix stemming (`Belediyesine` -> `Belediyesi`), and cross-language anchoring via `source_lang` and `source_anchors` in the dossier.
+   - **R4 Citation Completeness & Speech Separation**: Distinctively separates `OUTLET_ATTRIBUTION_RE` (e.g. `haberine göre`, `analize göre`, `sürüm notlarına göre`, `aktarıldığı üzere`, which strictly require a citation link in the same paragraph) from `SPEECH_ATTRIBUTION_RE` (bare speech verbs `dedi`, `söyledi`, `ifade etti`, which allow continuing a quote from an immediately preceding linked paragraph).
+   - **R5 Dossier Modes**: `--dossier` alone audits dossier URLs (Stage 1); `--dossier` with `--file` audits draft against dossier (Stage 2). Source roles (`primary` / `supplementary` / `historical`) are carried from the dossier; only `kevtemen` consumes them for same-day enforcement.
 
 2. **Verbatim Fact Grounding & Zero Extrapolation**:
    - Every number, date, year, percentage, and named entity extracted in the Factual Matrix MUST match verified source evidence.

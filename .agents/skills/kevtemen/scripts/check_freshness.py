@@ -14,26 +14,37 @@ Absolute gate:
 """
 
 import argparse
+from collections import OrderedDict
 import json
+from pathlib import Path
 import re
 import ssl
 import sys
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
+
+# Resolve shared directory for editorial_http
+_SHARED_DIR = Path(__file__).resolve().parents[2] / "_shared"
+if str(_SHARED_DIR) not in sys.path:
+    sys.path.insert(0, str(_SHARED_DIR))
+
+try:
+    import editorial_http
+except ImportError:
+    editorial_http = None
 
 try:
     ISTANBUL = ZoneInfo("Europe/Istanbul")
 except Exception:
     ISTANBUL = timezone(timedelta(hours=3))
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-
-_SSL_CTX = ssl.create_default_context()
-_SSL_CTX.check_hostname = False
-_SSL_CTX.verify_mode = ssl.CERT_NONE
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
 
 MONTHS_TR = {
     "ocak": 1, "şubat": 2, "subat": 2, "mart": 3, "nisan": 4,
@@ -42,24 +53,53 @@ MONTHS_TR = {
     "ekim": 10, "kasım": 11, "kasim": 11, "aralık": 12, "aralik": 12,
 }
 
+# Feature 17: Expanded metadata tags
 RE_META_PUB = re.compile(
-    r'article:published_time[^>]*content="([^"]+)"'
-    r'|content="([^"]+)"[^>]*property="article:published_time"', re.I)
-RE_LD_PUB = re.compile(r'"datePublished"\s*:\s*"([^"]+)"', re.I)
+    r"<meta\s+[^>]*(?:property|name)=[\'\"](?:article:published_time|pubdate|publishdate|datePublished|DC\.date\.issued)[\'\"][^>]*content=[\'\"]([^\'\"]+)[\'\"]"
+    r"|<meta\s+[^>]*content=[\'\"]([^\'\"]+)[\'\"][^>]*(?:property|name)=[\'\"](?:article:published_time|pubdate|publishdate|datePublished|DC\.date\.issued)[\'\"]",
+    re.I
+)
+
+# Feature 16: Scoped JSON-LD
+RE_JSONLD = re.compile(
+    r"<script\s+[^>]*type=[\"\']application/ld\+json[\"\'][^>]*>(.*?)</script>",
+    re.I | re.DOTALL
+)
+ALLOWED_JSONLD_TYPES = {
+    "NewsArticle", "Article", "ReportageNewsArticle", "BlogPosting", "WebPage"
+}
+
 RE_TIME_TAG = re.compile(r'<time[^>]+datetime="([^"]+)"', re.I)
+
+# Feature 15: ISO regex supporting fractional seconds without dropping timezone
 RE_ISO = re.compile(
     r"(\d{4})-(\d{2})-(\d{2})"
-    r"(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?(Z|[+-]\d{2}:?\d{2})?)?")
+    r"(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?(?:[.,]\d{1,9})?(Z|[+-]\d{2}:?\d{2})?)?"
+)
+
 RE_DOT = re.compile(r"\b(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ ,]+(\d{1,2}):(\d{2}))?")
 RE_SLASH = re.compile(r"\b(\d{1,2})/(\d{1,2})/(\d{4})\b")
 RE_URLPATH = re.compile(r"/(\d{4})/(\d{2})/(\d{2})/")
 RE_TR_LONG = re.compile(
     r"\b(\d{1,2})\s+(" + "|".join(MONTHS_TR) + r")\s+(\d{4})", re.I)
+
+# Feature 17: Anchored relative expressions & visible bylines (bare Bugün removed)
+RE_BYLINE_DATE = re.compile(
+    r"\b(yayın(?:lanma|lanış)?\s*tarihi|yayımlanma\s*tarihi|giriş\s*tarihi|haber\s*giriş|yayınlanma|yayımlanma|giriş|tarih)\s*:\s*([^\n<]+)",
+    re.I
+)
+RE_ANCHORED_TODAY = re.compile(
+    r"(?:(?:yayın(?:lanma)?|giriş|tarih)[^\w\n]*)?\bbugün\b[,\s]+(\d{1,2}):(\d{2})",
+    re.I
+)
+RE_ANCHORED_YESTERDAY = re.compile(
+    r"(?:(?:yayın(?:lanma)?|giriş|tarih)[^\w\n]*)?\bdün\b[,\s]+(\d{1,2}):(\d{2})",
+    re.I
+)
+
 RE_REL_HOURS = re.compile(r"(\d{1,2})\s*saat\s*önce", re.I)
 RE_REL_MIN = re.compile(r"(\d{1,3})\s*(?:dakika|dk)\s*önce", re.I)
 RE_REL_DAYS = re.compile(r"(\d{1,3})\s*gün\s*önce", re.I)
-RE_YESTERDAY = re.compile(r"\bdün\b", re.I)
-RE_TODAY = re.compile(r"\bbugün\b", re.I)
 
 TAG_RE = re.compile(r"<[^>]+>")
 HREF_RE = re.compile(r"href=[\'\"](https?://[^\'\"]+)[\'\"]", re.I)
@@ -91,8 +131,10 @@ def _apply_tz(y: int, mo: int, d: int, h: int, mi: int, s: int,
     sign = 1 if tz[0] == "+" else -1
     body = tz[1:].replace(":", "")
     try:
-        off = sign * timedelta(hours=int(body[:2]), minutes=int(body[2:4]))
-    except ValueError:
+        hrs = int(body[:2])
+        mins = int(body[2:4]) if len(body) >= 4 else 0
+        off = sign * timedelta(hours=hrs, minutes=mins)
+    except (ValueError, IndexError):
         return _mk_naive_istanbul(naive)
     return naive.replace(tzinfo=timezone(off)).astimezone(ISTANBUL)
 
@@ -107,12 +149,18 @@ def _from_iso_match(m: re.Match) -> Optional[datetime]:
 
 def parse_free_date(text: str) -> Optional[datetime]:
     """Parse an explicit date string: ISO, DD.MM.YYYY[ HH:MM], DD/MM/YYYY, DD Ay YYYY."""
-    m = RE_ISO.search(text)
+    s = text.strip()
+    try:
+        dt = datetime.fromisoformat(s.replace(",", "."))
+        return dt.replace(tzinfo=ISTANBUL) if dt.tzinfo is None else dt.astimezone(ISTANBUL)
+    except Exception:
+        pass
+    m = RE_ISO.search(s)
     if m:
         dt = _from_iso_match(m)
         if dt:
             return dt
-    m = RE_DOT.search(text)
+    m = RE_DOT.search(s)
     if m:
         try:
             return _mk_naive_istanbul(datetime(int(m.group(3)), int(m.group(2)),
@@ -120,14 +168,14 @@ def parse_free_date(text: str) -> Optional[datetime]:
                                                int(m.group(5) or 0)))
         except ValueError:
             pass
-    m = RE_SLASH.search(text)
+    m = RE_SLASH.search(s)
     if m:
         try:
             return _mk_naive_istanbul(datetime(int(m.group(3)), int(m.group(2)),
                                                int(m.group(1))))
         except ValueError:
             pass
-    m = RE_TR_LONG.search(text)
+    m = RE_TR_LONG.search(s)
     if m:
         try:
             return _mk_naive_istanbul(datetime(int(m.group(3)),
@@ -138,97 +186,210 @@ def parse_free_date(text: str) -> Optional[datetime]:
     return None
 
 
+def parse_iso_or_free(raw: str) -> Optional[datetime]:
+    """Parse ISO-8601 string preserving UTC and fractional seconds."""
+    s = raw.strip()
+    try:
+        dt = datetime.fromisoformat(s.replace(",", "."))
+        return dt.replace(tzinfo=ISTANBUL) if dt.tzinfo is None else dt.astimezone(ISTANBUL)
+    except Exception:
+        pass
+    m = RE_ISO.search(s)
+    if m:
+        return _from_iso_match(m)
+    return parse_free_date(s)
+
+
 def extract_pub_date(html: str, url: str) -> Optional[Dict[str, Any]]:
-    """Return the most authoritative publication datetime found: {'dt', 'evidence'}.
-    Priority: structured (meta/JSON-LD/time tag) > visible explicit dates >
-    URL path date > relative expressions > bare ISO anywhere."""
-    candidates: List[tuple] = []  # (priority, dt, evidence)
+    """Return the most authoritative publication datetime found.
+    Priority 1: Meta tags & main-entity JSON-LD datePublished (earliest)
+    Priority 2: <time datetime="..."> inside <article>
+    Priority 3: Explicit date-labeled visible bylines
+    Priority 4: URL path date
+    Priority 5: Time-anchored relative expressions
+    Priority 6: Visible dates in article body text
+    """
+    # -------------------------------------------------------------
+    # Priority 1: Meta tags and main-entity JSON-LD datePublished
+    # -------------------------------------------------------------
+    p1_candidates: List[Tuple[datetime, str]] = []
 
-    structured: List[str] = []
-    for rx in (RE_META_PUB, RE_LD_PUB, RE_TIME_TAG):
-        for m in rx.finditer(html):
-            raw = m.group(1) or m.group(2)
-            if raw:
-                structured.append(raw.strip())
-    for raw in structured:
-        m = RE_ISO.search(raw)
-        if m:
-            dt = _from_iso_match(m)
+    # 1a. Meta tags
+    for m in RE_META_PUB.finditer(html):
+        raw = (m.group(1) or m.group(2) or "").strip()
+        if raw:
+            dt = parse_iso_or_free(raw)
             if dt:
-                candidates.append((1, dt, f"structured: {raw[:60]}"))
+                p1_candidates.append((dt, f"meta: {raw[:60]}"))
 
-    text = TAG_RE.sub(" ", html)
-    for m in RE_DOT.finditer(text):
+    # 1b. Main-entity JSON-LD datePublished
+    for block in RE_JSONLD.finditer(html):
         try:
-            dt = _mk_naive_istanbul(datetime(int(m.group(3)), int(m.group(2)),
-                                             int(m.group(1)), int(m.group(4) or 0),
-                                             int(m.group(5) or 0)))
-            candidates.append((2, dt, f"visible: {m.group(0)}"))
-        except ValueError:
-            continue
-    for m in RE_TR_LONG.finditer(text):
-        try:
-            dt = _mk_naive_istanbul(datetime(int(m.group(3)),
-                                             MONTHS_TR[m.group(2).lower()],
-                                             int(m.group(1))))
-            candidates.append((2, dt, f"visible: {m.group(0)}"))
-        except (ValueError, KeyError):
+            data = json.loads(block.group(1).strip())
+            items = []
+            if isinstance(data, dict):
+                if "@graph" in data and isinstance(data["@graph"], list):
+                    items.extend(data["@graph"])
+                else:
+                    items.append(data)
+            elif isinstance(data, list):
+                items.extend(data)
+
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                itype = item.get("@type")
+                types = set(itype) if isinstance(itype, list) else {itype}
+                if types & ALLOWED_JSONLD_TYPES:
+                    raw_pub = item.get("datePublished")
+                    if raw_pub and isinstance(raw_pub, str):
+                        dt = parse_iso_or_free(raw_pub.strip())
+                        if dt:
+                            p1_candidates.append((dt, f"json-ld datePublished: {raw_pub[:60]}"))
+        except Exception:
             continue
 
+    if p1_candidates:
+        # Prefer the EARLIEST datePublished (never dateModified or newest)
+        earliest_p1 = min(p1_candidates, key=lambda c: c[0].timestamp())
+        return {"dt": earliest_p1[0], "evidence": earliest_p1[1]}
+
+    # -------------------------------------------------------------
+    # DOM Preparation: Isolate article & strip non-content blocks
+    # -------------------------------------------------------------
+    art_matches = list(re.finditer(r"<article[^>]*>(.*?)</article>", html, re.I | re.DOTALL))
+    if art_matches:
+        scope_html = art_matches[0].group(1)
+        scope_html = re.sub(r"<(aside|nav|script|style|noscript)[^>]*>.*?</\1>", " ", scope_html, flags=re.I | re.DOTALL)
+    else:
+        scope_html = re.sub(r"<(script|style|noscript|nav|header|footer|aside)[^>]*>.*?</\1>", " ", html, flags=re.I | re.DOTALL)
+
+    # -------------------------------------------------------------
+    # Priority 2: <time datetime="..."> inside article container
+    # -------------------------------------------------------------
+    p2_candidates: List[Tuple[datetime, str]] = []
+    for tm in RE_TIME_TAG.finditer(scope_html):
+        raw = tm.group(1).strip()
+        dt = parse_iso_or_free(raw)
+        if dt:
+            p2_candidates.append((dt, f"article time tag: {raw[:60]}"))
+
+    if p2_candidates:
+        earliest_p2 = min(p2_candidates, key=lambda c: c[0].timestamp())
+        return {"dt": earliest_p2[0], "evidence": earliest_p2[1]}
+
+    # -------------------------------------------------------------
+    # Priority 3: Explicit date-labeled visible bylines
+    # -------------------------------------------------------------
+    scope_text = TAG_RE.sub(" ", scope_html)
+    p3_candidates: List[Tuple[datetime, str]] = []
+    for bm in RE_BYLINE_DATE.finditer(scope_text):
+        label = bm.group(1)
+        val = bm.group(2).strip()
+        dt = parse_free_date(val)
+        if dt:
+            p3_candidates.append((dt, f"byline ({label}): {val[:40]}"))
+
+    if p3_candidates:
+        earliest_p3 = min(p3_candidates, key=lambda c: c[0].timestamp())
+        return {"dt": earliest_p3[0], "evidence": earliest_p3[1]}
+
+    # -------------------------------------------------------------
+    # Priority 4: URL path date
+    # -------------------------------------------------------------
     if url:
         m = RE_URLPATH.search(url)
         if m:
             try:
-                dt = _mk_naive_istanbul(datetime(int(m.group(1)), int(m.group(2)),
-                                                 int(m.group(3))))
-                candidates.append((3, dt, "url path"))
+                dt = _mk_naive_istanbul(datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))))
+                return {"dt": dt, "evidence": f"url path: {m.group(0)}"}
             except ValueError:
                 pass
 
+    # -------------------------------------------------------------
+    # Priority 5: Time-anchored relative expressions (bare Bugün removed)
+    # -------------------------------------------------------------
     now = now_istanbul()
-    m = RE_REL_MIN.search(text)
+    p5_candidates: List[Tuple[datetime, str]] = []
+    for m in RE_ANCHORED_TODAY.finditer(scope_text):
+        h, mi = int(m.group(1)), int(m.group(2))
+        dt = now.replace(hour=h, minute=mi, second=0, microsecond=0)
+        p5_candidates.append((dt, f"relative anchored: {m.group(0)}"))
+    for m in RE_ANCHORED_YESTERDAY.finditer(scope_text):
+        h, mi = int(m.group(1)), int(m.group(2))
+        dt = (now - timedelta(days=1)).replace(hour=h, minute=mi, second=0, microsecond=0)
+        p5_candidates.append((dt, f"relative anchored yesterday: {m.group(0)}"))
+    m = RE_REL_MIN.search(scope_text)
     if m:
-        candidates.append((4, now - timedelta(minutes=int(m.group(1))),
-                           f"relative: {m.group(0)}"))
-    m = RE_REL_HOURS.search(text)
+        p5_candidates.append((now - timedelta(minutes=int(m.group(1))), f"relative: {m.group(0)}"))
+    m = RE_REL_HOURS.search(scope_text)
     if m:
-        candidates.append((4, now - timedelta(hours=int(m.group(1))),
-                           f"relative: {m.group(0)}"))
-    m = RE_REL_DAYS.search(text)
+        p5_candidates.append((now - timedelta(hours=int(m.group(1))), f"relative: {m.group(0)}"))
+    m = RE_REL_DAYS.search(scope_text)
     if m:
-        candidates.append((4, now - timedelta(days=int(m.group(1))),
-                           f"relative: {m.group(0)}"))
-    if RE_TODAY.search(text):
-        candidates.append((4, now, "relative: today"))
-    if RE_YESTERDAY.search(text):
-        candidates.append((4, now - timedelta(days=1), "relative: yesterday"))
+        p5_candidates.append((now - timedelta(days=int(m.group(1))), f"relative: {m.group(0)}"))
 
-    if not candidates:
-        for m in RE_ISO.finditer(html):
-            dt = _from_iso_match(m)
-            if dt:
-                candidates.append((5, dt, f"bare ISO: {m.group(0)}"))
+    if p5_candidates:
+        earliest_p5 = min(p5_candidates, key=lambda c: c[0].timestamp())
+        return {"dt": earliest_p5[0], "evidence": earliest_p5[1]}
 
-    if not candidates:
-        return None
-    best = min(candidates, key=lambda c: (c[0], -c[1].timestamp()))
-    return {"dt": best[1], "evidence": best[2]}
+    # -------------------------------------------------------------
+    # Priority 6: Visible dates in article body text
+    # -------------------------------------------------------------
+    p6_candidates: List[Tuple[datetime, str]] = []
+    for m in RE_DOT.finditer(scope_text):
+        try:
+            dt = _mk_naive_istanbul(datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)),
+                                             int(m.group(4) or 0), int(m.group(5) or 0)))
+            p6_candidates.append((dt, f"visible date: {m.group(0)}"))
+        except ValueError:
+            continue
+    for m in RE_TR_LONG.finditer(scope_text):
+        try:
+            dt = _mk_naive_istanbul(datetime(int(m.group(3)), MONTHS_TR[m.group(2).lower()], int(m.group(1))))
+            p6_candidates.append((dt, f"visible Turkish date: {m.group(0)}"))
+        except (ValueError, KeyError):
+            continue
+
+    if p6_candidates:
+        earliest_p6 = min(p6_candidates, key=lambda c: c[0].timestamp())
+        return {"dt": earliest_p6[0], "evidence": earliest_p6[1]}
+
+    return None
 
 
 def fetch_html(url: str, timeout: int) -> str:
+    """Fetch HTML using verified shared transport layer or secure fallback."""
+    if editorial_http is not None:
+        try:
+            status, html, headers = editorial_http.fetch_html(url, timeout=timeout)
+        except Exception as exc:
+            raise urllib.error.URLError(f"Transport exception: {exc}")
+
+        if status >= 400:
+            err_msg = headers.get("error") or headers.get("x-error") or f"HTTP error {status}"
+            raise urllib.error.HTTPError(url, status, err_msg, headers, None)
+        if status < 200:
+            err_msg = headers.get("error") or headers.get("x-error") or f"Transport error (HTTP {status})"
+            raise urllib.error.URLError(err_msg)
+        return html
+
+    ctx = ssl.create_default_context()
     req = urllib.request.Request(url, headers={
         "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
         "Accept-Language": "tr,en;q=0.8",
     })
-    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
+    with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
         return resp.read().decode("utf-8", errors="replace")
 
 
 def check_target(label: str, kind: str, html: Optional[str], url: str,
-                 explicit_dt: Optional[datetime]) -> Dict[str, Any]:
-    result: Dict[str, Any] = {"target": label, "kind": kind}
-    today = now_istanbul().date()
+                 explicit_dt: Optional[datetime],
+                 citation_count: int = 1) -> Dict[str, Any]:
+    result: Dict[str, Any] = {"target": label, "kind": kind, "citation_count": citation_count}
+    now = now_istanbul()
+    today = now.date()
 
     if explicit_dt is not None:
         pub = {"dt": _mk_naive_istanbul(explicit_dt), "evidence": "explicit --date"}
@@ -244,9 +405,21 @@ def check_target(label: str, kind: str, html: Optional[str], url: str,
                       note="Publication date could not be determined")
         return result
 
-    pub_date = pub["dt"].date()
-    result.update(state="dated", pub_date=pub_date.strftime("%d.%m.%Y"),
-                  evidence=pub["evidence"], same_day=(pub_date == today))
+    pub_dt = pub["dt"]
+    pub_date = pub_dt.date()
+    age_hours = round((now - pub_dt).total_seconds() / 3600.0, 2)
+    yesterday = today - timedelta(days=1)
+    is_yesterday_late_evening = (pub_date == yesterday) and (18 <= pub_dt.hour <= 23)
+
+    result.update(
+        state="dated",
+        pub_date=pub_date.strftime("%d.%m.%Y"),
+        pub_datetime=pub_dt.isoformat(),
+        age_hours=age_hours,
+        is_yesterday_late_evening=is_yesterday_late_evening,
+        evidence=pub["evidence"],
+        same_day=(pub_date == today)
+    )
     return result
 
 
@@ -341,7 +514,6 @@ def main() -> None:
     # Anti-laundering check 2 & 3: Draft link containment & temporal markers
     if is_evergreen:
         if draft:
-            # Check for breaking-news temporal markers in draft
             clean_draft = TAG_RE.sub(" ", draft)
             m = BREAKING_TEMPORAL_MARKERS.search(clean_draft)
             if m:
@@ -349,7 +521,6 @@ def main() -> None:
                     f"evergreen_temporal_peg_violation: breaking-news temporal marker '{m.group(0)}' found in evergreen draft"
                 )
 
-            # Check draft links containment against dossier
             draft_hrefs = [h.rstrip("/") for h in HREF_RE.findall(draft)]
             known_dossier_urls = set(role_map.keys())
             for h in draft_hrefs:
@@ -358,7 +529,6 @@ def main() -> None:
                         f"unlisted_link_in_evergreen_draft: draft contains link '{h}' not declared in dossier sources"
                     )
 
-        # Also check dossier claims for temporal markers
         if dossier_data:
             for s in dossier_data.get("sources", []):
                 for c in s.get("claims", []):
@@ -368,6 +538,45 @@ def main() -> None:
                             f"evergreen_temporal_peg_violation: breaking-news marker '{m.group(0)}' found in source claim"
                         )
 
+    # Handle explicit --date check immediately if given
+    if args.date:
+        dt = parse_free_date(args.date)
+        if dt is None:
+            print(f"ERROR: Could not parse --date: {args.date!r}", file=sys.stderr)
+            sys.exit(2)
+        checks.append(check_target(args.date, "date", None, "", dt))
+
+    # Collect targets preserving encounter order (Normalized URL deduplication)
+    url_items: Dict[str, Dict[str, Any]] = OrderedDict()
+
+    # Draft hrefs
+    draft_hrefs = HREF_RE.findall(draft)
+    if draft_hrefs and not args.dossier:
+        print("Warning: --dossier not provided; all draft links audited under same-day freshness "
+              "(pass research dossier via --dossier for role-aware mode).", file=sys.stderr)
+
+    for href in draft_hrefs:
+        norm = href.strip().rstrip("/")
+        if norm not in url_items:
+            url_items[norm] = {"raw": href, "kind": "url", "count": 1, "role": role_map.get(norm)}
+        else:
+            url_items[norm]["count"] += 1
+
+    # CLI positional targets
+    for target in args.targets:
+        if target.startswith("http://") or target.startswith("https://"):
+            norm = target.strip().rstrip("/")
+            if norm not in url_items:
+                url_items[norm] = {"raw": target, "kind": "url", "count": 1, "role": role_map.get(norm)}
+            else:
+                url_items[norm]["count"] += 1
+        else:
+            norm = target.strip()
+            if norm not in url_items:
+                url_items[norm] = {"raw": target, "kind": "file", "count": 1, "role": None}
+            else:
+                url_items[norm]["count"] += 1
+
     # Standalone dossier mode: when no targets, file, text, or date provided
     if args.dossier and not args.targets and not draft and not args.date:
         if is_evergreen:
@@ -376,6 +585,7 @@ def main() -> None:
                 "kind": "dossier",
                 "state": "evergreen_bypassed",
                 "same_day": True,
+                "citation_count": 1,
                 "note": "Evergreen content: same-day publication check bypassed; delegated to kevrast Stage 1",
             })
         else:
@@ -385,82 +595,53 @@ def main() -> None:
                 sys.exit(2)
             for src in primary_sources:
                 u = src.get("url", "")
-                if args.no_network:
-                    pub_str = date_map.get(u.rstrip("/")) or str(dossier_data.get("date") or "")
-                    dt = parse_free_date(pub_str) if pub_str else now_istanbul()
-                    checks.append(check_target(u, "url", None, u, dt))
+                norm = u.strip().rstrip("/")
+                if norm not in url_items:
+                    url_items[norm] = {"raw": u, "kind": "url", "count": 1, "role": "primary"}
                 else:
-                    try:
-                        checks.append(check_target(u, "url", fetch_html(u, args.timeout), u, None))
-                    except (urllib.error.URLError, OSError, ValueError) as exc:
-                        checks.append({"target": u, "kind": "url", "state": "unreachable",
-                                       "same_day": False, "note": f"Target unreachable ({exc})"})
+                    url_items[norm]["count"] += 1
 
-    if args.date:
-        dt = parse_free_date(args.date)
-        if dt is None:
-            print(f"ERROR: Could not parse --date: {args.date!r}", file=sys.stderr)
-            sys.exit(2)
-        checks.append(check_target(args.date, "date", None, "", dt))
+    # Evaluate each unique target exactly once
+    for norm, item in url_items.items():
+        raw = item["raw"]
+        kind = item["kind"]
+        role = item["role"]
+        count = item["count"]
 
-    draft_hrefs = HREF_RE.findall(draft)
-    if draft_hrefs and not args.dossier:
-        print("Warning: --dossier not provided; all draft links audited under same-day freshness "
-              "(pass research dossier via --dossier for role-aware mode).", file=sys.stderr)
-
-    for href in draft_hrefs:
-        role = role_map.get(href.rstrip("/"))
         if is_evergreen:
-            checks.append({"target": href, "kind": "url", "state": "evergreen_delegated",
-                           "same_day": True,
+            checks.append({"target": raw, "kind": kind, "state": "evergreen_delegated",
+                           "same_day": True, "citation_count": count,
                            "note": f"role={role} -> evergreen delegated to kevrast"})
             continue
+
         if role in ("supplementary", "historical"):
-            checks.append({"target": href, "kind": "url", "state": "skipped_role",
-                           "same_day": True,
+            checks.append({"target": raw, "kind": kind, "state": "skipped_role",
+                           "same_day": True, "citation_count": count,
                            "note": f"role={role} -> same-day exempt; liveness and anchoring handled by kevrast"})
             continue
-        if args.no_network:
-            pub_str = date_map.get(href.rstrip("/")) or (str(dossier_data.get("date") or "") if dossier_data else "")
-            dt = parse_free_date(pub_str) if pub_str else now_istanbul()
-            checks.append(check_target(href, "url", None, href, dt))
-            continue
-        try:
-            checks.append(check_target(href, "url", fetch_html(href, args.timeout), href, None))
-        except (urllib.error.URLError, OSError, ValueError) as exc:
-            checks.append({"target": href, "kind": "url", "state": "unreachable",
-                           "same_day": False, "note": f"Target unreachable ({exc})"})
 
-    for target in args.targets:
-        role = role_map.get(target.rstrip("/"))
-        if is_evergreen:
-            checks.append({"target": target, "kind": "url", "state": "evergreen_delegated",
-                           "same_day": True,
-                           "note": f"role={role} -> evergreen delegated to kevrast"})
-            continue
-        if role in ("supplementary", "historical"):
-            checks.append({"target": target, "kind": "url", "state": "skipped_role",
-                           "same_day": True,
-                           "note": f"role={role} -> same-day exempt"})
-            continue
         if args.no_network:
-            pub_str = date_map.get(target.rstrip("/")) or ""
+            pub_str = date_map.get(norm) or (str(dossier_data.get("date") or "") if dossier_data else "")
             dt = parse_free_date(pub_str) if pub_str else now_istanbul()
-            checks.append(check_target(target, "url", None, target, dt))
+            checks.append(check_target(raw, kind, None, raw, dt, citation_count=count))
             continue
-        if target.startswith("http://") or target.startswith("https://"):
+
+        if kind == "url":
             try:
-                checks.append(check_target(target, "url", fetch_html(target, args.timeout), target, None))
-            except (urllib.error.URLError, OSError, ValueError) as exc:
-                checks.append({"target": target, "kind": "url", "state": "unreachable",
-                               "same_day": False, "note": f"Target unreachable ({exc})"})
+                html = fetch_html(raw, args.timeout)
+                checks.append(check_target(raw, kind, html, raw, None, citation_count=count))
+            except (urllib.error.URLError, OSError, ValueError, Exception) as exc:
+                checks.append({"target": raw, "kind": kind, "state": "unreachable",
+                               "same_day": False, "citation_count": count,
+                               "note": f"Target unreachable ({exc})"})
         else:
             try:
-                with open(target, encoding="utf-8") as f:
-                    checks.append(check_target(target, "file", f.read(), "", None))
+                with open(raw, encoding="utf-8") as f:
+                    checks.append(check_target(raw, kind, f.read(), "", None, citation_count=count))
             except OSError as exc:
-                checks.append({"target": target, "kind": "file", "state": "unreachable",
-                               "same_day": False, "note": f"File unreadable ({exc})"})
+                checks.append({"target": raw, "kind": kind, "state": "unreachable",
+                               "same_day": False, "citation_count": count,
+                               "note": f"File unreadable ({exc})"})
 
     if not checks and not is_evergreen:
         parser.print_help()
@@ -482,13 +663,19 @@ def main() -> None:
         print(f"Status: {report['status']} | Today: {report['today']}\n")
         print("[Source Date Audit]")
         for t in report["targets"]:
+            cite_suffix = f" [cited {t.get('citation_count', 1)}x]" if t.get("citation_count", 1) > 1 else ""
             if t["state"] == "dated":
                 mark = "[OK]" if t["same_day"] else "[!]"
-                print(f"  {mark} {t['target']} -> {t['pub_date']} ({t['evidence']})")
+                diag_suffix = (
+                    f" [age: {t['age_hours']}h, yesterday late-evening near-midnight]"
+                    if t.get("is_yesterday_late_evening")
+                    else f" [age: {t.get('age_hours', 0)}h]"
+                )
+                print(f"  {mark} {t['target']} -> {t['pub_date']} ({t['evidence']}){cite_suffix}{diag_suffix}")
             elif t["state"] in ("skipped_role", "evergreen_delegated", "evergreen_bypassed"):
-                print(f"  [INFO] {t['target']} -> {t.get('note', '')}")
+                print(f"  [INFO] {t['target']} -> {t.get('note', '')}{cite_suffix}")
             else:
-                print(f"  [!] {t['target']} -> {t.get('note', 'Date could not be determined')}")
+                print(f"  [!] {t['target']} -> {t.get('note', 'Date could not be determined')}{cite_suffix}")
 
         if anti_laundering_violations:
             print("\n[Anti-Laundering Violations]")

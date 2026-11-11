@@ -1,0 +1,89 @@
+--- a/tools/mcp_cli.py
++++ b/tools/mcp_cli.py
+@@ -217,8 +217,8 @@
+             sanitized_items.append(item_copy)
+         args["items"] = sanitized_items
+ 
+-    # 6. Featured image file path validation on create_news
+-    if tool_name == "create_news":
++    # 6. Featured image file path validation on create_news and update_news
++    if tool_name in ("create_news", "update_news"):
+         img = args.get("image")
+         if isinstance(img, dict) and "file_path" in img:
+             file_path = str(img["file_path"]).strip()
+@@ -630,18 +630,58 @@
+                 print(f"Error: Server '{server_name}' specified but tool name is missing.", file=sys.stderr)
+                 return 2
+ 
+-            # Translate positional syntax into `call <tool_name>` arguments
+-            call_argv = ["call", tool_name]
+-            args_json_candidate = None
++            # Extract global flags (--bridge, --timeout) to prepend before subcommands
++            global_flags: List[str] = []
++            non_global_remaining: List[str] = []
+             skip_next = False
+-
+             for i, tok in enumerate(remaining):
+                 if skip_next:
+                     skip_next = False
+                     continue
+-                if tok in ("--args-json", "--args-file", "--out", "--bridge", "--timeout"):
+-                    call_argv.extend([tok, remaining[i + 1]])
+-                    skip_next = True
++                if tok in ("--bridge", "--timeout"):
++                    if i + 1 < len(remaining):
++                        global_flags.extend([tok, remaining[i + 1]])
++                        skip_next = True
++                else:
++                    non_global_remaining.append(tok)
++
++            parser = build_parser()
++            tool_sub = tool_name.strip().lower()
++
++            # Route positional subcommands to their designated handlers
++            if tool_sub == "ping":
++                parsed_args = parser.parse_args(global_flags + ["ping"])
++                return handle_ping(parsed_args)
++
++            elif tool_sub in ("list-tools", "tools-list", "list_tools"):
++                parsed_args = parser.parse_args(global_flags + ["list-tools"])
++                return handle_list_tools(parsed_args)
++
++            elif tool_sub in ("get-record", "get_record"):
++                sub_argv = ["get-record"] + non_global_remaining
++                parsed_args = parser.parse_args(global_flags + sub_argv)
++                return handle_get_record(parsed_args)
++
++            elif tool_sub == "call":
++                if not non_global_remaining:
++                    print("Error: Subcommand 'call' requires a tool name.", file=sys.stderr)
++                    return 2
++                tool_name = non_global_remaining[0]
++                non_global_remaining = non_global_remaining[1:]
++
++            # Translate generic positional tool syntax into `call <tool_name>` arguments
++            call_argv = ["call", tool_name]
++            args_json_candidate = None
++            skip_next = False
++
++            for i, tok in enumerate(non_global_remaining):
++                if skip_next:
++                    skip_next = False
++                    continue
++                if tok in ("--args-json", "--args-file", "--out"):
++                    if i + 1 < len(non_global_remaining):
++                        call_argv.extend([tok, non_global_remaining[i + 1]])
++                        skip_next = True
+                 elif tok in ("--editorial-safe", "--no-editorial-safe", "--dry-run"):
+                     call_argv.append(tok)
+                 elif tok.startswith("{") and tok.endswith("}"):
+@@ -652,8 +692,7 @@
+             if args_json_candidate and "--args-json" not in call_argv and "--args-file" not in call_argv:
+                 call_argv.extend(["--args-json", args_json_candidate])
+ 
+-            parser = build_parser()
+-            parsed_args = parser.parse_args(call_argv)
++            parsed_args = parser.parse_args(global_flags + call_argv)
+             return handle_call(parsed_args)
+ 
+     parser = build_parser()

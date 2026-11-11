@@ -281,7 +281,7 @@ class McpHeadlineTools extends McpCrudToolsBase
         }
 
         $lang = $this->requireActiveLang($args);
-        $this->assertContentMatchesLang($lang, ['name' => $name]);
+        $this->assertContentMatchesLang($lang, $name);
 
         $model = $this->freshModel('mod_headline');
         $model->name = $name;
@@ -338,7 +338,7 @@ class McpHeadlineTools extends McpCrudToolsBase
         }
 
         $model->lang = $lang;
-        $this->assertContentMatchesLang($lang, ['name' => (string) $model->name]);
+        $this->assertContentMatchesLang($lang, (string) $model->name);
 
         if (array_key_exists('image', $args)) {
             $previousUrl = (string) ($model->image ?? '');

@@ -192,6 +192,20 @@
                 link_action: wizard_img_lang.link_action,
                 file_input_id: 'wizardImgInput'
             } %}
+            {% if wizard_lang_key == 'mod_news' %}
+            <div class="form-row mt-3">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="image_alt" id="wizardImageAltInput" placeholder=" " autocomplete="off" maxlength="255">
+                    <label class="m3-floating-label">{{ wizard_lang.admin.columns.image_alt }}</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="image_credit" id="wizardImageCreditInput" placeholder=" " autocomplete="off" maxlength="255">
+                    <label class="m3-floating-label">{{ wizard_lang.admin.columns.image_credit }}</label>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Step 8: Publish -->

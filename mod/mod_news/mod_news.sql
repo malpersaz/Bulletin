@@ -18,6 +18,8 @@ CREATE TABLE `mod_news` (
   `gallery_id` int(11) DEFAULT 0,
   `file_id` int(11) DEFAULT 0,
   `image` varchar(255) DEFAULT NULL,
+  `image_alt` varchar(255) DEFAULT NULL,
+  `image_credit` varchar(255) DEFAULT NULL,
   `acl_id` int(11) DEFAULT 0,
   `video` text DEFAULT NULL,
   `view_count` int(11) NOT NULL DEFAULT 0,

@@ -260,12 +260,13 @@ abstract class McpCrudToolsBase
         }
     }
 
-    protected function assertRecordMatchesLang(string $modelName, int $recordId, string $lang, string $label): void
+    protected function assertRecordMatchesLang(string $modelName, int $recordId, string $lang, string $label): object
     {
         $record = $this->loadRecordById($modelName, $recordId, $label);
         if ((string) $record->lang !== $lang) {
             throw new McpToolException("{$label} '{$recordId}' belongs to language '" . $record->lang . "', content language is '{$lang}'. They must match.");
         }
+        return $record;
     }
 
     protected function assertModerateDelete(string $module, int $recordUserId): void
@@ -352,20 +353,74 @@ abstract class McpCrudToolsBase
         ];
     }
 
+    /**
+     * Appends an equality condition to the model using conjunctive addWhere().
+     * Validates column identifier against /^[a-zA-Z_][a-zA-Z0-9_]*$/ to prevent injection
+     * and escapes string values via Obuilder::cc().
+     *
+     * @param object $model
+     * @param string $column
+     * @param string|int|float $value
+     */
+    protected function addEqFilter(object $model, string $column, string|int|float $value): void
+    {
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            throw new McpToolException("Invalid filter column name: '{$column}'");
+        }
+
+        if (is_int($value) || is_float($value)) {
+            $clause = "{$column} = {$value}";
+        } else {
+            $escaped = Obuilder::cc((string) $value);
+            $clause = "{$column} = '{$escaped}'";
+        }
+
+        $model->addWhere($clause);
+    }
+
+    /**
+     * Appends a parenthesized LIKE search condition across multiple columns using conjunctive addWhere().
+     * Escapes search input via Obuilder::cc() and validates all column names.
+     *
+     * @param object $model
+     * @param string[] $columns
+     * @param string $rawSearch
+     */
+    protected function addLikeSearchFilter(object $model, array $columns, string $rawSearch): void
+    {
+        $search = trim($rawSearch);
+        if ($search === '' || empty($columns)) {
+            return;
+        }
+
+        $escaped = Obuilder::cc($search);
+        $clauses = [];
+        foreach ($columns as $column) {
+            $column = (string) $column;
+            if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+                throw new McpToolException("Invalid search column name: '{$column}'");
+            }
+            $clauses[] = "{$column} LIKE '%{$escaped}%'";
+        }
+
+        if (!empty($clauses)) {
+            $model->addWhere('(' . implode(' OR ', $clauses) . ')');
+        }
+    }
+
     protected function applyCategoryFilters($model, array $args): void
     {
         if (isset($args['lang']) && trim((string) $args['lang']) !== '') {
-            $model->where_lang(trim((string) $args['lang']));
+            $this->addEqFilter($model, 'lang', trim((string) $args['lang']));
         }
         if (isset($args['root']) && in_array($args['root'], ['y', 'n'], true)) {
-            $model->where_root($args['root']);
+            $this->addEqFilter($model, 'root', $args['root']);
         }
         if (isset($args['seo']) && trim((string) $args['seo']) !== '') {
-            $model->where_seo(trim((string) $args['seo']));
+            $this->addEqFilter($model, 'seo', trim((string) $args['seo']));
         }
         if (isset($args['search']) && trim((string) $args['search']) !== '') {
-            $escaped = Obuilder::cc(trim((string) $args['search']));
-            $model->where("(name LIKE '%{$escaped}%' OR seo LIKE '%{$escaped}%')");
+            $this->addLikeSearchFilter($model, ['name', 'seo'], trim((string) $args['search']));
         }
     }
 
@@ -682,7 +737,9 @@ abstract class McpCrudToolsBase
     }
 
     /**
-     * Builds an SEO slug from a name, mirroring the admin makeSeoValue JS helper
+     * Builds an SEO slug from a name, mirroring the admin makeLegacySeoValue helper.
+     * Enforces Wikipedia-style casing, NFC normalization, and strips forward slashes
+     * and unsafe symbols that break web routing.
      */
     public static function makeSeo(string $text, string $locale = 'en'): string
     {
@@ -693,23 +750,29 @@ abstract class McpCrudToolsBase
         $locale = strtolower(trim($locale));
         $isKurdish = in_array($locale, self::KURDISH_LOCALES, true);
 
-        // Remove apostrophes, quotation marks, and punctuation (:;,!? etc.)
-        $value = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}:;,!?()\[\]{}]/u', '', $text) ?? '';
-        // Whitespace and dashes become underscores
-        $value = preg_replace('/[\s-]+/u', '_', $value) ?? '';
-        // Wikipedia-style parity: preserve original casing, do not force lowercase
-        // Normalize to NFC and strip stray combining dot above (U+0307)
+        // Normalize Unicode to NFC first so combining diacritics compose into base letters
         if (class_exists('Normalizer')) {
-            $normalized = \Normalizer::normalize($value, \Normalizer::FORM_C);
+            $normalized = \Normalizer::normalize($text, \Normalizer::FORM_C);
             if (is_string($normalized)) {
-                $value = $normalized;
+                $text = $normalized;
             }
         }
-        $value = str_replace("\u{0307}", '', $value);
+        $text = str_replace("\u{0307}", '', $text);
+
+        // Remove apostrophes, quotation marks, and punctuation (:;,!? etc.)
+        $value = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}:;,!?()\[\]{}]/u', '', $text) ?? '';
+
+        // Replace slashes, backslashes, and non-alphanumeric symbols with spaces (matches Helper::legacy_seo and script.js)
+        $value = preg_replace('/[^\p{L}\p{N}\s_-]/u', ' ', $value) ?? '';
+
         // Kurdish keyboard typo normalizations
         if ($isKurdish) {
             $value = str_replace(['ı', 'İ'], ['i', 'I'], $value);
         }
+
+        // Whitespace and dashes become underscores
+        $value = preg_replace('/[\s-]+/u', '_', $value) ?? '';
+
         // Collapse repeated underscores and trim
         $value = preg_replace('/_+/', '_', $value) ?? '';
         $value = trim($value, '_');
@@ -773,40 +836,52 @@ abstract class McpCrudToolsBase
     }
 
     /**
-     * Resolves audit metadata (lang_status, faq_count, faq_items) for a given record.
+     * Resolves audit metadata (lang_status, faq_count, faq_items, faq_published_count, faq_draft_count) for a given record.
      * Enriches MCP get_* responses so environment-agnostic audit tooling receives identical
      * data whether checking local DB or MCP-bridge-sourced records.
      */
-    protected function getRecordAuditMeta(string $modName, int $recordId, string $lang): array
+    protected function getRecordAuditMeta(string $modName, int $recordId, string $lang, string $recordStatus = 'y'): array
     {
         $langStatus = 'n';
         $faqCount = 0;
         $faqItems = [];
+        $faqPublishedCount = 0;
+        $faqDraftCount = 0;
 
         try {
             if (class_exists('Load')) {
                 /** @var Database $db */
                 $db = Load::lib('Database');
-                if ($db && method_exists($db, 'query')) {
-                    $safeLang = addslashes($lang);
-                    $langRow = $db->query("SELECT status FROM lang WHERE seo = '{$safeLang}' LIMIT 1")->fetch();
-                    if (is_array($langRow) && isset($langRow['status'])) {
-                        $langStatus = (string) $langRow['status'];
+                if ($db && method_exists($db, 'fetch_array') && method_exists($db, 'toArray')) {
+                    $safeLang = Obuilder::cc($lang);
+                    $db->fetch_array("SELECT status FROM lang WHERE seo = '{$safeLang}' LIMIT 1");
+                    $langRows = $db->toArray();
+                    if (is_array($langRows) && isset($langRows[0]) && is_array($langRows[0]) && isset($langRows[0]['status'])) {
+                        $langStatus = (string) $langRows[0]['status'];
                     }
 
-                    $safeMod = addslashes($modName);
-                    $faqRes = $db->query("SELECT id, question, answer FROM mod_faq WHERE mod_name = '{$safeMod}' AND vid = {$recordId} AND lang = '{$safeLang}' AND status = 'y'");
-                    if ($faqRes && method_exists($faqRes, 'fetchAll')) {
-                        $rows = $faqRes->fetchAll();
-                        if (is_array($rows)) {
-                            $faqItems = $rows;
-                            $faqCount = count($rows);
+                    $safeMod = Obuilder::cc($modName);
+                    $recordId = (int) $recordId;
+                    $faqStatusSql = ($recordStatus === 'n') ? "status IN ('y', 'n')" : "status = 'y'";
+
+                    $db->fetch_array(
+                        "SELECT id, question, answer, status, sort_order FROM mod_faq " .
+                        "WHERE mod_name = '{$safeMod}' AND vid = {$recordId} AND lang = '{$safeLang}' AND {$faqStatusSql} " .
+                        "ORDER BY sort_order ASC, id ASC"
+                    );
+                    $rawFaqRows = $db->toArray();
+                    if (is_array($rawFaqRows)) {
+                        $faqItems = $rawFaqRows;
+                        $faqCount = count($rawFaqRows);
+                        foreach ($rawFaqRows as $r) {
+                            if (is_array($r)) {
+                                if (($r['status'] ?? 'y') === 'y') {
+                                    $faqPublishedCount++;
+                                } else {
+                                    $faqDraftCount++;
+                                }
+                            }
                         }
-                    } elseif ($faqRes && method_exists($faqRes, 'fetch')) {
-                        while ($r = $faqRes->fetch()) {
-                            $faqItems[] = $r;
-                        }
-                        $faqCount = count($faqItems);
                     }
                 }
             }
@@ -818,6 +893,8 @@ abstract class McpCrudToolsBase
             'lang_status' => $langStatus,
             'faq_count' => $faqCount,
             'faq_items' => $faqItems,
+            'faq_published_count' => $faqPublishedCount,
+            'faq_draft_count' => $faqDraftCount,
         ];
     }
 }

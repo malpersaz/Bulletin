@@ -13,11 +13,11 @@ The repository uses a mixed enforcement model.
 - untouched files are protected from legacy cleanup noise
 - touched files are subject to stronger normalization rules
 
-## Zero Non-English Tolerance Rule (`AGENTS.md` Rule 7)
+## Zero Non-English Tolerance Rule (`AGENTS.md` Rule 6)
 
 No non-English comments, identifiers, variables, methods, functions, classes, translation keys, filenames, routes, or hardcoded user-facing strings are accepted in the codebase.
 
-If non-English code or comments are encountered in legacy or touched files during development or refactoring, they must be rewritten in clean English immediately (`AGENTS.md` Rule 7):
+If non-English code or comments are encountered in legacy or touched files during development or refactoring, they must be rewritten in clean English immediately (`AGENTS.md` Rule 6):
 
 - all code comments must be strictly in English
 - all variable, method, function, class, and property names must be in English

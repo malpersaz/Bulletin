@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": "e2e-mcp-005",
+  "method": "tools/call",
+  "params": {
+    "name": "update_news",
+    "arguments": {
+      "id": 101,
+      "status": "n"
+    }
+  }
+}

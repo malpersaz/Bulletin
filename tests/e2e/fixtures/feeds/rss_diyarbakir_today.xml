@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Diyarbakır Yerel Haberleri</title>
+  <link>https://www.amedhaber.net</link>
+  <description>Diyarbakır güncel yerel haber akışı</description>
+  <language>tr</language>
+  <pubDate>Wed, 11 Nov 2026 08:00:00 +0300</pubDate>
+  <item>
+    <title>Diyarbakır'da Ekolojik Kent Parkının İlk Etabı Açıldı</title>
+    <link>https://www.amedhaber.net/haber/ekolojik-kent-parki-acildi-10492</link>
+    <description>Diyarbakır merkezinde 45 dönümlük alanda inşa edilen ekolojik park hizmete girdi.</description>
+    <pubDate>Wed, 11 Nov 2026 09:15:00 +0300</pubDate>
+    <guid>https://www.amedhaber.net/haber/ekolojik-kent-parki-acildi-10492</guid>
+  </item>
+  <item>
+    <title>Diyarbakır Kültür Sanat Festivali Başladı</title>
+    <link>https://www.amedhaber.net/haber/kultur-sanat-festivali-10493</link>
+    <description>Kentte düzenlenen yıllık geleneksel kültür sanat etkinlikleri start aldı.</description>
+    <pubDate>Wed, 11 Nov 2026 10:00:00 +0300</pubDate>
+    <guid>https://www.amedhaber.net/haber/kultur-sanat-festivali-10493</guid>
+  </item>
+</channel>
+</rss>

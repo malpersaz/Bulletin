@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": "e2e-mcp-001",
+  "method": "tools/call",
+  "params": {
+    "name": "create_news",
+    "arguments": {
+      "category_id": 2,
+      "lang": "tr",
+      "name": "Diyarbakır'da Ekolojik Kent Parkının İlk Etabı Açıldı",
+      "summary": "Diyarbakır merkezinde inşa edilen 45 dönümlük ekolojik kent parkı törenle halkın hizmetine sunuldu.",
+      "content": "<p>Diyarbakır Büyükşehir Belediyesi tarafından inşa edilen park tamamlandı.</p>",
+      "status": "n",
+      "image_alt": "Diyarbakır Kent Parkı",
+      "image_credit": "Rudaw Medya Grubu"
+    }
+  }
+}

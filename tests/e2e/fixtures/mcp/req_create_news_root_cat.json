@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "e2e-mcp-002",
+  "method": "tools/call",
+  "params": {
+    "name": "create_news",
+    "arguments": {
+      "category_id": 1,
+      "lang": "tr",
+      "name": "Kök Kategori Altında Haber Kaydı Denemesi",
+      "summary": "Kök kategorilere doğrudan haber kaydı engellenmeli ve alt kategorilere yönlendirilmelidir.",
+      "content": "<p>Bu haber kök kategoriye eklenmeye çalışıldığı için reddedilmelidir.</p>",
+      "status": "n"
+    }
+  }
+}

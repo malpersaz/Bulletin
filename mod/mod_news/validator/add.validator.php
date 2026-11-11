@@ -138,7 +138,7 @@ class add_validator
             return True;
         }
 
-        // Normalize SEO slug (Rule 10)
+        // Normalize SEO slug (AGENTS.md Rule 9)
         $_POST['seo'] = $this->normalizeSeo((string) Req::Post('seo'));
 
         #Check length
@@ -219,6 +219,42 @@ class add_validator
         );
         if ($this->_check() === True) {
             return True;
+        }
+
+        // image_alt Length (optional)
+        if (trim((string) Req::Request('image_alt')) !== '') {
+            $this->valid->add(
+                [
+                    'name' => 'image_alt',
+                    'func' => 'length',
+                    'arg' => [
+                        'min' => '1',
+                        'max' => '255'
+                    ],
+                    'message' => sprintf($this->lang['mod_news']['validator']['length'], $this->lang['mod_news']['admin']['columns']['image_alt'], '1', '255')
+                ]
+            );
+            if ($this->_check() === True) {
+                return True;
+            }
+        }
+
+        // image_credit Length (optional)
+        if (trim((string) Req::Request('image_credit')) !== '') {
+            $this->valid->add(
+                [
+                    'name' => 'image_credit',
+                    'func' => 'length',
+                    'arg' => [
+                        'min' => '1',
+                        'max' => '255'
+                    ],
+                    'message' => sprintf($this->lang['mod_news']['validator']['length'], $this->lang['mod_news']['admin']['columns']['image_credit'], '1', '255')
+                ]
+            );
+            if ($this->_check() === True) {
+                return True;
+            }
         }
         // summary Length
         $this->valid->add(

@@ -122,6 +122,8 @@ function runRpc($payload, string $bearerKey = '', array $serverOverrides = []): 
     $db = Load::lib('Database');
     try {
         $db->query("DELETE FROM mod_news WHERE name LIKE 'MCP Smoke%'");
+        $db->query("DELETE FROM mod_headline WHERE name LIKE 'MCP Smoke%'");
+        $db->query("DELETE FROM mod_faq WHERE question LIKE '%MCP Smoke%' OR question LIKE '%Batch Test%' OR question LIKE '%Conjunctive%'");
         $db->query("DELETE FROM mod_news_category WHERE name LIKE 'MCP Smoke%'");
         $db->query("DELETE FROM mod_menu WHERE url LIKE '%mcp_smoke%'");
         $db->query("DELETE FROM mod_mcp_api_key WHERE name IN ('Smoke test key', 'Revoked')");
@@ -225,6 +227,9 @@ check('Discovery: list_pages registered', in_array('list_pages', $toolNames, tru
 check('Discovery: list_galleries registered', in_array('list_galleries', $toolNames, true));
 check('Discovery: list_videos registered', in_array('list_videos', $toolNames, true));
 check('Discovery: list_site_settings registered', in_array('list_site_settings', $toolNames, true));
+check('Discovery: batch_create_faqs registered', in_array('batch_create_faqs', $toolNames, true));
+check('Discovery: list_faq_modules registered', in_array('list_faq_modules', $toolNames, true));
+check('Discovery: check_duplicate_news registered', in_array('check_duplicate_news', $toolNames, true));
 
 // Ensure omitted Business modules are NOT present
 check('Parity: list_services NOT in Bulletin', !in_array('list_services', $toolNames, true));
@@ -667,13 +672,288 @@ check('Audit[v1.0.13]: mod/mod_mcp/index.php contains zero calls to undefined Da
 );
 
 // =========================================================================
+// 6.3 Milestone 1 Editorial Pipeline & MCP Remediation Regression (v1.0.63)
+// =========================================================================
+
+// 1. Root category rejection on create_news (B3)
+$db->fetch_array("SELECT id FROM mod_news_category WHERE lang = '{$testLang}' AND root = 'y' LIMIT 1");
+$rootCatRows = $db->toArray();
+$rootNewsCategoryId = (int) ($rootCatRows[0]['id'] ?? 0);
+if ($rootNewsCategoryId > 0) {
+    $resRootCat = runRpc(['jsonrpc' => '2.0', 'id' => 1001, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
+        'name' => 'MCP Smoke Root Category Rejection News',
+        'lang' => $testLang,
+        'category_id' => $rootNewsCategoryId,
+        'summary' => 'This is a valid summary between 90 and 120 characters long for testing root category rejection gate.',
+        'content' => '<p>Valid body content for root category test.</p>',
+        'seo' => 'root_cat_reject_test_slug',
+    ]]], $plaintextKey);
+    check('News[CategoryGate]: create_news rejects root category (root === y)',
+        ($resRootCat['result']['isError'] ?? false) === true
+        && stripos($resRootCat['result']['content'][0]['text'] ?? '', 'root') !== false,
+        json_encode($resRootCat)
+    );
+}
+
+// 2. SEO Normalization via makeSeo on create_news (B3)
+$dirtySeoInput = 'mcp smoke dirty seo slug with spaces';
+$expectedNormalizedSeo = 'mcp_smoke_dirty_seo_slug_with_spaces';
+$resDirtySeo = runRpc(['jsonrpc' => '2.0', 'id' => 1002, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
+    'name' => 'MCP Smoke SEO Normalization News',
+    'lang' => $testLang,
+    'category_id' => $sharedNewsCategoryId,
+    'summary' => 'This is a valid summary between 90 and 120 characters long for testing mandatory makeSeo normalization.',
+    'content' => '<p>Valid content body for SEO normalization test.</p>',
+    'seo' => $dirtySeoInput,
+    'status' => 'n',
+]]], $plaintextKey);
+$dirtySeoCreated = json_decode($resDirtySeo['result']['content'][0]['text'] ?? 'null', true);
+$m1NewsId = (int) ($dirtySeoCreated['id'] ?? 0);
+$dirtySeoItem = $dirtySeoCreated['item'] ?? [];
+check('News[SEO]: create_news normalizes explicit dirty SEO slug via makeSeo',
+    ($resDirtySeo['result']['isError'] ?? true) === false
+    && ($dirtySeoItem['seo'] ?? '') === $expectedNormalizedSeo,
+    json_encode($dirtySeoCreated)
+);
+
+// 3. Enriched get_news envelope (username, author_fullname, category_name, category_seo) (B3)
+if ($m1NewsId > 0) {
+    $resEnriched = runRpc(['jsonrpc' => '2.0', 'id' => 1003, 'method' => 'tools/call', 'params' => ['name' => 'get_news', 'arguments' => [
+        'id' => $m1NewsId,
+    ]]], $plaintextKey);
+    $enrichedPayload = json_decode($resEnriched['result']['content'][0]['text'] ?? 'null', true);
+    $enrichedItem = $enrichedPayload['item'] ?? $enrichedPayload;
+    check('News[Enrichment]: get_news returns username, author_fullname, category_name, and category_seo',
+        ($resEnriched['result']['isError'] ?? true) === false
+        && !empty($enrichedItem['username'])
+        && !empty($enrichedItem['author_fullname'])
+        && !empty($enrichedItem['category_name'])
+        && !empty($enrichedItem['category_seo']),
+        json_encode($enrichedPayload)
+    );
+}
+
+// 4. Headline creation and update without TypeError (B2)
+$resHeadlineCreate = runRpc(['jsonrpc' => '2.0', 'id' => 1004, 'method' => 'tools/call', 'params' => ['name' => 'create_headline', 'arguments' => [
+    'name' => 'MCP Smoke Headline Test Item',
+    'lang' => $testLang,
+    'status' => 'n',
+]]], $plaintextKey);
+$headlinePayload = json_decode($resHeadlineCreate['result']['content'][0]['text'] ?? 'null', true);
+$headlineId = (int) ($headlinePayload['id'] ?? 0);
+check('Headline[TypeErrorFix]: create_headline executes cleanly without TypeError',
+    ($resHeadlineCreate['result']['isError'] ?? true) === false
+    && $headlineId > 0,
+    json_encode($resHeadlineCreate)
+);
+if ($headlineId > 0) {
+    $resHeadlineUpdate = runRpc(['jsonrpc' => '2.0', 'id' => 1005, 'method' => 'tools/call', 'params' => ['name' => 'update_headline', 'arguments' => [
+        'id' => $headlineId,
+        'name' => 'MCP Smoke Headline Updated Name',
+    ]]], $plaintextKey);
+    $headlineUpdatePayload = json_decode($resHeadlineUpdate['result']['content'][0]['text'] ?? 'null', true);
+    check('Headline[TypeErrorFix]: update_headline executes cleanly without TypeError',
+        ($resHeadlineUpdate['result']['isError'] ?? true) === false
+        && ($headlineUpdatePayload['item']['name'] ?? '') === 'MCP Smoke Headline Updated Name',
+        json_encode($resHeadlineUpdate)
+    );
+    runRpc(['jsonrpc' => '2.0', 'id' => 1006, 'method' => 'tools/call', 'params' => ['name' => 'delete_headline', 'arguments' => ['id' => $headlineId]]], $plaintextKey);
+}
+
+// 5. batch_create_faqs for host entity (B3)
+if ($m1NewsId > 0) {
+    $resBatchFaqs = runRpc(['jsonrpc' => '2.0', 'id' => 1007, 'method' => 'tools/call', 'params' => ['name' => 'batch_create_faqs', 'arguments' => [
+        'mod_name' => 'mod_news',
+        'vid' => $m1NewsId,
+        'lang' => $testLang,
+        'status' => 'n',
+        'items' => [
+            [
+                'question' => 'Batch Test Soru 1: Bu haber nedir?',
+                'answer' => '<p>Cevap 1: Bu smoke testi icin hazirlanmis birinci test cevabidir.</p>',
+            ],
+            [
+                'question' => 'Batch Test Soru 2: Calismanin amaci nedir?',
+                'answer' => '<p>Cevap 2: Bu smoke testi icin hazirlanmis ikinci test cevabidir.</p>',
+            ],
+        ],
+    ]]], $plaintextKey);
+    $batchFaqPayload = json_decode($resBatchFaqs['result']['content'][0]['text'] ?? 'null', true);
+    check('FAQ[Batch]: batch_create_faqs creates multiple FAQs atomically',
+        ($resBatchFaqs['result']['isError'] ?? true) === false
+        && ($batchFaqPayload['created_count'] ?? 0) === 2
+        && is_array($batchFaqPayload['ids'] ?? null)
+        && count($batchFaqPayload['ids']) === 2,
+        json_encode($batchFaqPayload)
+    );
+}
+
+// 6. Draft FAQ visibility in getRecordAuditMeta on draft news (B2, B3)
+if ($m1NewsId > 0) {
+    $resAuditDraftNews = runRpc(['jsonrpc' => '2.0', 'id' => 1008, 'method' => 'tools/call', 'params' => ['name' => 'get_news', 'arguments' => [
+        'id' => $m1NewsId,
+    ]]], $plaintextKey);
+    $auditDraftPayload = json_decode($resAuditDraftNews['result']['content'][0]['text'] ?? 'null', true);
+    $auditDraftItem = $auditDraftPayload['item'] ?? $auditDraftPayload;
+    check('Audit[DraftFAQ]: get_news counts draft FAQs on draft news records (status=n)',
+        ($resAuditDraftNews['result']['isError'] ?? true) === false
+        && ($auditDraftItem['faq_count'] ?? 0) >= 2
+        && !empty($auditDraftItem['faq_items'])
+        && ($auditDraftItem['lang_status'] ?? '') === 'y',
+        json_encode([
+            'faq_count' => $auditDraftItem['faq_count'] ?? null,
+            'lang_status' => $auditDraftItem['lang_status'] ?? null,
+        ])
+    );
+}
+
+// 7. list_faq_modules discovery (B3)
+$resListFaqMods = runRpc(['jsonrpc' => '2.0', 'id' => 1009, 'method' => 'tools/call', 'params' => ['name' => 'list_faq_modules', 'arguments' => []]], $plaintextKey);
+$faqModsPayload = json_decode($resListFaqMods['result']['content'][0]['text'] ?? 'null', true);
+$faqModNames = array_column($faqModsPayload['items'] ?? [], 'mod_name');
+check('FAQ[Discovery]: list_faq_modules returns registered FAQ host modules',
+    ($resListFaqMods['result']['isError'] ?? true) === false
+    && ($faqModsPayload['total'] ?? 0) > 0
+    && in_array('mod_news', $faqModNames, true),
+    json_encode($faqModsPayload)
+);
+
+// 8. list_faqs include_answer toggle (B3)
+if ($m1NewsId > 0) {
+    $resFaqWithout = runRpc(['jsonrpc' => '2.0', 'id' => 1010, 'method' => 'tools/call', 'params' => ['name' => 'list_faqs', 'arguments' => [
+        'mod_name' => 'mod_news',
+        'vid' => $m1NewsId,
+        'lang' => $testLang,
+        'include_answer' => false,
+    ]]], $plaintextKey);
+    $faqWithoutPayload = json_decode($resFaqWithout['result']['content'][0]['text'] ?? 'null', true);
+    $firstWithout = $faqWithoutPayload['items'][0] ?? [];
+
+    $resFaqWith = runRpc(['jsonrpc' => '2.0', 'id' => 1011, 'method' => 'tools/call', 'params' => ['name' => 'list_faqs', 'arguments' => [
+        'mod_name' => 'mod_news',
+        'vid' => $m1NewsId,
+        'lang' => $testLang,
+        'include_answer' => true,
+    ]]], $plaintextKey);
+    $faqWithPayload = json_decode($resFaqWith['result']['content'][0]['text'] ?? 'null', true);
+    $firstWith = $faqWithPayload['items'][0] ?? [];
+
+    check('FAQ[AnswerToggle]: list_faqs respects include_answer (omits when false, includes when true)',
+        ($resFaqWithout['result']['isError'] ?? true) === false
+        && ($resFaqWith['result']['isError'] ?? true) === false
+        && !array_key_exists('answer', $firstWithout)
+        && isset($firstWith['answer'])
+        && $firstWith['answer'] !== '',
+        json_encode(['without' => $firstWithout, 'with' => $firstWith])
+    );
+}
+
+// 9. Conjunctive Filtering (B1 multi-filter on list_faqs & list_news)
+if ($m1NewsId > 0) {
+    $resConjunctive = runRpc(['jsonrpc' => '2.0', 'id' => 1012, 'method' => 'tools/call', 'params' => ['name' => 'list_faqs', 'arguments' => [
+        'mod_name' => 'mod_news',
+        'vid' => $m1NewsId,
+        'lang' => $testLang,
+        'status' => 'n',
+        'search' => 'Soru 1',
+    ]]], $plaintextKey);
+    $conjunctivePayload = json_decode($resConjunctive['result']['content'][0]['text'] ?? 'null', true);
+    check('Filter[Conjunctive]: list_faqs respects all simultaneous filters (mod_name, vid, lang, status, search)',
+        ($resConjunctive['result']['isError'] ?? true) === false
+        && ($conjunctivePayload['total'] ?? 0) === 1
+        && count($conjunctivePayload['items'] ?? []) === 1
+        && (int) ($conjunctivePayload['items'][0]['vid'] ?? 0) === $m1NewsId
+        && str_contains($conjunctivePayload['items'][0]['question'] ?? '', 'Soru 1'),
+        json_encode($conjunctivePayload)
+    );
+
+    // Also test multi-filter on list_news
+    $resNewsFilter = runRpc(['jsonrpc' => '2.0', 'id' => 1013, 'method' => 'tools/call', 'params' => ['name' => 'list_news', 'arguments' => [
+        'category_id' => $sharedNewsCategoryId,
+        'lang' => $testLang,
+        'status' => 'n',
+        'search' => 'SEO Normalization',
+    ]]], $plaintextKey);
+    $newsFilterPayload = json_decode($resNewsFilter['result']['content'][0]['text'] ?? 'null', true);
+    check('Filter[Conjunctive]: list_news respects simultaneous filters (category_id, lang, status, search)',
+        ($resNewsFilter['result']['isError'] ?? true) === false
+        && ($newsFilterPayload['total'] ?? 0) >= 1
+        && !empty($newsFilterPayload['items']),
+        json_encode($newsFilterPayload)
+    );
+
+    // 9.1 batch_create_faqs draft replacement scoping (B3 / Defect 1 fix verification)
+    // Seed an isolated sentinel draft FAQ for an unrelated entity
+    $db->query("INSERT INTO mod_faq (lang, mod_name, vid, question, answer, status, user_id, created_at) VALUES ('{$testLang}', 'mod_news', 999999, 'Sentinel Unrelated Draft Question', '<p>Sentinel</p>', 'n', 1, NOW())");
+    $sentinelFaqId = (int) $db->insert_id();
+
+    // Invoke batch_create_faqs on the test entity with replace_existing_drafts = true
+    $responseReplaceDrafts = runRpc(['jsonrpc' => '2.0', 'id' => 1016, 'method' => 'tools/call', 'params' => ['name' => 'batch_create_faqs', 'arguments' => [
+        'mod_name' => 'mod_news',
+        'vid' => $m1NewsId,
+        'lang' => $testLang,
+        'status' => 'n',
+        'replace_existing_drafts' => true,
+        'items' => [
+            [
+                'question' => 'Batch Test Question Replacement: Is this replaced?',
+                'answer' => '<p>Replacement answer content for smoke verification.</p>',
+            ],
+        ],
+    ]]], $plaintextKey);
+    $replaceDraftsPayload = json_decode($responseReplaceDrafts['result']['content'][0]['text'] ?? 'null', true);
+
+    // Verify sentinel draft was NOT deleted (unrelated entity draft isolation)
+    $db->fetch_array("SELECT id FROM mod_faq WHERE id = {$sentinelFaqId}");
+    $sentinelRecordSurvived = !empty($db->_result);
+
+    // Verify target entity drafts were replaced (previous 2 drafts replaced with exactly 1 new item)
+    $db->fetch_array("SELECT id, question FROM mod_faq WHERE mod_name = 'mod_news' AND vid = {$m1NewsId} AND lang = '{$testLang}' AND status = 'n'");
+    $targetDraftRecords = $db->_result ?? [];
+    $targetDraftsReplaced = count($targetDraftRecords) === 1
+        && ($targetDraftRecords[0]['question'] ?? '') === 'Batch Test Question Replacement: Is this replaced?';
+
+    check('FAQ[BatchDraftReplace]: batch_create_faqs with replace_existing_drafts deletes only targeted entity drafts and preserves unrelated drafts',
+        ($responseReplaceDrafts['result']['isError'] ?? true) === false
+        && ($replaceDraftsPayload['created_count'] ?? 0) === 1
+        && $sentinelRecordSurvived === true
+        && $targetDraftsReplaced === true,
+        json_encode([
+            'sentinel_survived' => $sentinelRecordSurvived,
+            'target_replaced' => $targetDraftsReplaced,
+            'payload' => $replaceDraftsPayload,
+        ])
+    );
+
+    // Clean up sentinel record
+    $db->query("DELETE FROM mod_faq WHERE id = {$sentinelFaqId}");
+
+    // 10. check_duplicate_news detection (B3)
+    $resDuplicate = runRpc(['jsonrpc' => '2.0', 'id' => 1014, 'method' => 'tools/call', 'params' => ['name' => 'check_duplicate_news', 'arguments' => [
+        'name' => 'MCP Smoke SEO Normalization News',
+        'lang' => $testLang,
+    ]]], $plaintextKey);
+    $duplicatePayload = json_decode($resDuplicate['result']['content'][0]['text'] ?? 'null', true);
+    check('News[DuplicateCheck]: check_duplicate_news detects duplicate headline within 48h',
+        ($resDuplicate['result']['isError'] ?? true) === false
+        && ($duplicatePayload['has_duplicate'] ?? false) === true
+        && ($duplicatePayload['duplicate_count'] ?? 0) >= 1,
+        json_encode($duplicatePayload)
+    );
+
+    // Cleanup test news and faqs
+    runRpc(['jsonrpc' => '2.0', 'id' => 1015, 'method' => 'tools/call', 'params' => ['name' => 'delete_news', 'arguments' => ['id' => $m1NewsId]]], $plaintextKey);
+    $db->query("DELETE FROM mod_faq WHERE mod_name = 'mod_news' AND vid = {$m1NewsId}");
+}
+
+// =========================================================================
 // 7. Environment Identity Verification (v1.0.61 Component A)
 // =========================================================================
 $initRes = runRpc(['jsonrpc' => '2.0', 'id' => 990, 'method' => 'initialize', 'params' => ['protocolVersion' => '2025-03-26']], $plaintextKey);
-check('Environment[v1.0.61]: initialize response includes _meta.environment',
+check('Environment[v1.0.63]: initialize response includes resolved site_status (open or closed, rejecting unknown)',
     isset($initRes['result']['_meta']['environment']['name'])
     && $initRes['result']['_meta']['environment']['name'] === 'development'
-    && in_array($initRes['result']['_meta']['environment']['site_status'], ['open', 'closed', 'unknown'], true),
+    && in_array($initRes['result']['_meta']['environment']['site_status'], ['open', 'closed'], true),
     json_encode($initRes['result']['_meta'] ?? [])
 );
 

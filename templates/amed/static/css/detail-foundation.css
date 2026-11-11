@@ -212,6 +212,23 @@
   display: block;
 }
 
+.news-hero-caption {
+  padding: 0.5rem 1rem;
+  font-size: 0.825rem;
+  line-height: 1.4;
+  color: var(--bs-secondary-color, #64748b);
+  background: rgba(0, 0, 0, 0.025);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-style: italic;
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .news-hero-caption {
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .detail-hero-placeholder,
 .detail-media-placeholder {
   display: flex;

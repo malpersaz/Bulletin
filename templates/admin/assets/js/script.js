@@ -3100,6 +3100,14 @@ function prepareAndSubmitWizard() {
     if (fileInput && fileInput.files[0]) {
         formData.append('image', fileInput.files[0]);
     }
+    const altInput = document.getElementById('wizardImageAltInput');
+    if (altInput && altInput.value.trim() !== '') {
+        formData.append('image_alt', altInput.value.trim());
+    }
+    const creditInput = document.getElementById('wizardImageCreditInput');
+    if (creditInput && creditInput.value.trim() !== '') {
+        formData.append('image_credit', creditInput.value.trim());
+    }
 
     // Publish Status - from hidden input (selection cards)
     const pubHidden = document.getElementById('wizardPublishHidden');

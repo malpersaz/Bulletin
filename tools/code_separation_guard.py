@@ -3,7 +3,7 @@
 code_separation_guard.py - Automated Code Separation Guard for Amed Framework (AF/Bulletin)
 
 Purpose:
-  Enforces AGENTS.md Rule 2 (Strict Code Separation Mandate):
+  Enforces AGENTS.md Rule 1 (Strict Code Separation Mandate):
   - Catches inline CSS (`style="..."` attributes and `<style>` blocks)
   - Catches inline JavaScript event handlers (`onclick=`, `onchange=`, `onsubmit=`, etc.)
   - Verifies that styling and behavioral logic remain cleanly separated into .css and .js files.

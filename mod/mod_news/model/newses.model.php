@@ -21,6 +21,8 @@ class newses_model extends ORM
     public $acl_id;
     public $deck;
     public $image;
+    public $image_alt;
+    public $image_credit;
     public $lang;
     public $categoryname;
     public $category_name;
@@ -45,10 +47,11 @@ class newses_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasUpdatedAtColumn() && $this->hasShowOnHomepageColumn()) {
+        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn() && $this->hasUpdatedAtColumn() && $this->hasShowOnHomepageColumn() && $this->hasImageAltColumn() && $this->hasImageCreditColumn()) {
             return;
         }
 
+        $this->ensureTableColumns();
         $this->dropViewIfExists('newses');
 
         $sql = "CREATE VIEW newses AS SELECT
@@ -69,6 +72,8 @@ class newses_model extends ORM
     mod_news.acl_id AS acl_id,
     mod_news.deck,
     mod_news.image,
+    mod_news.image_alt,
+    mod_news.image_credit,
     mod_news.file_id AS file_id,
     mod_news.lang,
     mod_news.video,
@@ -96,6 +101,55 @@ class newses_model extends ORM
    LEFT JOIN mod_news_category ON mod_news.category_id = mod_news_category.id";
 
         $this->query($sql);
+    }
+
+    private function hasImageAltColumn()
+    {
+        return $this->hasViewColumn('image_alt');
+    }
+
+    private function hasImageCreditColumn()
+    {
+        return $this->hasViewColumn('image_credit');
+    }
+
+    private function ensureTableColumns()
+    {
+        try {
+            if (!$this->hasTableColumn('mod_news', 'image_alt')) {
+                $this->query("ALTER TABLE `mod_news` ADD COLUMN `image_alt` varchar(255) DEFAULT NULL AFTER `image`");
+            }
+            if (!$this->hasTableColumn('mod_news', 'image_credit')) {
+                $this->query("ALTER TABLE `mod_news` ADD COLUMN `image_credit` varchar(255) DEFAULT NULL AFTER `image_alt`");
+            }
+        } catch (\Throwable $e) {
+            // Graceful fallback if SQLite or already added
+        }
+    }
+
+    private function hasTableColumn($tableName, $columnName)
+    {
+        try {
+            if ($this->getAdapterType() && strpos($this->getAdapterType(), 'PDO_SQLITE') !== false) {
+                $safeTable = addslashes($tableName);
+                $this->fetch_array("PRAGMA table_info('{$safeTable}')");
+                if (is_array($this->_result)) {
+                    foreach ($this->_result as $col) {
+                        if (isset($col['name']) && $col['name'] === $columnName) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            $safeTable = addslashes($tableName);
+            $safeCol = addslashes($columnName);
+            $this->fetch_array("SHOW COLUMNS FROM `{$safeTable}` LIKE '{$safeCol}'");
+            return $this->getSize() !== 0;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function hasUserImageColumn()

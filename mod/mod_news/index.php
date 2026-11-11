@@ -105,7 +105,7 @@ class mod_news_mod extends BaseModuleController
             'UTF-8'
         );
 
-        $textFields = ['name', 'title', 'description', 'keywords'];
+        $textFields = ['name', 'title', 'description', 'keywords', 'image_alt', 'image_credit'];
         foreach ($textFields as $field) {
             if (Req::is_Post($field)) {
                 $raw = Req::Post($field);
@@ -129,10 +129,28 @@ class mod_news_mod extends BaseModuleController
                     $val = (string) $model->name;
                 }
             }
+            if ($field === 'image_alt' || $field === 'image_credit') {
+                $val = ($val !== '') ? mb_substr($val, 0, 255) : null;
+            }
             $model->$field = $val;
         }
 
         return $model;
+    }
+
+    protected function cleanEntityFields(array $row): array
+    {
+        $row = parent::cleanEntityFields($row);
+        foreach (['image_alt', 'image_credit'] as $field) {
+            if (isset($row[$field]) && is_string($row[$field])) {
+                $row[$field] = html_entity_decode(
+                    html_entity_decode($row[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                    ENT_QUOTES | ENT_HTML5,
+                    'UTF-8'
+                );
+            }
+        }
+        return $row;
     }
 
     protected function beforeSave($model)

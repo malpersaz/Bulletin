@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "id": "e2e-mcp-004",
+  "method": "tools/call",
+  "params": {
+    "name": "list_faqs",
+    "arguments": {
+      "mod_name": "mod_news",
+      "vid": 101,
+      "lang": "tr",
+      "include_answer": true
+    }
+  }
+}

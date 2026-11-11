@@ -20,7 +20,7 @@ class McpFaqTools extends McpCrudToolsBase
                 'role' => 'list',
                 'domain' => 'faq',
                 'handler' => 'listFaqs',
-                'description' => 'List FAQ records with optional filters, ordered by sort_order then id. Returns paginated items (id, lang, mod_name, vid, question, sort_order, status, created_at, updated_at) plus the total count. The answer body is only returned by get_faq.',
+                'description' => 'List FAQ records with optional filters, ordered by sort_order then id. Returns paginated items (id, lang, mod_name, vid, question, sort_order, status, created_at, updated_at, and optionally answer if include_answer is true) plus the total count.',
                 'schema' => [
                     'type' => 'object',
                     'properties' => [
@@ -47,6 +47,11 @@ class McpFaqTools extends McpCrudToolsBase
                         'search' => [
                             'type' => 'string',
                             'description' => 'Search term matched against the question text.',
+                        ],
+                        'include_answer' => [
+                            'type' => 'boolean',
+                            'default' => false,
+                            'description' => 'Whether to include the full answer body in returned items. Defaults to false.',
                         ],
                         'limit' => [
                             'type' => 'integer',
@@ -241,6 +246,58 @@ class McpFaqTools extends McpCrudToolsBase
                     'idempotentHint' => true,
                 ],
             ],
+            'batch_create_faqs' => [
+                'module' => 'mod_faq',
+                'role' => 'add',
+                'domain' => 'faq',
+                'handler' => 'batchCreateFaqs',
+                'description' => 'Atomic batch creation of FAQ records for a single host record. Validates all items, host registration, language, and uniqueness before inserting any record. Accepts up to 25 items.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => ['type' => 'string', 'description' => 'Host module name (e.g. mod_news, mod_publication, mod_page).'],
+                        'vid' => ['type' => 'integer', 'description' => 'ID of existing host module record.'],
+                        'lang' => ['type' => 'string', 'description' => 'Active language code (e.g. tr, ku, en).'],
+                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Publish status for batch items (default n for safe staging).'],
+                        'replace_existing_drafts' => ['type' => 'boolean', 'default' => false, 'description' => 'If true, existing draft FAQs (status=n) for this entity/lang are deleted before inserting the new batch.'],
+                        'items' => [
+                            'type' => 'array',
+                            'minItems' => 1,
+                            'maxItems' => 25,
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'question' => ['type' => 'string', 'maxLength' => 255, 'description' => 'Question text (1-255 characters).'],
+                                    'answer' => ['type' => 'string', 'maxLength' => 5000, 'description' => 'Answer text (1-5000 characters).'],
+                                    'sort_order' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Optional explicit sort order.'],
+                                ],
+                                'required' => ['question', 'answer'],
+                            ],
+                            'description' => 'Array of FAQ items to create (1-25 items).',
+                        ],
+                    ],
+                    'required' => ['mod_name', 'vid', 'lang', 'items'],
+                ],
+                'title' => 'Batch Create FAQs',
+                'annotations' => ['readOnlyHint' => false, 'destructiveHint' => false, 'idempotentHint' => false],
+            ],
+            'list_faq_modules' => [
+                'module' => 'mod_faq',
+                'role' => 'list',
+                'domain' => 'faq',
+                'handler' => 'listFaqModules',
+                'description' => 'List the modules registered as FAQ-capable in the FAQ bridge (id, name, mod_name, mod_key, mod_value), ordered by id descending.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'search' => ['type' => 'string', 'description' => 'Search term matched against name, mod_name, mod_key, and mod_value.'],
+                        'limit' => ['type' => 'integer', 'default' => 10, 'maximum' => 50, 'description' => 'Maximum registrations to return (1-50).'],
+                        'offset' => ['type' => 'integer', 'default' => 0, 'description' => 'Registrations to skip.'],
+                    ],
+                ],
+                'title' => 'List FAQ Modules',
+                'annotations' => ['readOnlyHint' => true, 'destructiveHint' => false, 'idempotentHint' => true],
+            ],
         ];
     }
 
@@ -257,8 +314,13 @@ class McpFaqTools extends McpCrudToolsBase
         $limit = $this->normalizeLimit($args);
         $offset = $this->normalizeOffset($args);
 
+        $selectCols = 'id, lang, mod_name, vid, question, sort_order, status, created_at, updated_at';
+        if (!empty($args['include_answer'])) {
+            $selectCols .= ', answer';
+        }
+
         $model = $this->freshModel(self::FAQ_MODULE);
-        $model->select('id, lang, mod_name, vid, question, sort_order, status, created_at, updated_at');
+        $model->select($selectCols);
         $this->applyFaqFilters($model, $args);
         $model->order('sort_order', 'ASC')->order('id', 'ASC')->limit($limit, $offset)->getResult(true, true);
         $items = $model->toArray();
@@ -425,6 +487,177 @@ class McpFaqTools extends McpCrudToolsBase
         return ['deleted' => true, 'id' => $id];
     }
 
+    /**
+     * Atomic batch creation of FAQ records for a single host record.
+     */
+    public function batchCreateFaqs(array $args): array
+    {
+        $modName = trim((string) ($args['mod_name'] ?? ''));
+        $vid = (int) ($args['vid'] ?? 0);
+        $this->assertEntity($modName, $vid);
+
+        $lang = $this->requireActiveLang($args);
+        $status = $this->optionalEnum($args, 'status', 'n', ['y', 'n']);
+        $replaceDrafts = !empty($args['replace_existing_drafts']);
+
+        $rawItems = $args['items'] ?? null;
+        if (!is_array($rawItems) || empty($rawItems)) {
+            throw new McpToolException("Field 'items' must be a non-empty array of FAQ objects.");
+        }
+        if (count($rawItems) > self::FAQ_MAX_PER_ENTITY) {
+            throw new McpToolException("Field 'items' exceeds maximum batch size of " . self::FAQ_MAX_PER_ENTITY . " items.");
+        }
+
+        // Phase 1: In-memory structure & within-batch uniqueness validation
+        $validItems = [];
+        $batchQuestions = [];
+        foreach ($rawItems as $idx => $item) {
+            if (!is_array($item)) {
+                throw new McpToolException("Item at index {$idx} must be an object.");
+            }
+            $question = trim((string) ($item['question'] ?? ''));
+            if ($question === '' || mb_strlen($question, 'UTF-8') > self::FAQ_QUESTION_MAX) {
+                throw new McpToolException("Item {$idx}: Field 'question' is required (1-" . self::FAQ_QUESTION_MAX . " characters).");
+            }
+
+            $answer = trim((string) ($item['answer'] ?? ''));
+            if ($answer === '' || mb_strlen($answer, 'UTF-8') > self::FAQ_ANSWER_MAX) {
+                throw new McpToolException("Item {$idx}: Field 'answer' is required (1-" . self::FAQ_ANSWER_MAX . " characters).");
+            }
+
+            $this->assertContentMatchesLang($lang, $question, '', $answer);
+
+            $normQ = mb_strtolower($question, 'UTF-8');
+            if (isset($batchQuestions[$normQ])) {
+                throw new McpToolException("Duplicate question within batch: '{$question}'.");
+            }
+            $batchQuestions[$normQ] = true;
+
+            $validItems[] = [
+                'question' => $question,
+                'answer' => $answer,
+                'sort_order' => isset($item['sort_order']) ? (int) $item['sort_order'] : null,
+            ];
+        }
+
+        // Phase 2: Check database state (ceiling & uniqueness)
+        $existingModel = $this->freshModel(self::FAQ_MODULE);
+        $existingModel->where_mod_name_and_vid_and_lang($modName, $vid, $lang)->getResult(true, true);
+        $existingList = $existingModel->toArray();
+        if (!is_array($existingList)) {
+            $existingList = [];
+        }
+
+        $activeExisting = [];
+        foreach ($existingList as $ex) {
+            if ($replaceDrafts && ($ex['status'] ?? 'y') === 'n') {
+                continue; // Drafts will be purged
+            }
+            $activeExisting[] = $ex;
+        }
+
+        $totalProjected = count($activeExisting) + count($validItems);
+        if ($totalProjected > self::FAQ_MAX_PER_ENTITY) {
+            throw new McpToolException("Total FAQs would exceed ceiling of " . self::FAQ_MAX_PER_ENTITY . " (current: " . count($activeExisting) . ", batch: " . count($validItems) . ").");
+        }
+
+        foreach ($validItems as $vItem) {
+            $normQ = mb_strtolower($vItem['question'], 'UTF-8');
+            foreach ($activeExisting as $ex) {
+                if (mb_strtolower(trim((string) $ex['question']), 'UTF-8') === $normQ) {
+                    throw new McpToolException("Question already exists for this entity and language: '{$vItem['question']}'.");
+                }
+            }
+        }
+
+        // Phase 3: Atomic database operations
+        $db = Load::lib('Database');
+        $db->start_transaction();
+        $createdIds = [];
+
+        try {
+            if ($replaceDrafts) {
+                $draftModel = $this->freshModel(self::FAQ_MODULE);
+                $this->addEqFilter($draftModel, 'mod_name', $modName);
+                $this->addEqFilter($draftModel, 'vid', $vid);
+                $this->addEqFilter($draftModel, 'lang', $lang);
+                $this->addEqFilter($draftModel, 'status', 'n');
+                $draftModel->delete();
+            }
+
+            $nextSort = $this->nextEntitySortOrder($modName, $vid, $lang);
+
+            foreach ($validItems as $vItem) {
+                $faqModel = $this->freshModel(self::FAQ_MODULE);
+                $faqModel->lang = $lang;
+                $faqModel->mod_name = $modName;
+                $faqModel->vid = $vid;
+                $faqModel->question = $vItem['question'];
+                $faqModel->answer = $vItem['answer'];
+                $faqModel->sort_order = $vItem['sort_order'] !== null ? $vItem['sort_order'] : $nextSort++;
+                $faqModel->status = $status;
+                $faqModel->user_id = $this->actingUserId;
+                $faqModel->created_at = date('Y-m-d H:i:s');
+
+                if (!$faqModel->save(true)) {
+                    throw new McpToolException("Failed to save FAQ item: '{$vItem['question']}'.");
+                }
+                $createdIds[] = (int) $faqModel->id;
+            }
+
+            $db->commit();
+        } catch (\Throwable $e) {
+            $db->rollback();
+            throw new McpToolException('Batch creation failed and was rolled back: ' . $e->getMessage());
+        }
+
+        // Load created item envelopes
+        $createdItems = [];
+        foreach ($createdIds as $cid) {
+            $createdItems[] = $this->getFaq(['id' => $cid])['item'];
+        }
+
+        return [
+            'created' => true,
+            'count' => count($createdIds),
+            'created_count' => count($createdIds),
+            'ids' => $createdIds,
+            'items' => $createdItems,
+        ];
+    }
+
+    /**
+     * Lists registered FAQ host modules from mod_faq_mod.
+     */
+    public function listFaqModules(array $args): array
+    {
+        $limit = $this->normalizeLimit($args);
+        $offset = $this->normalizeOffset($args);
+
+        $model = $this->freshModel('mod_faq_mod');
+        $model->select('id, name, mod_name, mod_key, mod_value');
+        if (isset($args['search']) && trim((string) $args['search']) !== '') {
+            $this->addLikeSearchFilter($model, ['name', 'mod_name', 'mod_key', 'mod_value'], trim((string) $args['search']));
+        }
+        $model->order('id', 'DESC')->limit($limit, $offset)->getResult(true, true);
+        $items = $model->toArray();
+
+        $countModel = $this->freshModel('mod_faq_mod');
+        $countModel->select('id');
+        if (isset($args['search']) && trim((string) $args['search']) !== '') {
+            $this->addLikeSearchFilter($countModel, ['name', 'mod_name', 'mod_key', 'mod_value'], trim((string) $args['search']));
+        }
+        $countModel->getResult(true, true);
+        $total = $countModel->getSize();
+
+        return [
+            'items' => is_array($items) ? $items : [],
+            'total' => $total,
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+    }
+
     // ------------------------------------------------------------------
     // FAQ helpers
     // ------------------------------------------------------------------
@@ -443,19 +676,19 @@ class McpFaqTools extends McpCrudToolsBase
     private function applyFaqFilters($model, array $args): void
     {
         if (isset($args['mod_name']) && trim((string) $args['mod_name']) !== '') {
-            $model->where_mod_name(trim((string) $args['mod_name']));
+            $this->addEqFilter($model, 'mod_name', trim((string) $args['mod_name']));
         }
         if (isset($args['vid'])) {
-            $model->where_vid((int) $args['vid']);
+            $this->addEqFilter($model, 'vid', (int) $args['vid']);
         }
         if (isset($args['lang']) && trim((string) $args['lang']) !== '') {
-            $model->where_lang(trim((string) $args['lang']));
+            $this->addEqFilter($model, 'lang', trim((string) $args['lang']));
         }
         if (isset($args['status']) && in_array($args['status'], ['y', 'n'], true)) {
-            $model->where_status($args['status']);
+            $this->addEqFilter($model, 'status', $args['status']);
         }
         if (isset($args['search']) && trim((string) $args['search']) !== '') {
-            $model->where('question LIKE \'%' . Obuilder::cc(trim((string) $args['search'])) . '%\'');
+            $this->addLikeSearchFilter($model, ['question'], trim((string) $args['search']));
         }
     }
 

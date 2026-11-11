@@ -248,6 +248,22 @@
 					} %}
 				</div>
 
+				{# Image Alt Text #}
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="image_alt" id="editImageAltInput" placeholder=" " autocomplete="off" value="{{ d.image_alt|default('') }}" maxlength="255">
+						<label class="m3-floating-label">{{ lang.mod_news.admin.columns.image_alt }}</label>
+					</div>
+				</div>
+
+				{# Image Credit / Source #}
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="image_credit" id="editImageCreditInput" placeholder=" " autocomplete="off" value="{{ d.image_credit|default('') }}" maxlength="255">
+						<label class="m3-floating-label">{{ lang.mod_news.admin.columns.image_credit }}</label>
+					</div>
+				</div>
+
 				{# Gallery #}
 				<div class="form-row">
 					<label class="field-section-label">{{ lang.mod_news.admin.columns.gallery_id }}</label>

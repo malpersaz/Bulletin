@@ -505,7 +505,6 @@ class McpHealthChecker:
 
         auth_server_url = f"{base_origin}/.well-known/oauth-authorization-server"
         prot_res_url = f"{base_origin}/.well-known/oauth-protected-resource"
-        is_remote = not any(h in (parsed_url.netloc or "").lower() for h in ("localhost", "127.0.0.1"))
 
         # 1. Authorization server metadata
         try:
@@ -523,12 +522,7 @@ class McpHealthChecker:
                 else:
                     self.log_fail("RFC 8414 discovery check", f"HTTP {status}, auth_methods: {auth_methods}")
         except urllib.error.HTTPError as e:
-            if e.code == 403 and is_remote:
-                self.log_pass(
-                    f"RFC 8414 discovery: HTTP 403 on remote production server prior to v1.0.61 .htaccess deployment ({auth_server_url})"
-                )
-            else:
-                self.log_fail(f"RFC 8414 discovery error ({auth_server_url})", str(e))
+            self.log_fail(f"RFC 8414 discovery error ({auth_server_url})", str(e))
         except Exception as e:
             self.log_fail(f"RFC 8414 discovery error ({auth_server_url})", str(e))
 
@@ -549,12 +543,7 @@ class McpHealthChecker:
                 else:
                     self.log_fail("RFC 9728 discovery check", f"HTTP {status}, resource: {resource}, auth_servers: {auth_servers}")
         except urllib.error.HTTPError as e:
-            if e.code == 403 and is_remote:
-                self.log_pass(
-                    f"RFC 9728 discovery: HTTP 403 on remote production server prior to v1.0.61 .htaccess deployment ({prot_res_url})"
-                )
-            else:
-                self.log_fail(f"RFC 9728 discovery error ({prot_res_url})", str(e))
+            self.log_fail(f"RFC 9728 discovery error ({prot_res_url})", str(e))
         except Exception as e:
             self.log_fail(f"RFC 9728 discovery error ({prot_res_url})", str(e))
 

@@ -134,8 +134,10 @@ class McpServer
             if (class_exists('Load')) {
                 /** @var Database $db */
                 $db = Load::lib('Database');
-                if ($db && method_exists($db, 'query')) {
-                    $row = $db->query("SELECT site_status FROM mod_settings LIMIT 1")->fetch();
+                if ($db && method_exists($db, 'fetch_array') && method_exists($db, 'toArray')) {
+                    $db->fetch_array("SELECT site_status FROM mod_settings LIMIT 1");
+                    $rows = $db->toArray();
+                    $row = is_array($rows) && isset($rows[0]) && is_array($rows[0]) ? $rows[0] : null;
                     if (is_array($row) && isset($row['site_status'])) {
                         $rawStatus = strtolower(trim((string) $row['site_status']));
                         if ($rawStatus === 'closed' || $rawStatus === 'offline') {

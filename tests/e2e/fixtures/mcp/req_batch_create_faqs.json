@@ -1,0 +1,31 @@
+{
+  "jsonrpc": "2.0",
+  "id": "e2e-mcp-003",
+  "method": "tools/call",
+  "params": {
+    "name": "batch_create_faqs",
+    "arguments": {
+      "mod_name": "mod_news",
+      "vid": 101,
+      "lang": "tr",
+      "status": "n",
+      "items": [
+        {
+          "question": "Yeni ekolojik kent parkı nerede bulunuyor?",
+          "answer": "Park, Diyarbakır kent merkezinde yer almaktadır.",
+          "sort_order": 1
+        },
+        {
+          "question": "Parkın toplam büyüklüğü ne kadardır?",
+          "answer": "Park toplam 45 dönümlük arazi üzerine inşa edilmiştir.",
+          "sort_order": 2
+        },
+        {
+          "question": "İkinci etap ne zaman tamamlanacak?",
+          "answer": "İkinci etabın yıl sonuna kadar tamamlanması hedeflenmektedir.",
+          "sort_order": 3
+        }
+      ]
+    }
+  }
+}

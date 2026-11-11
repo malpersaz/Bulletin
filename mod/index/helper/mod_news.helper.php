@@ -29,7 +29,7 @@ class mod_news_helper extends indexBase
 
     private function _cleanNewsRow(array $row): array
     {
-        foreach (['name', 'title', 'summary', 'description', 'keywords', 'category_name'] as $field) {
+        foreach (['name', 'title', 'summary', 'description', 'keywords', 'category_name', 'image_alt', 'image_credit'] as $field) {
             if (isset($row[$field]) && is_string($row[$field])) {
                 $row[$field] = $this->_cleanText($row[$field]);
             }

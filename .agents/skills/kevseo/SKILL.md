@@ -8,7 +8,7 @@ description: Google News, Discover, and Semantic HTML SEO optimizer for Turkish 
 ## Operating Rule
 
 Keep this skill as a short ordered execution checklist. Follow the editorial pipeline:
-`kevkolin` (Research) -> `kevrast` (Stage 1) -> `kevanger` (Drafting in Turkish) -> `kevseo` (SEO & HTML Architecture) -> `kevrast` (Stage 2) -> Staging.
+`Stage 0: kevtemen` -> `kevkolin` -> `Stage 2: kevtemen` -> `kevrast Stage 1` -> `kevanger (Drafting)` -> `kevseo (SEO & HTML Architecture)` -> `kevrast Stage 2` -> `tools/verify_news_pipeline.sh` -> Staging.
 
 `kevseo` directly governs and decides the **semantic HTML architecture** of the news `content`, content depth thresholds, heading hierarchies, Google News E-E-A-T signals, and Google Discover readiness.
 
@@ -19,13 +19,13 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
 
 1. **Heading Hierarchy (Strict Level 2 & 3 Only)**:
    - **No `<h1>` inside content**: The article headline is rendered by the system template as `<h1>`. Content body must NEVER contain `<h1>`.
-   - **Mandatory `<h2>` Subheadings**: Every thematic section (context, background, key developments, official statements, local impact) MUST begin with a descriptive, entity-rich `<h2>` tag.
+   - **Mandatory `<h2>` Subheadings**: Every thematic section (context, background, key developments, official statements, local impact) MUST begin with a descriptive, entity-rich `<h2>` tag. Must contain at least **three (3) `<h2>` subheadings** to achieve parity with `audit_content_seo.py --profile editorial`.
    - **Nested `<h3>` Only**: If a subsection requires further breakdown, use `<h3>`. Never skip heading levels (e.g. no `<h4>` directly under `<h2>`).
 2. **Lead Paragraph (`<p>`) & Speakable TTS Alignment**:
    - The opening paragraph must answer the primary 5N1K (Kim, Ne, Nerede, Ne Zaman, Neden, Nasıl) within the first 30–45 words without filler phrases.
    - Strictly aligns with Schema.org `SpeakableSpecification` (`.news-detail-title`, `.news-detail-lead`, `.news-body > p:first-of-type`) enabling Google Assistant and audio news surface read-aloud compatibility.
 3. **Paragraph Length & Chunking**:
-   - Maximum 3 to 4 sentences per `<p>` tag to optimize for mobile viewports and Google News snippet extraction. Avoid dense walls of text.
+   - Maximum 3 to 4 sentences per `<p>` tag to optimize for mobile viewports and Google News snippet extraction. A warning is triggered if any paragraph exceeds 5 sentences or 90 words. Avoid dense walls of text.
 4. **Semantic Blockquotes & Excerpts (`<blockquote>`)**:
    - Substantial official statements, quotes, and excerpts must be enclosed within `<blockquote><p>"..."</p></blockquote>` or clean quotation paragraphs using standard double quotes `"..."`. French guillemets (`«...»`) are strictly forbidden.
 5. **Structured Lists (`<ul>` / `<ol>` and `<li>`)**:
@@ -33,10 +33,10 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
 6. **Outbound Authority Citations (`<a href="...">`)**:
    - In-text citations must use clean descriptive anchors (e.g. `<a href="$URL">$Name</a>`).
    - Major stories must include at least 2 verified, live outbound authority links.
-7. **Image Attribution Block**:
-   - For verified source images: At the bottom of the article: `<p><strong>Wêne: $Source</strong></p>` (or `<p><strong>Fotoğraf: $Source</strong></p>`).
-   - For absent/AI-generated images: `<p><strong>Wêne: Temsîlî</strong></p>` (or `<p><strong>Fotoğraf: Temsili</strong></p>`).
-8. **Strict Code Separation Mandate (AGENTS.md Rule 2)**:
+7. **Native Image Attribution & Alt Text**:
+   - Native columns `image_alt` and `image_credit` in `mod_news` automatically render `<figcaption class="news-hero-caption">{{ d.image_credit }}</figcaption>` under `<figure class="detail-hero">` and inject into JSON-LD `ImageObject.creditText`.
+   - **DO NOT** inject image attribution paragraphs (such as `<p><strong>Fotoğraf: ...</strong></p>`) into `content` prose.
+8. **Strict Code Separation Mandate (AGENTS.md Rule 1)**:
    - Zero inline styles (`style="..."`, `<style>`), zero inline scripts, and zero inline event handlers (`onclick="..."`). Only clean semantic HTML tags.
 
 ### 2. Content Length & Depth Thresholds
@@ -56,8 +56,9 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
    - Strictly 40–70 characters (hard max 70 enforced by database schema and admin interface).
    - Entity-first and keyword-frontloaded (place the person, institution, or city/event at the front).
    - Non-clickbait: Directly communicates the factual essence.
-2. **Deck Summary (`summary`)**:
-   - Strictly 90–120 characters (enforced by schema and Google News snippet preview).
+2. **Deck Summary (`summary`) & Meta Description (`description`)**:
+   - Strictly 90–120 characters (enforced by schema and `McpCrudToolsBase::assertSummaryLength()`).
+   - `description` MUST be identical to `summary` (`description == summary`, 90–120 characters) for `audit_content_seo.py` parity (`Meta Description Sync`).
 
 ### 4. Visual Asset Requirements (Google Discover Ready)
 1. **Minimum Dimensions**: Width must be at least 1200px (16:9 aspect ratio preferred).
@@ -74,6 +75,12 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
 ### 6. Automated Audit Execution
 Execute the automated SEO auditor script against the drafted article:
 ```bash
-python3 .agents/skills/kevseo/scripts/audit_seo.py --content "$DRAFT_HTML" --summary "$SUMMARY" --headline "$HEADLINE" --seo "$SEO_SLUG"
+python3 .agents/skills/kevseo/scripts/audit_seo.py \
+  --content "$DRAFT_HTML" \
+  --summary "$SUMMARY" \
+  --headline "$HEADLINE" \
+  --description "$DESCRIPTION" \
+  --seo "$SEO_SLUG" \
+  --strict-editorial
 ```
 Ensure the audit returns `Status: PASSED` before proceeding to `kevrast` (Stage 2).

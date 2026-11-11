@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Next.js Article Mock Page</title>
+</head>
+<body>
+  <main>
+    <article>
+      <h1>Next.js Article Title</h1>
+      <!-- Primary article hero with unwrappable Next.js CDN proxy -->
+      <img src="/_next/image?url=https%3A%2F%2Fcdn.example.com%2Fphotos%2Fhero_main.jpg&w=1920&q=75"
+           srcset="/_next/image?url=https%3A%2F%2Fcdn.example.com%2Fphotos%2Fhero_main.jpg&w=640&q=75 640w, /_next/image?url=https%3A%2F%2Fcdn.example.com%2Fphotos%2Fhero_main.jpg&w=1920&q=75 1920w"
+           alt="Primary Article Hero" width="1920" height="1080">
+      <p>Article body content with details and paragraphs.</p>
+    </article>
+    <aside class="sidebar">
+      <!-- Sidebar recommendation with inflated 3840w srcset -->
+      <img src="/_next/image?url=https%3A%2F%2Fcdn.example.com%2Fphotos%2Fsidebar_thumb.jpg&w=3840&q=75"
+           srcset="/_next/image?url=https%3A%2F%2Fcdn.example.com%2Fphotos%2Fsidebar_thumb.jpg&w=3840&q=75 3840w"
+           alt="Sidebar Recommendation" width="300" height="200">
+    </aside>
+  </main>
+</body>
+</html>

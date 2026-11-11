@@ -1,0 +1,33 @@
+{
+  "topic": "Diyarbakır'da Yeni Kent Parkı Projesi",
+  "date": "2026-11-10",
+  "type": "news",
+  "summary_of_event": "Diyarbakır'da dün duyurulan ekolojik kent parkı projesi.",
+  "key_entities": [
+    "Diyarbakır",
+    "Rudaw"
+  ],
+  "timeline": [],
+  "verified_facts": {
+    "numbers_and_metrics": [
+      "45"
+    ],
+    "dates_and_times": [
+      "2026-11-10"
+    ],
+    "official_statements_and_quotes": []
+  },
+  "sources": [
+    {
+      "url": "https://www.rudaw.net/turkish/kurdistan/1287295",
+      "role": "primary",
+      "outlet": "Rudaw",
+      "pub_date": "2026-11-10",
+      "claims": [
+        "Diyarbakır'daki yeni park alanı toplam 45 dönüm."
+      ]
+    }
+  ],
+  "contradictions": [],
+  "status": "ready_for_kevrast_stage_1"
+}

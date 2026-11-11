@@ -8,6 +8,8 @@ description: Curate, investigate, cross-reference, and compile multi-source rese
 ## Operating Rule
 
 Keep this skill as a short ordered execution checklist. Follow multi-source investigation protocols strictly and output a structured Research Dossier for downstream validation and Turkish journalistic drafting.
+- **Upstream Gate**: Only initiate research after Stage 0 `kevtemen` passes (or via Near-Midnight Recovery Protocol).
+- **Downstream Hand-off**: Always validate the completed dossier via Stage 2 `kevtemen` before triggering `kevrast` Stage 1.
 
 ## Sequence
 
@@ -23,8 +25,17 @@ Keep this skill as a short ordered execution checklist. Follow multi-source inve
   python3 .agents/skills/kevkolin/scripts/source_catalog.py --new-dossier "<Topic Title>" > /tmp/dossier_<slug>.json
   ```
 
-### 2. Multi-Source Investigation against Authoritative Registry
+### 2. Multi-Source Investigation against Authoritative Registry & Local Radar
 Search and cross-reference verified outlets using `.agents/skills/kevkolin/scripts/source_catalog.py`:
+
+#### Local News Radar (`--scan-today`) & Near-Midnight Recovery
+Scan live feeds of verified outlets to discover same-day primary stories or follow-ups:
+```bash
+python3 .agents/skills/kevkolin/scripts/source_catalog.py --scan-today [--category amed_diyarbakir] [--query "topic"] [--json]
+```
+- Fetches live RSS, Atom, and Google News sitemaps of verified outlets (e.g. Amida Haber, Tigris Haber, Güneydoğu Ekspres, CEGA Medya, Diyarbakır BB) via shared `editorial_http.py`.
+- Filters entries strictly to today's date in `Europe/Istanbul` (+03:00).
+- **Near-Midnight Recovery Protocol**: When dispatched to investigate a near-midnight yesterday lead from Stage 0, execute `--scan-today --category amed_diyarbakir` to find today's primary follow-up reports. If found, mark the today-dated article as `role: "primary"` and yesterday's seed as `role: "supplementary"`. If none exist, halt.
 
 1. **Diyarbakır (Amed) Local Media & Institutional Registry (`amed_diyarbakir`)**:
    - **Local News Portals & Newspapers**:
@@ -101,9 +112,17 @@ Compile the verified findings into a standardized Research Dossier conforming to
    ```bash
    python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --validate-dossier /tmp/dossier_<slug>.json
    ```
+5. **Cross-Language Source Anchoring**:
+   For foreign-language or non-Turkish sources (e.g. English, Kurdish), declare `"source_lang": "en"` and `"source_anchors": ["...", "..."]` inside the source entry in `dossier.schema.json`. `kevrast` uses these anchors to evaluate cross-language numeric and entity equivalence in Turkish drafts.
 
-### 5. Hand-off to Kevrast (Stage 1 Pre-Verification)
-- Run `kevrast` Stage 1 against the persisted dossier JSON (liveness, deep-link precision, and claim anchoring for every dossier URL):
-  ```bash
-  python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier /tmp/dossier_<slug>.json
-  ```
+### 5. Hand-off to Verification Pipeline
+Follow the strict two-step pre-drafting gate sequence:
+1. **Stage 2 kevtemen Dossier Gate**:
+   ```bash
+   python3 .agents/skills/kevtemen/scripts/check_freshness.py --dossier /tmp/dossier_<slug>.json
+   ```
+2. **Stage 1 kevrast Dossier Verification**:
+   ```bash
+   python3 .agents/skills/kevrast/scripts/verify_facts_and_links.py --dossier /tmp/dossier_<slug>.json
+   ```
+Drafting in `kevanger` may ONLY begin after both commands exit 0 (`PASSED`).

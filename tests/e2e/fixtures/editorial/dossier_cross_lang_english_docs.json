@@ -1,0 +1,37 @@
+{
+  "topic": "Google Antigravity Framework Yeni E2E Test Standardını Duyurdu",
+  "date": "2026-11-11",
+  "type": "news",
+  "source_lang": "en",
+  "summary_of_event": "Antigravity framework announced the release of version 1.0.63 with automated verification standard.",
+  "key_entities": [
+    "Google Antigravity",
+    "Bulletin"
+  ],
+  "source_anchors": {
+    "tr": "test çerçevesi",
+    "en": "test framework"
+  },
+  "verified_facts": {
+    "numbers_and_metrics": [
+      "1.0.63"
+    ],
+    "dates_and_times": [
+      "2026-11-11"
+    ],
+    "official_statements_and_quotes": []
+  },
+  "sources": [
+    {
+      "url": "https://antigravity.google/docs/release-v1.0.63",
+      "role": "primary",
+      "outlet": "Antigravity Docs",
+      "pub_date": "2026-11-11",
+      "claims": [
+        "Antigravity test framework release v1.0.63 announced."
+      ]
+    }
+  ],
+  "contradictions": [],
+  "status": "ready_for_kevrast_stage_1"
+}

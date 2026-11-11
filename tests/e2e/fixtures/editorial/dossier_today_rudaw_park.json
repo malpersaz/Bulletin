@@ -1,0 +1,36 @@
+{
+  "topic": "Diyarbakır'da 45 Dönümlük Yeni Ekolojik Kent Parkı Açıldı",
+  "date": "2026-11-11",
+  "type": "news",
+  "summary_of_event": "Diyarbakır'da 45 dönümlük arazi üzerine kurulan ekolojik kent parkının birinci etabı tamamlandı.",
+  "key_entities": [
+    "Diyarbakır",
+    "Rudaw",
+    "Diyarbakır Büyükşehir Belediyesi"
+  ],
+  "timeline": [],
+  "verified_facts": {
+    "numbers_and_metrics": [
+      "45",
+      "120"
+    ],
+    "dates_and_times": [
+      "2026-11-11"
+    ],
+    "official_statements_and_quotes": []
+  },
+  "sources": [
+    {
+      "url": "https://www.rudaw.net/turkish/kurdistan/1287295",
+      "role": "primary",
+      "outlet": "Rudaw",
+      "pub_date": "2026-11-11",
+      "claims": [
+        "Diyarbakır'daki yeni park alanı toplam 45 dönümlük arazi üzerine kuruldu.",
+        "Park alanına 120 adet yetişkin ağaç dikildi."
+      ]
+    }
+  ],
+  "contradictions": [],
+  "status": "ready_for_kevrast_stage_1"
+}

@@ -23,6 +23,8 @@ class mod_news_model extends ORM
     public $gallery_id;
     public $file_id;
     public $image;
+    public $image_alt;
+    public $image_credit;
     public $acl_id;
     public $video;
     public $view_count;
@@ -45,6 +47,8 @@ class mod_news_model extends ORM
             'acl_id' => 0,
             'view_count' => 0,
             'image' => null,
+            'image_alt' => null,
+            'image_credit' => null,
             'video' => null,
             'summary' => null,
             'updated_at' => null,

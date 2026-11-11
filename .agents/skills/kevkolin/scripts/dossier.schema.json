@@ -62,7 +62,36 @@
           },
           "role": {
             "type": "string",
-            "enum": ["primary", "supplementary", "historical"]
+            "enum": ["primary", "supplementary", "historical", "product"]
+          },
+          "source_lang": {
+            "type": "string",
+            "enum": ["tr", "en", "ku", "ar", "de", "fr"],
+            "default": "tr",
+            "description": "Primary language of the source document."
+          },
+          "source_anchors": {
+            "type": "array",
+            "description": "Bilingual anchor pairs for cross-language fact verification.",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "required": ["source_term", "tr_term"],
+              "properties": {
+                "source_term": {
+                  "type": "string",
+                  "minLength": 3,
+                  "description": "Verbatim term as it appears on the foreign source page."
+                },
+                "tr_term": {
+                  "type": "string",
+                  "minLength": 3,
+                  "description": "Translated or adapted term as it appears in the Turkish draft text."
+                }
+              },
+              "additionalProperties": false
+            }
           },
           "outlet": {
             "type": "string"

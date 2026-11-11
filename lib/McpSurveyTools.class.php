@@ -314,7 +314,7 @@ class McpSurveyTools extends McpCrudToolsBase
 
         $lang = $this->requireActiveLang($args);
         $options = $this->parseSurveyOptions($args['options'] ?? null);
-        $this->assertContentMatchesLang($lang, ['question' => $question]);
+        $this->assertContentMatchesLang($lang, $question);
 
         $model = $this->freshModel('mod_survey');
         $model->lang = $lang;
@@ -362,7 +362,7 @@ class McpSurveyTools extends McpCrudToolsBase
             $model->question = $question;
         }
 
-        $this->assertContentMatchesLang((string) $model->lang, ['question' => (string) $model->question]);
+        $this->assertContentMatchesLang((string) $model->lang, (string) $model->question);
 
         if (isset($args['status'])) {
             $model->status = $this->optionalEnum($args, 'status', (string) $model->status, ['y', 'n']);
