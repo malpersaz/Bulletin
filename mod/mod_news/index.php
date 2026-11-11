@@ -88,7 +88,16 @@ class mod_news_mod extends BaseModuleController
         require_once lib_dir . 'NewsSocialShareService.class.php';
         $data['social_accounts'] = NewsSocialShareService::getActiveAccounts();
 
-        $editId = (int) Req::Url(2);
+        $editId = 0;
+        $urlObj = Load::lib('Url');
+        $segments = $urlObj ? $urlObj->address() : [];
+        if (is_array($segments)) {
+            $editPos = array_search('edit', $segments, true);
+            if ($editPos !== false && isset($segments[$editPos + 1]) && is_numeric($segments[$editPos + 1])) {
+                $editId = (int) $segments[$editPos + 1];
+            }
+        }
+
         if ($editId > 0) {
             $data['social_jobs'] = NewsSocialShareService::getJobsForNews($editId);
             $data['social_prefs'] = NewsSocialShareService::getPreferences($editId);

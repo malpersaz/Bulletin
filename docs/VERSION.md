@@ -1,6 +1,15 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.66] - 2026-11-12
+- **`mod_news` Admin URL Routing Hardening & CLI Account Operations**:
+  - **`mod_news` Form Data ID Resolution (`mod/mod_news/index.php`)**:
+    - Fixed 500 Internal Server Error caused by undefined `Req::Url(2)` call inside `mod_news_mod::getFormData()`.
+    - Integrated safe URL segment inspection via `Load::lib('Url')->address()` with dynamic `edit` segment index resolution, ensuring admin list view (`/tr/mod_news/list`) and wizard initialization execute without routing fatals while preserving social jobs and preferences hydration during article editing.
+  - **Social Account Management CLI Tool (`tasks/manage_social_account.php`)**:
+    - Provided command-line utility for administrative social media account operations (listing, adding, testing connection, toggling active status, and deleting accounts) with automatic payload encryption via `SocialCrypto`.
+
+
 ## [v1.0.65] - 2026-11-11
 - **`mod_event` & `mod_event_category` Permissions Seed Task (`tasks/seed_event_roles_perms.php`)**:
   - Implemented standalone seed task to populate default role-based access control (RBAC) permissions across `mod_event` and `mod_event_category` modules for standard user groups (Super Admin, Admin, Editor, Author, Contributor).
