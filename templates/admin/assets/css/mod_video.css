@@ -1,0 +1,44 @@
+/**
+ * mod_video.css - Admin list surface styles for mod_video
+ * (toolbar state colors and datatable thumbnail cells).
+ */
+
+.standard-toolbar #toolbarPublish.active {
+    color: #0b57d0 !important;
+    background: rgba(11, 87, 208, 0.12);
+}
+
+.standard-toolbar #toolbarPublish.active.is-published {
+    color: #2e7d32 !important;
+    background: rgba(46, 125, 50, 0.12);
+}
+
+.standard-toolbar #toolbarSlider.active {
+    color: #0b57d0 !important;
+    background: rgba(11, 87, 208, 0.12);
+}
+
+.standard-toolbar #toolbarSlider.active.is-selected {
+    color: #2e7d32 !important;
+    background: rgba(46, 125, 50, 0.12);
+}
+
+.video-datatable-thumb {
+    width: 50px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.video-datatable-thumb-placeholder {
+    display: inline-block;
+    width: 50px;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    text-align: center;
+    line-height: 35px;
+    color: #999;
+}

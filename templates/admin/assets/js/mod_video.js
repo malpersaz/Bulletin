@@ -371,16 +371,10 @@ class VideoManager {
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
-            if (active) {
-                btn.classList.add('active');
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-            } else {
-                btn.classList.remove('active');
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.3';
-            }
+            btn.classList.toggle('active', !!active);
+            btn.classList.toggle('is-disabled', !active);
         });
+
 
         // Publish/Unpublish button icon & text update
         const publishIcon = document.getElementById('toolbarPublishIcon');
@@ -470,6 +464,32 @@ class VideoManager {
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     window.videoManager = new VideoManager();
+
+    const mainFab = document.getElementById('mainFab');
+    if (mainFab && mainFab.dataset.addUrl) {
+        mainFab.addEventListener('click', function () {
+            window.location.href = mainFab.dataset.addUrl;
+        });
+    }
+
+    const toolbarActions = [
+        ['toolbarSlider', 'sliderSelected'],
+        ['toolbarEdit', 'editSelected'],
+        ['toolbarImage', 'imageSelected'],
+        ['toolbarPublish', 'publishToggleSelected'],
+        ['toolbarDelete', 'deleteSelected']
+    ];
+    toolbarActions.forEach(function (pair) {
+        const button = document.getElementById(pair[0]);
+        if (button) {
+            button.addEventListener('click', function () {
+                const action = window[pair[1]];
+                if (typeof action === 'function') {
+                    action();
+                }
+            });
+        }
+    });
 });
 
 // --- Global toolbar action functions ---

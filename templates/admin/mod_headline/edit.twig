@@ -1,0 +1,154 @@
+{% set hide_navbar = true %}
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_headline.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_headline.edit }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_headline.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<div id="headlineFormConfig"
+     class="is-hidden"
+     data-messages="{{ {
+         'form_error_title': lang.mod_headline.ui.form_error_title,
+         'confirm_remove_image': lang.mod_headline.ui.confirm_remove_image,
+         'image_removed': lang.mod_headline.ui.image_removed,
+         'image_remove_error': lang.mod_headline.ui.image_remove_error,
+         'crop_title': lang.mod_headline.ui.crop_title,
+         'crop_finish': lang.mod_headline.ui.crop_finish,
+         'crop_error_plugin': lang.mod_headline.ui.crop_error_plugin,
+         'crop_error_canvas': lang.mod_headline.ui.crop_error_canvas,
+         'confirm_yes': lang.mod_headline.admin.radio.publish_yes,
+         'cancel': lang.mod_headline.ui.cancel
+     }|json_encode|e('html_attr') }}"></div>
+
+<div id="headlineFormFeedback"
+     data-has-error="{{ error is defined and error ? '1' : '0' }}"
+     data-has-success="{{ Success is defined and Success ? '1' : '0' }}"
+     data-message="{{ message is defined ? message : '' }}"
+     data-errors="{{ errors is defined ? errors|json_encode : '[]' }}"
+     data-redirect="{{ site.saddress }}mod_headline/list"
+     hidden></div>
+
+<input type="hidden" id="headlineRecordId" value="{{ d.id|default(0) }}">
+
+<form id="headlineForm"
+      method="POST"
+      action="{{ site.saddress }}mod_headline/edit/{{ d.id|default(0) }}"
+      enctype="multipart/form-data"
+      data-remove-image-url="{{ site.saddress }}mod_headline/image_remove_image">
+    <input type="hidden" name="edit" value="1">
+    <input type="hidden" name="status" value="{{ status is defined ? status : (d.status|default('y')) }}">
+
+    <div class="headline-form-container">
+        <section class="headline-form-card">
+            <div class="headline-form-header">
+                <i class="bi bi-card-text"></i>
+                <h3>{{ lang.mod_headline.edit }} #{{ d.id|default(0) }}</h3>
+            </div>
+
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <select class="m3-input-lg" name="lang" id="headlineLangSelect">
+                        {% if lang_lang is defined %}
+                            {% for l in lang_lang %}
+                                {% if l.status == 'y' or l.seo == site.lang or l.seo == d.lang %}
+                                    <option value="{{ l.seo }}" {% if (lang is defined and lang == l.seo) or l.seo == d.lang %}selected{% endif %}>{{ l.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <label class="m3-floating-label">{{ lang.mod_headline.admin.columns.language }}</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="name" id="headlineNameInput" placeholder=" " maxlength="255" required value="{{ name is defined ? name : (d.name|default('')) }}">
+                    <label class="m3-floating-label">{{ lang.mod_headline.admin.columns.name }}</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <input type="datetime-local"
+                           class="m3-input-lg"
+                           name="created_at"
+                           id="headlineCreatedAtInput"
+                           required
+                           value="{{ created_at is defined ? created_at|slice(0, 16)|replace({' ': 'T'}) : (d.created_at|default('now'|date('Y-m-d H:i'))|slice(0, 16)|replace({' ': 'T'})) }}">
+                    <label class="m3-floating-label">{{ lang.mod_headline.admin.columns.date }}</label>
+                </div>
+            </div>
+        </section>
+
+        <section class="headline-form-card">
+            <div class="headline-form-header">
+                <i class="bi bi-image"></i>
+                <h3>{{ lang.mod_headline.admin.columns.image }}</h3>
+            </div>
+
+            <input type="file" name="image" id="headlineImageInput" class="is-hidden" accept="image/*">
+
+            <label for="headlineImageInput" class="headline-upload-area {{ d.image is defined and d.image ? 'is-hidden' : '' }}" id="headlineUploadArea">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                <span>{{ lang.mod_headline.ui.upload_image }}</span>
+            </label>
+
+            <div class="headline-upload-preview {{ d.image is defined and d.image ? '' : 'is-hidden' }}" id="headlineImagePreview">
+                <img src="{{ d.image is defined and d.image ? site.iaddress ~ 'mod_headline/' ~ d.image : '' }}" alt="{{ d.name|default('') }}">
+                <button type="button" class="headline-remove-image-btn" id="headlineRemoveImageBtn">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+
+            <p class="headline-image-hint">{{ lang.mod_headline.ui.image_hint }}</p>
+        </section>
+
+        <section class="headline-form-card">
+            <div class="headline-form-header">
+                <i class="bi bi-send"></i>
+                <h3>{{ lang.mod_headline.ui.status_label }}</h3>
+            </div>
+
+            <div class="selection-grid">
+                {% set current_status = status is defined ? status : (d.status|default('y')) %}
+                <div class="selection-card {{ current_status == 'y' ? 'active' : '' }}" data-status-value="y" tabindex="0" role="button">
+                    <i class="bi bi-cloud-check selection-icon"></i>
+                    <div class="selection-label">{{ lang.mod_headline.ui.status_published }}</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card {{ current_status == 'n' ? 'active' : '' }}" data-status-value="n" tabindex="0" role="button">
+                    <i class="bi bi-pencil-square selection-icon"></i>
+                    <div class="selection-label">{{ lang.mod_headline.ui.status_draft }}</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+            </div>
+        </section>
+    </div>
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="m3-final-bar">
+    <button type="button" class="m3-btn-half m3-btn-half-neutral" id="headlineCancelBtn">
+        <i class="bi bi-x-lg"></i>
+        {{ lang.mod_headline.ui.cancel }}
+    </button>
+    <button type="submit" form="headlineForm" class="m3-btn-half m3-btn-half-primary">
+        <i class="bi bi-check-lg"></i>
+        {{ lang.mod_headline.ui.save }}
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_headline.js?v={{ site.version }}"></script>
+{% endblock %}

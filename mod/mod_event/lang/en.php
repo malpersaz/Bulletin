@@ -32,6 +32,57 @@ $lang['mod_event'] = [
     'local' => 'Local',
     'embed' => 'Embed',
 
+    'hero_slider_add' => 'Send to Slider',
+    'hero_slider_remove' => 'Remove from Slider',
+    'hero_slider_added' => 'Sent to slider.',
+    'hero_slider_removed' => 'Removed from slider.',
+    'hero_slider_error' => 'Slider update failed.',
+    'hero_slider_badge' => 'Slider',
+    'deck_add' => 'Mark as Featured',
+    'deck_remove' => 'Remove from Featured',
+    'deck_added' => 'Marked as featured.',
+    'deck_removed' => 'Removed from featured.',
+    'deck_error' => 'Failed to update featured state.',
+    'deck_badge' => 'Featured',
+
+    'status_badge' => [
+        'active' => 'Published',
+        'draft' => 'Draft',
+        'general' => 'General',
+    ],
+
+    'sheet' => [
+        'lang_title' => 'Language Selection',
+        'ok' => 'OK',
+        'search_placeholder' => 'Search language (e.g. English, JP)...',
+        'category_title' => 'Select Category',
+        'all' => 'All (Unfiltered)',
+    ],
+
+    'context_menu' => [
+        'title' => 'Event Actions',
+        'edit' => 'Edit',
+        'gallery' => 'Add Gallery to the Event',
+        'files' => 'Add File to the Event',
+        'video' => 'Add Video to the Event',
+        'status' => 'Change Status',
+        'delete' => 'Delete',
+        'delete_error' => 'Deletion failed!',
+        'publish' => 'Publish',
+        'unpublish' => 'Unpublish',
+        'published_msg' => 'Published',
+        'unpublished_msg' => 'Unpublished',
+        'confirm' => 'Yes',
+        'cancel' => 'Cancel',
+        'delete_success' => 'Event deleted!',
+    ],
+
+    'picker' => [
+        'gallery' => 'Select Existing Gallery',
+        'file' => 'Select Existing File',
+        'video' => 'Select Existing Video',
+    ],
+
     'filter' => [
         'title' => 'Filter & Sort',
         'close' => 'Close',

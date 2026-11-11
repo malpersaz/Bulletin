@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `mod_faq` (
   `lang` VARCHAR(10) NOT NULL DEFAULT 'en',
   `mod_name` VARCHAR(100) NOT NULL,
   `vid` INT(11) NOT NULL,
-  `question` VARCHAR(500) NOT NULL,
+  `question` VARCHAR(255) NOT NULL,
   `answer` TEXT NOT NULL,
   `sort_order` INT(11) NOT NULL DEFAULT 0,
   `status` ENUM('y', 'n') NOT NULL DEFAULT 'y',

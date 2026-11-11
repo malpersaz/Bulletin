@@ -1,0 +1,155 @@
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set show_fab = false %}
+{% set hide_contextual_bar = true %}
+{% set search_placeholder = lang.mod_faq.global_list.search_placeholder %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_faq.admin.faq_management }}{% endblock %}
+{% block headline %}{{ lang.mod_faq.admin.faq_management }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_faq.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<div class="faq-global-shell"
+     id="faqGlobalShell"
+     data-toggle-url="{{ site.saddress }}mod_faq/ajax_toggle_status"
+     data-delete-url="{{ site.saddress }}mod_faq/ajax_delete"
+     data-messages="{{ {
+         'confirm_delete': lang.mod_faq.confirm_delete,
+         'confirm_yes': lang.mod_faq.global_list.confirm_yes,
+         'confirm_cancel': lang.mod_faq.global_list.confirm_cancel,
+         'success_delete': lang.mod_faq.message.success.delete,
+         'success_status': lang.mod_faq.message.success.status,
+         'error_delete': lang.mod_faq.message.error.delete,
+         'error_status': lang.mod_faq.message.error.status,
+         'published': lang.mod_faq.published,
+         'draft': lang.mod_faq.draft
+     }|json_encode|e('html_attr') }}">
+    <!-- Context Banner -->
+    <section class="faq-global-banner">
+        <div class="faq-global-banner-info">
+            <h2>{{ lang.mod_faq.admin.faq_management }}</h2>
+            <p class="faq-global-banner-sub">{{ lang.mod_faq.title }}</p>
+        </div>
+        <div class="faq-global-banner-meta">
+            <span><i class="bi bi-patch-question"></i><strong>{{ total_count|default(0) }}</strong> {{ lang.mod_faq.global_list.total_questions }}</span>
+            <span><i class="bi bi-collection"></i><strong>{{ faq_groups|length }}</strong> {{ lang.mod_faq.global_list.host_records }}</span>
+            <span><i class="bi bi-translate"></i>{{ site.lang|default('en')|upper }}</span>
+        </div>
+    </section>
+
+    {% if is_capped is defined and is_capped %}
+        <div class="faq-global-cap-note">
+            <i class="bi bi-info-circle"></i>
+            <span>{{ lang.mod_faq.global_list.cap_notice|format(render_cap|default(200)) }}</span>
+        </div>
+    {% endif %}
+
+    <!-- Grouped List -->
+    <div class="faq-global-groups" id="faqGlobalGroups">
+        {% for group in faq_groups|default([]) %}
+            {% set group_search = (group.title ~ ' ' ~ group.mod_name ~ ' ' ~ group.vid ~ ' ' ~ group.items|map(item => item.question)|join(' '))|lower %}
+            <section class="faq-global-group" data-search="{{ group_search|e('html_attr') }}">
+                <header class="faq-global-group-header">
+                    <div class="faq-global-group-info">
+                        <div class="faq-global-group-title-row">
+                            <span class="faq-global-mod-badge">{{ group.mod_name|replace({'mod_': ''})|capitalize }}</span>
+                            <span class="faq-global-vid-badge">#{{ group.vid }}</span>
+                            <span class="faq-global-count-badge">{{ group.items|length }}</span>
+                            {% if group.orphan %}
+                                <span class="faq-global-orphan-badge" title="{{ lang.mod_faq.global_list.orphan_record }}">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    {{ lang.mod_faq.global_list.orphan_record }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        <h3 class="faq-global-group-title">{{ group.title }}</h3>
+                    </div>
+                    <a class="faq-global-open-editor" href="{{ site.saddress }}mod_faq/list/{{ group.mod_name }}/{{ group.vid }}">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        <span>{{ lang.mod_faq.global_list.open_editor }}</span>
+                    </a>
+                </header>
+
+                <div class="faq-global-rows">
+                    {% for item in group.items %}
+                        <article class="faq-global-row"
+                                 data-id="{{ item.id }}"
+                                 data-status="{{ item.status }}"
+                                 data-search="{{ (item.question ~ ' ' ~ item.mod_name ~ ' ' ~ item.vid)|lower|e('html_attr') }}">
+                            <div class="faq-global-row-body">
+                                <p class="faq-global-question">{{ item.question }}</p>
+                                <div class="faq-global-row-meta">
+                                    <span class="faq-global-row-id">#{{ item.id }}</span>
+                                    <span class="faq-global-row-lang">{{ item.lang|upper }}</span>
+                                    {% if item.sort_order is defined %}<span class="faq-global-row-sort">{{ item.sort_order }}</span>{% endif %}
+                                </div>
+                            </div>
+                            <div class="faq-global-row-actions">
+                                <button type="button"
+                                        class="faq-global-status-toggle"
+                                        data-action="faq-global-toggle"
+                                        data-id="{{ item.id }}"
+                                        data-status="{{ item.status }}"
+                                        aria-label="{{ lang.mod_faq.status }}">
+                                    <span class="faq-status-pill {{ item.status == 'y' ? 'status-published' : 'status-draft' }}">
+                                        {{ item.status == 'y' ? lang.mod_faq.published : lang.mod_faq.draft }}
+                                    </span>
+                                </button>
+                                <button type="button"
+                                        class="faq-global-delete-btn"
+                                        data-action="faq-global-delete"
+                                        data-id="{{ item.id }}"
+                                        aria-label="{{ lang.mod_faq.delete_question }}">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+
+    <!-- Empty State -->
+    <section class="faq-empty-state {{ faq_groups is defined and faq_groups is not empty ? '' : 'is-visible' }}" id="faqGlobalEmpty">
+        <div class="faq-empty-icon-box">
+            <i class="bi bi-patch-question"></i>
+        </div>
+        <h4 class="faq-empty-title">{{ lang.mod_faq.title }}</h4>
+        <p class="faq-empty-desc">{{ lang.mod_faq.global_list.empty_state }}</p>
+    </section>
+
+    <!-- Search Empty State -->
+    <section class="faq-empty-state" id="faqGlobalSearchEmpty" hidden>
+        <div class="faq-empty-icon-box">
+            <i class="bi bi-search"></i>
+        </div>
+        <h4 class="faq-empty-title">{{ lang.mod_faq.title }}</h4>
+        <p class="faq-empty-desc">{{ lang.mod_faq.global_list.search_empty }}</p>
+    </section>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar faq-global-toolbar">
+    <button type="button" class="toolbar-item" data-action="faq-global-back-panel">
+        <i class="bi bi-speedometer2"></i>
+        <span>{{ lang.management.dashboard }}</span>
+    </button>
+    <button type="button" class="toolbar-item active" data-action="faq-global-reload">
+        <i class="bi bi-arrow-clockwise"></i>
+        <span>{{ lang.mod_faq.admin.faq_management }}</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_faq_list.js?v={{ site.version }}"></script>
+{% endblock %}

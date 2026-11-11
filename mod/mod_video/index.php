@@ -658,7 +658,7 @@ class mod_video_mod extends BaseModuleController
     }
 
     // Edit Function
-    protected function _edit($id = NULL)
+    protected function _edit($id = NULL, $existingRecord = null)
     {
         $this->val = Load::validator('mod_video.edit');
         if ($this->val->check($id)) {
@@ -1001,28 +1001,28 @@ class mod_video_mod extends BaseModuleController
 
                 $last = "";
                 if (Role::hasPermission('mod_video', 'edit')) {
-                    $last .= '<button onclick="window.location.href=\''. $this->site['saddress'] .'mod_video/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
+                    $last .= '<button type="button" data-video-action="edit" data-video-id="' . $content['id'] . '" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_video']['button']['edit'] . ' </button>';
                 }
                 if (Role::hasPermission('mod_video',  'delete')) {
-                    $last .= '<button onclick="VideoManager.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
+                    $last .= '<button type="button" data-video-action="delete" data-video-id="' . $content['id'] . '" class="btn default btn-xs red">
     <i class="fa fa-trash-o"></i> ' . $this->lang['mod_video']['button'][ 'delete'] . ' </button>';
                 }
 
                 if (Role::hasPermission('mod_video', 'gallery')) {
-                    $last .= '<button onclick="VideoManager.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue">
+                    $last .= '<button type="button" data-video-action="gallery" data-video-id="' . $content['id'] . '" class="btn default btn-xs blue">
     <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_video']['button']['gallery'] . ' </button>';
                 }
 
                 if (Role::hasPermission('mod_video', 'file')) {
-                    $last .= '<button onclick="VideoManager.processDosya(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
+                    $last .= '<button type="button" data-video-action="file" data-video-id="' . $content['id'] . '" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_video']['button']['file'] . ' </button>';
                 }
                 $data[] = [
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    $content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_video/image/' . $content['image'] . '?v=' . time() . '" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--md-sys-color-outline-variant);">' : '<span style="display: inline-block; width: 50px; height: 35px; background: rgba(0,0,0,0.05); border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); text-align: center; line-height: 35px; color: #999;"><i class="fa fa-video-camera"></i></span>',
+                    $content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_video/image/' . $content['image'] . '?v=' . time() . '" class="video-datatable-thumb" alt="">' : '<span class="video-datatable-thumb-placeholder"><i class="fa fa-video-camera"></i></span>',
                     $content['duration'],
                     $content['lang'],
                     $content['created_at'],

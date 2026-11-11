@@ -370,6 +370,10 @@ class user_model extends ORM
                 exit();
             }
 
+            if (!headers_sent()) {
+                header('Location: ' . $targetUrl, true, 302);
+                exit();
+            }
             Helper::redirect($targetUrl, 0);
             return;
         }
@@ -388,8 +392,12 @@ class user_model extends ORM
     // Render management/unauthorized.twig and show error
     private function _renderUnauthorized()
     {
+        if (!headers_sent()) {
+            header('HTTP/1.1 403 Forbidden');
+        }
         Run::import('management', '_index');
         $this->theme = Load::lib('AdminTemplate');
+        $this->theme->lang(Load::lang('management'));
         $this->site['title'] = $this->lang['mod_user']['error']['permission_error'];
         $this->theme->set('site', $this->site);
         $this->theme->set('error_message', $this->error);

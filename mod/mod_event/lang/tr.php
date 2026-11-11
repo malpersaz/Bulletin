@@ -32,6 +32,57 @@ $lang['mod_event'] = [
     'local' => 'Local',
     'embed' => 'Embed',
 
+    'hero_slider_add' => 'Slider\'a Gönder',
+    'hero_slider_remove' => 'Slider\'dan Kaldır',
+    'hero_slider_added' => 'Etkinlik slider\'a eklendi.',
+    'hero_slider_removed' => 'Etkinlik slider\'dan kaldırıldı.',
+    'hero_slider_error' => 'Slider güncellenemedi.',
+    'hero_slider_badge' => 'Slider',
+    'deck_add' => 'Öne Çıkar',
+    'deck_remove' => 'Öne Çıkanlardan Kaldır',
+    'deck_added' => 'Etkinlik öne çıkarıldı.',
+    'deck_removed' => 'Etkinlik öne çıkanlardan kaldırıldı.',
+    'deck_error' => 'Öne çıkarma durumu güncellenemedi.',
+    'deck_badge' => 'Öne Çıkan',
+
+    'status_badge' => [
+        'active' => 'Yayında',
+        'draft' => 'Taslak',
+        'general' => 'Genel',
+    ],
+
+    'sheet' => [
+        'lang_title' => 'Dil Seçimi',
+        'ok' => 'Tamam',
+        'search_placeholder' => 'Dil ara (örn: İngilizce, JP)...',
+        'category_title' => 'Kategori Seç',
+        'all' => 'Tümü (Filtresiz)',
+    ],
+
+    'context_menu' => [
+        'title' => 'Etkinlik İşlemleri',
+        'edit' => 'Düzenle',
+        'gallery' => 'Galeri İşlemleri',
+        'files' => 'Dosya Ekle',
+        'video' => 'Etkinliğe Video Ekle',
+        'status' => 'Durum Değiştir',
+        'delete' => 'Sil',
+        'delete_error' => 'Silme işlemi başarısız!',
+        'publish' => 'Yayınla',
+        'unpublish' => 'Yayından Kaldır',
+        'published_msg' => 'Yayınlandı',
+        'unpublished_msg' => 'Yayından Kaldırıldı',
+        'confirm' => 'Evet',
+        'cancel' => 'Vazgeç',
+        'delete_success' => 'Etkinlik silindi!',
+    ],
+
+    'picker' => [
+        'gallery' => 'Mevcut Galeriyi Seç',
+        'file' => 'Mevcut Dosyayı Seç',
+        'video' => 'Mevcut Videoyu Seç',
+    ],
+
     'filter' => [
         'title' => 'Filter & Sort',
         'close' => 'Close',

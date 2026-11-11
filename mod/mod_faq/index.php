@@ -147,6 +147,10 @@ class mod_faq_mod extends BaseModuleController
                     $this->jsonResponse(['status' => 'error', 'message' => $msg]);
                     return false;
                 }
+                // Non-AJAX denial delegates to the shared auth contract:
+                // unauthenticated visitors get a 302 login redirect and
+                // authenticated-but-unauthorized users get the 403 shell.
+                $this->user->hasPermission('mod_faq', 'list', $msg, 1);
                 return false;
             }
 
@@ -155,15 +159,75 @@ class mod_faq_mod extends BaseModuleController
             $this->theme->set('site', $this->site);
             $this->theme->set('is_global_list', true);
 
+            $render_cap = 200;
+
             $this->mod_faq_model = Load::model('mod_faq');
             $this->mod_faq_model->flush();
-            $this->mod_faq_model->select('id,lang,mod_name,vid,question,answer,sort_order,status,user_id,created_at,updated_at')->order('id', 'DESC')->gR();
+            $this->mod_faq_model->select('id,lang,mod_name,vid,question,answer,sort_order,status,user_id,created_at,updated_at')->order('id', 'DESC')->limit($render_cap)->gR();
+            $faqs = ($this->mod_faq_model->getSize() !== 0) ? $this->mod_faq_model->toArray() : [];
 
-            if ($this->mod_faq_model->getSize() !== 0) {
-                $this->theme->set('faqs', $this->mod_faq_model->toArray());
-            } else {
-                $this->theme->set('faqs', []);
+            // Load the FAQ host-module registrations once for title resolution.
+            $registration_model = Load::model('mod_faq_mod');
+            $registration_model->flush();
+            $registration_model->select('mod_name,mod_key,mod_value')->gR();
+            $registrations = [];
+            if ($registration_model->getSize() !== 0) {
+                foreach ($registration_model->toArray() as $registration) {
+                    $registrations[$registration['mod_name']] = $registration;
+                }
             }
+
+            // Group rows per host record (groups keep latest-FAQ-first order).
+            $host_models = [];
+            $faq_groups = [];
+            foreach ($faqs as $faq) {
+                $faq_mod_name = (string) $faq['mod_name'];
+                $faq_vid = (int) $faq['vid'];
+                $group_key = $faq_mod_name . '#' . $faq_vid;
+
+                if (!isset($faq_groups[$group_key])) {
+                    $host_title = false;
+                    $host_orphan = true;
+                    if (isset($registrations[$faq_mod_name])) {
+                        if (!isset($host_models[$faq_mod_name])) {
+                            $host_models[$faq_mod_name] = Load::model($faq_mod_name);
+                        }
+                        $host_model = $host_models[$faq_mod_name];
+                        $host_model->flush();
+                        if ($host_model->exists_id($faq_vid)) {
+                            $host_record = $host_model->getResultOne()->toArray();
+                            $host_title = $this->_resolve_record_title($host_record, $registrations[$faq_mod_name]['mod_value']);
+                            $host_orphan = false;
+                        }
+                    }
+                    if ($host_title === false) {
+                        $host_title = $faq_mod_name . ' #' . $faq_vid;
+                    }
+
+                    $faq_groups[$group_key] = [
+                        'mod_name' => $faq_mod_name,
+                        'vid' => $faq_vid,
+                        'title' => $host_title,
+                        'orphan' => $host_orphan,
+                        'items' => [],
+                    ];
+                }
+
+                $faq_groups[$group_key]['items'][] = $faq;
+            }
+
+            // Rows inside each group follow the scoped editor order.
+            foreach ($faq_groups as $group_key => $group) {
+                usort($group['items'], static function ($a, $b) {
+                    return [(int) $a['sort_order'], (int) $a['id']] <=> [(int) $b['sort_order'], (int) $b['id']];
+                });
+                $faq_groups[$group_key] = $group;
+            }
+
+            $this->theme->set('faq_groups', array_values($faq_groups));
+            $this->theme->set('total_count', count($faqs));
+            $this->theme->set('render_cap', $render_cap);
+            $this->theme->set('is_capped', count($faqs) >= $render_cap);
 
             $this->theme->tpl('mod_faq/list');
             return true;

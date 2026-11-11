@@ -55,7 +55,7 @@
 | M2 | Shared HTTP Client & Editorial Gate Hardening | Features 13-23 (editorial_http.py, check_freshness.py, verify_facts_and_links.py) | none | DONE (gate passed, all tests verified) |
 | M3 | Image Pipeline, mod_news Media Credits & Swarm CLI | Features 24-29 (process_news_image.py, mod_news schema/templates, mcp_cli.py) | M1, M2 | DONE (gate passed, all tests verified) |
 | M4 | Radar, SEO Alignment, Skill Docs & Rule Fixes | Features 30-33 (source_catalog.py, audit_seo.py, SKILL.md docs, rule citations) | M2, M3 | DONE (gate passed, clean audit) |
-| M5 | Verification, Quality Guards, Version Parity & Release | Features 34-36 (mcp_smoke.php, quality guards, docs/VERSION.md, git commit, tag, push) | M1, M2, M3, M4 | IN_PROGRESS (sub_orch_m5) |
+| M5 | Verification, Quality Guards, Version Parity & Release | Features 34-36 (mcp_smoke.php, quality guards, docs/VERSION.md, git commit, tag, push) | M1, M2, M3, M4 | DONE (gate passed, commit b4060d39, tag v1.0.63 pushed) |
 
 ## Code Layout
 - `lib/mcp/McpCrudToolsBase.php`: Core MCP CRUD methods, `addEqFilter()`, `addLikeSearchFilter()`, `getRecordAuditMeta()`.

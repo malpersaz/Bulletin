@@ -724,6 +724,47 @@ class Amed
         $adminTemplate->output();
     }
 
+    /**
+     * Render the admin error shell for a failed template output.
+     * Never leaks exception messages or file paths when DEBUG is off.
+     */
+    private function renderAdminTemplateError(\Throwable $error)
+    {
+        if (DEBUG) {
+            throw $error;
+        }
+
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        if (!headers_sent()) {
+            header('HTTP/1.1 500 Internal Server Error');
+        }
+
+        $managementLang = Load::lang('management');
+        $adminTemplate = Load::lib('AdminTemplate');
+        $adminTemplate->lang($managementLang);
+
+        $site = Registry::get('site_config');
+        $site['title'] = $managementLang['management']['template_error_page_title'];
+
+        $adminTemplate->setGlobal('site', $site);
+        $adminTemplate->setGlobal('error_title', $managementLang['management']['template_error_page_title']);
+        $adminTemplate->setGlobal('error_headline', $managementLang['management']['template_error_headline']);
+        $adminTemplate->setGlobal('error_heading', $managementLang['management']['template_error_heading']);
+        $adminTemplate->setGlobal('error_description', $managementLang['management']['template_error_description']);
+        $adminTemplate->setGlobal('hide_navbar', true);
+        $adminTemplate->setGlobal('hide_search', true);
+        $adminTemplate->setGlobal('show_fab', false);
+        $adminTemplate->setGlobal('show_navbar', false);
+        $adminTemplate->setGlobal('show_filter_sheet', false);
+        $adminTemplate->setGlobal('show_extra_sheets', false);
+        $adminTemplate->setGlobal('show_wizards', false);
+        $adminTemplate->tpl('pages/route_error');
+        $adminTemplate->output();
+        exit();
+    }
+
     public function __destruct()
     {
         if (empty($this->class)) {
@@ -784,7 +825,11 @@ class Amed
                 $admintemplate->setGlobal('site', Registry::get('site_config'));
                 $admintemplate->setGlobal('link', $currentFullUrl);
                 $admintemplate->ctx_add('site', Registry::get('site_config'));
-                $admintemplate->output();
+                try {
+                    $admintemplate->output();
+                } catch (\Throwable $templateError) {
+                    $this->renderAdminTemplateError($templateError);
+                }
                 unset($admintemplate);
             }
 
@@ -798,7 +843,20 @@ class Amed
                 }
                 $twigTemplate->setGlobal('mod', $this->class);
                 $twigTemplate->setGlobal('link', $currentFullUrl);
-                $twigTemplate->output();
+                try {
+                    $twigTemplate->output();
+                } catch (\Throwable $templateError) {
+                    if (DEBUG) {
+                        throw $templateError;
+                    }
+                    if (ob_get_level() > 0) {
+                        ob_clean();
+                    }
+                    if (!headers_sent()) {
+                        header('HTTP/1.1 500 Internal Server Error');
+                    }
+                    exit();
+                }
                 unset($twigTemplate);
             }
         }

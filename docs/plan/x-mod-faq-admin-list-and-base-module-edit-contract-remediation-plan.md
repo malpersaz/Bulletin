@@ -6,7 +6,7 @@
 **Date:** 2026-11-11  
 **Origin:** User-reported admin panel defect at `/tr/mod_faq/list`, reproduced and root-caused with an authenticated `Admin Webmaster` session on the local stack. Investigation expanded across the whole FAQ admin surface and the admin navigation that surrounds it.  
 **Architecture Standard:** Amed Framework Core (Strict Code Separation, phone-only admin contract per `templates/admin/AGENTS.md` + `.agents/design/admin/DESIGN.md`, 100% English code and docs, real i18n keys with no fallback copy, `module-modernization-check` baseline)  
-**Status:** Planned (not implemented). May ship inside `v1.0.63` or as a standalone hotfix release; version parity via `config/site.config.php`, `docs/SERVER.md`, `docs/VERSION.md` at release time (`github-release` skill).
+**Status:** Implemented (shipped as `v1.0.63.1` hotfix on 2026-11-11; version parity synchronized across `config/site.config.php`, `config/site.config.example.php`, `docs/SERVER.md`, and `docs/VERSION.md`).
 
 ---
 

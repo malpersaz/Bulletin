@@ -191,6 +191,8 @@ $lang['mod_headline'] = [
         'radio' => [
             'published_yes' => 'Yes',
             'published_no' => 'No',
+            'publish_yes' => 'Yes',
+            'publish_no' => 'No',
         ],
     ],
 
@@ -390,4 +392,64 @@ $lang['mod_headline'] = [
         'responsive_test' => 'Responsive Test',
     ],
 
+    // Controller-facing keys (legacy mod_headline controller references)
+    'edit' => 'Edit Full Headline',
+    'list' => 'Full Headline List',
+    'errors' => [
+        'record' => 'The specified Featured Content record could not be found!',
+    ],
+    'role_errors' => [
+        'add' => 'You do not have permission to add Featured Content',
+        'edit' => 'You do not have permission to edit Featured Content',
+        'list' => 'You do not have permission to view Featured Content Management',
+        'delete' => 'You do not have permission to delete Featured Content',
+        'moderate_edit' => 'You cannot edit Featured Content records belonging to others',
+        'moderate_delete' => 'You cannot delete Featured Content records belonging to others',
+    ],
+    'message' => [
+        'success' => [
+            'add' => 'Featured Content successfully added!',
+            'edit' => 'Featured Content successfully updated!',
+        ],
+        'error' => [
+            'edit' => 'Failed to update Featured Content!',
+        ],
+    ],
+    'button' => [
+        'edit' => 'Edit',
+        'delete' => 'Delete',
+        'gallery' => 'Image Gallery',
+        'file' => 'Files',
+    ],
+    'validator' => [
+        'required' => 'Please do not leave the %s field empty',
+        'length' => '%s must be between %s and %s characters',
+    ],
+    // Admin surface strings for the phone-first templates (mod_headline/*.twig)
+    'ui' => [
+        'search_placeholder' => 'Search featured content...',
+        'no_data' => 'No featured content found',
+        'empty_hint' => 'Create your first featured content to get started',
+        'status_label' => 'Status',
+        'status_published' => 'Published',
+        'status_draft' => 'Draft',
+        'save' => 'Save',
+        'cancel' => 'Cancel',
+        'delete' => 'Delete',
+        'edit' => 'Edit',
+        'confirm_delete' => 'Are you sure you want to delete this featured content?',
+        'delete_success' => 'Featured content deleted successfully!',
+        'delete_error' => 'Failed to delete featured content!',
+        'remove_image' => 'Remove Image',
+        'confirm_remove_image' => 'Are you sure you want to remove this image?',
+        'image_removed' => 'Image removed successfully!',
+        'image_remove_error' => 'Failed to remove the image!',
+        'upload_image' => 'Upload Image',
+        'image_hint' => 'Recommended size: 2000x750 pixels (JPG, PNG, GIF)',
+        'crop_title' => 'Crop Image',
+        'crop_finish' => 'Apply Crop',
+        'crop_error_plugin' => 'The image cropping plugin could not be loaded.',
+        'crop_error_canvas' => 'The image could not be cropped. Please try another image.',
+        'form_error_title' => 'Please review the form',
+    ],
 ];

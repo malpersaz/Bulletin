@@ -112,5 +112,33 @@ $lang['mod_headline'] = [
       'publish_no' => 'Na',
     ],
   ],
+  // Admin surface strings for the phone-first templates (mod_headline/*.twig)
+  'ui' =>
+  [
+    'search_placeholder' => 'Li sernivîsên tev bigere...',
+    'no_data' => 'Tu sernivîsa tev nehate dîtin',
+    'empty_hint' => 'Yekem sernivîsa xwe ya tev çêbike',
+    'status_label' => 'Rewş',
+    'status_published' => 'Weşandî',
+    'status_draft' => 'Ne weşandî',
+    'save' => 'Qeyd Bike',
+    'cancel' => 'Betal',
+    'delete' => 'Jê Bibe',
+    'edit' => 'Biguhere',
+    'confirm_delete' => 'Ma tu piştrast î ku dixwazî vê sernivîsa tev jê bibî?',
+    'delete_success' => 'Sernivîsa tev bi serkeftî hate jêbirin!',
+    'delete_error' => 'Sernivîsa tev nehate jêbirin!',
+    'remove_image' => 'Wêneyê Rake',
+    'confirm_remove_image' => 'Ma tu piştrast î ku dixwazî vê wêneyê rakî?',
+    'image_removed' => 'Wêne hate rakirin!',
+    'image_remove_error' => 'Wêne nehate rakirin!',
+    'upload_image' => 'Wêneyê Bar Bike',
+    'image_hint' => 'Mezinahiya tê pêşniyarkirin: 2000x750 pîksel (JPG, PNG, GIF)',
+    'crop_title' => 'Wêneyê Bibirre',
+    'crop_finish' => 'Birrandinê Bisebirîne',
+    'crop_error_plugin' => 'Pêveka birrandina wêneyan nehate barkirin.',
+    'crop_error_canvas' => 'Wêne nehate birrandin. Wêneyekî din biceribîne.',
+    'form_error_title' => 'Xêra xwe formê kontrol bike',
+  ],
 ];
 ?>

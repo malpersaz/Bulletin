@@ -1,5 +1,26 @@
 # Amed Framework — Bulletin CMS Version History
 
+
+## [v1.0.64] - 2026-11-11
+- **`mod_event` UI/UX Parity with `mod_news`, Admin Navigation & Global Error Handling Hardening**:
+  - **`mod_event` UI/UX Parity (`templates/admin/mod_event/`, `templates/admin/assets/js/mod_event.js`, `templates/admin/assets/css/mod_event.css`, `mod/mod_event/lang/`)**:
+    - **Card Architecture & Live Status Badges**: Restructured event list items into Material 3 cards matching `mod_news` design language (`card-content-layout`, `news-thumb-wrapper`, `card-thumbnail`, `card-body-col`, `meta-bottom-row`), including live state pills for publication (`state-status`), featured lead (`state-deck`), and hero slider (`state-slider`).
+    - **Contextual Frosted Glass Floating Toolbar & Elevated FAB**: Replaced static bottom bar with the M3 liquid glass floating toolbar (`backdrop-filter: blur(28px)`), smooth scale animations, item action states, and synchronized elevating FAB button (`has-selection` translateY transition avoiding UI overlap).
+    - **Interactive Media Relation Picker**: Connected event list cards to modal relation selector (`openMediaRelationPicker`) for video embed, gallery assignment, and attachment files management.
+    - **Search & Filter Enhancements**: Added real-time search term highlighting (`mark.news-search-hit`), pull-to-refresh (`initPullToRefresh`), and load-more button pagination (`load-more-btn`).
+    - **Quick Poster Upload / Removal**: Connected `image_uploader.twig` partial with SweetAlert2 confirmation dialog and server endpoints (`list_upload_image` / `image_remove_image`).
+    - **Locale Parity**: Added full i18n dictionaries for Turkish (`tr.php`) and English (`en.php`) for `status_badge`, `sheet`, `context_menu`, `picker`, `hero_slider_*`, and `deck_*` keys.
+  - **`mod_faq` Admin Global List, `BaseModuleController::_edit` Contract Fatals, `mod_headline` Admin Templates & Admin Error Semantics (`docs/plan/x-mod-faq-admin-list-and-base-module-edit-contract-remediation-plan.md`)**:
+    - **Module Load Contract Restoration (WP1/F2)**: Aligned `protected function _edit($id = null)` overrides in `mod_faq_mod`, `mod_attachment_mod`, `mod_video`, and `mod_page` with `BaseModuleController::_edit($id = null, $existingRecord = null)`, eliminating unauthenticated path disclosure fatals.
+    - **Global FAQ Management Page (WP2/F1+F7)**: Created `templates/admin/mod_faq/list.twig` phone-first global list with server-side host-record title resolution and `templates/admin/assets/js/mod_faq_list.js` id-scoped toggle/delete behavior.
+    - **FAQ Admin Navigation (WP3/F6)**: Added `mod_faq` (global FAQ management) and `mod_faq_mod` (FAQ host modules) sidebar entries across all 9 management locales.
+    - **Scoped FAQ Modal Code Separation (WP4/F8)**: Removed inline script block from `modal_list.twig`, activated `data-faq-lang` dataset parser in `mod_faq.js`, and updated versioned stylesheet assets.
+    - **Full Headline Admin Templates (WP5/F3)**: Created `templates/admin/mod_headline/{list,add,edit}.twig` plus external `mod_headline.js` / `mod_headline.css` (DataTable-driven cards, phone-first forms with Cropper at 2000x750) and aligned locale files across five languages.
+    - **Admin Error & Auth Semantics (WP6/F4+F5)**: Wrapped admin template output in `Amed::__destruct` with a 500 error shell, issued true 302 login redirects for unauthenticated non-AJAX admin GETs, and served modernized `management/unauthorized.twig` with HTTP 403.
+    - **FAQ Schema Limit Parity (WP7/F9)**: Added idempotent `tasks/tighten_mod_faq_question_column.php` task and aligned `installer/mod_faq/mod_faq.sql` to `VARCHAR(255)`.
+    - **`mod_video` Admin Separation Cleanup**: Extracted list-surface inline styles/handlers into `templates/admin/assets/css/mod_video.css` and external event bindings in `templates/admin/assets/js/mod_video.js`.
+  - **Verification**: Zero syntax errors (`php -l`), code separation passed across all modified and newly created template/JS/CSS files, module boundary audit passed (0 violations across 11,189 files).
+
 ## [v1.0.63] - 2026-11-11
 - **Kevanger Editorial Pipeline Remediation, MCP Server Hardening, Media Credits & Swarm Architecture (`docs/plan/v1.0.63-kevanger-editorial-pipeline-remediation-and-enhancement-plan.md`)**:
   - **Phase 1: Critical MCP, ORM Filter & Nginx Infrastructure Fixes (`lib/McpCrudToolsBase.class.php`, `lib/McpServer.class.php`, `lib/McpNewsTools.class.php`, `lib/McpHeadlineTools.class.php`, `lib/McpFaqTools.class.php`, `docker/nginx/prod.conf`, `tools/mcp_health_check.py`, `tasks/mcp_smoke.php`)**:

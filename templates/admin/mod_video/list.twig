@@ -7,24 +7,7 @@
 {% block headline %}{{ lang.mod_video.list }}{% endblock %}
 
 {% block styles %}
-<style>
-    .standard-toolbar #toolbarPublish.active {
-        color: #0b57d0 !important;
-        background: rgba(11, 87, 208, 0.12);
-    }
-    .standard-toolbar #toolbarPublish.active.is-published {
-        color: #2e7d32 !important;
-        background: rgba(46, 125, 50, 0.12);
-    }
-    .standard-toolbar #toolbarSlider.active {
-        color: #0b57d0 !important;
-        background: rgba(11, 87, 208, 0.12);
-    }
-    .standard-toolbar #toolbarSlider.active.is-selected {
-        color: #2e7d32 !important;
-        background: rgba(46, 125, 50, 0.12);
-    }
-</style>
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
@@ -42,15 +25,15 @@
 </div>
 
 <!-- EMPTY STATE -->
-<div id="empty-state" class="empty-state-container" style="display: none;">
+<div id="empty-state" class="empty-state-container is-hidden">
     <div class="empty-icon-box">
         <i class="bi bi-camera-video"></i>
     </div>
-    <h2 style="font-weight: 800;">{{ lang.mod_video.empty_state }}</h2>
+    <h2 class="video-empty-title">{{ lang.mod_video.empty_state }}</h2>
 </div>
 
 <!-- INFINITE SCROLL LOADER -->
-<div id="infinite-loader" class="infinite-loader" style="display: none;">
+<div id="infinite-loader" class="infinite-loader is-hidden">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
@@ -58,7 +41,7 @@
 </div>
 
 <!-- HIDDEN FILTERS -->
-<form id="filterForm" style="display: none;">
+<form id="filterForm" class="is-hidden">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
@@ -71,34 +54,34 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_video.hero_slider_add }}">
+        <button id="toolbarSlider" type="button" class="toolbar-item is-disabled" title="{{ lang.mod_video.hero_slider_add }}">
             <i class="bi bi-stars"></i>
             <span>{{ lang.mod_video.hero_slider_badge }}</span>
         </button>
 
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarEdit" type="button" class="toolbar-item is-disabled">
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_video.button.edit }}</span>
         </button>
-        
-        <button id="toolbarImage" class="toolbar-item" onclick="imageSelected()" style="opacity:0.3; pointer-events:none;">
+
+        <button id="toolbarImage" type="button" class="toolbar-item is-disabled">
             <i class="bi bi-image"></i>
             <span>{{ lang.mod_video.admin.columns.image }}</span>
         </button>
 
-        <button id="toolbarPublish" class="toolbar-item" onclick="publishToggleSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarPublish" type="button" class="toolbar-item is-disabled">
             <i id="toolbarPublishIcon" class="bi bi-eye-fill"></i>
             <span id="toolbarPublishText">{{ lang.mod_video.grid.publish.key }}</span>
         </button>
 
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarDelete" type="button" class="toolbar-item is-disabled">
             <i class="bi bi-trash3-fill"></i>
             <span>{{ lang.mod_video.button.delete }}</span>
         </button>
     </div>
 
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video/add'" aria-label="{{ lang.mod_video.add }}">
+    <button type="button" class="main-fab" id="mainFab" data-add-url="{{ site.saddress }}mod_video/add" aria-label="{{ lang.mod_video.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endblock %}

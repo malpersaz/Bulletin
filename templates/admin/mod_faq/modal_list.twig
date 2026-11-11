@@ -8,11 +8,44 @@
 {% block headline %}{{ lang.mod_faq.module_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_faq.css?v=1.2">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_faq.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
-<div class="faq-modal-shell" data-modal-title="{{ lang.mod_faq.module_title }}" data-modal-icon="bi-patch-question-fill" data-mod-name="{{ mod_name }}" data-vid="{{ vid }}" data-lang="{{ site.lang|default('en') }}">
+<div class="faq-modal-shell" data-modal-title="{{ lang.mod_faq.module_title }}" data-modal-icon="bi-patch-question-fill" data-mod-name="{{ mod_name }}" data-vid="{{ vid }}" data-lang="{{ site.lang|default('en') }}"
+     data-faq-lang="{{ {
+         title: lang.mod_faq.title,
+         module_title: lang.mod_faq.module_title,
+         add_question: lang.mod_faq.add_question,
+         edit_question: lang.mod_faq.edit_question,
+         delete_question: lang.mod_faq.delete_question,
+         update: lang.mod_faq.update,
+         save_all: lang.mod_faq.save_all,
+         question: lang.mod_faq.question,
+         answer: lang.mod_faq.answer,
+         sort_order: lang.mod_faq.sort_order,
+         status: lang.mod_faq.status,
+         published: lang.mod_faq.published,
+         draft: lang.mod_faq.draft,
+         empty_state: lang.mod_faq.empty_state,
+         limit_reached: lang.mod_faq.limit_reached,
+         question_placeholder: lang.mod_faq.question_placeholder,
+         answer_placeholder: lang.mod_faq.answer_placeholder,
+         drag_to_reorder: lang.mod_faq.drag_to_reorder,
+         confirm_delete: lang.mod_faq.confirm_delete,
+         success_add: lang.mod_faq.message.success.add,
+         success_edit: lang.mod_faq.message.success.edit,
+         success_delete: lang.mod_faq.message.success.delete,
+         success_reorder: lang.mod_faq.message.success.reorder,
+         success_batch: lang.mod_faq.message.success.batch,
+         success_status: lang.mod_faq.message.success.status,
+         error_max_limit: lang.mod_faq.message.error.max_limit,
+         question_required: lang.mod_faq.validation.question_required,
+         question_max: lang.mod_faq.validation.question_max,
+         question_duplicate: lang.mod_faq.validation.question_duplicate,
+         answer_required: lang.mod_faq.validation.answer_required,
+         answer_max: lang.mod_faq.validation.answer_max
+     }|json_encode|e('html_attr') }}">
 
     <!-- Context Header -->
     <div class="faq-context-card">
@@ -124,41 +157,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    window.FAQ_LANG = {
-        title: {{ lang.mod_faq.title|json_encode|raw }},
-        module_title: {{ lang.mod_faq.module_title|json_encode|raw }},
-        add_question: {{ lang.mod_faq.add_question|json_encode|raw }},
-        edit_question: {{ lang.mod_faq.edit_question|json_encode|raw }},
-        delete_question: {{ lang.mod_faq.delete_question|json_encode|raw }},
-        update: {{ lang.mod_faq.update|json_encode|raw }},
-        save_all: {{ lang.mod_faq.save_all|json_encode|raw }},
-        question: {{ lang.mod_faq.question|json_encode|raw }},
-        answer: {{ lang.mod_faq.answer|json_encode|raw }},
-        sort_order: {{ lang.mod_faq.sort_order|json_encode|raw }},
-        status: {{ lang.mod_faq.status|json_encode|raw }},
-        published: {{ lang.mod_faq.published|json_encode|raw }},
-        draft: {{ lang.mod_faq.draft|json_encode|raw }},
-        empty_state: {{ lang.mod_faq.empty_state|json_encode|raw }},
-        limit_reached: {{ lang.mod_faq.limit_reached|json_encode|raw }},
-        question_placeholder: {{ lang.mod_faq.question_placeholder|json_encode|raw }},
-        answer_placeholder: {{ lang.mod_faq.answer_placeholder|json_encode|raw }},
-        drag_to_reorder: {{ lang.mod_faq.drag_to_reorder|json_encode|raw }},
-        confirm_delete: {{ lang.mod_faq.confirm_delete|json_encode|raw }},
-        success_add: {{ lang.mod_faq.message.success.add|json_encode|raw }},
-        success_edit: {{ lang.mod_faq.message.success.edit|json_encode|raw }},
-        success_delete: {{ lang.mod_faq.message.success.delete|json_encode|raw }},
-        success_reorder: {{ lang.mod_faq.message.success.reorder|json_encode|raw }},
-        success_batch: {{ lang.mod_faq.message.success.batch|json_encode|raw }},
-        success_status: {{ lang.mod_faq.message.success.status|json_encode|raw }},
-        error_max_limit: {{ lang.mod_faq.message.error.max_limit|json_encode|raw }},
-        question_required: {{ lang.mod_faq.validation.question_required|json_encode|raw }},
-        question_max: {{ lang.mod_faq.validation.question_max|json_encode|raw }},
-        question_duplicate: {{ lang.mod_faq.validation.question_duplicate|json_encode|raw }},
-        answer_required: {{ lang.mod_faq.validation.answer_required|json_encode|raw }},
-        answer_max: {{ lang.mod_faq.validation.answer_max|json_encode|raw }}
-    };
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-<script src="/templates/admin/assets/js/mod_faq.js?v=1.3"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_faq.js?v={{ site.version }}"></script>
 {% endblock %}

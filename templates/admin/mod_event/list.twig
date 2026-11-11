@@ -14,9 +14,9 @@
 {% endblock %}
 
 {% block content %}
-{% set stat_total_event_label = lang.mod_event.ui.all %}
-{% set stat_published_event_label = lang.mod_event.admin.radio.publish_yes %}
-{% set stat_draft_event_label = lang.mod_event.admin.radio.publish_no %}
+{% set stat_total_event_label = lang.mod_event.status_badge.general %}
+{% set stat_published_event_label = lang.mod_event.status_badge.active %}
+{% set stat_draft_event_label = lang.mod_event.status_badge.draft %}
 {% set empty_zero_records_label = lang.mod_event.datatable.zeroRecords %}
 {% set empty_table_label = lang.mod_event.datatable.emptyTable %}
 {% set loading_records_label = lang.mod_event.datatable.loadingRecords %}
@@ -74,28 +74,28 @@
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
 
-<div id="eventImageModal" class="event-image-modal" aria-hidden="true">
-    <div class="event-image-modal__scrim" data-action="close-image-uploader"></div>
-    <div class="event-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="eventImageModalTitle">
+<div id="eventImageModal" class="news-image-modal" aria-hidden="true">
+    <div class="news-image-modal__scrim" data-action="close-image-uploader"></div>
+    <div class="news-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="eventImageModalTitle">
         <header class="wizard-header">
             <button type="button" class="icon-btn" data-action="close-image-uploader">
                 <i class="bi bi-x-lg"></i>
             </button>
             <div class="wizard-title">
-                <span id="eventImageModalTitle">{{ lang.mod_event.wizard.steps.poster }}</span>
+                <span id="eventImageModalTitle">{{ lang.mod_event.upload_image }}</span>
                 <span id="eventImageModalSubtitle" hidden></span>
             </div>
-            <button type="button" id="eventImageSaveBtn" class="m3-btn-text event-image-save" data-action="submit-list-image-upload" disabled hidden>{{ lang.mod_event.button.send }}</button>
+            <button type="button" id="eventImageSaveBtn" class="m3-btn-text news-image-save" data-action="submit-list-image-upload" disabled hidden>{{ lang.mod_event.button.send }}</button>
         </header>
 
         <div class="wizard-progress-bar">
             <div class="wizard-progress-fill progress-full-width"></div>
         </div>
 
-        <div class="wizard-content event-image-modal__body">
+        <div class="wizard-content news-image-modal__body">
             {% include 'admin/partials/image_uploader.twig' with {
                 shell_id: 'listImageShell',
-                shell_class: 'event-image-shell',
+                shell_class: 'news-image-shell',
                 has_image: false,
                 shell_attrs: {
                     'data-drop-title': lang.mod_event.upload_image,
@@ -136,7 +136,7 @@
                 file_input_id: 'listImgInput'
             } %}
 
-            <div id="eventImageModalFooter" class="wizard-footer event-image-modal__footer is-single-action">
+            <div id="eventImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
                 <button type="button" id="eventImageCancelBtn" class="m3-btn-outlined" data-action="close-image-uploader">{{ lang.mod_event.button.cancel }}</button>
             </div>
         </div>
@@ -145,57 +145,57 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="standard-toolbar event-toolbar" id="contentToolbar" role="toolbar" aria-label="{{ lang.mod_event.list }}" aria-hidden="true">
+<div class="standard-toolbar event-toolbar news-toolbar" id="contentToolbar" role="toolbar" aria-label="{{ lang.mod_event.list }}" aria-hidden="true">
     {% if session.permissions.mod_event.edit is defined or session.permissions.mod_event.change_status is defined or session.permissions.mod_event.approval is defined %}
-        <button id="toolbarStatus" class="toolbar-item is-disabled" data-action="toggle-status" title="{{ lang.mod_event.toolbar.status }}" aria-label="{{ lang.mod_event.toolbar.status }}">
+        <button id="toolbarStatus" class="toolbar-item is-disabled" data-action="toggle-status" title="{{ lang.mod_event.status_badge.active }}" aria-label="{{ lang.mod_event.status_badge.active }}">
             <i class="bi bi-eye-fill"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.edit is defined %}
-        <button id="toolbarDeck" class="toolbar-item is-disabled" data-action="toggle-deck" title="{{ lang.mod_event.toolbar.deck }}" aria-label="{{ lang.mod_event.toolbar.deck }}">
+        <button id="toolbarDeck" class="toolbar-item is-disabled" data-action="toggle-deck" title="{{ lang.mod_event.deck_add }}" aria-label="{{ lang.mod_event.deck_add }}">
             <i class="bi bi-bookmark-star"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.edit is defined %}
-        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_event.toolbar.slider }}" aria-label="{{ lang.mod_event.toolbar.slider }}">
+        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_event.hero_slider_add }}" aria-label="{{ lang.mod_event.hero_slider_add }}">
             <i class="bi bi-stars"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.edit is defined %}
-        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_event.toolbar.video }}" aria-label="{{ lang.mod_event.toolbar.video }}">
+        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_event.context_menu.video }}" aria-label="{{ lang.mod_event.context_menu.video }}">
             <i class="bi bi-camera-video"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.gallery is defined %}
-        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_event.toolbar.gallery }}" aria-label="{{ lang.mod_event.toolbar.gallery }}">
+        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_event.context_menu.gallery }}" aria-label="{{ lang.mod_event.context_menu.gallery }}">
             <i class="bi bi-images"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.file is defined %}
-        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_event.toolbar.files }}" aria-label="{{ lang.mod_event.toolbar.files }}">
+        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_event.context_menu.files }}" aria-label="{{ lang.mod_event.context_menu.files }}">
             <i class="bi bi-paperclip"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.faq is defined or session.permissions.mod_event.edit is defined %}
-        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_event.toolbar.faq }}" aria-label="{{ lang.mod_event.toolbar.faq }}">
+        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_faq.module_title|default(lang.mod_event.toolbar.faq) }}" aria-label="{{ lang.mod_faq.module_title|default(lang.mod_event.toolbar.faq) }}">
             <i class="bi bi-patch-question-fill"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.edit is defined %}
-        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_event.toolbar.edit }}" aria-label="{{ lang.mod_event.toolbar.edit }}">
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_event.context_menu.edit }}" aria-label="{{ lang.mod_event.context_menu.edit }}">
             <i class="bi bi-pencil-fill"></i>
         </button>
     {% endif %}
 
     {% if session.permissions.mod_event.delete is defined %}
-        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_event.toolbar.delete }}" aria-label="{{ lang.mod_event.toolbar.delete }}">
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_event.context_menu.delete }}" aria-label="{{ lang.mod_event.context_menu.delete }}">
             <i class="bi bi-trash3-fill"></i>
         </button>
     {% endif %}

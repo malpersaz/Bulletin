@@ -50,8 +50,8 @@
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | E2E-M1 | Test Infrastructure & Framework Setup | Runner harness, test runner script, directory layout, TEST_INFRA.md | none | DONE (TEST_INFRA.md published, run_e2e_tests.py, harness, 38 tests pass) |
-| E2E-M2 | Tier 1 Feature Coverage Suite | >=5 test cases per feature across all 36 features (happy path) | E2E-M1 | IN_PROGRESS |
-| E2E-M3 | Tier 2 Boundary & Corner Case Suite | >=5 test cases per feature at boundaries/error conditions | E2E-M1 | PLANNED |
+| E2E-M2 | Tier 1 Feature Coverage Suite | >=5 test cases per feature across all 36 features (happy path) | E2E-M1 | DONE (187 tests in tests/e2e/tier1/, 186 passed / 1 skipped, Gate PASS) |
+| E2E-M3 | Tier 2 Boundary & Corner Case Suite | >=5 test cases per feature at boundaries/error conditions | E2E-M1 | IN_PROGRESS |
 | E2E-M4 | Tier 3 Cross-Feature Combination Suite | Pairwise and cross-module interaction test cases | E2E-M2, E2E-M3 | PLANNED |
 | E2E-M5 | Tier 4 Real-World Application Suite & TEST_READY | Full workflow scenarios, end-to-end integration, publish TEST_READY.md | E2E-M4 | PLANNED |
 

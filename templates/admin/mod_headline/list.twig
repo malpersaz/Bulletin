@@ -1,0 +1,73 @@
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set show_fab = false %}
+{% set hide_contextual_bar = true %}
+{% set search_placeholder = lang.mod_headline.ui.search_placeholder %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_headline.list }}{% endblock %}
+{% block headline %}{{ lang.mod_headline.list }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_headline.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<div class="headline-shell"
+     id="headlineShell"
+     data-module-url="{{ site.saddress }}mod_headline/"
+     data-datatable-url="{{ site.saddress }}mod_headline/datatable_json"
+     data-edit-url="{{ site.saddress }}mod_headline/edit/"
+     data-delete-url="{{ site.saddress }}mod_headline/delete"
+     data-add-url="{{ site.saddress }}mod_headline/add"
+     data-messages="{{ {
+         'no_data': lang.mod_headline.ui.no_data,
+         'empty_hint': lang.mod_headline.ui.empty_hint,
+         'status_published': lang.mod_headline.ui.status_published,
+         'status_draft': lang.mod_headline.ui.status_draft,
+         'confirm_delete': lang.mod_headline.ui.confirm_delete,
+         'delete_success': lang.mod_headline.ui.delete_success,
+         'delete_error': lang.mod_headline.ui.delete_error,
+         'confirm_yes': lang.mod_headline.admin.radio.publish_yes,
+         'confirm_cancel': lang.mod_headline.ui.cancel
+     }|json_encode|e('html_attr') }}">
+    <div id="headlineList" class="headline-list"></div>
+
+    <section id="headlineEmpty" class="headline-empty is-hidden">
+        <div class="empty-icon-box"><i class="bi bi-layout-text-window-reverse"></i></div>
+        <h3>{{ lang.mod_headline.ui.no_data }}</h3>
+        <p>{{ lang.mod_headline.ui.empty_hint }}</p>
+    </section>
+
+    <div id="headlineLoader" class="headline-loader is-hidden">
+        <div class="spinner-track">
+            <div class="spinner-fill"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar">
+    <button id="headlineToolbarEdit" class="toolbar-item" disabled>
+        <i class="bi bi-pencil-fill"></i>
+        <span>{{ lang.mod_headline.ui.edit }}</span>
+    </button>
+
+    <button id="headlineToolbarDelete" class="toolbar-item" disabled>
+        <i class="bi bi-trash3-fill"></i>
+        <span>{{ lang.mod_headline.ui.delete }}</span>
+    </button>
+</div>
+
+<button type="button" class="main-fab" id="mainFab" aria-label="{{ lang.mod_headline.add }}">
+    <i class="bi bi-plus-lg"></i>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_headline.js?v={{ site.version }}"></script>
+{% endblock %}

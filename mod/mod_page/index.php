@@ -840,7 +840,7 @@ class mod_page_mod extends BaseModuleController
     }
 
     // Edit Function
-    protected function _edit($id = NULL)
+    protected function _edit($id = NULL, $existingRecord = null)
     {
         $this->val = Load::validator('mod_page.edit');
         if ($this->val->check($id)) {

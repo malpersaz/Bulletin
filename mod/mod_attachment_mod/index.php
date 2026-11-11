@@ -85,7 +85,7 @@ class mod_attachment_mod_mod extends BaseModuleController
         }
     }
 
-    protected function _edit($id = null)
+    protected function _edit($id = null, $existingRecord = null)
     {
         $isAjax = $this->isAjaxRequest();
         $this->val = Load::validator('mod_attachment_mod.edit');

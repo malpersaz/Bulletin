@@ -111,5 +111,33 @@ $lang['mod_headline'] = [
       'publish_no' => 'Na',
     ],
   ],
+  // Admin surface strings for the phone-first templates (mod_headline/*.twig)
+  'ui' =>
+  [
+    'search_placeholder' => 'Li sernivîsê tev de bigêre...',
+    'no_data' => 'Sernivîsa tev nêdiya',
+    'empty_hint' => 'Sernivîsa xwe ya teverî a yewine vırazê',
+    'status_label' => 'Weziyet',
+    'status_published' => 'Weşaniyaye',
+    'status_draft' => 'Taslaq',
+    'save' => 'Qeyd Ke',
+    'cancel' => 'Bıterkne',
+    'delete' => 'Wedarne',
+    'edit' => 'Newe Kerdış',
+    'confirm_delete' => 'Ti emel î ke wazenî na sernivîsa tevî wedarnî?',
+    'delete_success' => 'Sernivîsa tevî bi serkewti wedariyê!',
+    'delete_error' => 'Sernivîsa tevî nêwedariyê!',
+    'remove_image' => 'Resımi Wedarne',
+    'confirm_remove_image' => 'Ti emel î ke wazenî no resımi wedarnî?',
+    'image_removed' => 'Resım wedariya!',
+    'image_remove_error' => 'Resım nêwedariya!',
+    'upload_image' => 'Resım Bar Ke',
+    'image_hint' => 'Ebatê teslımyekerdışî: 2000x750 pîksel (JPG, PNG, GIF)',
+    'crop_title' => 'Resımi Bıbirre',
+    'crop_finish' => 'Birnayışî Bımisne',
+    'crop_error_plugin' => 'Plagînê birnayışê resımi nêbarbiyo.',
+    'crop_error_canvas' => 'Resım nêbirna. Resımê bîni cerrebne.',
+    'form_error_title' => 'Xêrê xo form kontrol ke',
+  ],
 ];
 ?>

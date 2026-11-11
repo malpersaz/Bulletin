@@ -85,7 +85,7 @@ class mod_faq_mod_mod extends BaseModuleController
         }
     }
 
-    protected function _edit($id = null)
+    protected function _edit($id = null, $existingRecord = null)
     {
         $isAjax = $this->isAjaxRequest();
         $this->val = Load::validator('mod_faq_mod.edit');
