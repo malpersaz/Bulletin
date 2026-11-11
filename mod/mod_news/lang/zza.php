@@ -477,4 +477,19 @@ $lang['mod_news'] = [
         'status_good' => 'Hol o',
         'status_excellent' => 'Bêqusûr',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Vera Media Sosyale de Parekerdene',
+        'custom_caption_label' => 'Metno Xususi yo Parekerdene',
+        'custom_caption_placeholder' => 'Seba şuxilnayîşê sernameyî û verqaytê qertî veng verdê...',
+        'jobs_status_title' => 'Weziyetê Weşanayîşê Medya Sosyale',
+        'status_published' => 'Weşiya',
+        'status_pending' => 'Paweno',
+        'status_failed' => 'Vervat nêbi',
+        'retry' => 'Reyna Biponye',
+        'view_live_post' => 'Parekerdena Cındî Bivêne',
+        'retry_queued' => 'Gurîye seba newe ra ceribnayîşî kewte rêze',
+        'retry_failed' => 'Newe ra ceribnayîş nêbi',
+    ],
 ];

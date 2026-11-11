@@ -472,4 +472,19 @@ $lang['mod_news'] = [
         'status_good' => 'Bon',
         'status_excellent' => 'Excellent',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Partage sur les réseaux sociaux',
+        'custom_caption_label' => 'Texte personnalisé',
+        'custom_caption_placeholder' => 'Laisser vide pour utiliser le titre de l\'article et l\'aperçu...',
+        'jobs_status_title' => 'État de publication sociale',
+        'status_published' => 'Publié',
+        'status_pending' => 'En attente',
+        'status_failed' => 'Échoué',
+        'retry' => 'Réessayer',
+        'view_live_post' => 'Voir la publication en direct',
+        'retry_queued' => 'Tâche mise en file pour nouvel essai',
+        'retry_failed' => 'Échec de la nouvelle tentative',
+    ],
 ];

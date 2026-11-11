@@ -473,4 +473,19 @@ $lang['mod_news'] = [
         'status_good' => 'Bra',
         'status_excellent' => 'Utmärkt',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Dela på sociala medier',
+        'custom_caption_label' => 'Anpassad text för delning',
+        'custom_caption_placeholder' => 'Lämna tomt för att använda artikelrubrik och kortförhandsvisning...',
+        'jobs_status_title' => 'Publiceringsstatus för sociala medier',
+        'status_published' => 'Publicerad',
+        'status_pending' => 'Väntar',
+        'status_failed' => 'Misslyckades',
+        'retry' => 'Försök igen',
+        'view_live_post' => 'Visa liveinlägg',
+        'retry_queued' => 'Jobb har köats för nytt försök',
+        'retry_failed' => 'Kunde inte försöka igen',
+    ],
 ];

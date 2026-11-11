@@ -474,4 +474,19 @@ $lang['mod_news'] = [
         'status_good' => 'Good',
         'status_excellent' => 'Excellent',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Social Media Sharing',
+        'custom_caption_label' => 'Custom Social Caption',
+        'custom_caption_placeholder' => 'Leave blank to use the article title and link card preview...',
+        'jobs_status_title' => 'Social Publishing Status',
+        'status_published' => 'Published',
+        'status_pending' => 'Pending',
+        'status_failed' => 'Failed',
+        'retry' => 'Retry',
+        'view_live_post' => 'View Live Post',
+        'retry_queued' => 'Job queued for retry',
+        'retry_failed' => 'Failed to retry job',
+    ],
 ];

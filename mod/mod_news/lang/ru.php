@@ -488,4 +488,19 @@ Opening file upload screen for news.',
         'status_good' => 'Хорошо',
         'status_excellent' => 'Отлично',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Публикация в социальных сетях',
+        'custom_caption_label' => 'Пользовательский текст',
+        'custom_caption_placeholder' => 'Оставьте пустым для заголовка и предпросмотра карточки...',
+        'jobs_status_title' => 'Статус публикации в соцсетях',
+        'status_published' => 'Опубликовано',
+        'status_pending' => 'В очереди',
+        'status_failed' => 'Ошибка',
+        'retry' => 'Повторить',
+        'view_live_post' => 'Открыть публикацию',
+        'retry_queued' => 'Задача поставлена в очередь на повтор',
+        'retry_failed' => 'Не удалось повторить задачу',
+    ],
 ];

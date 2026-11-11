@@ -372,6 +372,84 @@
 						</div>
 					</div>
 				</div>
+
+				{% if social_accounts is defined and social_accounts is not empty %}
+				<div class="form-row mt-3">
+					<label class="field-section-label">{{ lang.mod_news.social.share_channels_title }}</label>
+					<div class="selection-grid social-channels-grid">
+						{% for account in social_accounts %}
+							{% set isChannelActive = (social_prefs.channels is defined and account.id in social_prefs.channels) or (social_prefs is empty and account.auto_share_default == 'y') %}
+							<div class="selection-card{% if isChannelActive %} active{% endif %}" data-action="toggle-social-channel" data-account-id="{{ account.id }}">
+								<input type="checkbox" name="social_channels[]" value="{{ account.id }}" class="visually-hidden social-channel-checkbox"{% if isChannelActive %} checked{% endif %}>
+								{% if account.platform == 'x' %}
+									<i class="bi bi-twitter-x selection-icon"></i>
+								{% elseif account.platform == 'facebook' %}
+									<i class="bi bi-facebook selection-icon"></i>
+								{% elseif account.platform == 'instagram_story' %}
+									<i class="bi bi-instagram selection-icon"></i>
+								{% else %}
+									<i class="bi bi-share selection-icon"></i>
+								{% endif %}
+								<div class="selection-label">{{ account.account_label }}</div>
+								<i class="bi bi-check-circle-fill check-icon"></i>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="form-row social-caption-box">
+					<div class="m3-input-wrapper">
+						<textarea name="social_custom_caption" class="social-caption-textarea" placeholder="{{ lang.mod_news.social.custom_caption_placeholder }}" maxlength="500">{{ social_prefs.custom_caption|default('') }}</textarea>
+						<label class="m3-floating-label">{{ lang.mod_news.social.custom_caption_label }}</label>
+					</div>
+				</div>
+				{% endif %}
+
+				{% if social_jobs is defined and social_jobs is not empty %}
+				<div class="social-jobs-card">
+					<div class="social-jobs-title">
+						<i class="bi bi-broadcast"></i>
+						<span>{{ lang.mod_news.social.jobs_status_title }}</span>
+					</div>
+					<div class="social-jobs-list">
+						{% for job in social_jobs %}
+						<div class="social-job-row">
+							<div class="social-job-info">
+								{% if job.platform == 'x' %}
+									<i class="bi bi-twitter-x social-job-platform-icon"></i>
+								{% elseif job.platform == 'facebook' %}
+									<i class="bi bi-facebook social-job-platform-icon"></i>
+								{% elseif job.platform == 'instagram_story' %}
+									<i class="bi bi-instagram social-job-platform-icon"></i>
+								{% else %}
+									<i class="bi bi-share social-job-platform-icon"></i>
+								{% endif %}
+								<span class="social-job-label">{{ job.account_label }}</span>
+							</div>
+							<div class="social-job-actions">
+								{% if job.status == 'published' %}
+									<span class="social-job-pill status-published">{{ lang.mod_news.social.status_published }}</span>
+									{% if job.external_post_url %}
+										<a href="{{ job.external_post_url }}" target="_blank" rel="noopener noreferrer" class="social-link-btn" title="{{ lang.mod_news.social.view_live_post }}">
+											<i class="bi bi-box-arrow-up-right"></i>
+										</a>
+									{% endif %}
+								{% elseif job.status == 'pending' or job.status == 'processing' %}
+									<span class="social-job-pill status-pending" data-job-id="{{ job.id }}">{{ lang.mod_news.social.status_pending }}</span>
+								{% elseif job.status == 'failed' %}
+									<span class="social-job-pill status-failed" data-job-id="{{ job.id }}">{{ lang.mod_news.social.status_failed }}</span>
+									<button type="button" class="social-retry-btn" data-action="retry-social-job" data-job-id="{{ job.id }}">
+										<i class="bi bi-arrow-repeat"></i> {{ lang.mod_news.social.retry }}
+									</button>
+								{% else %}
+									<span class="social-job-pill status-skipped">{{ job.status|upper }}</span>
+								{% endif %}
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				{% endif %}
 			</div>
 		</div>
 	</form>

@@ -472,4 +472,19 @@ $lang['mod_news'] = [
         'status_good' => 'خوب',
         'status_excellent' => 'عالی',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'اشتراک‌گذاری در شبکه‌های اجتماعی',
+        'custom_caption_label' => 'متن سفارشی اشتراک‌گذاری',
+        'custom_caption_placeholder' => 'برای استفاده از عنوان خبر و پیش‌نمایش کارت خالی بگذارید...',
+        'jobs_status_title' => 'وضعیت انتشار در شبکه‌های اجتماعی',
+        'status_published' => 'منتشر شد',
+        'status_pending' => 'در انتظار',
+        'status_failed' => 'ناموفق',
+        'retry' => 'تلاش مجدد',
+        'view_live_post' => 'مشاهده پست زنده',
+        'retry_queued' => 'کار برای تلاش مجدد در صف قرار گرفت',
+        'retry_failed' => 'تلاش مجدد ناموفق بود',
+    ],
 ];

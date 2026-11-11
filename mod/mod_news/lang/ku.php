@@ -475,4 +475,19 @@ $lang['mod_news'] = [
         'status_good' => 'Baş e',
         'status_excellent' => 'Bê Qisûr',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Parvekirina Medyaya Civakî',
+        'custom_caption_label' => 'Daxuyaniya Taybet a Medyaya Civakî',
+        'custom_caption_placeholder' => 'Vala bihêle da ku sernavê nûçeyê û pêşdîtina qertê were bikaranîn...',
+        'jobs_status_title' => 'Rewşa Weşandina Medyaya Civakî',
+        'status_published' => 'Hate Weşandin',
+        'status_pending' => 'Li Bendê Ye',
+        'status_failed' => 'Bi Ser Nekeft',
+        'retry' => 'Dîsa Biceribîne',
+        'view_live_post' => 'Parvekirina Zindî Bibîne',
+        'retry_queued' => 'Kar ji bo ceribandina nû kete rêzê',
+        'retry_failed' => 'Ceribandina nû bi ser neket',
+    ],
 ];

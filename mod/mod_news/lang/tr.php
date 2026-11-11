@@ -474,4 +474,19 @@ $lang['mod_news'] = [
         'status_good' => 'İyi',
         'status_excellent' => 'Kusursuz',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'Sosyal Medya Paylaşımı',
+        'custom_caption_label' => 'Özel Paylaşım Metni',
+        'custom_caption_placeholder' => 'Haber başlığı ve kart önizlemesini kullanmak için boş bırakın...',
+        'jobs_status_title' => 'Sosyal Yayın Durumu',
+        'status_published' => 'Yayınlandı',
+        'status_pending' => 'Sırada',
+        'status_failed' => 'Başarısız',
+        'retry' => 'Tekrar Dene',
+        'view_live_post' => 'Canlı Paylaşımı Gör',
+        'retry_queued' => 'İş yeniden denenmek üzere kuyruğa alındı',
+        'retry_failed' => 'Yeniden deneme başarısız oldu',
+    ],
 ];

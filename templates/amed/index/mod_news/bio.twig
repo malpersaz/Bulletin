@@ -1,0 +1,92 @@
+{% extends "layouts/base.twig" %}
+
+{% set d = ctx_get('d') %}
+{% set bio_items = ctx_get('bio_items') %}
+{% set active_lang = ctx_get('active_lang') ?: site.lang %}
+{% set bio_url = site.saddress ~ 'bio' %}
+{% set bio_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ bio_url }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ d.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ d.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ bio_url }}">
+    <meta property="og:title" content="{{ d.title }}">
+    <meta property="og:description" content="{{ d.description }}">
+    <meta property="og:image" content="{{ bio_logo_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ d.title }}">
+    <meta name="twitter:description" content="{{ d.description }}">
+    <meta name="twitter:image" content="{{ bio_logo_asset }}">
+{% endblock %}
+
+{% block content %}
+<div class="bio-container">
+    <header class="bio-header">
+        <div class="bio-avatar-wrapper">
+            <img src="{{ bio_logo_asset }}" alt="{{ site.title }}" class="bio-avatar" width="88" height="88">
+        </div>
+        <h1 class="bio-site-title">{{ site.title }}</h1>
+        <p class="bio-site-description">{{ d.description }}</p>
+        <div class="bio-badge-row">
+            <span class="bio-badge">{{ lang.index.mod_news.bio_channel_badge ?: 'Instagram Stories' }}</span>
+        </div>
+    </header>
+
+    <main class="bio-feed">
+        {% if bio_items is defined and bio_items is not empty %}
+            <div class="bio-cards-grid">
+                {% for item in bio_items %}
+                    <a href="{{ site.saddress }}news/{{ item.seo }}" class="bio-card" title="{{ item.name }}">
+                        <div class="bio-card__thumb-box">
+                            {% if item.image is defined and item.image is not empty %}
+                                <img src="{{ site.iaddress ~ 'mod_news/thumb/' ~ item.image }}" alt="{{ item.name }}" class="bio-card__thumb" loading="lazy" width="360" height="202">
+                            {% else %}
+                                <div class="bio-card__thumb bio-card__thumb--placeholder">
+                                    <i class="fa fa-newspaper-o"></i>
+                                </div>
+                            {% endif %}
+                            {% if item.category_name is defined and item.category_name is not empty %}
+                                <span class="bio-card__category">{{ item.category_name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="bio-card__content">
+                            <h2 class="bio-card__title">{{ item.name }}</h2>
+                            {% if item.summary is defined and item.summary is not empty %}
+                                <p class="bio-card__summary">{{ item.summary }}</p>
+                            {% endif %}
+                            <div class="bio-card__meta">
+                                <time class="bio-card__time" datetime="{{ item.created_at }}">{{ item.created_at|date("d.m.Y H:i") }}</time>
+                                <span class="bio-card__read-more">{{ lang.index.mod_news.read_more ?: 'Read' }} <i class="fa fa-angle-right"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bio-empty-state">
+                <i class="fa fa-newspaper-o bio-empty-icon"></i>
+                <p class="bio-empty-text">{{ lang.index.mod_news.empty_bio ?: 'No news available at this moment.' }}</p>
+                <a href="{{ site.saddress }}" class="bio-btn-home">{{ lang.index.mod_news.back_to_home ?: 'Homepage' }}</a>
+            </div>
+        {% endif %}
+    </main>
+
+    <footer class="bio-footer">
+        <a href="{{ site.saddress }}" class="bio-btn-home">
+            <i class="fa fa-home"></i> {{ lang.index.mod_news.back_to_home ?: 'Back to Homepage' }}
+        </a>
+    </footer>
+</div>
+{% endblock %}

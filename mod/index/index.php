@@ -140,6 +140,17 @@ class index_mod extends indexBase
         unset($news);
     }
 
+    public function bio($lang = null)
+    {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
+        $news = Load::helper('index.mod_news');
+        $news->bio($lang);
+        unset($news);
+    }
+
     public function publication($seo = null)
     {
         if (!$this->guardFeatureOr404('publication.front')) {

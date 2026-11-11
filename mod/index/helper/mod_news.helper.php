@@ -1152,4 +1152,49 @@ class mod_news_helper extends indexBase
         $this->theme->tpl('index/mod_news/archive');
         $this->_index();
     }
+
+    public function bio($lang = null)
+    {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
+        $activeLang = !empty($lang) ? (string) $lang : (string) ($this->site['lang'] ?? 'tr');
+        $safeLang = addslashes($activeLang);
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $activeLang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('n');
+        $publishCondition = $this->getPublishedDateCondition('n');
+
+        $db = new Database();
+        $sql = "SELECT DISTINCT n.id, n.name, n.seo, n.image, n.summary, n.created_at, n.lang, 
+                       c.name as category_name, c.seo as category_seo,
+                       (SELECT MAX(j.published_at) FROM mod_news_social_jobs j WHERE j.news_id = n.id AND j.platform = 'instagram_story' AND j.status = 'published') as story_published_at
+                FROM mod_news n
+                LEFT JOIN mod_news_category c ON n.category_id = c.id
+                WHERE n.status = 'y' 
+                  AND n.lang = '{$safeLang}' 
+                  AND n.category_id IN ({$allowedCatList})
+                  AND {$aclCondition}
+                  AND {$publishCondition}
+                ORDER BY (story_published_at IS NOT NULL) DESC, story_published_at DESC, n.created_at DESC
+                LIMIT 24";
+
+        $db->fetch_array($sql);
+        $items = ($db->getSize() > 0) ? $this->_cleanNewsRows($db->toArray()) : [];
+
+        $d = [
+            'title' => ($this->lang['index']['mod_news']['bio_title'] ?? 'Instagram Bio Link') . ' | ' . ($this->site['title'] ?? 'Amed Bülten'),
+            'description' => ($this->lang['index']['mod_news']['bio_description'] ?? 'Read latest featured news via our Instagram bio link.'),
+            'link' => rtrim($this->site['saddress'] ?? $this->site['address'], '/') . '/bio',
+            'keywords' => $this->lang['index']['mod_news']['keywords'] ?? 'news, bio, amed bulten',
+        ];
+
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('bio_items', $items);
+        $this->theme->ctx_set('active_lang', $activeLang);
+        $this->theme->tpl('index/mod_news/bio');
+        $this->_index();
+    }
 }

@@ -114,7 +114,7 @@ class cron_manager_helper extends indexBase
             $target = 'elections';
         }
 
-        if (in_array($target, ['market', 'sports', 'elections', 'all'], true)) {
+        if (in_array($target, ['market', 'sports', 'elections', 'social', 'all'], true)) {
             return $target;
         }
 
@@ -160,7 +160,7 @@ class cron_manager_helper extends indexBase
             echo json_encode([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Invalid cron target. Allowed targets: market, sports, elections, all.',
+                'message' => 'Invalid cron target. Allowed targets: market, sports, elections, social, all.',
                 'timestamp' => date('c'),
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             exit;
@@ -225,6 +225,26 @@ class cron_manager_helper extends indexBase
                 ];
             } catch (\Throwable $e) {
                 $tasks['elections'] = [
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ];
+            }
+        }
+
+        if ($target === 'social' || $target === 'all') {
+            try {
+                require_once lib_dir . 'NewsSocialShareService.class.php';
+                $socialRes = NewsSocialShareService::processPendingJobs(10, 'cron_web');
+                $tasks['social'] = [
+                    'status' => 'success',
+                    'processed' => $socialRes['processed'] ?? 0,
+                    'published' => $socialRes['published'] ?? 0,
+                    'in_progress' => $socialRes['in_progress'] ?? 0,
+                    'failed' => $socialRes['failed'] ?? 0,
+                    'skipped' => $socialRes['skipped'] ?? 0,
+                ];
+            } catch (\Throwable $e) {
+                $tasks['social'] = [
                     'status' => 'error',
                     'message' => $e->getMessage(),
                 ];

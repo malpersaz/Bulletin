@@ -2567,4 +2567,62 @@ document.addEventListener('DOMContentLoaded', () => {
         window.newsEditManager = new NewsEditManager(window.MOD_NEWS_EDIT_CONFIG || {});
         window.contentEditManager = window.newsEditManager;
     }
+
+    // Automated Social Sharing Interactions (Wizard & Edit Form)
+    document.addEventListener('click', (e) => {
+        const channelCard = e.target.closest('[data-action="toggle-social-channel"]');
+        if (channelCard) {
+            channelCard.classList.toggle('active');
+            const checkbox = channelCard.querySelector('.social-channel-checkbox');
+            if (checkbox) {
+                checkbox.checked = channelCard.classList.contains('active');
+            }
+        }
+
+        const retryBtn = e.target.closest('[data-action="retry-social-job"]');
+        if (retryBtn) {
+            const jobId = retryBtn.dataset.jobId;
+            if (!jobId) return;
+
+            retryBtn.disabled = true;
+            const originalHtml = retryBtn.innerHTML;
+            retryBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i>';
+
+            fetch('/mod_news/ajax_retry_social_job', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({ job_id: jobId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(data.message || 'Queued for retry', 'success');
+                    }
+                    const pill = document.querySelector(`.social-job-pill[data-job-id="${jobId}"]`);
+                    if (pill) {
+                        pill.className = 'social-job-pill status-pending';
+                        pill.textContent = 'PENDING';
+                    }
+                    retryBtn.remove();
+                } else {
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(data.message || 'Retry failed', 'error');
+                    }
+                    retryBtn.disabled = false;
+                    retryBtn.innerHTML = originalHtml;
+                }
+            })
+            .catch(() => {
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar('Connection error', 'error');
+                }
+                retryBtn.disabled = false;
+                retryBtn.innerHTML = originalHtml;
+            });
+        }
+    });
 });

@@ -245,6 +245,30 @@
                     </div>
                 </div>
             </div>
+
+            {% if social_accounts is defined and social_accounts is not empty %}
+            <div class="form-row mt-3">
+                <label class="field-section-label">{{ wizard_lang.social.share_channels_title }}</label>
+                <div class="selection-grid social-channels-grid">
+                    {% for account in social_accounts %}
+                    <div class="selection-card{% if account.auto_share_default == 'y' %} active{% endif %}" data-action="toggle-social-channel" data-account-id="{{ account.id }}">
+                        <input type="checkbox" name="social_channels[]" value="{{ account.id }}" class="visually-hidden social-channel-checkbox"{% if account.auto_share_default == 'y' %} checked{% endif %}>
+                        {% if account.platform == 'x' %}
+                            <i class="bi bi-twitter-x selection-icon"></i>
+                        {% elseif account.platform == 'facebook' %}
+                            <i class="bi bi-facebook selection-icon"></i>
+                        {% elseif account.platform == 'instagram_story' %}
+                            <i class="bi bi-instagram selection-icon"></i>
+                        {% else %}
+                            <i class="bi bi-share selection-icon"></i>
+                        {% endif %}
+                        <div class="selection-label">{{ account.account_label }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
             {% endif %}
 
             <div class="wizard-summary">

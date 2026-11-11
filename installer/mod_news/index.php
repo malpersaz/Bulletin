@@ -10,7 +10,10 @@ class mod_news extends installerbase implements installerbaseinterface
         $this->mod = 'mod_news';
         // Slider is part of the content schema, not a separate module table.
         $this->tables = array(
-            'mod_news'
+            'mod_news',
+            'mod_news_social_accounts',
+            'mod_news_social_prefs',
+            'mod_news_social_jobs'
         );
         $this->views = array(
             'newses'

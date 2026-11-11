@@ -472,4 +472,19 @@ $lang['mod_news'] = [
         'status_good' => 'جيد',
         'status_excellent' => 'ممتاز',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'المشاركة عبر وسائل التواصل الاجتماعي',
+        'custom_caption_label' => 'نص مخصص للمشاركة',
+        'custom_caption_placeholder' => 'اتركه فارغاً لاستخدام عنوان الخبر ومعاينة البطاقة...',
+        'jobs_status_title' => 'حالة النشر على وسائل التواصل',
+        'status_published' => 'تم النشر',
+        'status_pending' => 'قيد الانتظار',
+        'status_failed' => 'فشل',
+        'retry' => 'إعادة المحاولة',
+        'view_live_post' => 'عرض المنشور المباشر',
+        'retry_queued' => 'تم وضع المهمة في قائمة الانتظار لإعادة المحاولة',
+        'retry_failed' => 'فشلت إعادة المحاولة',
+    ],
 ];

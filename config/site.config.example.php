@@ -59,7 +59,7 @@ $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.64';
+$site['version'] = '1.0.65';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');
@@ -99,6 +99,9 @@ $site['mcp_cimd_allowed_hosts'] = $site['mcp_cimd_allowed_hosts'] ?? [
 // Automated Cron & Webhook Authentication (override in config/site.config.local.php or environment variables)
 $site['cron_user'] = getenv('AMED_CRON_USER') ?: ($site['cron_user'] ?? 'amed_cron');
 $site['cron_token'] = getenv('AMED_CRON_TOKEN') ?: ($site['cron_token'] ?? 'CHANGE_ME_HIGH_ENTROPY_CRON_TOKEN');
+
+// Automated Social Media API Secret Encryption Key
+$site['social_secret_key'] = getenv('AMED_SOCIAL_SECRET_KEY') ?: ($site['social_secret_key'] ?? '');
 
 $localSiteConfig = __DIR__ . DIRECTORY_SEPARATOR . 'site.config.local.php';
 if (file_exists($localSiteConfig)) {

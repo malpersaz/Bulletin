@@ -102,7 +102,7 @@ trait PublicHelperTrait
     public function getAllowedAclCondition(string $tablePrefix = 's', string $columnName = 'acl_id'): string
     {
         $idList = implode(',', $this->getAllowedAclIds());
-        $prefix = $tablePrefix !== '' ? $tablePrefix . '.' : '';
+        $prefix = $tablePrefix !== '' ? rtrim($tablePrefix, '.') . '.' : '';
         return "{$prefix}{$columnName} IN ({$idList})";
     }
 
@@ -115,7 +115,7 @@ trait PublicHelperTrait
      */
     public function getPublishedDateCondition(string $tablePrefix = '', string $columnName = 'created_at'): string
     {
-        $prefix = $tablePrefix !== '' ? $tablePrefix . '.' : '';
+        $prefix = $tablePrefix !== '' ? rtrim($tablePrefix, '.') . '.' : '';
         $now = date('Y-m-d H:i:s');
         return "{$prefix}{$columnName} <= '{$now}'";
     }

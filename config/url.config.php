@@ -104,6 +104,12 @@ $url['newses/(:any)']='index/newses/$1';
 $url['newses/(:any)/(:num)']='index/newses/$1/$2';
 $url['news-archive']='index/news_archive';
 
+// Instagram Bio Bridge Landing Page
+$url['bio'] = 'index/bio';
+$url['bio/'] = 'index/bio';
+$url['(:any)/bio'] = 'index/bio/$1';
+$url['(:any)/bio/'] = 'index/bio/$1';
+
 // Publications and Publication Category
 $url['publication']='index/publications';
 $url['publication/']='index/publications';

@@ -500,4 +500,19 @@ $lang['mod_news'] = [
         'status_good' => 'باشە',
         'status_excellent' => 'ناوازە',
     ],
+
+    // === Automated Social Sharing ===
+    'social' => [
+        'share_channels_title' => 'بڵاوکردنەوە لە تۆڕە کۆمەڵایەتییەکان',
+        'custom_caption_label' => 'دەقی تایبەتی بڵاوکردنەوە',
+        'custom_caption_placeholder' => 'بە بەتاڵی جێی بهێڵە بۆ بەکارهێنانی سەردێڕی هەواڵەکە و پێشبینینی کارتەکە...',
+        'jobs_status_title' => 'دۆخی بڵاوکردنەوەی کۆمەڵایەتی',
+        'status_published' => 'بڵاوکرایەوە',
+        'status_pending' => 'لە چاوەڕوانیدایە',
+        'status_failed' => 'سەرکەوتوو نەبوو',
+        'retry' => 'دووبارە تاقیبکەرەوە',
+        'view_live_post' => 'پۆستی ڕاستەوخۆ ببینە',
+        'retry_queued' => 'کارەکە خرایە ڕیزەوە بۆ دووبارە تاقیکردنەوە',
+        'retry_failed' => 'دووبارە تاقیکردنەوە سەرکەوتوو نەبوو',
+    ],
 ];

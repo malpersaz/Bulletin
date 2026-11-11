@@ -85,6 +85,15 @@ class mod_news_mod extends BaseModuleController
         $data['categories'] = $mod_news_category->toArray();
         $data['categories_flat'] = $data['categories'];
 
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        $data['social_accounts'] = NewsSocialShareService::getActiveAccounts();
+
+        $editId = (int) Req::Url(2);
+        if ($editId > 0) {
+            $data['social_jobs'] = NewsSocialShareService::getJobsForNews($editId);
+            $data['social_prefs'] = NewsSocialShareService::getPreferences($editId);
+        }
+
         return $data;
     }
 
@@ -190,6 +199,59 @@ class mod_news_mod extends BaseModuleController
         $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
         return $this->cleanNewsTextEntities($model);
+    }
+
+    protected function afterSave($model)
+    {
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+
+        $socialChannels = Req::Post_Safe('social_channels');
+        if (!is_array($socialChannels)) {
+            $singleChannel = Req::Post_Safe('social_channel');
+            $socialChannels = !empty($singleChannel) ? (is_array($singleChannel) ? $singleChannel : [$singleChannel]) : [];
+        }
+        $customCaption = Req::Post_Safe('social_custom_caption');
+
+        if (!empty($socialChannels) || !empty($customCaption)) {
+            NewsSocialShareService::savePreferences((int) $model->id, (array) $socialChannels, $customCaption);
+        }
+
+        if (($model->status ?? 'n') === 'y') {
+            NewsSocialShareService::enqueueForNews((int) $model->id, (array) $socialChannels, $customCaption);
+        }
+
+        return $model;
+    }
+
+    protected function afterUpdate($model, $id)
+    {
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+
+        $socialChannels = Req::Post_Safe('social_channels');
+        if (!is_array($socialChannels)) {
+            $singleChannel = Req::Post_Safe('social_channel');
+            $socialChannels = !empty($singleChannel) ? (is_array($singleChannel) ? $singleChannel : [$singleChannel]) : [];
+        }
+        $customCaption = Req::Post_Safe('social_custom_caption');
+
+        if (Req::is_Post('social_channels') || Req::is_Post('social_channel') || Req::is_Post('social_custom_caption')) {
+            NewsSocialShareService::savePreferences((int) $id, (array) $socialChannels, $customCaption);
+        }
+
+        if (($model->status ?? 'n') === 'y') {
+            NewsSocialShareService::enqueueForNews((int) $id, (array) $socialChannels, $customCaption);
+        } else {
+            NewsSocialShareService::cancelJobsForNews((int) $id);
+        }
+
+        return $model;
+    }
+
+    protected function afterDelete($id)
+    {
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        NewsSocialShareService::cancelJobsForNews((int) $id);
+        return true;
     }
 
     protected function getDatatableColumns()
@@ -716,6 +778,12 @@ class mod_news_mod extends BaseModuleController
                         $indexingService->notifyDelete($absoluteUrl);
                     }
                 }
+                require_once lib_dir . 'NewsSocialShareService.class.php';
+                if ($newVal === 'y') {
+                    NewsSocialShareService::enqueueForNews($id);
+                } else {
+                    NewsSocialShareService::cancelJobsForNews($id);
+                }
                 $response['new_status'] = $newVal;
                 $response['is_published'] = ($newVal === 'y');
                 $response['message'] = $newVal === 'y'
@@ -776,6 +844,14 @@ class mod_news_mod extends BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'y', $query, 'approval')) {
+            require_once lib_dir . 'NewsSocialShareService.class.php';
+            if (is_array($query)) {
+                foreach ($query as $newsId) {
+                    NewsSocialShareService::enqueueForNews((int) $newsId);
+                }
+            } elseif ($query > 0) {
+                NewsSocialShareService::enqueueForNews((int) $query);
+            }
             $this->echoSuccessResponse();
             return;
         }
@@ -786,9 +862,104 @@ class mod_news_mod extends BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'n', $query, 'approval')) {
+            require_once lib_dir . 'NewsSocialShareService.class.php';
+            if (is_array($query)) {
+                foreach ($query as $newsId) {
+                    NewsSocialShareService::cancelJobsForNews((int) $newsId);
+                }
+            } elseif ($query > 0) {
+                NewsSocialShareService::cancelJobsForNews((int) $query);
+            }
             $this->echoSuccessResponse();
             return;
         }
         echo 'ERROR';
+    }
+
+    public function ajax_retry_social_job()
+    {
+        if (Role::hasPermission('mod_news', 'edit') === false) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $this->lang['mod_news']['role_errors']['edit']
+            ]);
+            return;
+        }
+
+        $jobId = (int) Req::Post_Safe('job_id');
+        if ($jobId <= 0) {
+            $this->jsonResponse(['success' => false, 'message' => 'Invalid job ID']);
+            return;
+        }
+
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        $res = NewsSocialShareService::retryJob($jobId);
+
+        $this->jsonResponse([
+            'success' => $res,
+            'message' => $res 
+                ? ($this->lang['mod_news']['social']['retry_queued'] ?? 'Job queued for retry')
+                : ($this->lang['mod_news']['social']['retry_failed'] ?? 'Failed to retry job')
+        ]);
+    }
+
+    public function ajax_test_social_connection()
+    {
+        if (Role::hasPermission('mod_news', 'edit') === false) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $this->lang['mod_news']['role_errors']['edit']
+            ]);
+            return;
+        }
+
+        $accountId = (int) Req::Post_Safe('account_id');
+        if ($accountId <= 0) {
+            $this->jsonResponse(['success' => false, 'message' => 'Invalid account ID']);
+            return;
+        }
+
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        $account = NewsSocialShareService::getAccountById($accountId);
+        if (!$account) {
+            $this->jsonResponse(['success' => false, 'message' => 'Account not found']);
+            return;
+        }
+
+        $provider = NewsSocialShareService::getProvider($account['platform']);
+        if (!$provider) {
+            $this->jsonResponse(['success' => false, 'message' => 'Unsupported platform']);
+            return;
+        }
+
+        $credentials = SocialCrypto::decryptPayload($account['credentials_cipher'] ?? '') ?? [];
+        $result = $provider->verifyConnection($credentials, $account['external_account_id']);
+
+        $this->jsonResponse($result);
+    }
+
+    public function ajax_get_social_jobs()
+    {
+        if (Role::hasPermission('mod_news', 'list') === false && Role::hasPermission('mod_news', 'edit') === false) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $this->lang['mod_news']['role_errors']['list']
+            ]);
+            return;
+        }
+
+        $newsId = (int) Req::Post_Safe('news_id');
+        if ($newsId <= 0) {
+            $this->jsonResponse(['success' => false, 'jobs' => []]);
+            return;
+        }
+
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        $jobs = NewsSocialShareService::getJobsForNews($newsId);
+
+        $this->jsonResponse([
+            'success' => true,
+            'jobs' => $jobs,
+        ]);
     }
 }

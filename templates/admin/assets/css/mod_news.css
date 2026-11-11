@@ -1791,3 +1791,167 @@ mark.news-search-hit {
 }
 
 
+
+/* Automated Social Sharing UI Components (Phone-Only Admin) */
+.social-channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.social-jobs-card {
+    background: var(--md-sys-color-surface-container, #f3edf7);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 14px;
+    border: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+}
+
+.social-jobs-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.social-jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.social-job-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--md-sys-color-surface, #ffffff);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    font-size: 0.82rem;
+}
+
+.social-job-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.social-job-platform-icon {
+    font-size: 1.1rem;
+    color: var(--md-sys-color-primary, #6750a4);
+    flex-shrink: 0;
+}
+
+.social-job-label {
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.social-job-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.social-job-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.social-job-pill.status-published {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.social-job-pill.status-pending,
+.social-job-pill.status-processing {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.social-job-pill.status-failed {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.social-job-pill.status-skipped,
+.social-job-pill.status-cancelled {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.social-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--md-sys-color-primary-container, #eaddff);
+    color: var(--md-sys-color-on-primary-container, #21005d);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.social-link-btn:hover {
+    color: var(--md-sys-color-primary, #6750a4);
+}
+
+.social-retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.social-retry-btn:hover {
+    background: #fecaca;
+}
+
+.social-caption-box {
+    margin-top: 12px;
+}
+
+.social-caption-textarea {
+    width: 100%;
+    min-height: 64px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: vertical;
+    background: var(--md-sys-color-surface, #ffffff);
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    box-sizing: border-box;
+}
+
+.social-caption-textarea:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary, #6750a4);
+    box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.15);
+}

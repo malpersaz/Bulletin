@@ -1,6 +1,38 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.65] - 2026-11-11
+- **`mod_event` & `mod_event_category` Permissions Seed Task (`tasks/seed_event_roles_perms.php`)**:
+  - Implemented standalone seed task to populate default role-based access control (RBAC) permissions across `mod_event` and `mod_event_category` modules for standard user groups (Super Admin, Admin, Editor, Author, Contributor).
+- **`mod_news` Automated Social Sharing Architecture (`docs/plan/x-mod-news-social-auto-share-architecture-plan.md`)**:
+  - **Multi-Platform Provider Architecture (`lib/SocialProviders/`)**:
+    - **Provider Interface (`lib/SocialProviders/SocialProviderInterface.php`)**: Defined unified contract for social media dispatching, test connection verification, platform identification, rate limit handling, and structured result payload.
+    - **X / Twitter API v2 (`lib/SocialProviders/XProvider.class.php`)**: Implemented OAuth 1.0a User Context authentication (HMAC-SHA1) with dual-mode publishing (Link Card preview with summary_large_image and Native Media upload via chunks), rate limit header parsing (`x-rate-limit-reset`), and daily post quota enforcement.
+    - **Facebook Pages Graph API v27.0 (`lib/SocialProviders/FacebookPageProvider.class.php`)**: Implemented automated feed publishing via long-lived Meta Business Portfolio System User Access Tokens (SUAT), resolving canonical OpenGraph metadata previews.
+    - **Instagram Stories Graph API v27.0 (`lib/SocialProviders/InstagramStoryProvider.class.php`)**: Implemented container-based story publishing pipeline (`media_type=STORIES`), asynchronous container status polling (`FINISHED`), and strict sRGB JPEG format adherence.
+  - **Dynamic 9:16 Vertical Story Card Generator (`lib/SocialStoryCardGenerator.class.php`)**:
+    - Built a high-performance visual story card generator using pure native `\Imagick` (zero GD dependency, compatible with environments lacking `ext-gd`).
+    - Composes 1080x1920 canvas adhering to Instagram safe zones (top 240px, bottom 340px) with aspect-fill blurred hero background (`blurImage(40, 20)`), dark overlay scrim, rounded hero card (920x860), multi-line headline typography with dynamic font size stepping, category pill, publication timestamp, publication masthead, and localized call-to-action pill ("Biyodaki linkten okuyun" / "Ji lînka biyoyê bixwînin").
+    - Supports bundled TrueType fonts in `templates/base_static/fonts/social/` (`NotoSans-Bold.ttf`, `NotoSans-Regular.ttf`, `NotoNaskhArabic-Bold.ttf`) with bi-directional RTL support for Arabic, Sorani Kurdish, and Persian.
+    - Includes automatic OpenGraph 1200x630 companion generation and rolling 72-hour cleanup of expired story cards.
+  - **Transactional Outbox Engine & Models (`lib/NewsSocialShareService.class.php`, `mod/mod_news/model/`)**:
+    - **Database Schemas & Models**: Added `mod_news_social_accounts`, `mod_news_social_prefs`, and `mod_news_social_jobs` tables with corresponding ORM models and AES-256-CBC + HMAC-SHA-256 encryption (`lib/SocialCrypto.class.php`) for API secrets.
+    - **Outbox Enqueueing & Idempotency**: Automatically creates pending jobs when news items are created, updated, approved, or published, guarded by composite unique idempotency keys (`news:{id}:acct:{id}`).
+    - **Lifecycle Synchronization**: Cancels uncompleted outbox jobs when an article is unpublished, deleted, or unapproved.
+  - **Background Worker & Web Cron Infrastructure (`tasks/social_share_worker.php`, `mod/index/helper/cron_manager.helper.php`)**:
+    - **CLI Worker**: Created robust CLI daemon / single-run worker (`tasks/social_share_worker.php`) with `--once`, `--daemon`, `--limit=N` arguments, signal handling (SIGTERM, SIGINT), atomic job reservation (`in_progress` with worker token), exponential backoff retries (`next_attempt_at`), and daily limit quota throttling.
+    - **Web Cron Route**: Added `'social'` target to `cron_manager.helper.php` (`GET /cron/social`) protected by session authentication, basic auth, and high-entropy cron token.
+  - **Public Instagram Bio Bridge Landing Page (`/bio`, `/{lang}/bio`)**:
+    - Added dedicated fast mobile-friendly landing route in `config/url.config.php` and `mod/index/helper/mod_news.helper.php::bio()`.
+    - Serves Instagram-shared and featured articles prioritized by story publication date with responsive thumbnails, categories, timestamps, and Wikipedia-style SEO article URLs.
+    - Hardened `PublicHelperTrait.php` table prefix handling (`rtrim($tablePrefix, '.')`) to defend against SQL syntax regressions.
+  - **Mobile-First Admin UI & 11-Locale Parity (`templates/admin/mod_news/`, `mod/mod_news/lang/`, `mod/index/lang/`)**:
+    - Integrated social share toggles into Add News Wizard (Step 8) and Edit News form (Card 4) adhering strictly to the phone-only mobile admin contract.
+    - Complete code separation with 0 inline CSS and 0 inline JS, powered by external handlers in `templates/admin/assets/js/mod_news.js` and responsive styles in `templates/admin/assets/css/mod_news.css`.
+    - Added retry action button and live post link status indicators for active social jobs.
+    - Achieved 100% dictionary key parity across all 11 supported languages (`en`, `ku`, `tr`, `ar`, `ckb`, `de`, `fa`, `fr`, `ru`, `sv`, `zza`).
+
+
 ## [v1.0.64] - 2026-11-11
 - **`mod_event` UI/UX Parity with `mod_news`, Admin Navigation & Global Error Handling Hardening**:
   - **`mod_event` UI/UX Parity (`templates/admin/mod_event/`, `templates/admin/assets/js/mod_event.js`, `templates/admin/assets/css/mod_event.css`, `mod/mod_event/lang/`)**:

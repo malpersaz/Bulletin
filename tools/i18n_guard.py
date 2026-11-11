@@ -70,7 +70,7 @@ DEV_TERMS = {
     "rgb", "rgba", "hsl", "hsla", "pk", "ai", "tinymce", "mce", "nfc", "enum", "qtype",
     "ttl", "proj", "vars", "reqs", "accs", "dbrefs", "rownum",
     "kb", "mb", "gb", "tb", "fps", "hd", "sd",
-    "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini",
+    "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini", "idempotency", "prefs", "bio",
     "modality", "modalities", "vimeo", "mailto", "telehealth", "og", "tiktok", "tik", "tok",
     "unhtmlentities", "temizle", "hsc", "cdata", "aylar", "kontrol",
     "tema", "secenek", "resimgetir", "ust", "arsiv", "yil", "fullmanset", "anket", "oyver", "kat"
