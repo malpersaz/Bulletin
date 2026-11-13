@@ -11,6 +11,7 @@ class mod_event_mod extends BaseModuleController
     protected $has_gallery = true;
     protected $has_files = true;
     protected $has_faq = true;
+    protected $has_social_posts = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -103,7 +104,9 @@ class mod_event_mod extends BaseModuleController
             $model->seo = Helper::legacy_seo($model->name);
         }
 
-        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        if (Req::is_Post('video')) {
+            $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        }
 
         return $model;
     }
@@ -151,7 +154,9 @@ class mod_event_mod extends BaseModuleController
             $model->seo = Helper::legacy_seo($model->name);
         }
 
-        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        if (Req::is_Post('video')) {
+            $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        }
 
         return $model;
     }

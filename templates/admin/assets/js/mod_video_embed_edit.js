@@ -93,7 +93,9 @@ function initVideoEmbedForm() {
         missingContent: form.dataset.i18nMissingContent || 'Content',
         uploadPlaceholder: form.dataset.i18nUploadText || 'Tap or Drag to Upload Image',
         previewText: form.dataset.i18nPreviewText || 'Preview',
-        fallbackSlug: form.dataset.i18nFallbackSlug || 'video'
+        fallbackSlug: form.dataset.i18nFallbackSlug || 'video',
+        providerFacebook: form.dataset.i18nProviderFacebook || 'Facebook',
+        noVideoSocial: form.dataset.i18nNoVideoSocial || 'This social post does not contain a video. Add it under Social Media Posts instead.'
     };
 
     /**
@@ -186,7 +188,24 @@ function initVideoEmbedForm() {
     }
 
     /**
-     * Parse video source (X, YouTube, Vimeo) from embed iframe or watch/short/share URL
+     * Checks whether input points to a non-video social media post.
+     */
+    function isNonVideoSocialInput(input) {
+        let raw = (input || '').toString().trim();
+        if (!raw) return false;
+        if (raw.includes('&lt;') || raw.includes('&gt;') || raw.includes('&quot;') || raw.includes('&#')) {
+            const txt = document.createElement('textarea');
+            txt.innerHTML = raw;
+            raw = txt.value;
+        }
+        if (/(?:x|twitter)\.com\/[^/\s]+\/status(?:es)?\/\d{5,25}\/photo\/\d+/i.test(raw)) return true;
+        if (/facebook\.com\/(?:plugins\/post\.php|[^/\s]+\/posts\/|posts\/|permalink\.php|story\.php|photo\.php|[^/\s]+\/photos\/|photos\/|share\/p\/)/i.test(raw)) return true;
+        if (/instagram\.com\/(?:[^/\s]+\/)?p\//i.test(raw)) return true;
+        return false;
+    }
+
+    /**
+     * Parse video source (X, YouTube, Vimeo, Facebook Video) from embed iframe or watch/short/share URL
      */
     function detectVideoSource(input) {
         let raw = (input || '').toString().trim();
@@ -197,6 +216,10 @@ function initVideoEmbedForm() {
             const txt = document.createElement('textarea');
             txt.innerHTML = raw;
             raw = txt.value;
+        }
+
+        if (isNonVideoSocialInput(raw)) {
+            return null;
         }
 
         // X (Twitter)
@@ -214,6 +237,73 @@ function initVideoEmbedForm() {
                     canonicalUrl: 'https://x.com/' + (handle || 'i') + '/status/' + statusId
                 };
             }
+        }
+
+        // Facebook (video & reel URLs only — checked before YouTube so ?v= params do not collide)
+        const facebookPluginMatch = raw.match(/facebook\.com\/plugins\/video\.php\?(?:[^"'\s<>]*&)?href=([^"'\s<>&#]+)/i);
+        if (facebookPluginMatch) {
+            try {
+                const innerHref = decodeURIComponent(facebookPluginMatch[1]);
+                if (innerHref) return detectVideoSource(innerHref);
+            } catch (err) {
+                // Ignore malformed percent encoding
+            }
+        }
+
+        const facebookWatchMatch = raw.match(/(?:www\.|m\.)?facebook\.com\/(?:watch\/?\?(?:[^#\s]*&)?|video\.php\?(?:[^#\s]*&)?)v=(\d{5,32})/i);
+        if (facebookWatchMatch) {
+            return {
+                provider: 'facebook',
+                id: facebookWatchMatch[1],
+                cacheKey: 'fb_' + facebookWatchMatch[1],
+                startSeconds: 0,
+                canonicalUrl: 'https://www.facebook.com/watch/?v=' + facebookWatchMatch[1]
+            };
+        }
+
+        const facebookPageVideoMatch = raw.match(/(?:www\.|m\.)?facebook\.com\/([A-Za-z0-9_.-]+)\/videos\/(?:[^/\s]+\/)?(\d{5,32})/i);
+        if (facebookPageVideoMatch) {
+            return {
+                provider: 'facebook',
+                id: facebookPageVideoMatch[2],
+                cacheKey: 'fb_' + facebookPageVideoMatch[2],
+                startSeconds: 0,
+                canonicalUrl: 'https://www.facebook.com/' + facebookPageVideoMatch[1] + '/videos/' + facebookPageVideoMatch[2]
+            };
+        }
+
+        const facebookReelMatch = raw.match(/(?:www\.|m\.)?facebook\.com\/reel\/(\d{5,32})/i);
+        if (facebookReelMatch) {
+            return {
+                provider: 'facebook',
+                id: facebookReelMatch[1],
+                cacheKey: 'fb_reel_' + facebookReelMatch[1],
+                startSeconds: 0,
+                canonicalUrl: 'https://www.facebook.com/reel/' + facebookReelMatch[1]
+            };
+        }
+
+        const facebookShareMatch = raw.match(/(?:www\.|m\.)?facebook\.com\/share\/([vr])\/([A-Za-z0-9_-]{4,100})/i);
+        if (facebookShareMatch) {
+            const shareKind = facebookShareMatch[1].toLowerCase();
+            return {
+                provider: 'facebook',
+                id: 'share_' + shareKind + '_' + facebookShareMatch[2],
+                cacheKey: 'fb_share_' + shareKind + '_' + facebookShareMatch[2],
+                startSeconds: 0,
+                canonicalUrl: 'https://www.facebook.com/share/' + shareKind + '/' + facebookShareMatch[2] + '/'
+            };
+        }
+
+        const facebookShortMatch = raw.match(/fb\.watch\/([A-Za-z0-9_-]{4,64})/i);
+        if (facebookShortMatch) {
+            return {
+                provider: 'facebook',
+                id: 'fbwatch_' + facebookShortMatch[1],
+                cacheKey: 'fb_watch_' + facebookShortMatch[1],
+                startSeconds: 0,
+                canonicalUrl: 'https://fb.watch/' + facebookShortMatch[1] + '/'
+            };
         }
 
         // YouTube
@@ -238,7 +328,7 @@ function initVideoEmbedForm() {
         const shortUrlMatch = raw.match(/youtu\.be\/([A-Za-z0-9_-]{11})/i);
         if (shortUrlMatch) return buildYouTubeInfo(shortUrlMatch[1]);
 
-        const watchMatch = raw.match(/[?&]v=([A-Za-z0-9_-]{11})/i);
+        const watchMatch = /(?:youtube\.com|youtu\.be)/i.test(raw) ? raw.match(/[?&]v=([A-Za-z0-9_-]{11})(?:[&#]|$)/i) : null;
         if (watchMatch) return buildYouTubeInfo(watchMatch[1]);
 
         if (/^[A-Za-z0-9_-]{11}$/.test(raw)) {
@@ -254,7 +344,7 @@ function initVideoEmbedForm() {
     function updateProviderBadge(sourceInfo) {
         const badge = document.getElementById('embedProviderBadge');
         if (!badge) return;
-        badge.classList.remove('is-x', 'is-youtube');
+        badge.classList.remove('is-x', 'is-youtube', 'is-facebook');
 
         if (!sourceInfo) {
             badge.innerHTML = '<i class="bi bi-link-45deg"></i> <span class="badge-text">' + (i18n.providerCustom || 'Link / Embed') + '</span>';
@@ -269,6 +359,10 @@ function initVideoEmbedForm() {
         } else if (sourceInfo.provider === 'youtube') {
             badge.classList.add('is-youtube');
             badge.innerHTML = '<i class="bi bi-youtube"></i> <span class="badge-text">' + (i18n.providerYoutube || 'YouTube') + '</span>';
+            if (embedPreview) embedPreview.classList.remove('is-provider-x');
+        } else if (sourceInfo.provider === 'facebook') {
+            badge.classList.add('is-facebook');
+            badge.innerHTML = '<i class="bi bi-facebook"></i> <span class="badge-text">' + (i18n.providerFacebook || 'Facebook') + '</span>';
             if (embedPreview) embedPreview.classList.remove('is-provider-x');
         }
     }
@@ -493,6 +587,15 @@ function initVideoEmbedForm() {
             return;
         }
 
+        if (isNonVideoSocialInput(rawVal)) {
+            lastFetchedVideoId = '';
+            updateProviderBadge(null);
+            embedInputDebounceTimer = setTimeout(() => {
+                showAutofillAjaxAlert(i18n.information, i18n.noVideoSocial, [], true);
+            }, 200);
+            return;
+        }
+
         const detected = detectVideoSource(rawVal);
         updateProviderBadge(detected);
 
@@ -563,6 +666,16 @@ function initVideoEmbedForm() {
     if (originalInput) {
         originalInput.addEventListener('input', () => {
             const rawVal = originalInput.value.trim();
+            if (isNonVideoSocialInput(rawVal)) {
+                lastFetchedVideoId = '';
+                updateProviderBadge(null);
+                if (embedInputDebounceTimer) clearTimeout(embedInputDebounceTimer);
+                embedInputDebounceTimer = setTimeout(() => {
+                    showAutofillAjaxAlert(i18n.information, i18n.noVideoSocial, [], true);
+                }, 200);
+                return;
+            }
+
             const detected = detectVideoSource(rawVal);
             if (detected && detected.cacheKey !== lastFetchedVideoId && (!embedInput || !embedInput.value.trim())) {
                 updateProviderBadge(detected);

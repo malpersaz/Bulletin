@@ -398,6 +398,7 @@ $lang['mod_news'] = [
         'delete_success' => 'Haber silindi!',
         'add_video' => 'Video Ekle',
         'add_file' => 'Dosya Ekle',
+        'social_post' => 'Sosyal Gönderiler',
     ],
 
         'show_on_homepage' => 'Anasayfada Göster',
@@ -424,6 +425,7 @@ $lang['mod_news'] = [
         'gallery' => 'Mevcut Galeriyi Seç',
         'file' => 'Mevcut Dosyayı Seç',
         'video' => 'Mevcut Videoyu Seç',
+        'social_post' => 'Sosyal Gönderileri Yönet',
     ],
 
     // === Latest News ===

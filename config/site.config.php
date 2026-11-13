@@ -59,7 +59,7 @@ $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.67';
+$site['version'] = '1.0.68';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');

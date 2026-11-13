@@ -35,6 +35,7 @@ require_once(lib_dir . 'McpSeoTools.class.php');
 require_once(lib_dir . 'McpSliderTools.class.php');
 require_once(lib_dir . 'McpSurveyTools.class.php');
 require_once(lib_dir . 'McpVideoTools.class.php');
+require_once(lib_dir . 'McpSocialPostTools.class.php');
 require_once(lib_dir . 'McpResourceManager.class.php');
 require_once(lib_dir . 'McpPromptManager.class.php');
 
@@ -163,7 +164,7 @@ class McpServer
 
     public const TOOLSET_GROUPS = [
         'content' => ['news', 'page', 'publication', 'announcement', 'headline'],
-        'media' => ['gallery', 'video', 'attachment', 'document', 'imagecategories'],
+        'media' => ['gallery', 'video', 'socialmedia_post', 'attachment', 'document', 'imagecategories'],
         'taxonomy' => ['menu', 'faq', 'survey'],
         'system' => ['settings', 'acl', 'popup', 'redirect', 'seo', 'slider'],
     ];
@@ -197,6 +198,7 @@ class McpServer
         'slider' => McpSliderTools::class,
         'survey' => McpSurveyTools::class,
         'video' => McpVideoTools::class,
+        'socialmedia_post' => McpSocialPostTools::class,
     ];
 
     /**

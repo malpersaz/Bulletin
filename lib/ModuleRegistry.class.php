@@ -78,6 +78,14 @@ class ModuleRegistry
             'modules' => ['mod_event_category', 'mod_gallery', 'mod_user'],
             'tables' => ['mod_event_category', 'mod_gallery', 'mod_user'],
         ],
+        'mod_socialmedia_post_mod' => [
+            'modules' => ['mod_user'],
+            'tables' => ['mod_user'],
+        ],
+        'mod_socialmedia_post' => [
+            'modules' => ['mod_socialmedia_post_mod', 'mod_user'],
+            'tables' => ['mod_socialmedia_post_mod', 'mod_user'],
+        ],
     ];
 
     private $uninstallDependents = [
@@ -85,6 +93,7 @@ class ModuleRegistry
         'mod_publication_category' => ['mod_publication'],
         'mod_video_embed_category' => ['mod_video_embed'],
         'mod_event_category' => ['mod_event'],
+        'mod_socialmedia_post_mod' => ['mod_socialmedia_post'],
     ];
 
     public function getFeatureConfig($feature)

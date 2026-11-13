@@ -11,6 +11,7 @@ class mod_page_mod extends BaseModuleController
     protected $has_gallery = true;
     protected $has_files = true;
     protected $has_faq = true;
+    protected $has_social_posts = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -807,12 +808,19 @@ class mod_page_mod extends BaseModuleController
             }
 
             if ($this->mod_page_model->save(TRUE)) {
+                $savedPageId = (int) ($this->mod_page_model->id ?? 0);
+                if ($savedPageId <= 0) {
+                    $savedPageId = (int) $this->db->insert_id();
+                }
                 if ($this->syncMenuRecord($menuBinding, '', (int) $this->mod_page_model->user_id) === FALSE) {
                     if (isset($image->url)) {
                         $image->_rollback();
                     }
                     $this->_error_message($this->lang['mod_page']['messages']['error']['add']);
                     return FALSE;
+                }
+                if ($savedPageId > 0) {
+                    $this->syncRelatedSocialPosts($savedPageId, (string) $this->mod_page_model->content, $_POST['social_post_ids'] ?? null);
                 }
                 $this->_success_message($this->lang['mod_page']['messages']['success']['add']);
                 
@@ -944,6 +952,8 @@ class mod_page_mod extends BaseModuleController
                     $this->db->query("UPDATE `mod_menu` SET `url` = " . $this->db->quote($newUrl) . " WHERE `url` = " . $this->db->quote($url));
                 }
 
+                $this->syncRelatedSocialPosts((int) $id, (string) $this->mod_page_model->content, $_POST['social_post_ids'] ?? null);
+
                 $this->_success_message($this->lang['mod_page']['messages']['success']['edit']);
 
                 // Notify Google Indexing API of page update
@@ -1071,6 +1081,7 @@ class mod_page_mod extends BaseModuleController
             // Delete related files if exists
             Run::import('mod_attachment', '_remove', ['mod_page', $this->mod_page_model->id]);
         }
+        $this->removeRelatedSocialPosts((int) $this->mod_page_model->id);
 
         // Notify Google Indexing API of deletion
         $site_config = Registry::get('site_config');

@@ -120,6 +120,7 @@ class mod_publication_helper extends indexBase
         }
 
         $pub_data = $this->enrichTimestampFields($publication->toArray());
+        $pub_data = $this->enrichRowWithSocialPosts('mod_publication', (int) $publication->id, $pub_data);
         $this->theme->ctx_set('d', $pub_data);
         $this->theme->ctx_set('detail', $pub_data);
         $this->theme->tpl('index/mod_publication/publication');

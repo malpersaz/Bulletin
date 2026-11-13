@@ -7,6 +7,7 @@
  * - mod_gallery_mod
  * - mod_attachment_mod
  * - mod_faq_mod
+ * - `mod_socialmedia_post_mod` / `mod_socialmedia_post_link`
  * - static/<module>/ uploaded images and thumbnails
  * 
  * Safely handles scenarios where optional bridge modules are uninstalled or missing.
@@ -99,6 +100,16 @@ class BridgeCleanupService
             } catch (\Throwable $e) {}
         }
 
+        if (self::tableExists('mod_socialmedia_post_mod') || self::tableExists('mod_socialmedia_post_link')) {
+            try {
+                if (class_exists('Run') && file_exists(root_dir . 'mod/mod_socialmedia_post/index.php')) {
+                    Run::import('mod_socialmedia_post', '_remove', [$modName, $recordId]);
+                } elseif (self::tableExists('mod_socialmedia_post_link')) {
+                    $db->query("DELETE FROM `mod_socialmedia_post_link` WHERE `mod_name` = '{$modNameSafe}' AND `vid` = {$recordId}");
+                }
+            } catch (\Throwable $e) {}
+        }
+
         if (!empty($image)) {
             self::deleteImageFile($modName, $image, $imageOptions);
         }
@@ -151,6 +162,11 @@ class BridgeCleanupService
             try {
                 Run::import('mod_faq', '_remove', [$modName]);
             } catch (\Throwable $e) {}
+            if (file_exists(root_dir . 'mod/mod_socialmedia_post/index.php')) {
+                try {
+                    Run::import('mod_socialmedia_post', '_remove', [$modName]);
+                } catch (\Throwable $e) {}
+            }
         } else {
             if (self::tableExists('mod_gallery')) {
                 try {
@@ -167,9 +183,14 @@ class BridgeCleanupService
                     $db->query("DELETE FROM `mod_faq` WHERE `mod_name` = '{$modNameSafe}'");
                 } catch (\Throwable $e) {}
             }
+            if (self::tableExists('mod_socialmedia_post_link')) {
+                try {
+                    $db->query("DELETE FROM `mod_socialmedia_post_link` WHERE `mod_name` = '{$modNameSafe}'");
+                } catch (\Throwable $e) {}
+            }
         }
 
-        // 3. Delete registry rows in mod_gallery_mod, mod_attachment_mod, mod_faq_mod
+        // 3. Delete registry rows in mod_gallery_mod, mod_attachment_mod, mod_faq_mod, mod_socialmedia_post_mod
         if (self::tableExists('mod_gallery_mod')) {
             try {
                 $db->query("DELETE FROM `mod_gallery_mod` WHERE `mod_name` = '{$modNameSafe}'");
@@ -185,6 +206,12 @@ class BridgeCleanupService
         if (self::tableExists('mod_faq_mod')) {
             try {
                 $db->query("DELETE FROM `mod_faq_mod` WHERE `mod_name` = '{$modNameSafe}'");
+            } catch (\Throwable $e) {}
+        }
+
+        if (self::tableExists('mod_socialmedia_post_mod')) {
+            try {
+                $db->query("DELETE FROM `mod_socialmedia_post_mod` WHERE `mod_name` = '{$modNameSafe}'");
             } catch (\Throwable $e) {}
         }
 

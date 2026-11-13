@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Alternar código',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Enlace / Inserción',
         'tombstone_error' => 'Esta publicación ya no está disponible o es privada.',
         'no_video_in_post' => 'No se encontró ningún video en esta publicación.',
@@ -153,6 +154,7 @@ $lang['mod_video_embed'] = [
         'length' => '%s debe tener entre %s y %s caracteres',
         'inarray' => 'El campo %s solo puede tomar los valores \' %s \'',
         'unsupported_emoji' => 'No se permiten emojis o caracteres no compatibles en el campo %s.',
+        'err_no_video_use_social_post' => 'Esta publicación social no contiene un video. Agréguela en Publicaciones Sociales.',
     ],
     'context_menu' => [
         'title' => 'Acciones',

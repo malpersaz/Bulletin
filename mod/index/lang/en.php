@@ -196,6 +196,9 @@ $lang['index']['mod_video_embed'] = [
     'external_media_notice_x' => 'Clicking play connects directly to X (Twitter) and loads external media.',
     'external_media_notice_youtube' => 'Clicking play connects directly to YouTube and loads external media.',
     'source_attribution' => 'Source',
+    'load_facebook_video' => 'Play Facebook Video',
+    'view_on_facebook' => 'View on Facebook',
+    'external_media_notice_facebook' => 'Clicking play connects directly to Facebook and loads external media.',
 ];
 
 $lang['index']['mod_video_embed']['latest_videos'] = [
@@ -207,6 +210,16 @@ $lang['index']['mod_video_embed']['latest_videos'] = [
 ];
 
 # mod_pictures
+$lang['index']['mod_socialmedia_post'] = [
+    'title' => 'Social Media Post',
+    'view_on_x' => 'View on X',
+    'view_on_facebook' => 'View on Facebook',
+    'view_on_instagram' => 'View on Instagram',
+    'view_original_post' => 'View Original Post',
+    'source_label' => 'Source',
+    'related_posts' => 'Related Social Media Posts',
+];
+
 $lang['index']['mod_pictures'] = [
     'title' => 'Photo Gallery',
     '1' => 'Photo Gallery',

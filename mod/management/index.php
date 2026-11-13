@@ -151,6 +151,7 @@ class management_mod extends indexBase
         $this->theme->lang(Load::lang('mod_acl'));
         $this->theme->lang(Load::lang('mod_seo'));
         $this->theme->lang(Load::lang('mod_settings'));
+        $this->theme->lang(Load::lang('mod_socialmedia_post'));
 
         $sharedModules = [
             'mod_news' => $this->isFeatureReady('news.front'),
@@ -161,6 +162,8 @@ class management_mod extends indexBase
         ];
         $sharedModuleHealth = [
             'mod_news' => $this->getModuleHealth('mod_news'),
+            'mod_socialmedia_post' => $this->getModuleHealth('mod_socialmedia_post'),
+            'mod_socialmedia_post_mod' => $this->getModuleHealth('mod_socialmedia_post_mod'),
             'mod_publication' => $this->getModuleHealth('mod_publication'),
             'mod_video_embed' => $this->getModuleHealth('mod_video_embed'),
             'mod_event' => $this->getModuleHealth('mod_event'),

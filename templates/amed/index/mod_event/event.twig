@@ -4,7 +4,8 @@
 {% block css_custom %}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/events.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}-20261113v3">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/social-post.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
@@ -214,7 +215,7 @@
 
             {# Rich HTML Content Body #}
             <div class="event-content-body detail-content mb-4">
-                {{ d.content|raw }}
+                {{ (d.rendered_content is defined ? d.rendered_content : d.content)|raw }}
             </div>
 
             {% if video is not empty %}
@@ -409,5 +410,5 @@
 {% endblock %}
 
 {% block js_custom %}
-    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}-20261113v2" defer></script>
 {% endblock %}

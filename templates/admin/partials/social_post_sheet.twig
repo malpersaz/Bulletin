@@ -1,0 +1,107 @@
+{% if lang.mod_socialmedia_post is defined and lang.mod_socialmedia_post is not null %}
+{% set sp_sheet = lang.mod_socialmedia_post.sheet %}
+<div class="sp-sheet-overlay" id="socialPostSheetOverlay"></div>
+<aside class="sp-sheet" id="socialPostSheet" aria-hidden="true" role="dialog" aria-labelledby="spSheetTitle">
+    <div class="sp-sheet-handle" aria-hidden="true"></div>
+
+    <div class="sp-sheet-header">
+        <div class="sp-sheet-title-wrap">
+            <h3 class="sp-sheet-title" id="spSheetTitle">{{ sp_sheet.title }}</h3>
+            <p class="sp-sheet-subtitle" id="spSheetSubtitle">{{ sp_sheet.subtitle }}</p>
+        </div>
+        <button type="button" class="sp-icon-btn" id="spSheetCloseBtn" aria-label="{{ sp_sheet.close_button }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="sp-sheet-tabs" role="tablist">
+        <button type="button" class="sp-sheet-tab is-active" data-sp-tab="new" role="tab">{{ sp_sheet.tab_new }}</button>
+        <button type="button" class="sp-sheet-tab" data-sp-tab="library" role="tab">{{ sp_sheet.tab_library }}</button>
+        <button type="button" class="sp-sheet-tab" data-sp-tab="linked" role="tab">
+            <span>{{ sp_sheet.tab_linked }}</span>
+            <span class="sp-count-pill" id="spSheetLinkedCount">0</span>
+        </button>
+    </div>
+
+    <div class="sp-sheet-body">
+        <div class="sp-sheet-feedback sp-hidden" id="spSheetFeedback"></div>
+
+        <section data-sp-panel="new" class="sp-field">
+            <label for="spSheetUrlInput">{{ sp_sheet.url_label }}</label>
+            <input
+                type="url"
+                id="spSheetUrlInput"
+                class="sp-input"
+                placeholder="{{ sp_sheet.url_placeholder }}"
+                autocomplete="off"
+            >
+            <div class="sp-autofill-actions">
+                <button type="button" class="sp-btn" id="spSheetPasteBtn">{{ lang.mod_socialmedia_post.autofill.paste_button }}</button>
+                <button type="button" class="sp-btn sp-btn-subtle" id="spSheetFetchBtn">{{ sp_sheet.fetch_button }}</button>
+                <button type="button" class="sp-btn sp-btn-primary" id="spSheetQuickSaveBtn">
+                    <span id="spSheetQuickSaveLabel">{{ sp_sheet.insert_button }}</span>
+                </button>
+            </div>
+
+            <div class="sp-sheet-preview sp-hidden" id="spSheetPreviewBox">
+                <span class="sp-provider-badge" id="spSheetPreviewProvider"></span>
+                <div class="sp-card-body">
+                    <img class="sp-card-thumb sp-hidden" id="spSheetPreviewThumb" src="" alt="">
+                    <div class="sp-card-info">
+                        <p class="sp-card-snippet" id="spSheetPreviewCaption"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sp-field">
+                <label for="spSheetNameInput">{{ sp_sheet.title_label }}</label>
+                <input
+                    type="text"
+                    id="spSheetNameInput"
+                    class="sp-input"
+                    maxlength="255"
+                    placeholder="{{ sp_sheet.title_placeholder }}"
+                >
+            </div>
+        </section>
+
+        <section data-sp-panel="library" class="sp-field sp-hidden">
+            <div class="sp-search-bar">
+                <i class="bi bi-search"></i>
+                <input
+                    type="search"
+                    id="spSheetLibrarySearch"
+                    placeholder="{{ sp_sheet.search_placeholder }}"
+                    aria-label="{{ sp_sheet.search_placeholder }}"
+                >
+            </div>
+
+            <div class="sp-filter-row">
+                <button type="button" class="sp-pill is-active" data-sp-sheet-provider="all">{{ sp_sheet.all_providers }}</button>
+                <button type="button" class="sp-pill" data-sp-sheet-provider="x"><i class="bi bi-twitter-x"></i> {{ lang.mod_socialmedia_post.autofill.provider_x }}</button>
+                <button type="button" class="sp-pill" data-sp-sheet-provider="facebook"><i class="bi bi-facebook"></i> {{ lang.mod_socialmedia_post.autofill.provider_facebook }}</button>
+                <button type="button" class="sp-pill" data-sp-sheet-provider="instagram"><i class="bi bi-instagram"></i> {{ lang.mod_socialmedia_post.autofill.provider_instagram }}</button>
+            </div>
+
+            <div class="sp-list" id="spSheetLibraryList"></div>
+
+            <div class="sp-empty sp-hidden" id="spSheetLibraryEmpty">
+                <i class="bi bi-inbox"></i>
+                <span>{{ sp_sheet.empty_library }}</span>
+            </div>
+
+            <button type="button" class="sp-btn sp-btn-subtle sp-btn-block sp-hidden" id="spSheetLoadMoreBtn">
+                {{ lang.mod_socialmedia_post.filter.load_more }}
+            </button>
+        </section>
+
+        <section data-sp-panel="linked" class="sp-field sp-hidden">
+            <div class="sp-list" id="spSheetLinkedList"></div>
+            <div class="sp-empty sp-hidden" id="spSheetLinkedEmpty">
+                <i class="bi bi-link-45deg"></i>
+                <span>{{ sp_sheet.empty_linked }}</span>
+            </div>
+        </section>
+    </div>
+</aside>
+{% endif %}

@@ -32,6 +32,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Växla kod',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Länk / Inbäddning',
         'tombstone_error' => 'Det här inlägget är inte längre tillgängligt eller är privat.',
         'no_video_in_post' => 'Inget videoklipp hittades i detta inlägg.',
@@ -136,6 +137,7 @@ $lang['mod_video_embed'] = [
         'length' => '%s måste vara mellan %s och %s tecken',
         'inarray' => 'Fältet %s kan endast ta värdena \' %s \'',
         'unsupported_emoji' => 'Emoji eller tecken som inte stöds är inte tillåtna i fältet %s.',
+        'err_no_video_use_social_post' => 'Det här sociala inlägget innehåller ingen video. Lägg till det under Sociala Inlägg i stället.',
     ],
     'context_menu' => [
         'title' => 'Åtgärder',

@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'گۆڕینی کۆد',
         'provider_youtube' => 'یوتیوب',
         'provider_x' => 'ئێکس (تویتەر)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'بەستەر / کورتەکۆد',
         'tombstone_error' => 'ئەم پۆستە بەردەست نییە یان تایبەتە.',
         'no_video_in_post' => 'هیچ ڤیدیۆیەک لەم پۆستەدا نەدۆزرایەوە.',
@@ -98,6 +99,7 @@ $lang['mod_video_embed'] = [
         'length' => 'Qada %s divê di navbera %s û %s tîpan de be!',
         'inarray' => 'Nirxa qada %s nederbasdar e!',
         'unsupported_emoji' => 'Di qada %s de emoji an karakterên nayên piştgirîkirin nayên qebûlkirin.',
+        'err_no_video_use_social_post' => 'ئەم پۆستە کۆمەڵایەتییە ڤیدیۆی تێدا نییە. لە بەشی پۆستەکانی تۆڕی کۆمەڵایەتی زیادی بکە.',
     ],
     'context_menu' => [
         'title' => 'Kirar',

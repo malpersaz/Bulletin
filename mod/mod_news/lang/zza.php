@@ -404,6 +404,7 @@ $lang['mod_news'] = [
         'delete_success' => 'Nûçe hat jêbirin!',
         'add_video' => 'Vîdeo Eke',
         'add_file' => 'Dosya Eke',
+        'social_post' => 'Şawitîyê Sosyalan',
     ],
 
         'show_on_homepage' => 'Pelaser de bımocne',
@@ -428,6 +429,7 @@ $lang['mod_news'] = [
         'gallery' => 'Galeriya Estbîyaye Weçine',
         'file' => 'Dosyaya Estbîyaye Weçine',
         'video' => 'Vîdeoya Estbîyaye Weçine',
+        'social_post' => 'Îdareyê Şawitîyanê Sosyalan',
     ],
 
     // === Latest News ===

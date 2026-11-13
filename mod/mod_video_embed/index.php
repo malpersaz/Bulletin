@@ -198,6 +198,14 @@ class mod_video_embed_mod extends BaseModuleController
             return;
         }
 
+        if (VideoEmbedProviderService::isNonVideoSocialUrl($embed) || VideoEmbedProviderService::isNonVideoSocialUrl($original)) {
+            $this->_jsonResponse([
+                'status' => 'error',
+                'message' => $this->lang['mod_video_embed']['validator']['err_no_video_use_social_post'] ?? $this->_autofillMessage('no_video_in_post'),
+            ]);
+            return;
+        }
+
         $detected = VideoEmbedProviderService::detectProvider($source);
         if ($detected === null) {
             $this->_jsonResponse([
@@ -211,7 +219,10 @@ class mod_video_embed_mod extends BaseModuleController
         $videoId = $detected['id'];
 
         try {
-            $metadata = VideoEmbedProviderService::fetchMetadata($provider, $videoId, $this->site['lang'] ?? 'tr');
+            $metadata = VideoEmbedProviderService::fetchMetadata($provider, $videoId, $this->site['lang'] ?? 'tr', [
+                'canonical_url' => $detected['canonical_url'] ?? '',
+                'has_explicit_video_path' => !empty($detected['has_explicit_video_path']),
+            ]);
             $imageFile = '';
             $imageUrl = '';
             $missingFields = [];
@@ -250,6 +261,7 @@ class mod_video_embed_mod extends BaseModuleController
                 'aspect_ratio' => $metadata['aspect_ratio'] ?? '16:9',
                 'lang' => $this->site['lang'] ?? 'tr',
                 'start' => (int) ($detected['start'] ?? 0),
+                'canonical_url' => $metadata['canonical_url'] ?? ($detected['canonical_url'] ?? ''),
             ]);
 
             $originalUrl = ($provider === 'youtube' && !empty($detected['start']))
@@ -271,7 +283,7 @@ class mod_video_embed_mod extends BaseModuleController
                     'title' => $safeTitle,
                     'description' => $safeDescription,
                     'content' => $content,
-                    'duration' => $metadata['duration'] ?? ($provider === 'x' ? '00:00' : ''),
+                    'duration' => $metadata['duration'] ?? (in_array($provider, ['x', 'facebook'], true) ? '00:00' : ''),
                     'keywords' => $this->_makeKeywordString($safeTitle),
                     'original' => $originalUrl,
                     'embed' => $embedCode,
@@ -283,7 +295,9 @@ class mod_video_embed_mod extends BaseModuleController
             ]);
         } catch (Throwable $e) {
             $msgKey = $e->getMessage();
-            if (str_starts_with($msgKey, 'autofill.')) {
+            if ($msgKey === 'autofill.no_video_in_post' || $msgKey === 'validator.err_no_video_use_social_post') {
+                $message = $this->lang['mod_video_embed']['validator']['err_no_video_use_social_post'] ?? $this->_autofillMessage('no_video_in_post');
+            } elseif (str_starts_with($msgKey, 'autofill.')) {
                 $subKey = substr($msgKey, 9);
                 $message = $this->lang['mod_video_embed']['autofill'][$subKey] ?? $this->_autofillThrowableMessage($e);
             } else {
@@ -479,17 +493,17 @@ class mod_video_embed_mod extends BaseModuleController
             $checkEmbed = trim((string)$this->mod_video_embed_model->embed);
 
             if ($checkOriginal !== '' || $checkEmbed !== '') {
-                $dupModel = Load::model('mod_video_embed');
-                $dupModel->select('id')->where_lang($checkLang);
+                $duplicateModel = Load::model('mod_video_embed');
+                $duplicateModel->select('id')->where_lang($checkLang);
                 if ($checkOriginal !== '') {
-                    $dupModel->where_original($checkOriginal);
+                    $duplicateModel->where_original($checkOriginal);
                 } else {
-                    $dupModel->where_embed($checkEmbed);
+                    $duplicateModel->where_embed($checkEmbed);
                 }
-                $dupModel->order('id', 'ASC')->gRo();
-                if ($dupModel->getSize() > 0) {
-                    $dupModel->sync();
-                    $existingVideoId = (int)$dupModel->id;
+                $duplicateModel->order('id', 'ASC')->gRo();
+                if ($duplicateModel->getSize() > 0) {
+                    $duplicateModel->sync();
+                    $existingVideoId = (int)$duplicateModel->id;
                 }
             }
 

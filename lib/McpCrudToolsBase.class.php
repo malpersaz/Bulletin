@@ -562,9 +562,14 @@ abstract class McpCrudToolsBase
             'mod_gallery_mod' => 'mod_gallery',
             'mod_attachment_mod' => 'mod_attachment',
             'mod_faq_mod' => 'mod_faq',
+            'mod_socialmedia_post_mod' => 'mod_socialmedia_post',
         ];
 
+        $runtime = Load::lib('ModuleRuntime');
         foreach ($bridges as $bridgeTable => $bridgeModule) {
+            if (!$runtime->tableExists($bridgeTable) || !file_exists(root_dir . 'mod/' . $bridgeModule . '/index.php')) {
+                continue;
+            }
             $bridgeModel = $this->freshModel($bridgeTable);
             if ($bridgeModel->exists_mod_name($module) === true) {
                 Run::import($bridgeModule, '_remove', [$module, $recordId]);

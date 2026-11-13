@@ -36,7 +36,7 @@ class tools_mod extends indexMain
         }
 
 
-        $content->content = str_replace("<br>", "\n", Req::unhtmlentities($content->content));
+        $content->content = str_replace("<br>", "\n", Req::unhtmlentities(SocialPostProviderService::stripTokens((string) $content->content)));
         $output = $content->name . "\n";
         if (isset($content->created_at)) {
             $output .= "\n" . date('h:i d.m.Y', strtotime($content->created_at)) . "\n" . "\n";
@@ -91,7 +91,7 @@ class tools_mod extends indexMain
         }
 
 
-        $content->content = Req::unhtmlentities($content->content);
+        $content->content = Req::unhtmlentities(SocialPostProviderService::stripTokens((string) $content->content));
         $output = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -240,7 +240,7 @@ class tools_mod extends indexMain
             exit('::::)');
         }
 
-        $content->content = str_replace("<br>", "\n", Req::unhtmlentities($content->content));
+        $content->content = str_replace("<br>", "\n", Req::unhtmlentities(SocialPostProviderService::stripTokens((string) $content->content)));
         $output = $content->name . "\n" . "\n" . date('h:i d.m.Y', strtotime($content->created_at)) . "\n" . "\n";
         $output .= strip_tags($content->content);
 

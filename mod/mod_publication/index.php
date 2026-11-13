@@ -11,6 +11,7 @@ class mod_publication_mod extends BaseModuleController
     protected $has_gallery = true;
     protected $has_files = true;
     protected $has_faq = true;
+    protected $has_social_posts = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',

@@ -41,6 +41,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Переключить код',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Ссылка / Вставка',
         'tombstone_error' => 'Эта публикация больше недоступна или является приватной.',
         'no_video_in_post' => 'В этой публикации видео не найдено.',
@@ -150,6 +151,7 @@ $lang['mod_video_embed'] = [
         'length' => 'Длина поля %s должна составлять от %s до %s символов',
         'unique' => 'Значение %s уже зарегистрировано в системе. Пожалуйста, укажите другое %s!',
         'inarray' => 'Поле %s может принимать только значения \'%s\'',
+        'err_no_video_use_social_post' => 'Эта публикация не содержит видео. Добавьте её в раздел Посты из соцсетей.',
     ],
     'context_menu' => [
         'edit' => 'Редактировать',

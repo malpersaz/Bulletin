@@ -115,7 +115,19 @@
         <div class="wizard-step" id="wizardStep6">
             <h2 class="step-headline">{{ attribute(wizard_lang.wizard.step, wizard_body_key) }}</h2>
             <p class="step-subhead">{{ attribute(wizard_lang.wizard.subtitle, wizard_body_key) }}</p>
-            
+
+            <div class="sp-editor-bar" data-social-post-bar="1" data-target-module="{{ wizard_lang_key }}" data-vid="0" data-textarea-id="wizardContentTextarea">
+                <div class="sp-editor-bar-row">
+                    <button type="button" class="sp-editor-trigger" data-sp-open-sheet="1">
+                        <i class="bi bi-share"></i>
+                        <span>{{ lang.mod_socialmedia_post.named }}</span>
+                        <span class="sp-count-pill" data-sp-count="1">0</span>
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+                <div class="sp-chips-row" data-sp-chips="1" aria-label="{{ lang.mod_socialmedia_post.sheet.tab_linked }}"></div>
+            </div>
+
             <div class="mod-news-editor-wrap">
                 <textarea name="content" id="wizardContentTextarea"></textarea>
             </div>

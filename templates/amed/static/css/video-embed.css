@@ -46,20 +46,24 @@
 .video-embed-stage--x {
     max-inline-size: 550px;
     margin-inline: auto;
+    border-radius: 14px;
+}
+
+.video-embed-stage--x[data-mounted="true"] {
     aspect-ratio: auto;
-    min-height: 480px;
+    min-height: 520px;
     background-color: transparent;
     box-shadow: none;
     overflow: visible;
 }
 
-.video-embed-stage--x:hover {
+.video-embed-stage--x[data-mounted="true"]:hover {
     box-shadow: none;
 }
 
 .video-embed-stage--x iframe {
     width: 100%;
-    min-height: 480px;
+    min-height: 520px;
     border: 0;
     border-radius: 16px;
 }
@@ -81,11 +85,15 @@
     box-shadow: inset 0 0 0 3px #3b82f6;
 }
 
-.video-embed-poster {
+.video-embed-stage img.video-embed-poster {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
     object-fit: cover;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -142,6 +150,11 @@
     border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
+.badge-facebook {
+    background-color: rgba(24, 119, 242, 0.92);
+    color: #ffffff;
+}
+
 .badge-youtube {
     background-color: rgba(239, 68, 68, 0.95);
     color: #ffffff;
@@ -191,6 +204,12 @@
     color: var(--bs-secondary-color, #6c757d);
 }
 
+/* Align the caption with the centered, width-capped X (Twitter) stage */
+.video-embed-stage--x ~ .video-embed-caption {
+    max-inline-size: 550px;
+    margin-inline: auto;
+}
+
 .video-embed-attribution a {
     color: var(--bs-body-color, #212529);
     text-decoration: none;
@@ -214,5 +233,10 @@
 }
 
 .video-embed-stage--x .video-embed-mounted-frame {
-    min-height: 480px;
+    width: 100%;
+    min-height: 520px;
+    height: auto;
+    border: 0;
+    border-radius: 16px;
+    overflow: hidden;
 }

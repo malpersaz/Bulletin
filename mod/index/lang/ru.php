@@ -195,6 +195,9 @@ $lang['index']['mod_video_embed'] = [
     'external_media_notice_x' => 'При нажатии на воспроизведение будет установлено соединение с X (Twitter) для загрузки медиа.',
     'external_media_notice_youtube' => 'При нажатии на воспроизведение будет установлено соединение с YouTube для загрузки медиа.',
     'source_attribution' => 'Источник',
+    'load_facebook_video' => 'Смотреть видео Facebook',
+    'view_on_facebook' => 'Открыть на Facebook',
+    'external_media_notice_facebook' => 'Нажатие воспроизведения подключается напрямую к серверам Facebook и загружает внешний контент.',
 ];
 
 $lang['index']['mod_video_embed']['latest_videos'] = [
@@ -206,6 +209,16 @@ $lang['index']['mod_video_embed']['latest_videos'] = [
 ];
 
 # mod_pictures
+$lang['index']['mod_socialmedia_post'] = [
+    'title' => 'Пост из соцсети',
+    'view_on_x' => 'Открыть в X',
+    'view_on_facebook' => 'Открыть в Facebook',
+    'view_on_instagram' => 'Открыть в Instagram',
+    'view_original_post' => 'Открыть оригинал',
+    'source_label' => 'Источник',
+    'related_posts' => 'Связанные посты в соцсетях',
+];
+
 $lang['index']['mod_pictures'] = [
     'title' => 'Фотогалерея',
     '1' => 'Фотогалерея',

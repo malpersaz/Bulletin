@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'Genom att klicka på spela ansluts du till X (Twitter) och extern media läses in.',
         'external_media_notice_youtube' => 'Genom att klicka på spela ansluts du till YouTube och extern media läses in.',
         'source_attribution' => 'Källa',
+        'load_facebook_video' => 'Spela Facebook-video',
+        'view_on_facebook' => 'Visa på Facebook',
+        'external_media_notice_facebook' => 'Uppspelning ansluter direkt till Facebooks servrar och laddar externt innehåll.',
         'latest_videos' => [
             'title' => 'Videor',
             'all_items' => 'Alla Videor',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'Videor',
             2 => 'Alla videor',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'Socialt Inlägg',
+        'view_on_x' => 'Visa på X',
+        'view_on_facebook' => 'Visa på Facebook',
+        'view_on_instagram' => 'Visa på Instagram',
+        'view_original_post' => 'Visa originalinlägg',
+        'source_label' => 'Källa',
+        'related_posts' => 'Relaterade sociala inlägg',
     ],
     'mod_pictures' => [
         'title' => 'Fotogalleri',

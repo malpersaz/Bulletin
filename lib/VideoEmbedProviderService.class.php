@@ -28,7 +28,61 @@ class VideoEmbedProviderService
         'i.ytimg.com',
         'vimeo.com',
         'player.vimeo.com',
+        'www.facebook.com',
+        'facebook.com',
+        'm.facebook.com',
+        'fb.watch',
+        'graph.facebook.com',
     ];
+
+    /**
+     * Returns true when an input URL or iframe points to a known non-video
+     * social media post (X photo post, Facebook text/photo post, Instagram photo post).
+     */
+    public static function isNonVideoSocialUrl(?string $input): bool
+    {
+        if ($input === null) {
+            return false;
+        }
+
+        $raw = trim($input);
+        if ($raw === '') {
+            return false;
+        }
+
+        $decoded = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if (preg_match('/<iframe\b[^>]*\bsrc=["\']([^"\']+)["\']/i', $decoded, $iframeMatch)) {
+            $decoded = trim(html_entity_decode($iframeMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
+        if (preg_match('/^https?:\/\/(?:www\.|m\.)?facebook\.com\/plugins\/post\.php\b/i', $decoded)) {
+            return true;
+        }
+
+        if (preg_match('/^https?:\/\/(?:www\.|m\.)?facebook\.com\/plugins\/video\.php\?([^#\s]+)/i', $decoded, $pluginMatch)) {
+            parse_str($pluginMatch[1], $queryParams);
+            if (!empty($queryParams['href']) && self::isNonVideoSocialUrl((string) $queryParams['href'])) {
+                return true;
+            }
+        }
+
+        // X / Twitter explicit photo path
+        if (preg_match('/(?:x|twitter)\.com\/[^\/\s]+\/status(?:es)?\/\d{5,25}\/photo\/\d+/i', $decoded)) {
+            return true;
+        }
+
+        // Facebook non-video posts / photos
+        if (preg_match('/(?:www\.|m\.)?facebook\.com\/(?:[^\/\s]+\/posts\/|posts\/|permalink\.php|story\.php|photo\.php|[^\/\s]+\/photos\/|photos\/|share\/p\/)/i', $decoded)) {
+            return true;
+        }
+
+        // Instagram standard photo/carousel post
+        if (preg_match('/(?:www\.)?instagram\.com\/(?:[^\/\s]+\/)?p\//i', $decoded)) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Detects the provider and extracts video ID from URL or embed iframe snippet.
@@ -47,8 +101,20 @@ class VideoEmbedProviderService
             return null;
         }
 
-        if (strpos($raw, '&lt;') !== false || strpos($raw, '&gt;') !== false || strpos($raw, '&quot;') !== false) {
-            $raw = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $raw = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if (self::isNonVideoSocialUrl($raw)) {
+            return null;
+        }
+
+        if (preg_match('/<iframe\b[^>]*\bsrc=["\']([^"\']+)["\']/i', $raw, $iframeMatch)) {
+            $raw = trim(html_entity_decode($iframeMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
+        if (preg_match('/^https?:\/\/(?:www\.|m\.)?facebook\.com\/plugins\/video\.php\?([^#\s]+)/i', $raw, $facebookPluginMatch)) {
+            parse_str($facebookPluginMatch[1], $facebookQuery);
+            if (!empty($facebookQuery['href'])) {
+                return self::detectProvider((string) $facebookQuery['href']);
+            }
         }
 
         // 1. X (Twitter) patterns:
@@ -60,6 +126,8 @@ class VideoEmbedProviderService
         if (preg_match('/(?:(?:x|twitter)\.com\/(?:([A-Za-z0-9_]{1,15})\/status(?:es)?|i\/(?:web\/)?status)\/(\d{5,25})|platform\.twitter\.com\/embed\/Tweet\.html\?(?:[^"\'\s<>]*&)?id=(\d{5,25}))/i', $raw, $m)) {
             $statusId = !empty($m[2]) ? $m[2] : (!empty($m[3]) ? $m[3] : '');
             $handle = !empty($m[1]) && strtolower($m[1]) !== 'i' ? $m[1] : null;
+            $hasExplicitVideoPath = (bool) preg_match('/(?:x|twitter)\.com\/(?:[A-Za-z0-9_]{1,15}|i\/(?:web\/)?)\/status(?:es)?\/\d{5,25}\/video\/\d+/i', $raw)
+                || (bool) preg_match('/(?:x|twitter)\.com\/i\/status\/\d{5,25}\/video\/\d+/i', $raw);
 
             if ($statusId !== '') {
                 $canonical = 'https://x.com/' . ($handle ?? 'i') . '/status/' . $statusId;
@@ -68,11 +136,77 @@ class VideoEmbedProviderService
                     'id' => $statusId,
                     'canonical_url' => $canonical,
                     'handle' => $handle,
+                    'has_explicit_video_path' => $hasExplicitVideoPath,
                 ];
             }
         }
 
-        // 2. YouTube patterns
+        // 2. Facebook video-only patterns (checked before YouTube so ?v= params on facebook.com are never misread):
+        // - https://www.facebook.com/watch/?v=1234567890
+        // - https://www.facebook.com/video.php?v=1234567890
+        // - https://www.facebook.com/{page}/videos/1234567890
+        // - https://www.facebook.com/reel/1234567890
+        // - https://www.facebook.com/share/v/{token} or /share/r/{token}
+        // - https://fb.watch/{token}
+        if (preg_match('/(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/(?:watch\/?\?(?:[^#\s]*&)?|video\.php\?(?:[^#\s]*&)?)v=(\d{5,32})/i', $raw, $facebookWatchMatch)) {
+            $facebookId = $facebookWatchMatch[1];
+            return [
+                'provider' => 'facebook',
+                'id' => $facebookId,
+                'canonical_url' => 'https://www.facebook.com/watch/?v=' . $facebookId,
+                'handle' => null,
+                'aspect_ratio' => '16:9',
+            ];
+        }
+
+        if (preg_match('/(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/([A-Za-z0-9_.-]+)\/videos\/(?:[^\/\s]+\/)?(\d{5,32})/i', $raw, $facebookPageVideoMatch)) {
+            $pageHandle = $facebookPageVideoMatch[1];
+            $facebookId = $facebookPageVideoMatch[2];
+            $canonicalHandle = strtolower($pageHandle) === 'watch' ? 'watch' : $pageHandle;
+            return [
+                'provider' => 'facebook',
+                'id' => $facebookId,
+                'canonical_url' => 'https://www.facebook.com/' . $canonicalHandle . '/videos/' . $facebookId,
+                'handle' => strtolower($pageHandle) === 'watch' ? null : $pageHandle,
+                'aspect_ratio' => '16:9',
+            ];
+        }
+
+        if (preg_match('/(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/reel\/(\d{5,32})/i', $raw, $facebookReelMatch)) {
+            $facebookId = $facebookReelMatch[1];
+            return [
+                'provider' => 'facebook',
+                'id' => $facebookId,
+                'canonical_url' => 'https://www.facebook.com/reel/' . $facebookId,
+                'handle' => null,
+                'aspect_ratio' => '9:16',
+            ];
+        }
+
+        if (preg_match('/(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/share\/([vr])\/([A-Za-z0-9_-]{4,100})/i', $raw, $facebookShareMatch)) {
+            $kind = strtolower($facebookShareMatch[1]);
+            $token = $facebookShareMatch[2];
+            return [
+                'provider' => 'facebook',
+                'id' => 'share_' . $kind . '_' . $token,
+                'canonical_url' => 'https://www.facebook.com/share/' . $kind . '/' . $token . '/',
+                'handle' => null,
+                'aspect_ratio' => ($kind === 'r') ? '9:16' : '16:9',
+            ];
+        }
+
+        if (preg_match('/(?:https?:\/\/)?fb\.watch\/([A-Za-z0-9_-]{4,64})/i', $raw, $facebookShortMatch)) {
+            $token = $facebookShortMatch[1];
+            return [
+                'provider' => 'facebook',
+                'id' => 'fbwatch_' . $token,
+                'canonical_url' => 'https://fb.watch/' . $token . '/',
+                'handle' => null,
+                'aspect_ratio' => '16:9',
+            ];
+        }
+
+        // 3. YouTube patterns
         $youtubeId = self::extractYouTubeId($raw);
         if ($youtubeId !== null) {
             $startSeconds = self::extractYouTubeStartSeconds($raw);
@@ -89,7 +223,7 @@ class VideoEmbedProviderService
             ];
         }
 
-        // 3. Vimeo patterns:
+        // 4. Vimeo patterns:
         // - https://vimeo.com/12345678
         // - https://player.vimeo.com/video/12345678
         if (preg_match('/(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]+\/videos\/|album\/\d+\/video\/|video\/|)(\d+)|player\.vimeo\.com\/video\/(\d+))/i', $raw, $m)) {
@@ -129,7 +263,7 @@ class VideoEmbedProviderService
         if (preg_match('/youtu\.be\/([A-Za-z0-9_-]{11})/i', $raw, $m)) {
             return $m[1];
         }
-        if (preg_match('/[?&]v=([A-Za-z0-9_-]{11})/i', $raw, $m)) {
+        if (preg_match('/[?&]v=([A-Za-z0-9_-]{11})(?:[&#]|$)/i', $raw, $m) && preg_match('/(?:youtube\.com|youtu\.be)/i', $raw)) {
             return $m[1];
         }
         if (preg_match('/^[A-Za-z0-9_-]{11}$/', $raw)) {
@@ -203,7 +337,7 @@ class VideoEmbedProviderService
      *
      * @throws Exception
      */
-    public static function fetchMetadata(string $provider, string $id, string $lang = 'en'): array
+    public static function fetchMetadata(string $provider, string $id, string $lang = 'en', array $context = []): array
     {
         $cacheKey = 'video_embed_meta_' . $provider . '_' . $id;
 
@@ -218,9 +352,10 @@ class VideoEmbedProviderService
         }
 
         $result = match ($provider) {
-            'x' => self::fetchXMetadata($id, $lang),
+            'x' => self::fetchXMetadata($id, $lang, !empty($context['has_explicit_video_path'])),
             'youtube' => self::fetchYouTubeMetadata($id),
             'vimeo' => self::fetchVimeoMetadata($id),
+            'facebook' => self::fetchFacebookVideoMetadata($id, (string) ($context['canonical_url'] ?? ''), $lang),
             default => throw new Exception('Unsupported video provider: ' . $provider),
         };
 
@@ -234,7 +369,7 @@ class VideoEmbedProviderService
     /**
      * Fetches metadata for an X (Twitter) video post.
      */
-    private static function fetchXMetadata(string $statusId, string $lang): array
+    private static function fetchXMetadata(string $statusId, string $lang, bool $hasExplicitVideoPath = false): array
     {
         $token = self::computeXSyndicationToken($statusId);
         $syndicationUrl = 'https://cdn.syndication.twimg.com/tweet-result?id=' . rawurlencode($statusId) . '&token=' . rawurlencode($token) . '&lang=en';
@@ -249,9 +384,17 @@ class VideoEmbedProviderService
         }
 
         if (is_array($json) && $status >= 200 && $status < 300) {
-            // Guard: ensure video or animated_gif exists
-            $hasVideo = !empty($json['video'])
-                || (!empty($json['mediaDetails']) && is_array($json['mediaDetails']) && in_array($json['mediaDetails'][0]['type'] ?? '', ['video', 'animated_gif'], true));
+            // Guard: ensure video or animated_gif exists across all mediaDetails attachments
+            $matchedMedia = null;
+            if (!empty($json['mediaDetails']) && is_array($json['mediaDetails'])) {
+                foreach ($json['mediaDetails'] as $mediaItem) {
+                    if (is_array($mediaItem) && in_array($mediaItem['type'] ?? '', ['video', 'animated_gif'], true)) {
+                        $matchedMedia = $mediaItem;
+                        break;
+                    }
+                }
+            }
+            $hasVideo = !empty($json['video']) || $matchedMedia !== null;
 
             if (!$hasVideo) {
                 throw new Exception('autofill.no_video_in_post');
@@ -292,8 +435,8 @@ class VideoEmbedProviderService
             $durationMs = 0;
             if (!empty($json['video']['durationMs'])) {
                 $durationMs = (int) $json['video']['durationMs'];
-            } elseif (!empty($json['mediaDetails'][0]['video_info']['duration_millis'])) {
-                $durationMs = (int) $json['mediaDetails'][0]['video_info']['duration_millis'];
+            } elseif (!empty($matchedMedia['video_info']['duration_millis'])) {
+                $durationMs = (int) $matchedMedia['video_info']['duration_millis'];
             }
 
             $duration = '00:00';
@@ -304,13 +447,13 @@ class VideoEmbedProviderService
 
             // Aspect ratio
             $aspectRatio = '16:9';
-            $ratioValues = $json['video']['aspectRatio'] ?? ($json['mediaDetails'][0]['video_info']['aspect_ratio'] ?? null);
+            $ratioValues = $json['video']['aspectRatio'] ?? ($matchedMedia['video_info']['aspect_ratio'] ?? null);
             if (is_array($ratioValues) && count($ratioValues) === 2 && (int) $ratioValues[1] > 0) {
                 $aspectRatio = self::normalizeAspectRatio((int) $ratioValues[0], (int) $ratioValues[1]);
             }
 
             // High-resolution poster
-            $thumbnailUrl = (string) ($json['video']['poster'] ?? ($json['mediaDetails'][0]['media_url_https'] ?? ''));
+            $thumbnailUrl = (string) ($json['video']['poster'] ?? ($matchedMedia['media_url_https'] ?? ''));
 
             // Provenance date handling
             $createdAtUtc = '';
@@ -361,48 +504,152 @@ class VideoEmbedProviderService
             ];
         }
 
-        // Secondary Fallback: publish.twitter.com/oembed
-        $oembedUrl = 'https://publish.twitter.com/oembed?url=' . rawurlencode('https://twitter.com/i/status/' . $statusId) . '&dnt=true&omit_script=true';
-        $oembedResp = self::httpRequest($oembedUrl, 6, 524288);
-        $oembedJson = $oembedResp['body'] !== '' ? json_decode($oembedResp['body'], true) : null;
+        // Secondary Fallback: publish.twitter.com/oembed only when explicit /video/{n} path is present
+        if ($hasExplicitVideoPath) {
+            $oembedUrl = 'https://publish.twitter.com/oembed?url=' . rawurlencode('https://twitter.com/i/status/' . $statusId) . '&dnt=true&omit_script=true';
+            $oembedResp = self::httpRequest($oembedUrl, 6, 524288);
+            $oembedJson = $oembedResp['body'] !== '' ? json_decode($oembedResp['body'], true) : null;
 
-        if (is_array($oembedJson) && !empty($oembedJson['author_name'])) {
-            $authorName = trim((string) $oembedJson['author_name']);
-            $rawHtml = (string) ($oembedJson['html'] ?? '');
-            $cleanText = trim(strip_tags($rawHtml));
-            $cleanText = self::stripEmojiAndUnsupportedChars($cleanText);
+            if (is_array($oembedJson) && !empty($oembedJson['author_name'])) {
+                $authorName = trim((string) $oembedJson['author_name']);
+                $rawHtml = (string) ($oembedJson['html'] ?? '');
+                $cleanText = trim(strip_tags($rawHtml));
+                $cleanText = self::stripEmojiAndUnsupportedChars($cleanText);
 
-            $title = Helper::truncateWords($cleanText, 120);
-            if ($title === '') {
-                $title = $authorName . ' — X Video';
+                $title = Helper::truncateWords($cleanText, 120);
+                if ($title === '') {
+                    $title = $authorName . ' — X Video';
+                }
+                $description = Helper::truncateWords($cleanText, 200);
+
+                $authorHandle = '';
+                if (preg_match('/twitter\.com\/([A-Za-z0-9_]{1,15})/i', (string) ($oembedJson['author_url'] ?? ''), $am)) {
+                    $authorHandle = $am[1];
+                }
+
+                return [
+                    'provider' => 'x',
+                    'id' => $statusId,
+                    'title' => $title,
+                    'name' => $title,
+                    'description' => $description,
+                    'duration' => '00:00',
+                    'thumbnail_url' => '',
+                    'author_name' => $authorName,
+                    'author_handle' => $authorHandle,
+                    'aspect_ratio' => '16:9',
+                    'created_at' => '',
+                    'content_html' => '<p>' . htmlspecialchars($cleanText, ENT_QUOTES, 'UTF-8') . '</p>',
+                    'canonical_url' => 'https://x.com/' . ($authorHandle ?: 'i') . '/status/' . $statusId,
+                    'source' => 'x_oembed',
+                    'is_partial' => true,
+                ];
             }
-            $description = Helper::truncateWords($cleanText, 200);
-
-            $authorHandle = '';
-            if (preg_match('/twitter\.com\/([A-Za-z0-9_]{1,15})/i', (string) ($oembedJson['author_url'] ?? ''), $am)) {
-                $authorHandle = $am[1];
-            }
-
-            return [
-                'provider' => 'x',
-                'id' => $statusId,
-                'title' => $title,
-                'name' => $title,
-                'description' => $description,
-                'duration' => '00:00',
-                'thumbnail_url' => '',
-                'author_name' => $authorName,
-                'author_handle' => $authorHandle,
-                'aspect_ratio' => '16:9',
-                'created_at' => '',
-                'content_html' => '<p>' . htmlspecialchars($cleanText, ENT_QUOTES, 'UTF-8') . '</p>',
-                'canonical_url' => 'https://x.com/' . ($authorHandle ?: 'i') . '/status/' . $statusId,
-                'source' => 'x_oembed',
-                'is_partial' => true,
-            ];
         }
 
-        throw new Exception('autofill.fetch_failed');
+        throw new Exception('autofill.no_video_in_post');
+    }
+
+    /**
+     * Fetches partial/OpenGraph metadata for a Facebook video or Reel URL.
+     */
+    private static function fetchFacebookVideoMetadata(string $id, string $canonicalUrl, string $lang): array
+    {
+        $targetUrl = trim($canonicalUrl);
+        if ($targetUrl === '') {
+            if (str_starts_with($id, 'fbwatch_')) {
+                $targetUrl = 'https://fb.watch/' . substr($id, 8) . '/';
+            } elseif (str_starts_with($id, 'share_v_')) {
+                $targetUrl = 'https://www.facebook.com/share/v/' . substr($id, 8) . '/';
+            } elseif (str_starts_with($id, 'share_r_')) {
+                $targetUrl = 'https://www.facebook.com/share/r/' . substr($id, 8) . '/';
+            } else {
+                $targetUrl = 'https://www.facebook.com/watch/?v=' . $id;
+            }
+        }
+
+        if (self::isNonVideoSocialUrl($targetUrl)) {
+            throw new Exception('autofill.no_video_in_post');
+        }
+
+        $isReel = str_contains($targetUrl, '/reel/') || str_starts_with($id, 'share_r_');
+        $aspectRatio = $isReel ? '9:16' : '16:9';
+        $title = '';
+        $description = '';
+        $thumbnailUrl = '';
+
+        $response = self::httpRequest($targetUrl, 6, 524288);
+        $html = (string) ($response['body'] ?? '');
+        if ($html !== '') {
+            if (preg_match('/<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $titleMatch)) {
+                $title = self::stripEmojiAndUnsupportedChars(html_entity_decode($titleMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            }
+            if (preg_match('/<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $descMatch)) {
+                $description = self::stripEmojiAndUnsupportedChars(html_entity_decode($descMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            }
+            if (preg_match('/<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $imgMatch)) {
+                $candidateImage = html_entity_decode($imgMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $imageHost = strtolower((string) (parse_url($candidateImage, PHP_URL_HOST) ?? ''));
+                if ($imageHost !== '' && in_array($imageHost, self::ALLOWED_HOSTS, true)) {
+                    $thumbnailUrl = $candidateImage;
+                }
+            }
+        }
+
+        $safeTitle = Helper::truncateWords($title !== '' ? $title : 'Facebook Video #' . $id, 120);
+        $safeDescription = Helper::truncateWords($description !== '' ? $description : $safeTitle, 200);
+        $contentHtml = '<p>' . htmlspecialchars($safeDescription, ENT_QUOTES, 'UTF-8') . '</p>';
+
+        return [
+            'provider' => 'facebook',
+            'id' => $id,
+            'title' => $safeTitle,
+            'name' => $safeTitle,
+            'description' => $safeDescription,
+            'duration' => '00:00',
+            'thumbnail_url' => $thumbnailUrl,
+            'author_name' => 'Facebook',
+            'author_handle' => null,
+            'aspect_ratio' => $aspectRatio,
+            'created_at' => '',
+            'content_html' => $contentHtml,
+            'canonical_url' => $targetUrl,
+            'source' => 'facebook_og',
+            'is_partial' => true,
+        ];
+    }
+
+    /**
+     * Validates that a mod_video_embed input represents a supported video source
+     * and blocks non-video social media posts across forms, autofill, and MCP.
+     *
+     * @throws Exception with 'validator.err_no_video_use_social_post' for non-video social posts
+     */
+    public static function assertVideoEmbedSourceAllowed(string $embedInput, ?string $originalUrl = null, string $lang = 'en'): void
+    {
+        if (self::isNonVideoSocialUrl($embedInput) || self::isNonVideoSocialUrl($originalUrl)) {
+            throw new Exception('validator.err_no_video_use_social_post');
+        }
+
+        $detected = self::detectProvider($embedInput) ?? self::detectProvider($originalUrl);
+        if ($detected !== null && $detected['provider'] === 'x') {
+            try {
+                self::fetchMetadata('x', $detected['id'], $lang, [
+                    'has_explicit_video_path' => !empty($detected['has_explicit_video_path']),
+                ]);
+            } catch (Throwable $e) {
+                $code = $e->getMessage();
+                if ($code === 'autofill.no_video_in_post') {
+                    throw new Exception('validator.err_no_video_use_social_post');
+                }
+                if ($code === 'autofill.tombstone_error') {
+                    throw $e;
+                }
+                if (empty($detected['has_explicit_video_path'])) {
+                    throw new Exception('validator.err_no_video_use_social_post');
+                }
+            }
+        }
     }
 
     /**
@@ -587,6 +834,22 @@ class VideoEmbedProviderService
                 $src = 'https://player.vimeo.com/video/' . rawurlencode($id);
                 return '<iframe class="video-embed-frame video-embed-frame--vimeo" width="640" height="360" src="' . $src . '" data-provider="vimeo" data-video-id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '" data-aspect-ratio="16:9" title="' . $title . '" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>';
 
+            case 'facebook':
+                $canonicalHref = trim((string) ($opts['canonical_url'] ?? ''));
+                if ($canonicalHref === '') {
+                    if (str_starts_with($id, 'fbwatch_')) {
+                        $canonicalHref = 'https://fb.watch/' . substr($id, 8) . '/';
+                    } elseif (str_starts_with($id, 'share_v_')) {
+                        $canonicalHref = 'https://www.facebook.com/share/v/' . substr($id, 8) . '/';
+                    } elseif (str_starts_with($id, 'share_r_')) {
+                        $canonicalHref = 'https://www.facebook.com/share/r/' . substr($id, 8) . '/';
+                    } else {
+                        $canonicalHref = 'https://www.facebook.com/watch/?v=' . $id;
+                    }
+                }
+                $src = 'https://www.facebook.com/plugins/video.php?href=' . rawurlencode($canonicalHref) . '&amp;show_text=false&amp;width=560';
+                return '<iframe class="video-embed-frame video-embed-frame--facebook" width="560" height="315" src="' . $src . '" data-provider="facebook" data-video-id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '" data-aspect-ratio="' . $aspectRatio . '" title="' . $title . '" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>';
+
             default:
                 return '';
         }
@@ -597,6 +860,10 @@ class VideoEmbedProviderService
      */
     public static function sanitizeOrRebuildEmbed(string $embedInput, ?string $originalUrl = null, array $opts = []): string
     {
+        if (self::isNonVideoSocialUrl($embedInput) || self::isNonVideoSocialUrl($originalUrl)) {
+            return '';
+        }
+
         $detectedEmbed = self::detectProvider($embedInput);
         $detectedOriginal = self::detectProvider($originalUrl);
         $detected = $detectedEmbed ?? $detectedOriginal;
@@ -610,6 +877,12 @@ class VideoEmbedProviderService
                     $opts['start'] = $start;
                 }
             }
+            if (empty($opts['canonical_url']) && !empty($detected['canonical_url'])) {
+                $opts['canonical_url'] = (string) $detected['canonical_url'];
+            }
+            if (empty($opts['aspect_ratio']) && !empty($detected['aspect_ratio'])) {
+                $opts['aspect_ratio'] = (string) $detected['aspect_ratio'];
+            }
             return self::buildEmbedHtml($detected['provider'], $detected['id'], $opts);
         }
 
@@ -617,7 +890,7 @@ class VideoEmbedProviderService
         $purified = Helper::clear_html($embedInput);
         if (preg_match('/<iframe\b[^>]*\bsrc="([^"]+)"[^>]*>/i', $purified, $m)) {
             $src = $m[1];
-            if (preg_match('%^https://(www\.youtube\.com/embed/|www\.youtube-nocookie\.com/embed/|player\.vimeo\.com/video/|platform\.twitter\.com/embed/Tweet\.html)%', $src)) {
+            if (preg_match('%^https://(www\.youtube\.com/embed/|www\.youtube-nocookie\.com/embed/|player\.vimeo\.com/video/|www\.facebook\.com/plugins/video\.php)%', $src)) {
                 return $purified;
             }
         }
@@ -644,7 +917,10 @@ class VideoEmbedProviderService
         if (preg_match('/<iframe\b[^>]*\bsrc="([^"]+)"/i', $embedHtml, $m)) {
             $embedSrc = html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
         } elseif ($detected !== null) {
-            $built = self::buildEmbedHtml($detected['provider'], $detected['id'], ['lang' => $siteLang]);
+            $built = self::buildEmbedHtml($detected['provider'], $detected['id'], [
+                'lang' => $siteLang,
+                'canonical_url' => $detected['canonical_url'] ?? $original,
+            ]);
             if (preg_match('/<iframe\b[^>]*\bsrc="([^"]+)"/i', $built, $bm)) {
                 $embedSrc = html_entity_decode($bm[1], ENT_QUOTES, 'UTF-8');
             }
@@ -691,6 +967,7 @@ class VideoEmbedProviderService
         $row['schema_duration'] = $row['iso_duration'];
         $row['is_x'] = ($provider === 'x');
         $row['is_youtube'] = ($provider === 'youtube');
+        $row['is_facebook'] = ($provider === 'facebook');
 
         return $row;
     }

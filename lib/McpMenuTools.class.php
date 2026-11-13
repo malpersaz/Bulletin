@@ -625,7 +625,11 @@ class McpMenuTools extends McpCrudToolsBase
     private function nextMenuSiblingOrder(int $parentId, string $lang): int
     {
         $model = $this->freshModel('mod_menu');
-        $model->where_parent_id($parentId)->where_lang($lang)->order('`order`', 'DESC')->limit(1)->getResultOne(true, true);
+        $model->where_parent_id($parentId)
+            ->addWhere("lang = '" . addslashes($lang) . "'")
+            ->order('`order`', 'DESC')
+            ->limit(1)
+            ->getResultOne(true, true);
         if ($model->getSize() === 0) {
             return 1;
         }

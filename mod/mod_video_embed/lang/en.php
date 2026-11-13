@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Toggle Code',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Link / Embed',
         'tombstone_error' => 'This post is no longer available or is private.',
         'no_video_in_post' => 'No video or media was found in this post.',
@@ -154,6 +155,7 @@ $lang['mod_video_embed'] = [
         'length' => '%s must be between %s and %s characters',
         'inarray' => '%s field can only take \' %s \' values',
         'unsupported_emoji' => 'Emoji or unsupported characters are not allowed in the %s field.',
+        'err_no_video_use_social_post' => 'This social post does not contain a video. Add it under Social Media Posts instead.',
     ],
     'context_menu' => [
         'title' => 'Actions',

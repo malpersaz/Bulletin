@@ -1829,6 +1829,13 @@ class mod_user_mod extends indexMain
                     $mod('mod_attachment_mod', 'list', $management['file_modules'], 'bi bi-paperclip', [
                         $list('mod_attachment_mod', 'list', $base . 'mod_attachment_mod/list'),
                     ], ['attachment', 'ek', 'ekler', 'dosya', 'modul']),
+                    $mod('mod_socialmedia_post', 'list', $management['social_posts'], 'bi bi-share', [
+                        $add('mod_socialmedia_post', 'add', $base . 'mod_socialmedia_post/add'),
+                        $list('mod_socialmedia_post', 'list', $base . 'mod_socialmedia_post/list'),
+                    ], ['social', 'post', 'x', 'facebook', 'instagram', 'embed']),
+                    $mod('mod_socialmedia_post_mod', 'list', $management['social_post_modules'], 'bi bi-diagram-3', [
+                        $list('mod_socialmedia_post_mod', 'list', $base . 'mod_socialmedia_post_mod/list'),
+                    ], ['social', 'post', 'module', 'modul', 'registry']),
                     $mod('mod_gallery', 'list', $gallery_lang['mod_gallery']['admin']['title'], 'bi bi-collection-fill', [
                         $list('mod_gallery', 'list', $base . 'mod_gallery/list'),
                     ], ['gallery', 'galeri', 'resim', 'fotograf', 'fotoğraf', 'album', 'albüm', 'galerî', 'wene']),
@@ -1986,6 +1993,8 @@ class mod_user_mod extends indexMain
             [$management_lang, ['management', 'mcp_api_keys']],
             [$management_lang, ['management', 'settings']],
             [$management_lang, ['management', 'announcement_management']],
+            [$management_lang, ['management', 'social_posts']],
+            [$management_lang, ['management', 'social_post_modules']],
             [$video_embed_lang, ['mod_video_embed', 'list']],
             [$video_lang, ['mod_video', 'video_management']],
             [$gallery_lang, ['mod_gallery', 'admin', 'title']],

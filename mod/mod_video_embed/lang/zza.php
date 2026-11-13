@@ -32,6 +32,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Kodê Xami',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Gire / Embed',
         'tombstone_error' => 'No parvekewdiş nika çino ya zî mured o.',
         'no_video_in_post' => 'Nê parvekewdişî de vîdyo nêame dîyene.',
@@ -97,6 +98,7 @@ $lang['mod_video_embed'] = [
         'length' => 'Qada %s divê di navbera %s û %s tîpan de be!',
         'inarray' => 'Nirxa qada %s nederbasdar e!',
         'unsupported_emoji' => 'Emoji ya zi karakterê ke piştgirî nêbenê de qada %s de qebul nêkeno.',
+        'err_no_video_use_social_post' => 'Nê şawitîyê sosyalî de vîdyo çin o. Qismê Şawitîyê Medyaya Sosyalî ra îlawe bike.',
     ],
     'context_menu' => [
         'title' => 'Kirar',

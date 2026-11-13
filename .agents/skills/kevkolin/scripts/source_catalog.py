@@ -65,7 +65,7 @@ VERIFIED_SOURCES = {
         {"name": "964media", "urls": ["https://964media.com"]},
         {"name": "Shafaq News", "urls": ["https://shafaq.com"]},
         {"name": "Bianet", "urls": ["https://bianet.org"], "feed": "https://bianet.org/sitemap/haberler", "feed_type": "sitemap"},
-        {"name": "Mezopotamya Ajansı (MA)", "urls": ["https://mezopotamyaajansi44.com"]},
+        {"name": "Mezopotamya Ajansı (MA)", "urls": ["https://mezopotamyaajansi45.com"]},
         {"name": "Official KRG Portals", "urls": ["https://gov.krd", "https://presidency.gov.krd"]}
     ],
     "united_states": {

@@ -1,0 +1,170 @@
+{% set show_fab = false %}
+{% set show_search = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_socialmedia_post.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_socialmedia_post.edit }}{% endblock %}
+
+{% block content %}
+<div
+    class="sp-form-shell"
+    id="socialPostFormShell"
+    data-autofill-url="{{ site.saddress }}mod_socialmedia_post/autofill_metadata"
+    data-messages="{{ {
+        missingSource: lang.mod_socialmedia_post.autofill.missing_source,
+        fetchFailed: lang.mod_socialmedia_post.autofill.fetch_failed,
+        autofillSuccess: lang.mod_socialmedia_post.autofill.success
+    }|json_encode|e('html_attr') }}"
+>
+    <section class="sp-intro">
+        <h2>{{ lang.mod_socialmedia_post.edit }}</h2>
+        <p>[socialpost:{{ d.id }}]</p>
+    </section>
+
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for errMsg in errors %}
+                <div>{{ errMsg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="editSocialPostForm" class="sp-form-card">
+        <input type="hidden" name="edit" value="1">
+        <input type="hidden" name="provider" id="spProviderInput" value="{{ d.provider ?: '' }}">
+        <input type="hidden" name="post_id" id="spPostIdInput" value="{{ d.post_id ?: '' }}">
+        <input type="hidden" name="autofill_image" id="spAutofillImageInput" value="">
+        <input type="hidden" name="remove_image" id="spRemoveImageInput" value="0">
+
+        <div class="sp-field">
+            <label for="spLangSelect">{{ lang.mod_socialmedia_post.admin.columns.language }}</label>
+            <select class="sp-select" name="lang" id="spLangSelect">
+                {% for lg in lang_lang %}
+                    <option value="{{ lg.seo }}" {% if d.lang == lg.seo %}selected{% endif %}>{{ lg.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="sp-field">
+            <label for="spUrlInput">{{ lang.mod_socialmedia_post.admin.columns.url }}</label>
+            <div class="sp-url-row">
+                <input
+                    class="sp-input"
+                    type="url"
+                    name="url"
+                    id="spUrlInput"
+                    value="{{ d.url ?: '' }}"
+                    placeholder="{{ lang.mod_socialmedia_post.sheet.url_placeholder }}"
+                >
+            </div>
+            <div class="sp-autofill-actions">
+                <button type="button" class="sp-btn" id="spPasteBtn">{{ lang.mod_socialmedia_post.autofill.paste_button }}</button>
+                <button type="button" class="sp-btn" id="spClearBtn">{{ lang.mod_socialmedia_post.autofill.clear_button }}</button>
+                <button type="button" class="sp-btn sp-btn-primary" id="spFetchBtn">
+                    <i class="bi bi-magic"></i>
+                    <span>{{ lang.mod_socialmedia_post.autofill.button }}</span>
+                </button>
+            </div>
+            {% if d.provider %}
+                <span class="sp-provider-badge" id="spDetectedProviderPill">{{ d.provider|upper }} / {{ d.media_type }}</span>
+            {% else %}
+                <span class="sp-provider-badge sp-hidden" id="spDetectedProviderPill"></span>
+            {% endif %}
+        </div>
+
+        <div class="sp-field">
+            <label for="spMediaTypeSelect">{{ lang.mod_socialmedia_post.admin.columns.media_type }}</label>
+            <select class="sp-select" name="media_type" id="spMediaTypeSelect">
+                {% set curType = d.media_type ?: 'post' %}
+                <option value="post" {% if curType == 'post' %}selected{% endif %}>post</option>
+                <option value="video" {% if curType == 'video' %}selected{% endif %}>video</option>
+                <option value="reel" {% if curType == 'reel' %}selected{% endif %}>reel</option>
+                <option value="photo" {% if curType == 'photo' %}selected{% endif %}>photo</option>
+            </select>
+        </div>
+
+        <div class="sp-field">
+            <label for="spNameInput">{{ lang.mod_socialmedia_post.admin.columns.name }}</label>
+            <input class="sp-input" type="text" name="name" id="spNameInput" value="{{ d.name ?: '' }}" maxlength="255">
+        </div>
+
+        <div class="sp-field">
+            <label for="spHandleInput">{{ lang.mod_socialmedia_post.admin.columns.handle }}</label>
+            <input class="sp-input" type="text" name="handle" id="spHandleInput" value="{{ d.handle ?: '' }}" maxlength="64">
+        </div>
+
+        <div class="sp-field">
+            <label for="spContentInput">{{ lang.mod_socialmedia_post.admin.columns.content }}</label>
+            <textarea class="sp-textarea" name="content" id="spContentInput" rows="3">{{ d.content ?: '' }}</textarea>
+        </div>
+
+        <div class="sp-thumb-preview {% if thumb_url is not defined or thumb_url == '' %}sp-hidden{% endif %}" id="spThumbPreview">
+            <img src="{{ thumb_url is defined ? thumb_url : '' }}" alt="" id="spThumbImg">
+            <div class="sp-thumb-meta">
+                <span>{{ lang.mod_socialmedia_post.admin.columns.image }}</span>
+                <button type="button" class="sp-btn sp-btn-danger" id="spRemoveThumbBtn">{{ lang.mod_socialmedia_post.button.remove }}</button>
+            </div>
+        </div>
+
+        <div class="sp-field">
+            <label for="spImageFileInput">{{ lang.mod_socialmedia_post.admin.columns.image }}</label>
+            <input class="sp-input" type="file" name="image" id="spImageFileInput" accept="image/*">
+        </div>
+
+        <details class="sp-raw-embed-details">
+            <summary><i class="bi bi-code-slash"></i> <span>{{ lang.mod_socialmedia_post.autofill.preview_label }}</span></summary>
+            <textarea class="sp-textarea" name="embed_html" id="spEmbedHtmlInput" rows="4">{{ d.embed_html|default('') }}</textarea>
+        </details>
+
+        <div class="sp-field">
+            <label for="spAclSelect">{{ lang.mod_socialmedia_post.admin.columns.acl_id }}</label>
+            <select class="sp-select" name="acl_id" id="spAclSelect">
+                <option value="0" {% if d.acl_id is not defined or d.acl_id == 0 %}selected{% endif %}>{{ lang.mod_socialmedia_post.filter.all }}</option>
+                {% for acl in mod_acl_acl_id %}
+                    <option value="{{ acl.id }}" {% if d.acl_id == acl.id %}selected{% endif %}>{{ acl.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="sp-field">
+            <label>{{ lang.mod_socialmedia_post.admin.columns.status }}</label>
+            <div class="sp-segmented-status">
+                <label class="sp-radio-chip">
+                    <input type="radio" name="status" value="y" {% if d.status == 'y' %}checked{% endif %}>
+                    <span>{{ lang.mod_socialmedia_post.admin.radio.publish_yes }}</span>
+                </label>
+                <label class="sp-radio-chip">
+                    <input type="radio" name="status" value="n" {% if d.status != 'y' %}checked{% endif %}>
+                    <span>{{ lang.mod_socialmedia_post.admin.radio.publish_no }}</span>
+                </label>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if oke is not defined %}
+    {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
+        cancel_url: site.saddress ~ 'mod_socialmedia_post/list',
+        cancel_label: lang.mod_socialmedia_post.button.cancel,
+        form_id: 'editSocialPostForm',
+        submit_label: lang.mod_socialmedia_post.button.edit,
+        reset_label: lang.mod_socialmedia_post.button.refresh
+    } %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_socialmedia_post.js?v={{ site.version }}"></script>
+{% endblock %}

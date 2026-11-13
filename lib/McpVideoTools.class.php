@@ -1334,12 +1334,28 @@ class McpVideoTools extends McpCrudToolsBase
 
         $original = trim((string) ($args['original'] ?? ''));
 
+        // Guard: reject non-video social media posts (redirect agents to create_socialmedia_post)
+        try {
+            VideoEmbedProviderService::assertVideoEmbedSourceAllowed($embed, $original, $lang);
+        } catch (Throwable $e) {
+            $errCode = $e->getMessage();
+            if ($errCode === 'validator.err_no_video_use_social_post' || $errCode === 'autofill.no_video_in_post') {
+                throw new McpToolException("This social post does not contain a video. Use create_socialmedia_post instead.");
+            }
+            if ($errCode === 'autofill.tombstone_error') {
+                throw new McpToolException("The referenced social post is private or no longer available.");
+            }
+        }
+
         // Provider auto-detection & metadata resolution
         $detected = VideoEmbedProviderService::detectProvider($embed) ?? (VideoEmbedProviderService::detectProvider($original));
         $meta = null;
         if ($detected !== null) {
             try {
-                $meta = VideoEmbedProviderService::fetchMetadata($detected['provider'], $detected['id'], $lang);
+                $meta = VideoEmbedProviderService::fetchMetadata($detected['provider'], $detected['id'], $lang, [
+                    'canonical_url' => $detected['canonical_url'] ?? '',
+                    'has_explicit_video_path' => !empty($detected['has_explicit_video_path']),
+                ]);
             } catch (Throwable) {
                 $meta = null;
             }
@@ -1378,7 +1394,7 @@ class McpVideoTools extends McpCrudToolsBase
         if ($duration === '') {
             if (!empty($meta['duration'])) {
                 $duration = $meta['duration'];
-            } elseif ($detected !== null && $detected['provider'] === 'x') {
+            } elseif ($detected !== null && in_array($detected['provider'], ['x', 'facebook'], true)) {
                 $duration = '00:00';
             }
         }
@@ -1395,8 +1411,9 @@ class McpVideoTools extends McpCrudToolsBase
         if ($detected !== null) {
             $embed = VideoEmbedProviderService::buildEmbedHtml($detected['provider'], $detected['id'], [
                 'title' => $name,
-                'aspect_ratio' => $meta['aspect_ratio'] ?? '16:9',
+                'aspect_ratio' => $meta['aspect_ratio'] ?? ($detected['aspect_ratio'] ?? '16:9'),
                 'lang' => $lang,
+                'canonical_url' => $meta['canonical_url'] ?? ($detected['canonical_url'] ?? $original),
             ]);
         } else {
             $embed = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embed, $original, [
@@ -1404,7 +1421,7 @@ class McpVideoTools extends McpCrudToolsBase
                 'lang' => $lang,
             ]);
             if ($embed === '') {
-                throw new McpToolException("Field 'embed' must be a valid iframe or URL from an approved provider (YouTube, X, Vimeo).");
+                throw new McpToolException("Field 'embed' must be a valid iframe or video URL from an approved provider (YouTube, X video, Facebook video, Vimeo).");
             }
         }
 
@@ -1514,21 +1531,35 @@ class McpVideoTools extends McpCrudToolsBase
             if ($embed === '') {
                 throw new McpToolException("Field 'embed' cannot be empty.");
             }
+            $effectiveOriginal = isset($args['original']) ? (string) $args['original'] : (string) $model->original;
+            try {
+                VideoEmbedProviderService::assertVideoEmbedSourceAllowed($embed, $effectiveOriginal, $lang);
+            } catch (Throwable $e) {
+                $errCode = $e->getMessage();
+                if ($errCode === 'validator.err_no_video_use_social_post' || $errCode === 'autofill.no_video_in_post') {
+                    throw new McpToolException("This social post does not contain a video. Use create_socialmedia_post instead.");
+                }
+                if ($errCode === 'autofill.tombstone_error') {
+                    throw new McpToolException("The referenced social post is private or no longer available.");
+                }
+            }
             $detected = VideoEmbedProviderService::detectProvider($embed)
-                ?? (VideoEmbedProviderService::detectProvider(isset($args['original']) ? (string) $args['original'] : (string) $model->original));
+                ?? (VideoEmbedProviderService::detectProvider($effectiveOriginal));
             if ($detected !== null) {
                 $name = isset($args['name']) ? (string) $args['name'] : (string) $model->name;
                 $model->embed = VideoEmbedProviderService::buildEmbedHtml($detected['provider'], $detected['id'], [
                     'title' => $name,
                     'lang' => $lang,
+                    'aspect_ratio' => $detected['aspect_ratio'] ?? '16:9',
+                    'canonical_url' => $detected['canonical_url'] ?? $effectiveOriginal,
                 ]);
             } else {
-                $sanitized = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embed, isset($args['original']) ? (string) $args['original'] : (string) $model->original, [
+                $sanitized = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embed, $effectiveOriginal, [
                     'title' => (string) $model->name,
                     'lang' => $lang,
                 ]);
                 if ($sanitized === '') {
-                    throw new McpToolException("Field 'embed' must be a valid iframe or URL from an approved provider (YouTube, X, Vimeo).");
+                    throw new McpToolException("Field 'embed' must be a valid iframe or video URL from an approved provider (YouTube, X video, Facebook video, Vimeo).");
                 }
                 $model->embed = $sanitized;
             }

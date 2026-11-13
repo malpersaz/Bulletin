@@ -1,0 +1,73 @@
+{% set show_fab = false %}
+{% set show_search = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_socialmedia_post_mod.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_socialmedia_post_mod.edit }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_socialmedia_post.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<div class="sp-mod-form-shell">
+    <section class="sp-intro">
+        <h2>{{ lang.mod_socialmedia_post_mod.edit }}</h2>
+        <p>{{ lang.mod_socialmedia_post_mod.named }}</p>
+    </section>
+
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for errMsg in errors %}
+                <div>{{ errMsg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" id="editSocialPostModForm" class="sp-mod-form-card">
+        <input type="hidden" name="edit" value="1">
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="name" value="{{ d.name ?: (name is defined ? name : '') }}" type="text" id="name" placeholder=" " maxlength="255">
+            <label class="m3-floating-label" for="name">{{ lang.mod_socialmedia_post_mod.admin.columns.name }}</label>
+        </div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_name" value="{{ d.mod_name ?: (mod_name is defined ? mod_name : '') }}" type="text" id="mod_name" placeholder=" " maxlength="255">
+            <label class="m3-floating-label" for="mod_name">{{ lang.mod_socialmedia_post_mod.admin.columns.mod_name }}</label>
+        </div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_key" value="{{ d.mod_key ?: (mod_key is defined ? mod_key : '') }}" type="text" id="mod_key" placeholder=" " maxlength="255">
+            <label class="m3-floating-label" for="mod_key">{{ lang.mod_socialmedia_post_mod.admin.columns.mod_key }}</label>
+        </div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_value" value="{{ d.mod_value ?: (mod_value is defined ? mod_value : '') }}" type="text" id="mod_value" placeholder=" " maxlength="255">
+            <label class="m3-floating-label" for="mod_value">{{ lang.mod_socialmedia_post_mod.admin.columns.mod_value }}</label>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if oke is not defined %}
+    {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
+        cancel_url: site.saddress ~ 'mod_socialmedia_post_mod/list',
+        cancel_label: lang.mod_socialmedia_post_mod.button.cancel,
+        form_id: 'editSocialPostModForm',
+        submit_label: lang.mod_socialmedia_post_mod.button.edit,
+        reset_label: lang.mod_socialmedia_post_mod.button.refresh
+    } %}
+{% endif %}
+{% endblock %}

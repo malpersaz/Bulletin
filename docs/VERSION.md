@@ -1,6 +1,35 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.68] - 2026-11-13
+### Added
+- **Native Social Media Posts Module (`mod_socialmedia_post`) & Bridge Registry (`mod_socialmedia_post_mod`)**: Introduced full CRUD controllers (`mod/mod_socialmedia_post/index.php`, `mod/mod_socialmedia_post_mod/index.php`), ORM models, installer schemas (`mod_socialmedia_post`, `mod_socialmedia_post_link`, `mod_socialmedia_post_mod`), ACL roles/permissions, and 11 complete locale packs (`ku`, `tr`, `en`, `ckb`, `zza`, `ar`, `de`, `fr`, `sv`, `ru`, `fa`).
+- **Editorial Service & Inline Token Bridge (`[socialpost:N]`)**: Added `lib/SocialPostProviderService.class.php` with provider URL/embed detection (X, Facebook, Instagram), SSRF-hardened metadata autofill, paragraph-unwrapping HTML5 `<figure>` expansion (`renderTokens`), and syndication token stripping (`stripTokens`).
+- **Host Content Wiring**: Connected `$has_social_posts = true` and `syncRelatedSocialPosts()` across `mod_news`, `mod_publication`, `mod_event`, `mod_announcements`, and `mod_page`; updated frontend helpers (`mod/index/indexBase.php`, host helpers), public facade card styles/scripts (`templates/amed/static/css/social-post.css`), admin TinyMCE toolbar/inline card bar (`templates/admin/assets/js/social_post_picker.js`), context-menu quick access, and syndication cleanups (`mod/index/index.php` RSS/JSON, `mod/tools/index.php`, `lib/LlmsService.class.php`).
+- **MCP Social Post Toolset**: Added `lib/McpSocialPostTools.class.php` (7 tools: `list_socialmedia_posts`, `get_socialmedia_post`, `create_socialmedia_post`, `update_socialmedia_post`, `delete_socialmedia_post`, `link_socialmedia_post`, `unlink_socialmedia_post`) with idempotent `(provider, post_id, lang)` lookup, `status = 'n'` draft default, and 4-byte UTF-8 emoji preservation, registered exclusively in `lib/McpServer.class.php`.
+- **CLI Bootstrap & Migration Tasks**: Added `tasks/bootstrap_socialmedia_post.php` for idempotent schema/ACL/bridge seeding on existing deployments and `tasks/migrate_video_embed_social_posts.php` (`--dry-run` and live modes) to migrate misplaced non-video social posts from `mod_video_embed` and rewire host records to `[socialpost:N]`.
+
+### Changed
+- **Remote Video Scope Enforcement & Facebook Video Support (`mod_video_embed`)**: Hardened `VideoEmbedProviderService`, validators (`add`/`edit`), `mod_video_embed/index.php`, `McpVideoTools`, and admin/wizard JavaScript to reject non-video social media posts across all paths while adding Facebook video-only support (`watch`, `/videos/`, `/reel/`, `fb.watch`, `/share/v|r/`) across backend and frontend facade playback.
+- **User Role & Translation Coverage**: Added Persian (`mod/mod_user/lang/fa.php`) and updated `mod/mod_user/index.php` panel role categories (`social_posts`, `social_post_modules`).
+- **Static Public Social Post Card (`lib/SocialPostProviderService.class.php`)**: Replaced the click-to-load iframe facade in `buildPublicFigureHtml()` with a fully static, locally rendered card (provider pill, handle, post body, locally cached thumbnail, and "View on X/Facebook/Instagram" source link). Public pages no longer open any connection to third-party platform servers, and the redundant "Load X Post" button with its external notice was removed.
+- **Duplicate Text Removal**: The card title is now rendered only when the post has no body text, preventing the post text from appearing twice (title + excerpt).
+
+### Fixed
+- **Social Post Linking (`mod/mod_socialmedia_post/index.php`)**: `insertLinkRow()` loaded the link model from a non-existent path (`mod/mod_socialmedia_post_link/model/`), which aborted "Save and Link" / "Link" with an HTML error page; it now uses `Load::model('mod_socialmedia_post.mod_socialmedia_post_link')`.
+- **JSON-Only AJAX Responses**: `quick_save` and related endpoints return JSON for expired sessions, missing permissions, database errors, and fatal errors, and log every failure reason to `logs/ajax_errors.log`.
+- **Admin Social Post Picker (`templates/admin/assets/js/social_post_picker.js`)**: Requests now use `window.SITE_URL` instead of the non-existent `/management/` route; non-JSON responses surface the HTTP status code and log the server response to the console. Asset cache-busting version updated in `templates/admin/layout.twig`.
+- **Thumbnail Storage**: Social post thumbnails are stored in both `static/mod_socialmedia_post/` and `/thumb/`.
+- **Admin Sheet Overflow (`templates/admin/assets/css/style.css`, `templates/admin/assets/js/script.js`, `templates/admin/assets/css/mod_socialmedia_post.css`)**: `#socialPostSheet` and `#context-menu-sheet` are now constrained inside `.mobile-wrapper` on the phone-only admin surface.
+- **Video Embed Caption Alignment (`templates/amed/static/css/video-embed.css`)**: The source caption below remote video cards is aligned with the card; CSS cache-busting version bumped in 5 public Twig templates.
+
+### Removed
+- **`templates/amed/static/js/social-post.js`**: Deleted the now-unused iframe loader and its includes in `templates/amed/index/mod_news/news.twig` and `templates/amed/partials/_detail_scripts.twig`; cleaned unused button/notice/iframe rules from `templates/amed/static/css/social-post.css`.
+- **Unused Locale Keys**: Removed `load_x_post`, `load_facebook_post`, `load_instagram_post`, `load_post`, and `external_notice_*` from all 11 `mod/index/lang/*.php` packs.
+- **`SocialPostProviderService::resolveLoadLabel()`**: Removed the private helper that only served the deleted button.
+
+---
+
 ## [v1.0.67] - 2026-11-13
 - **Zero-Cost Automated Social Sharing via Enhanced RSS Bridge & WebSub Push (`docs/plan/x-rss-zero-cost-social-bridge-v1.0.67.md`)**:
   - **Dedicated Social Syndication RSS Engine (`mod/index/index.php`, `config/url.config.php`)**:

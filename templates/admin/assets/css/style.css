@@ -798,6 +798,10 @@ body:has(.bottom-sheet.active) .fab-container,
 body:has(.bottom-sheet.active) .fab-overlay,
 body:has(.bottom-sheet.active) .main-fab,
 body:has(.bottom-sheet.active) .standard-toolbar,
+body:has(.sp-sheet.active) .fab-container,
+body:has(.sp-sheet.active) .fab-overlay,
+body:has(.sp-sheet.active) .main-fab,
+body:has(.sp-sheet.active) .standard-toolbar,
 body:has(.wizard-overlay.active) .fab-container,
 body:has(.wizard-overlay.active) .fab-overlay,
 body:has(.wizard-overlay.active) .main-fab,
@@ -1132,7 +1136,7 @@ body.selection-mode .card-checkbox {
    ============================================= */
 #context-menu-sheet {
   height: auto !important;
-  max-height: none !important;
+  max-height: calc(100dvh - 32px) !important;
   width: calc(100% - 32px);
   max-width: 340px;
   left: 50% !important;
@@ -1149,11 +1153,11 @@ body.selection-mode .card-checkbox {
     0 24px 80px rgba(0, 0, 0, 0.18),
     0 8px 24px rgba(103, 80, 164, 0.08),
     0 0 0 1px rgba(103, 80, 164, 0.06);
-  padding: 8px 0;
+  padding: 6px 0;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.2s ease;
   pointer-events: none;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 
 #context-menu-sheet.active {
@@ -1164,10 +1168,19 @@ body.selection-mode .card-checkbox {
 
 /* Context Menu Header */
 #context-menu-sheet .context-menu-header {
-  padding: 20px 24px 12px 24px;
+  padding: 16px 20px 10px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+}
+
+#context-menu-sheet .context-menu-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 #context-menu-sheet .context-menu-header h3 {
@@ -1186,14 +1199,20 @@ body.selection-mode .card-checkbox {
 .context-action-item {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 24px;
+  gap: 14px;
+  min-height: 48px;
+  padding: 8px 20px;
+  box-sizing: border-box;
   cursor: pointer;
   transition: background 0.15s ease;
   border-radius: 0;
   position: relative;
   text-decoration: none;
   color: inherit;
+}
+
+.context-action-item.is-hidden {
+  display: none !important;
 }
 
 .context-action-item:hover {
@@ -1208,14 +1227,14 @@ body.selection-mode .card-checkbox {
 
 /* Circular Icon Containers */
 .context-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 18px;
+  font-size: 17px;
   transition: transform 0.2s ease;
 }
 
@@ -1247,6 +1266,11 @@ body.selection-mode .card-checkbox {
 .context-icon.icon-faq {
   background: rgba(124, 58, 237, 0.12);
   color: #7C3AED;
+}
+
+.context-icon.icon-social-post {
+  background: rgba(14, 116, 144, 0.12);
+  color: #0E7490;
 }
 
 .context-icon.icon-status {
@@ -1283,7 +1307,7 @@ body.selection-mode .card-checkbox {
 .context-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06) 20%, rgba(0, 0, 0, 0.06) 80%, transparent);
-  margin: 6px 24px;
+  margin: 4px 20px;
 }
 
 /* Delete item special styling */
@@ -1303,7 +1327,8 @@ body.selection-mode .card-checkbox {
 @media(min-width: 1024px) {
   #context-menu-sheet {
     position: absolute !important;
-    z-index: 110 !important;
+    max-height: calc(100% - 32px) !important;
+    z-index: 405 !important;
   }
 
   #context-menu-sheet.active {
@@ -3184,7 +3209,7 @@ body:has(.m3-final-bar) #snackbar-container,
   /* Fixed overlays should also be absolute in simulator */
   #lang-sheet-overlay,
   #context-menu-overlay {
-    z-index: 105 !important;
+    z-index: 404 !important;
     position: absolute !important;
   }
 
@@ -3196,7 +3221,7 @@ body:has(.m3-final-bar) #snackbar-container,
 
   #lang-sheet,
   #context-menu-sheet {
-    z-index: 110 !important;
+    z-index: 405 !important;
     position: absolute !important;
   }
 
@@ -4566,6 +4591,10 @@ textarea:-webkit-autofill:focus {
   color: #7c3aed !important;
   background: rgba(124, 58, 237, 0.12) !important;
 }
+.standard-toolbar #toolbarSocialPost.active {
+  color: #0e7490 !important;
+  background: rgba(14, 116, 144, 0.12) !important;
+}
 .standard-toolbar #toolbarEdit.active {
   color: #6750a4 !important;
   background: rgba(103, 80, 164, 0.12) !important;
@@ -4618,6 +4647,9 @@ textarea:-webkit-autofill:focus {
 .standard-toolbar #toolbarFaq.active i {
   filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.24)) !important;
 }
+.standard-toolbar #toolbarSocialPost.active i {
+  filter: drop-shadow(0 2px 6px rgba(14, 116, 144, 0.24)) !important;
+}
 .standard-toolbar #toolbarEdit.active i {
   filter: drop-shadow(0 2px 4px rgba(103, 80, 164, 0.25)) !important;
 }
@@ -4655,6 +4687,9 @@ textarea:-webkit-autofill:focus {
 }
 .standard-toolbar #toolbarFaq.active:hover {
   background: rgba(124, 58, 237, 0.18) !important;
+}
+.standard-toolbar #toolbarSocialPost.active:hover {
+  background: rgba(14, 116, 144, 0.18) !important;
 }
 .standard-toolbar #toolbarEdit.active:hover {
   background: rgba(103, 80, 164, 0.18) !important;

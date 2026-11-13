@@ -105,6 +105,8 @@
         data-i18n-upload-text="{{ lang.mod_video_embed.wizard.label.upload_text|e('html_attr') }}"
         data-i18n-preview-text="{{ lang.mod_video_embed.admin.columns.preview|e('html_attr') }}"
         data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|e('html_attr') }}"
+        data-i18n-provider-facebook="{{ lang.mod_video_embed.autofill.provider_facebook|e('html_attr') }}"
+        data-i18n-no-video-social="{{ lang.mod_video_embed.validator.err_no_video_use_social_post|e('html_attr') }}"
     >
         <input type="hidden" name="add" value="{{ lang.mod_video_embed.button.add }}">
         <input type="hidden" name="target_module" id="videoTargetModule" value="{{ target_module|default('') }}">

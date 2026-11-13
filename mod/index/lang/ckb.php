@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'کرتەکردن لەسەر لێدان پەیوەندی بە ئێکس (تویتەر) دەکات و میدیای دەرەکی بار دەکات.',
         'external_media_notice_youtube' => 'کرتەکردن لەسەر لێدان پەیوەندی بە یوتیوب دەکات و میدیای دەرەکی بار دەکات.',
         'source_attribution' => 'سەرچاوە',
+        'load_facebook_video' => 'لێدانی ڤیدیۆی فەیسبووک',
+        'view_on_facebook' => 'بینین لە فەیسبووک',
+        'external_media_notice_facebook' => 'لێدان پەیوەندی ڕاستەوخۆ بە سێرڤەرەکانی فەیسبووکەوە دەکات و میدیای دەرەکی باردەکات.',
         'latest_videos' => [
             'title' => 'ڤیدیۆکان',
             'all_items' => 'هەموو ڤیدیۆکان',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'ڤیدیۆکان',
             2 => 'هەموو ڤیدیۆکان',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'پۆستی تۆڕی کۆمەڵایەتی',
+        'view_on_x' => 'بینین لە X',
+        'view_on_facebook' => 'بینین لە فەیسبووک',
+        'view_on_instagram' => 'بینین لە ئینستاگرام',
+        'view_original_post' => 'بینینی پۆستی ڕەسەن',
+        'source_label' => 'سەرچاوە',
+        'related_posts' => 'پۆستە کۆمەڵایەتییە پەیوەندیدارەکان',
     ],
     'mod_pictures' => [
         'title' => 'گەلەری وێنەکان',

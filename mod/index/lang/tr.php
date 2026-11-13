@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'Oynat butonuna tıklandığında X (Twitter) sunucularına bağlanılarak harici medya yüklenecektir.',
         'external_media_notice_youtube' => 'Oynat butonuna tıklandığında YouTube sunucularına bağlanılarak harici medya yüklenecektir.',
         'source_attribution' => 'Kaynak',
+        'load_facebook_video' => 'Facebook Videosunu Oynat',
+        'view_on_facebook' => 'Facebook üzerinde gör',
+        'external_media_notice_facebook' => 'Oynat butonuna tıklandığında Facebook sunucularına bağlanılarak harici medya yüklenecektir.',
         'latest_videos' => [
             'title' => 'Videolar',
             'all_items' => 'Tüm Videolar',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'Videolar',
             2 => 'Tüm Videolar',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'Sosyal Medya Gönderisi',
+        'view_on_x' => 'X üzerinde gör',
+        'view_on_facebook' => 'Facebook üzerinde gör',
+        'view_on_instagram' => 'Instagram üzerinde gör',
+        'view_original_post' => 'Orijinal Gönderiyi Gör',
+        'source_label' => 'Kaynak',
+        'related_posts' => 'İlgili Sosyal Medya Paylaşımları',
     ],
     'mod_pictures' => [
         'title' => 'İçerik Galerisi',

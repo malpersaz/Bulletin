@@ -398,6 +398,7 @@ $lang['mod_news'] = [
         'delete_success' => 'News deleted!',
         'add_video' => 'Add Video',
         'add_file' => 'Add File',
+        'social_post' => 'Social Posts',
     ],
 
         'show_on_homepage' => 'Show on Homepage',
@@ -424,6 +425,7 @@ $lang['mod_news'] = [
         'gallery' => 'Select Existing Gallery',
         'file' => 'Select Existing File',
         'video' => 'Select Existing Video',
+        'social_post' => 'Manage Social Posts',
     ],
 
     // === Latest News ===

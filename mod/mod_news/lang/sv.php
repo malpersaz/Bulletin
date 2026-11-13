@@ -397,6 +397,7 @@ $lang['mod_news'] = [
         'delete_success' => 'Nyhet raderad!',
         'add_video' => 'Lägg till video',
         'add_file' => 'Lägg till fil',
+        'social_post' => 'Sociala Inlägg',
     ],
 
         'show_on_homepage' => 'Visa på startsidan',
@@ -424,6 +425,7 @@ $lang['mod_news'] = [
         'gallery' => 'Välj befintligt galleri',
         'file' => 'Välj befintlig fil',
         'video' => 'Välj befintlig video',
+        'social_post' => 'Hantera sociala inlägg',
     ],
 
     // === Latest News ===

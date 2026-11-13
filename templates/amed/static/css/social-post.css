@@ -1,0 +1,162 @@
+/**
+ * social-post.css - Public Inline Social Post Embed Card (static, no third-party requests)
+ * Amed Framework (AKM Bulletin CMS) - v1.0.68
+ * Strict Code Separation: zero inline styles, light/dark token aware, >= 44px touch target.
+ */
+
+.social-post-embed {
+    --sp-pub-bg: #ffffff;
+    --sp-pub-subtle: #f8fafc;
+    --sp-pub-border: rgba(15, 23, 42, 0.12);
+    --sp-pub-text: #0f172a;
+    --sp-pub-muted: #64748b;
+    --sp-pub-accent: #0f172a;
+    --sp-pub-on-accent: #ffffff;
+    --sp-pub-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    max-width: 550px;
+    width: 100%;
+    margin: 1.75rem auto;
+    border: 1px solid var(--sp-pub-border);
+    border-radius: 14px;
+    background: var(--sp-pub-bg);
+    box-shadow: var(--sp-pub-shadow);
+    overflow: hidden;
+}
+
+[data-bs-theme="dark"] .social-post-embed,
+body.dark-mode .social-post-embed {
+    --sp-pub-bg: #141820;
+    --sp-pub-subtle: #1b202b;
+    --sp-pub-border: rgba(255, 255, 255, 0.12);
+    --sp-pub-text: #f1f5f9;
+    --sp-pub-muted: #94a3b8;
+    --sp-pub-accent: #f1f5f9;
+    --sp-pub-on-accent: #0f172a;
+    --sp-pub-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.social-post-facade {
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.social-post-facade-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.social-post-provider-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--sp-pub-subtle);
+    color: var(--sp-pub-text);
+    border: 1px solid var(--sp-pub-border);
+}
+
+.social-post-embed--x .social-post-provider-pill i {
+    color: var(--sp-pub-text);
+}
+
+.social-post-embed--facebook .social-post-provider-pill i {
+    color: #1877f2;
+}
+
+.social-post-embed--instagram .social-post-provider-pill i {
+    color: #e1306c;
+}
+
+.social-post-handle {
+    font-size: 0.8125rem;
+    color: var(--sp-pub-muted);
+    font-weight: 500;
+}
+
+.social-post-facade-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--sp-pub-text);
+}
+
+.social-post-excerpt {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--sp-pub-muted);
+}
+
+.social-post-thumb-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--sp-pub-border);
+    background: var(--sp-pub-subtle);
+}
+
+.social-post-thumb {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+    object-fit: cover;
+}
+
+.social-post-external-link:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.social-post-caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.625rem 1.125rem;
+    border-top: 1px solid var(--sp-pub-border);
+    background: var(--sp-pub-subtle);
+    font-size: 0.8125rem;
+    color: var(--sp-pub-muted);
+}
+
+.social-post-caption-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.social-post-caption-source cite {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--sp-pub-text);
+}
+
+.social-post-external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 36px;
+    color: var(--sp-pub-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.social-post-external-link:hover {
+    text-decoration: underline;
+}
+
+.social-post-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.75rem;
+}

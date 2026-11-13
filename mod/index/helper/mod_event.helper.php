@@ -732,6 +732,7 @@ class mod_event_helper extends indexBase
         $this->_mod_faq('mod_event', $eventModel->id);
 
         $eventData = $this->_cleanEventRow($eventModel->toArray());
+        $eventData = $this->enrichRowWithSocialPosts('mod_event', (int) $eventModel->id, $eventData);
         $this->theme->ctx_set('d', $eventData);
         $this->theme->ctx_set('detail', $eventData);
 

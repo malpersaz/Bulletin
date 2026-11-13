@@ -386,7 +386,7 @@ class Helper
         $config->set('HTML.SafeIframe', true);
 
         // Set allowed iframe sources using HTTPS-only exact provider paths
-        $config->set('URI.SafeIframeRegexp', '%^https://(www\.youtube\.com/embed/|www\.youtube-nocookie\.com/embed/|player\.vimeo\.com/video/|platform\.twitter\.com/embed/Tweet\.html)%');
+        $config->set('URI.SafeIframeRegexp', '%^https://(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|platform\.twitter\.com/embed/Tweet\.html|(www\.)?google\.com/maps/embed|(maps\.)?google\.com/maps|www\.openstreetmap\.org/export/embed\.html|www\.facebook\.com/plugins/(post|video)\.php|www\.instagram\.com/(p|reel)/[A-Za-z0-9_-]+/embed)%');
         $config->set('AutoFormat.Linkify', true);
         $config->set('AutoFormat.RemoveEmpty', false);
 

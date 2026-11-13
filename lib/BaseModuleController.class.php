@@ -26,6 +26,7 @@ abstract class BaseModuleController
     protected $has_gallery = false;
     protected $has_files = false;
     protected $has_faq = false;
+    protected $has_social_posts = false;
 
     // Flexible image fields configuration
     protected $image_fields = [
@@ -781,6 +782,9 @@ abstract class BaseModuleController
         if ($this->has_faq) {
             $this->ensureBridgeModule('mod_faq_mod', 'FAQs', 'id', 'name');
         }
+        if ($this->has_social_posts) {
+            $this->ensureBridgeModule('mod_socialmedia_post_mod', 'Social Posts', 'id', 'name');
+        }
     }
 
     /**
@@ -1404,6 +1408,17 @@ abstract class BaseModuleController
 
             // Save model
             if ($model->save(true)) {
+                $savedRecordId = (int) ($model->id ?? 0);
+                if ($savedRecordId <= 0) {
+                    $savedRecordId = (int) $this->db->insert_id();
+                    if ($savedRecordId > 0) {
+                        $model->id = $savedRecordId;
+                    }
+                }
+                if ($this->has_social_posts && $savedRecordId > 0) {
+                    $this->syncRelatedSocialPosts($savedRecordId, (string) ($model->content ?? ''), $_POST['social_post_ids'] ?? null);
+                }
+
                 // Execute post-save callback
                 $this->executeAfterSaveCallback($model);
 
@@ -1490,6 +1505,10 @@ abstract class BaseModuleController
 
             // Update model
             if ($model->update('id')) {
+                if ($this->has_social_posts && (int) $id > 0) {
+                    $this->syncRelatedSocialPosts((int) $id, (string) ($model->content ?? ''), $_POST['social_post_ids'] ?? null);
+                }
+
                 // Execute post-update callback
                 $this->executeAfterUpdateCallback($model, $id, $oldMenuUrl);
 
@@ -1551,6 +1570,11 @@ abstract class BaseModuleController
             // Remove related files
             if ($this->has_files) {
                 $this->removeRelatedFiles($model->id);
+            }
+
+            // Remove related social media post links
+            if ($this->has_social_posts) {
+                $this->removeRelatedSocialPosts($model->id);
             }
 
             // Remove images if they exist
@@ -1616,6 +1640,98 @@ abstract class BaseModuleController
         if ($file_mod->exists_mod_name($this->module_name) === true) {
             Run::import('mod_attachment', '_remove', [$this->module_name, $record_id]);
         }
+    }
+
+    /**
+     * Synchronize bound social media posts from explicit IDs and inline tokens.
+     */
+    protected function syncRelatedSocialPosts($record_id, $contentHtml = '', $explicitPostIds = null)
+    {
+        $recordId = (int) $record_id;
+        if ($recordId <= 0) {
+            return;
+        }
+        if (!$this->tableExists('mod_socialmedia_post_link') || !$this->tableExists('mod_socialmedia_post')) {
+            return;
+        }
+
+        $this->ensureBridgeModule('mod_socialmedia_post_mod', 'Social Posts', 'id', 'name');
+
+        $collected = [];
+        if (class_exists('SocialPostProviderService') && $contentHtml !== '') {
+            foreach (SocialPostProviderService::extractTokenIds((string) $contentHtml) as $tokenId) {
+                $tokenId = (int) $tokenId;
+                if ($tokenId > 0) {
+                    $collected[$tokenId] = $tokenId;
+                }
+            }
+        }
+
+        if (is_array($explicitPostIds)) {
+            foreach ($explicitPostIds as $item) {
+                $postId = (int) $item;
+                if ($postId > 0) {
+                    $collected[$postId] = $postId;
+                }
+            }
+        } elseif (is_string($explicitPostIds) && trim($explicitPostIds) !== '') {
+            foreach (explode(',', $explicitPostIds) as $part) {
+                $postId = (int) trim($part);
+                if ($postId > 0) {
+                    $collected[$postId] = $postId;
+                }
+            }
+        }
+
+        if (empty($collected)) {
+            return;
+        }
+
+        $idList = implode(',', array_values($collected));
+        $this->db->fetch_array("SELECT id FROM `mod_socialmedia_post` WHERE `id` IN ({$idList})");
+        $validRows = $this->db->toArray() ?: [];
+        $validIds = [];
+        foreach ($validRows as $row) {
+            $validIds[(int) $row['id']] = true;
+        }
+        if (empty($validIds)) {
+            return;
+        }
+
+        $safeMod = addslashes((string) $this->module_name);
+        $this->db->fetch_array("SELECT `socialmedia_post_id` FROM `mod_socialmedia_post_link` WHERE `mod_name` = '{$safeMod}' AND `vid` = {$recordId}");
+        $existingRows = $this->db->toArray() ?: [];
+        $existingIds = [];
+        foreach ($existingRows as $row) {
+            $existingIds[(int) $row['socialmedia_post_id']] = true;
+        }
+
+        $sortOrder = count($existingIds);
+        $now = date('Y-m-d H:i:s');
+        foreach ($collected as $postId) {
+            if (!isset($validIds[$postId]) || isset($existingIds[$postId])) {
+                continue;
+            }
+            $this->db->query("INSERT INTO `mod_socialmedia_post_link` (`socialmedia_post_id`, `mod_name`, `vid`, `sort_order`, `created_at`) VALUES ({$postId}, '{$safeMod}', {$recordId}, {$sortOrder}, '{$now}')");
+            $sortOrder++;
+        }
+    }
+
+    /**
+     * Remove related social media post links for a deleted host record.
+     */
+    protected function removeRelatedSocialPosts($record_id)
+    {
+        $recordId = (int) $record_id;
+        if ($recordId <= 0 || !$this->tableExists('mod_socialmedia_post_link')) {
+            return;
+        }
+        if (file_exists(root_dir . 'mod/mod_socialmedia_post/index.php')) {
+            Run::import('mod_socialmedia_post', '_remove', [$this->module_name, $recordId]);
+            return;
+        }
+        $safeMod = addslashes((string) $this->module_name);
+        $this->db->query("DELETE FROM `mod_socialmedia_post_link` WHERE `mod_name` = '{$safeMod}' AND `vid` = {$recordId}");
     }
 
     /**
@@ -1693,7 +1809,7 @@ abstract class BaseModuleController
 
     protected function echoSuccessResponse()
     {
-        if (in_array($this->module_name, ['mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed', 'mod_event'])) {
+        if (in_array($this->module_name, ['mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed', 'mod_event', 'mod_socialmedia_post'])) {
             echo 'Success';
         } else {
             echo 'OK';

@@ -81,7 +81,7 @@
 
 {% block css_custom %}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}-20261113v3">
 {% endblock %}
 
 {% block content %}
@@ -95,7 +95,7 @@
             </div>
             <div class="list-group list-group-flush">
                 <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">
-                    {{ lang.index.mod_video_embed.latest_videos.all_items|default(lang.index.mod_video_embed.1) }}
+                    {{ lang.index.mod_video_embed.latest_videos.all_items }}
                 </a>
                 {% for kat in categories %}
                     <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">

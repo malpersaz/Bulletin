@@ -12,6 +12,13 @@
         or ('youtube' in (vid.embed_src|default('')|lower))
         or ('youtube' in (vid.embed|default('')|lower))
         or ('youtu.be' in (vid.original|default('')|lower)) %}
+    {% set is_x_vid = (vid.is_x is defined and vid.is_x)
+        or (vid.provider is defined and vid.provider == 'x')
+        or ('platform.twitter.com' in (vid.embed_src|default('')|lower)) %}
+    {% set is_fb = (vid.is_facebook is defined and vid.is_facebook)
+        or (vid.provider is defined and vid.provider == 'facebook')
+        or ('facebook.com' in (vid.embed_src|default('')|lower))
+        or ('fb.watch' in (vid.original|default('')|lower)) %}
     {% set aspect_cls = 'video-embed-stage--16x9' %}
     {% if vid.aspect_ratio is defined and vid.aspect_ratio == '4:3' %}
         {% set aspect_cls = 'video-embed-stage--4x3' %}
@@ -19,8 +26,6 @@
         {% set aspect_cls = 'video-embed-stage--1x1' %}
     {% elseif (vid.aspect_ratio is defined and vid.aspect_ratio == '9:16') or (vid.is_vertical is defined and vid.is_vertical) %}
         {% set aspect_cls = 'video-embed-stage--vertical' %}
-    {% elseif vid.is_x is defined and vid.is_x %}
-        {% set aspect_cls = 'video-embed-stage--x' %}
     {% endif %}
 
     {% if is_hero_player %}
@@ -39,15 +44,18 @@
 
     {% set figure_cls = is_hero_player ? 'video-embed-figure video-embed-figure--hero' : 'video-embed-figure mb-4' %}
     {% set caption_cls = is_hero_player ? 'video-embed-caption video-embed-caption--hero d-flex flex-wrap justify-content-between align-items-center gap-2' : 'video-embed-caption mt-2 d-flex flex-wrap justify-content-between align-items-center gap-2' %}
+    {% set provider_name = vid.provider|default(is_x_vid ? 'x' : (is_fb ? 'facebook' : 'youtube')) %}
+    {% set load_label = is_x_vid ? lang.index.mod_video_embed.load_x_video : (is_fb ? lang.index.mod_video_embed.load_facebook_video : lang.index.mod_video_embed.load_video) %}
+    {% set source_href = vid.canonical_url|default(vid.original|default('')) %}
 
     <figure class="{{ figure_cls }}" data-video-figure>
-        <div class="video-embed-stage {{ aspect_cls }}{% if vid.is_x is defined and vid.is_x %} video-embed-stage--x{% endif %}"
+        <div class="video-embed-stage {{ aspect_cls }}{% if is_x_vid %} video-embed-stage--x{% elseif is_fb %} video-embed-stage--facebook{% endif %}"
              data-video-embed-facade
-             data-provider="{{ vid.provider|default(vid.is_x is defined and vid.is_x ? 'x' : 'youtube') }}"
+             data-provider="{{ provider_name }}"
              data-aspect-ratio="{{ vid.aspect_ratio|default('16:9') }}"
              data-embed-src="{{ vid.embed_src|default('')|e('html_attr') }}"
              data-title="{{ vid.name|default('')|e('html_attr') }}">
-            <div class="video-embed-facade" role="button" tabindex="0" aria-label="{{ lang.index.mod_video_embed.load_video }}: {{ vid.name|default('')|e('html_attr') }}">
+            <div class="video-embed-facade" role="button" tabindex="0" aria-label="{{ load_label }}: {{ vid.name|default('')|e('html_attr') }}">
                 {% if poster is not empty %}
                     {% if is_hero_player %}
                         <img src="{{ poster }}"
@@ -72,9 +80,18 @@
                 {% endif %}
                 <div class="video-embed-overlay" aria-hidden="true"></div>
                 <div class="video-embed-badges">
-                    {% if vid.is_x is defined and vid.is_x %}
+                    {% if is_x_vid %}
                         <span class="video-embed-badge badge-x">
-                            <i class="bi bi-twitter-x me-1" aria-hidden="true"></i><span>X</span>
+                            <i class="bi bi-twitter-x" aria-hidden="true"></i>
+                            {% if vid.author_handle is defined and vid.author_handle is not empty %}
+                                <bdi dir="ltr" class="ms-1">@{{ vid.author_handle }}</bdi>
+                            {% else %}
+                                <span class="visually-hidden">X</span>
+                            {% endif %}
+                        </span>
+                    {% elseif is_fb %}
+                        <span class="video-embed-badge badge-facebook">
+                            <i class="bi bi-facebook me-1" aria-hidden="true"></i><span>Facebook</span>
                         </span>
                     {% elseif is_yt %}
                         <span class="video-embed-badge badge-youtube">
@@ -97,7 +114,7 @@
                 {% elseif vid.embed is defined and vid.embed is not empty %}
                     {{ vid.embed|raw }}
                 {% else %}
-                    <a href="{{ vid.canonical_url|default(vid.original|default('#')) }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                    <a href="{{ source_href ?: '#' }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
                         {{ lang.index.mod_video_embed.view_original_source }}
                     </a>
                 {% endif %}
@@ -107,20 +124,16 @@
             <figcaption class="{{ caption_cls }}">
                 <span class="video-embed-attribution">
                     <span class="text-muted">{{ lang.index.mod_video_embed.source_attribution }}:</span>
-                    {% if vid.canonical_url is defined and vid.canonical_url is not empty %}
-                        <a href="{{ vid.canonical_url }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">
-                            <bdi dir="ltr">{% if vid.author_handle is defined and vid.author_handle is not empty %}@{{ vid.author_handle }}{% elseif vid.is_x is defined and vid.is_x %}X (Twitter){% elseif is_yt %}YouTube{% else %}{{ vid.name }}{% endif %}</bdi>
-                        </a>
-                    {% elseif vid.original is defined and vid.original is not empty %}
-                        <a href="{{ vid.original }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">
-                            <bdi dir="ltr">{% if vid.is_x is defined and vid.is_x %}X (Twitter){% elseif is_yt %}YouTube{% else %}{{ vid.name }}{% endif %}</bdi>
+                    {% if source_href is not empty %}
+                        <a href="{{ source_href }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">
+                            <bdi dir="ltr">{% if vid.author_handle is defined and vid.author_handle is not empty %}@{{ vid.author_handle }}{% elseif is_x_vid %}X (Twitter){% elseif is_fb %}Facebook{% else %}{{ vid.name }}{% endif %}</bdi>
                         </a>
                     {% else %}
-                        <span class="fw-semibold">{{ vid.is_x is defined and vid.is_x ? 'X (Twitter)' : (is_yt ? 'YouTube' : site.title) }}</span>
+                        <span class="fw-semibold">{{ is_x_vid ? 'X (Twitter)' : (is_fb ? 'Facebook' : site.title) }}</span>
                     {% endif %}
                 </span>
                 <small class="video-embed-notice text-muted">
-                    {{ (vid.is_x is defined and vid.is_x) ? lang.index.mod_video_embed.external_media_notice_x : lang.index.mod_video_embed.external_media_notice_youtube }}
+                    {{ is_x_vid ? lang.index.mod_video_embed.external_media_notice_x : (is_fb ? lang.index.mod_video_embed.external_media_notice_facebook : lang.index.mod_video_embed.external_media_notice_youtube) }}
                 </small>
             </figcaption>
         {% endif %}

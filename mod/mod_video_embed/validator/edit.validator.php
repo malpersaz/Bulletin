@@ -218,7 +218,21 @@ class edit_validator
 
         $embedInput = trim((string) Req::Post('embed'));
         $originalInput = trim((string) Req::Post_Safe('original'));
+        $langInput = trim((string) Req::Post_Safe('lang'));
         if ($embedInput !== '') {
+            try {
+                VideoEmbedProviderService::assertVideoEmbedSourceAllowed($embedInput, $originalInput, $langInput !== '' ? $langInput : 'en');
+            } catch (Throwable $e) {
+                $errCode = $e->getMessage();
+                if ($errCode === 'validator.err_no_video_use_social_post' || $errCode === 'autofill.no_video_in_post') {
+                    $this->errors['embed'] = $this->lang['mod_video_embed']['validator']['err_no_video_use_social_post']
+                        ?? 'This social post does not contain a video. Add it under Social Media Posts instead.';
+                } else {
+                    $this->errors['embed'] = $this->lang['mod_video_embed']['autofill']['tombstone_error']
+                        ?? ($this->lang['mod_video_embed']['errors']['invalid_embed'] ?? 'Invalid video embed code or URL.');
+                }
+                return True;
+            }
             $sanitized = VideoEmbedProviderService::sanitizeOrRebuildEmbed($embedInput, $originalInput);
             if ($sanitized === '') {
                 $this->errors['embed'] = $this->lang['mod_video_embed']['errors']['invalid_embed'] ?? 'Invalid video embed code or URL.';

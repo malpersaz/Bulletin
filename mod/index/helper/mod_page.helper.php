@@ -37,8 +37,9 @@ class mod_page_helper extends indexBase
                 exit;
             }
 
-            $this->tema->ctx_set('d', $page->toArray());
-            $this->tema->ctx_set('detail', $page->toArray());
+            $pageData = $this->enrichRowWithSocialPosts('mod_page', (int) $page->id, $page->toArray());
+            $this->tema->ctx_set('d', $pageData);
+            $this->tema->ctx_set('detail', $pageData);
             // Access permission check
             if ($this->_permission_check($page->acl_id)) {
                 return;
@@ -96,8 +97,9 @@ class mod_page_helper extends indexBase
                     exit;
                 }
 
-                $this->tema->ctx_set('d', $page->toArray());
-                $this->tema->ctx_set('detail', $page->toArray());
+                $pageData = $this->enrichRowWithSocialPosts('mod_page', (int) $page->id, $page->toArray());
+                $this->tema->ctx_set('d', $pageData);
+                $this->tema->ctx_set('detail', $pageData);
                 if ($this->_permission_check($page->acl_id)) {
                     return;
                 }

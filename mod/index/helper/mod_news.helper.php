@@ -219,6 +219,7 @@ class mod_news_helper extends indexBase
             $this->_mod_faq('mod_news', $news->id);
 
             $news_data = $this->_cleanNewsRow($news->toArray());
+            $news_data = $this->enrichRowWithSocialPosts('mod_news', (int) $news->id, $news_data);
 
             // Metrics & E-E-A-T Enrichment
             $cleanBodyText = trim(strip_tags((string) ($news_data['content'] ?? '')));

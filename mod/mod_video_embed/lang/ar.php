@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'تبديل الرمز',
         'provider_youtube' => 'يوتيوب',
         'provider_x' => 'إكس (تويتر)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'رابط / تضمين',
         'tombstone_error' => 'هذا المنشور لم يعد متاحاً أو خاص.',
         'no_video_in_post' => 'لم يتم العثور على فيديو في هذا المنشور.',
@@ -153,6 +154,7 @@ $lang['mod_video_embed'] = [
         'length' => 'يجب أن يكون %s بين %s و %s حرفاً',
         'inarray' => 'يمكن لحقل %s أن يأخذ قيم \' %s \' فقط',
         'unsupported_emoji' => 'الرموز التعبيرية أو الأحرف غير المدعومة غير مسموح بها في حقل %s.',
+        'err_no_video_use_social_post' => 'هذا المنشور الاجتماعي لا يحتوي على فيديو. أضفه من قسم منشورات التواصل الاجتماعي.',
     ],
     'context_menu' => [
         'title' => 'الإجراءات',

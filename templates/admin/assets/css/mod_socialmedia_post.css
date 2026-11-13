@@ -1,0 +1,958 @@
+/**
+ * mod_socialmedia_post.css - Minimalist Phone-First Admin Styles
+ * Amed Framework (AKM Bulletin CMS) - v1.0.68
+ *
+ * Designed strictly for phone viewports (<= 430px), hairline 1px borders,
+ * zero nested cards, and >= 44px touch targets.
+ */
+
+:root {
+    --sp-bg: #f8f9fb;
+    --sp-surface: #ffffff;
+    --sp-surface-subtle: #f3f5f8;
+    --sp-border: #e5e7eb;
+    --sp-border-strong: #d1d5db;
+    --sp-text: #111827;
+    --sp-muted: #6b7280;
+    --sp-accent: #111827;
+    --sp-on-accent: #ffffff;
+    --sp-accent-soft: #eef2ff;
+    --sp-accent-ink: #3730a3;
+    --sp-success: #15803d;
+    --sp-success-bg: #f0fdf4;
+    --sp-draft: #b45309;
+    --sp-draft-bg: #fffbeb;
+    --sp-danger: #b91c1c;
+    --sp-danger-bg: #fef2f2;
+    --sp-x: #0f1419;
+    --sp-fb: #1877f2;
+    --sp-ig: #e1306c;
+    --sp-radius: 12px;
+    --sp-radius-sm: 8px;
+}
+
+[data-bs-theme="dark"],
+body.dark-mode,
+.dark-theme {
+    --sp-bg: #0f1115;
+    --sp-surface: #171a21;
+    --sp-surface-subtle: #1f242e;
+    --sp-border: #2a303c;
+    --sp-border-strong: #3a4252;
+    --sp-text: #f3f4f6;
+    --sp-muted: #9ca3af;
+    --sp-accent: #f3f4f6;
+    --sp-on-accent: #111827;
+    --sp-accent-soft: #262c3d;
+    --sp-accent-ink: #c7d2fe;
+    --sp-success: #4ade80;
+    --sp-success-bg: rgba(21, 128, 61, 0.16);
+    --sp-draft: #fbbf24;
+    --sp-draft-bg: rgba(180, 83, 9, 0.16);
+    --sp-danger: #f87171;
+    --sp-danger-bg: rgba(185, 28, 28, 0.16);
+    --sp-x: #e5e7eb;
+    --sp-fb: #60a5fa;
+    --sp-ig: #f472b6;
+}
+
+.sp-hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   1. Shared Shell & Minimalist Filter / Search Strip
+   ========================================================================== */
+.sp-shell,
+.sp-mod-shell {
+    padding: 8px 12px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sp-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 12px;
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+}
+
+.sp-search-bar i {
+    color: var(--sp-muted);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.sp-search-bar input {
+    width: 100%;
+    min-height: 42px;
+    border: 0;
+    background: transparent;
+    color: var(--sp-text);
+    font-size: 14px;
+    outline: none;
+}
+
+.sp-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+}
+
+.sp-filter-row::-webkit-scrollbar {
+    display: none;
+}
+
+.sp-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.sp-pill.is-active {
+    background: var(--sp-accent);
+    border-color: var(--sp-accent);
+    color: var(--sp-on-accent);
+}
+
+/* ==========================================================================
+   2. Social Post Card List & Registry Cards
+   ========================================================================== */
+.sp-list,
+.sp-mod-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sp-card,
+.sp-mod-card {
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.sp-card.is-selected,
+.sp-mod-card.selected {
+    border-color: var(--sp-accent);
+    background: var(--sp-surface-subtle);
+}
+
+.sp-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sp-card-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+}
+
+.sp-provider-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 26px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--sp-border);
+    color: var(--sp-text);
+    background: var(--sp-surface-subtle);
+}
+
+.sp-provider-badge[data-provider="x"] {
+    color: var(--sp-x);
+}
+
+.sp-provider-badge[data-provider="facebook"] {
+    color: var(--sp-fb);
+}
+
+.sp-provider-badge[data-provider="instagram"] {
+    color: var(--sp-ig);
+}
+
+.sp-media-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sp-muted);
+    background: var(--sp-surface-subtle);
+    border: 1px solid var(--sp-border);
+    text-transform: uppercase;
+}
+
+.sp-token-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 30px;
+    padding: 0 8px;
+    border-radius: 6px;
+    border: 1px dashed var(--sp-border-strong);
+    background: transparent;
+    color: var(--sp-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.sp-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.sp-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--sp-muted);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.sp-icon-btn:active {
+    background: var(--sp-surface-subtle);
+}
+
+.sp-status-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 44px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sp-status-btn.is-active {
+    color: var(--sp-success);
+    background: var(--sp-success-bg);
+    border-color: transparent;
+}
+
+.sp-status-btn.is-draft {
+    color: var(--sp-draft);
+    background: var(--sp-draft-bg);
+    border-color: transparent;
+}
+
+.sp-card-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.sp-card-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--sp-radius-sm);
+    object-fit: cover;
+    background: var(--sp-surface-subtle);
+    border: 1px solid var(--sp-border);
+    flex-shrink: 0;
+}
+
+.sp-card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sp-card-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--sp-text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sp-card-handle {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sp-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sp-card-snippet {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--sp-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sp-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--sp-border);
+    font-size: 12px;
+    color: var(--sp-muted);
+}
+
+/* Registry Grid Details */
+.sp-mod-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sp-mod-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface-subtle);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sp-text);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.sp-mod-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--sp-text);
+}
+
+.sp-mod-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--sp-muted);
+}
+
+.sp-mod-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--sp-border);
+}
+
+.sp-mod-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sp-muted);
+    margin-bottom: 2px;
+}
+
+.sp-mod-field div {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--sp-text);
+    word-break: break-word;
+}
+
+.sp-empty {
+    padding: 36px 20px;
+    text-align: center;
+    border: 1px dashed var(--sp-border-strong);
+    border-radius: var(--sp-radius);
+    color: var(--sp-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.sp-empty i {
+    font-size: 28px;
+    opacity: 0.7;
+}
+
+.sp-load-more-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+}
+
+.sp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: var(--sp-radius-sm);
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sp-btn-primary {
+    background: var(--sp-accent);
+    border-color: var(--sp-accent);
+    color: var(--sp-on-accent);
+}
+
+.sp-btn-subtle {
+    background: var(--sp-surface-subtle);
+}
+
+.sp-btn-danger {
+    color: var(--sp-danger);
+    background: var(--sp-danger-bg);
+    border-color: transparent;
+}
+
+.sp-btn-block {
+    width: 100%;
+}
+
+/* ==========================================================================
+   3. Social Post Add/Edit Form & Autofill Strip
+   ========================================================================== */
+.sp-form-shell,
+.sp-mod-form-shell {
+    padding: 8px 12px 104px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sp-intro {
+    padding: 4px 2px;
+}
+
+.sp-intro h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--sp-text);
+}
+
+.sp-intro p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--sp-muted);
+}
+
+.sp-form-card,
+.sp-mod-form-card {
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.sp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sp-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sp-text);
+}
+
+.sp-input,
+.sp-select,
+.sp-textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: var(--sp-radius-sm);
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.sp-input:focus,
+.sp-select:focus,
+.sp-textarea:focus {
+    border-color: var(--sp-accent);
+}
+
+.sp-textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.sp-hint {
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--sp-muted);
+}
+
+.sp-url-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.sp-url-row .sp-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.sp-autofill-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.sp-autofill-actions .sp-btn-primary {
+    grid-column: 1 / -1;
+}
+
+.sp-thumb-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    background: var(--sp-surface-subtle);
+}
+
+.sp-thumb-preview img {
+    width: 64px;
+    height: 64px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--sp-border);
+}
+
+.sp-thumb-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sp-raw-embed-details {
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    padding: 10px 12px;
+    background: var(--sp-surface-subtle);
+}
+
+.sp-raw-embed-details summary {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sp-text);
+    cursor: pointer;
+    list-style: none;
+}
+
+.sp-raw-embed-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.sp-raw-embed-details .sp-textarea {
+    margin-top: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+}
+
+.sp-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+}
+
+.sp-segmented-status {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.sp-radio-chip {
+    position: relative;
+}
+
+.sp-radio-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sp-radio-chip span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: var(--sp-radius-sm);
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sp-radio-chip input:checked + span {
+    background: var(--sp-accent);
+    border-color: var(--sp-accent);
+    color: var(--sp-on-accent);
+}
+
+/* ==========================================================================
+   4. Host Editor Action Bar & Linked Chips
+   ========================================================================== */
+.sp-editor-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sp-editor-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sp-editor-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: var(--sp-radius-sm);
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+.sp-editor-trigger:active {
+    background: var(--sp-surface-subtle);
+}
+
+.sp-count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--sp-surface-subtle);
+    border: 1px solid var(--sp-border);
+    color: var(--sp-text);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.sp-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sp-bound-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    color: var(--sp-text);
+    font-size: 12px;
+    max-width: 100%;
+}
+
+.sp-bound-chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 190px;
+    font-weight: 500;
+}
+
+.sp-bound-chip-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--sp-muted);
+}
+
+/* ==========================================================================
+   5. Minimalist Bottom Sheet (#socialPostSheet)
+   ========================================================================== */
+.sp-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 1060;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sp-sheet-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.sp-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    z-index: 1061;
+    background: var(--sp-surface);
+    border-top: 1px solid var(--sp-border);
+    border-radius: 18px 18px 0 0;
+    max-height: min(85dvh, calc(100% - 16px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(0, 105%, 0);
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.24s ease;
+}
+
+.sp-sheet.active {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+}
+
+@media (min-width: 1024px) {
+    .mobile-wrapper .sp-sheet-overlay {
+        position: absolute;
+        z-index: 410;
+    }
+
+    .mobile-wrapper .sp-sheet {
+        position: absolute;
+        max-height: calc(100% - 20px);
+        z-index: 411;
+    }
+}
+
+.sp-sheet-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--sp-border-strong);
+    margin: 10px auto 4px;
+    flex-shrink: 0;
+}
+
+.sp-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 14px 10px;
+    border-bottom: 1px solid var(--sp-border);
+    flex-shrink: 0;
+}
+
+.sp-sheet-title-wrap {
+    min-width: 0;
+}
+
+.sp-sheet-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--sp-text);
+}
+
+.sp-sheet-subtitle {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--sp-muted);
+}
+
+.sp-sheet-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    flex-shrink: 0;
+}
+
+.sp-sheet-tab {
+    min-height: 44px;
+    padding: 0 8px;
+    border-radius: var(--sp-radius-sm);
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface-subtle);
+    color: var(--sp-muted);
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.sp-sheet-tab.is-active {
+    background: var(--sp-accent);
+    border-color: var(--sp-accent);
+    color: var(--sp-on-accent);
+}
+
+.sp-sheet-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.sp-sheet-preview {
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+    padding: 12px;
+    background: var(--sp-surface-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sp-sheet-item {
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+    padding: 12px;
+    background: var(--sp-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sp-sheet-item-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+}
+
+.sp-sheet-feedback {
+    padding: 10px 12px;
+    border-radius: var(--sp-radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.sp-sheet-feedback.is-error {
+    background: var(--sp-danger-bg);
+    color: var(--sp-danger);
+}
+
+.sp-sheet-feedback.is-success {
+    background: var(--sp-success-bg);
+    color: var(--sp-success);
+}

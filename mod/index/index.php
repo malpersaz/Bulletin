@@ -755,7 +755,7 @@ class index_mod extends indexBase
                 $categoryName = trim(html_entity_decode(strip_tags((string) ($o['category_name'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                 $categoryCdata = str_replace(']]>', ']]]]><![CDATA[>', $categoryName);
 
-                $rawBody = (string) ($o['content'] ?? '');
+                $rawBody = SocialPostProviderService::stripTokens((string) ($o['content'] ?? ''));
                 $sanitizedBody = preg_replace('#<(script|style|iframe|form|object|embed)\b[^>]*>.*?</\1>#is', '', $rawBody);
                 $sanitizedBody = strip_tags((string) $sanitizedBody, '<p><h2><h3><h4><blockquote><ul><ol><li><a><strong><b><em><i><figure><figcaption><img><br>');
                 $encodedParts = [];
@@ -929,7 +929,7 @@ class index_mod extends indexBase
                     $hashtagList[] = '#' . $siteBrandTag;
                 }
 
-                $rawBody = (string) ($o['content'] ?? '');
+                $rawBody = SocialPostProviderService::stripTokens((string) ($o['content'] ?? ''));
                 $sanitizedBody = preg_replace('#<(script|style|iframe|form|object|embed)\b[^>]*>.*?</\1>#is', '', $rawBody);
                 $sanitizedBody = strip_tags((string) $sanitizedBody, '<p><h2><h3><h4><blockquote><ul><ol><li><a><strong><b><em><i><figure><figcaption><img><br>');
                 $encodedParts = [];

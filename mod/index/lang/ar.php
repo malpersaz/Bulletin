@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'النقر على تشغيل يتصل مباشرة بـ إكس (تويتر) ويحمّل الوسائط الخارجية.',
         'external_media_notice_youtube' => 'النقر على تشغيل يتصل مباشرة بـ يوتيوب ويحمّل الوسائط الخارجية.',
         'source_attribution' => 'المصدر',
+        'load_facebook_video' => 'تشغيل فيديو فيسبوك',
+        'view_on_facebook' => 'عرض على فيسبوك',
+        'external_media_notice_facebook' => 'النقر على تشغيل يتصل مباشرة بخوادم فيسبوك ويحمل الوسائط الخارجية.',
         'latest_videos' => [
             'title' => 'الفيديوهات',
             'all_items' => 'جميع الفيديوهات',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'فيديوهات',
             2 => 'كل الفيديوهات',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'منشور تواصل اجتماعي',
+        'view_on_x' => 'عرض على X',
+        'view_on_facebook' => 'عرض على فيسبوك',
+        'view_on_instagram' => 'عرض على إنستغرام',
+        'view_original_post' => 'عرض المنشور الأصلي',
+        'source_label' => 'المصدر',
+        'related_posts' => 'منشورات التواصل الاجتماعي ذات الصلة',
     ],
     'mod_pictures' => [
         'title' => 'معرض الصور',

@@ -16,7 +16,7 @@
 
 {% block css_custom %}
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}-20261113v3">
 {% endblock %}
 
 {% block title %}
@@ -101,7 +101,7 @@
             </div>
             <div class="list-group list-group-flush">
                 <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action">
-                    {{ lang.index.mod_video_embed.latest_videos.all_items|default(lang.index.mod_video_embed.1) }}
+                    {{ lang.index.mod_video_embed.latest_videos.all_items }}
                 </a>
                 {% for kat in categories %}
                     <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if d.category_seo == kat.seo %} active{% endif %}">
@@ -150,7 +150,7 @@
 
                 <hr>
                 <p class="text-muted small">
-                    {{ sprintf(lang.index.mod_video_embed.7|default('Published on %s in %s'), d.created_at|date('d.m.Y'), site.saddress ~ 'videos/' ~ d.category_seo, d.categoryname, d.categoryname)|raw }}
+                    {{ sprintf(lang.index.mod_video_embed.7, d.created_at|date('d.m.Y'), site.saddress ~ 'videos/' ~ d.category_seo, d.categoryname, d.categoryname)|raw }}
                 </p>
             </div>
         </article>
@@ -159,5 +159,5 @@
 {% endblock %}
 
 {% block js_custom %}
-    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}-20261113v2" defer></script>
 {% endblock %}

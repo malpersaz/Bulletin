@@ -615,6 +615,7 @@ function openContextMenu(id, title, isPublished, hiddenActions = []) {
     const galleryActionLabel = document.querySelector('#contextActionGallery .context-action-label');
     const filesActionLabel = document.querySelector('#contextActionFiles .context-action-label');
     const faqActionLabel = document.querySelector('#contextActionFaq .context-action-label');
+    const socialPostActionLabel = document.querySelector('#contextActionSocialPost .context-action-label');
     const deleteActionLabel = document.querySelector('#contextActionDelete .context-action-label');
 
     if (titleEl) titleEl.innerText = title;
@@ -622,16 +623,25 @@ function openContextMenu(id, title, isPublished, hiddenActions = []) {
     if (galleryActionLabel && safeAdminLang?.context_menu?.gallery) galleryActionLabel.innerText = safeAdminLang.context_menu.gallery;
     if (filesActionLabel && safeAdminLang?.context_menu?.files) filesActionLabel.innerText = safeAdminLang.context_menu.files;
     if (faqActionLabel && safeAdminLang?.context_menu?.faq) faqActionLabel.innerText = safeAdminLang.context_menu.faq;
+    const socialPostLabel = safeAdminLang?.context_menu?.social_post || '';
+    if (socialPostActionLabel && socialPostLabel) socialPostActionLabel.innerText = socialPostLabel;
     if (deleteActionLabel && safeAdminLang?.context_menu?.delete) deleteActionLabel.innerText = safeAdminLang.context_menu.delete;
 
     // Handle hidden actions
     const galleryAction = document.getElementById('contextActionGallery');
     const filesAction = document.getElementById('contextActionFiles');
     const faqAction = document.getElementById('contextActionFaq');
+    const socialPostAction = document.getElementById('contextActionSocialPost');
 
     if (galleryAction) galleryAction.style.display = hiddenActions.includes('gallery') ? 'none' : 'flex';
     if (filesAction) filesAction.style.display = hiddenActions.includes('files') ? 'none' : 'flex';
     if (faqAction) faqAction.style.display = hiddenActions.includes('faq') ? 'none' : 'flex';
+    if (socialPostAction) {
+        const shouldHideSocialPost = hiddenActions.includes('social_post')
+            || (!socialPostLabel && !(socialPostActionLabel?.textContent || '').trim());
+        socialPostAction.classList.remove('sp-hidden');
+        socialPostAction.classList.toggle('is-hidden', shouldHideSocialPost);
+    }
 
     // Toggle Status Text based on current state
     if (statusAction) {
@@ -646,12 +656,14 @@ function openContextMenu(id, title, isPublished, hiddenActions = []) {
 
     if (sheet && overlay) {
         const dynamicDialog = document.getElementById('modal-dynamic-dialog');
-        if (dynamicDialog && dynamicDialog.open) {
-            dynamicDialog.appendChild(overlay);
-            dynamicDialog.appendChild(sheet);
-        } else if (sheet.parentElement !== document.body) {
-            document.body.appendChild(overlay);
-            document.body.appendChild(sheet);
+        const hostContainer = (dynamicDialog && dynamicDialog.open)
+            ? dynamicDialog
+            : (document.querySelector('.mobile-wrapper') || document.body);
+        if (overlay.parentElement !== hostContainer) {
+            hostContainer.appendChild(overlay);
+        }
+        if (sheet.parentElement !== hostContainer) {
+            hostContainer.appendChild(sheet);
         }
 
         sheet.classList.add('active');
@@ -4304,6 +4316,23 @@ function validateVideoEmbedWizardStep(step) {
     // Step 3: Embed Code
     if (step === 3) {
         const embedInput = document.getElementById('videoEmbedInput');
+        const originalInput = document.getElementById('videoEmbedOriginalInput');
+        const combinedVal = ((embedInput ? embedInput.value : '') + ' ' + (originalInput ? originalInput.value : '')).trim();
+        const isNonVideoSocial = /(?:x|twitter)\.com\/[^/\s]+\/status(?:es)?\/\d{5,25}\/photo\/\d+/i.test(combinedVal)
+            || /facebook\.com\/(?:plugins\/post\.php|[^/\s]+\/posts\/|posts\/|permalink\.php|story\.php|photo\.php|[^/\s]+\/photos\/|photos\/|share\/p\/)/i.test(combinedVal)
+            || /instagram\.com\/(?:[^/\s]+\/)?p\//i.test(combinedVal);
+        if (isNonVideoSocial) {
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(
+                    safeAdminLang?.video_embed?.validator?.err_no_video_use_social_post
+                        || 'This social post does not contain a video. Add it under Social Media Posts instead.',
+                    'error',
+                    6000
+                );
+            }
+            if (embedInput) embedInput.focus();
+            return false;
+        }
         if (embedInput && embedInput.value.trim().length < 10) {
             embedInput.focus();
             return false;

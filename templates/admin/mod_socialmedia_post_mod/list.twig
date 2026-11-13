@@ -1,0 +1,73 @@
+{% set show_fab = true %}
+{% set show_search = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = false %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_socialmedia_post_mod.list }}{% endblock %}
+{% block headline %}{{ lang.mod_socialmedia_post_mod.named }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_socialmedia_post.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<div
+    class="sp-mod-shell"
+    id="socialPostModShell"
+    data-datatable-url="{{ site.saddress }}mod_socialmedia_post_mod/datatable"
+    data-edit-url="{{ site.saddress }}mod_socialmedia_post_mod/edit/"
+    data-delete-url="{{ site.saddress }}mod_socialmedia_post_mod/delete"
+    data-labels="{{ {
+        name: lang.mod_socialmedia_post_mod.admin.columns.name,
+        modName: lang.mod_socialmedia_post_mod.admin.columns.mod_name,
+        modKey: lang.mod_socialmedia_post_mod.admin.columns.mod_key,
+        modValue: lang.mod_socialmedia_post_mod.admin.columns.mod_value
+    }|json_encode|e('html_attr') }}"
+    data-messages="{{ {
+        removeRecord: lang.mod_socialmedia_post_mod.remove_record,
+        yes: lang.mod_socialmedia_post_mod.button.yes,
+        no: lang.mod_socialmedia_post_mod.button.no,
+        deleteSuccess: lang.mod_socialmedia_post_mod.message.success.delete
+    }|json_encode|e('html_attr') }}"
+>
+    <div class="sp-search-bar">
+        <i class="bi bi-search"></i>
+        <input type="search" id="searchInput" placeholder="{{ lang.management.module_search_placeholder }}" aria-label="{{ lang.management.module_search_placeholder }}">
+    </div>
+
+    <div class="sp-mod-list" id="socialPostModList"></div>
+
+    <div class="sp-empty sp-hidden" id="socialPostModEmpty">
+        <i class="bi bi-share"></i>
+        <span>{{ lang.management.no_records_found }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block fab %}
+{% if session.permissions.mod_socialmedia_post_mod.add is defined %}
+<div class="fab-container" id="fabContainer">
+    <a href="{{ site.saddress }}mod_socialmedia_post_mod/add" class="fab-main" aria-label="{{ lang.mod_socialmedia_post_mod.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="contextual-toolbar" id="contextualToolbar">
+    <button type="button" class="toolbar-item" id="toolbarEdit" disabled aria-label="{{ lang.mod_socialmedia_post_mod.button.edit }}">
+        <i class="bi bi-pencil-square"></i>
+    </button>
+    <button type="button" class="toolbar-item text-danger" id="toolbarDelete" disabled aria-label="{{ lang.mod_socialmedia_post_mod.button.delete }}">
+        <i class="bi bi-trash"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_socialmedia_post_mod.js?v={{ site.version }}"></script>
+{% endblock %}

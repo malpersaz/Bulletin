@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'Tiknayîşê dayîşî de eynî wext de bi X (Twitter) re girêdayîş virazîyeno û medyaya teberi bar bena.',
         'external_media_notice_youtube' => 'Tiknayîşê dayîşî de eynî wext de bi YouTube re girêdayîş virazîyeno û medyaya teberi bar bena.',
         'source_attribution' => 'Çıme',
+        'load_facebook_video' => 'Vîdyoyê Facebookî Bide Kaykerdiş',
+        'view_on_facebook' => 'Ser Facebookî de Bivîne',
+        'external_media_notice_facebook' => 'Wexto ke ti bînî kaykerdiş, rasterast bi serveranê Facebookî ve girêdayî beno.',
         'latest_videos' => [
             'title' => 'Vîdyoyî',
             'all_items' => 'Pêro Vîdyoyî',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'Vîdyo',
             2 => 'Hemû Vîdyo',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'Şawitîyê Medyaya Sosyalî',
+        'view_on_x' => 'Ser X de Bivîne',
+        'view_on_facebook' => 'Ser Facebookî de Bivîne',
+        'view_on_instagram' => 'Ser Instagramî de Bivîne',
+        'view_original_post' => 'Şawitîyo Orijînal Bivîne',
+        'source_label' => 'Çime',
+        'related_posts' => 'Şawitîyê Medyaya Sosyalî yê Têkildarî',
     ],
     'mod_pictures' => [
         'title' => 'Galerîya Fotografan',

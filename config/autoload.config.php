@@ -31,6 +31,7 @@ $autoload['libfile'] = array(
     'ImageService',
     'GoogleIndexingService',
     'VideoEmbedProviderService',
+    'SocialPostProviderService',
     'AIService',
     'LlmsService',
     'WebSubService'

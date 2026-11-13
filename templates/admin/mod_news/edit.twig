@@ -156,6 +156,17 @@
 
 				<div class="form-row">
 					<label class="field-section-label">{{ lang.mod_news.wizard.step.news }}</label>
+					<div class="sp-editor-bar" data-social-post-bar="1" data-target-module="mod_news" data-vid="{{ d.id }}" data-textarea-id="editContentTextarea">
+						<div class="sp-editor-bar-row">
+							<button type="button" class="sp-editor-trigger" data-sp-open-sheet="1">
+								<i class="bi bi-share"></i>
+								<span>{{ lang.mod_socialmedia_post.named }}</span>
+								<span class="sp-count-pill" data-sp-count="1">0</span>
+								<i class="bi bi-plus-circle"></i>
+							</button>
+						</div>
+						<div class="sp-chips-row" data-sp-chips="1" aria-label="{{ lang.mod_socialmedia_post.sheet.tab_linked }}"></div>
+					</div>
 					<div class="mod-news-editor-wrap">
 						<textarea name="content" id="editContentTextarea">{{ d.content|raw }}</textarea>
 					</div>

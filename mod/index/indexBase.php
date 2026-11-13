@@ -212,8 +212,98 @@ abstract class indexBase
         }
     }
 
+    /**
+     * Checks once per request whether the social post bridge tables exist.
+     */
+    private function hasSocialPostTables(): bool
+    {
+        static $ready = null;
+        if ($ready !== null) {
+            return $ready;
+        }
+
+        try {
+            $db = Load::lib('Database');
+            $adapter = strtoupper((string) $db->getAdapterType());
+            foreach (['mod_socialmedia_post', 'mod_socialmedia_post_link'] as $tbl) {
+                if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='" . addslashes($tbl) . "' LIMIT 1");
+                } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                    $db->fetch_array("SELECT tablename FROM pg_tables WHERE schemaname = current_schema() AND tablename='" . addslashes($tbl) . "' LIMIT 1");
+                } else {
+                    $db->fetch_array("SHOW TABLES LIKE '" . addslashes($tbl) . "'");
+                }
+                if ($db->getSize() === 0) {
+                    $ready = false;
+                    return false;
+                }
+            }
+            $ready = true;
+            return true;
+        } catch (\Throwable $e) {
+            $ready = false;
+            return false;
+        }
+    }
+
+    /**
+     * Fetches published social posts bound to a host module record and exposes them to Twig.
+     */
+    public function _mod_socialmedia_post(string $modName, int $vid): array
+    {
+        $modName = preg_replace('/[^a-z0-9_]/i', '', trim($modName));
+        if ($modName === '' || $vid <= 0 || !$this->hasSocialPostTables()) {
+            $this->tema->ctx_set('social_posts', []);
+            return [];
+        }
+
+        try {
+            $db = Load::lib('Database');
+            SocialPostProviderService::ensureUtf8mb4Connection($db);
+            $aclCondition = method_exists($this, 'getAllowedAclCondition')
+                ? $this->getAllowedAclCondition('p', 'acl_id')
+                : 'p.acl_id = 0';
+            $sql = "SELECT p.id, p.lang, p.provider, p.media_type, p.post_id, p.url, p.embed_html, p.name, p.handle, p.content, p.image, p.status, p.acl_id, l.sort_order"
+                . " FROM mod_socialmedia_post p"
+                . " INNER JOIN mod_socialmedia_post_link l ON l.socialmedia_post_id = p.id"
+                . " WHERE l.mod_name = '" . addslashes($modName) . "'"
+                . " AND l.vid = " . (int) $vid
+                . " AND p.status = 'y'"
+                . " AND " . $aclCondition
+                . " ORDER BY l.sort_order ASC, l.id ASC";
+            $db->fetch_array($sql);
+            $rows = $db->getSize() > 0 ? $db->toArray() : [];
+            if (!is_array($rows)) {
+                $rows = [];
+            }
+            $this->tema->ctx_set('social_posts', $rows);
+            return $rows;
+        } catch (\Throwable $e) {
+            error_log('Amed Framework Notice: Social post query failed: ' . $e->getMessage());
+            $this->tema->ctx_set('social_posts', []);
+            return [];
+        }
+    }
+
+    /**
+     * Populates rendered_content with inline social figures while stripping tokens from content.
+     */
+    public function enrichRowWithSocialPosts(string $modName, int $vid, array $row): array
+    {
+        $boundRows = $this->_mod_socialmedia_post($modName, $vid);
+        $uiLabels = is_array($this->lang['index']['mod_socialmedia_post'] ?? null)
+            ? $this->lang['index']['mod_socialmedia_post']
+            : [];
+        $rawContent = (string) ($row['content'] ?? '');
+        $row['rendered_content'] = SocialPostProviderService::renderTokens($rawContent, $boundRows, $uiLabels, true);
+        $row['content'] = SocialPostProviderService::stripTokens($rawContent);
+        return $row;
+    }
+
     public function _mod_video($v)
     {
+        $this->tema->ctx_set('video', []);
+
         if (empty($v) || !is_string($v)) {
             return;
         }
@@ -226,66 +316,121 @@ abstract class indexBase
             return;
         }
 
+        $orderedRefs = [];
         $video_ids = [];
         $vid_ids = [];
 
-        foreach($data as $prefixed_id) {
-            $parts = explode(':', $prefixed_id, 2);
-            if (count($parts) == 2) {
-                if ($parts[0] == 'video') {
-                    $video_ids[] = $parts[1];
-                } elseif ($parts[0] == 'vid') {
-                    $vid_ids[] = $parts[1];
+        foreach ($data as $prefixed_id) {
+            if (!is_string($prefixed_id) && !is_numeric($prefixed_id)) {
+                continue;
+            }
+            $parts = explode(':', (string) $prefixed_id, 2);
+            if (count($parts) !== 2) {
+                continue;
+            }
+            $type = trim($parts[0]);
+            $id = (int) trim($parts[1]);
+            if ($id <= 0) {
+                continue;
+            }
+            if ($type === 'video') {
+                $orderedRefs[] = ['type' => 'video', 'id' => $id];
+                $video_ids[$id] = $id;
+            } elseif ($type === 'vid') {
+                $orderedRefs[] = ['type' => 'vid', 'id' => $id];
+                $vid_ids[$id] = $id;
+            }
+        }
+
+        $video_ids = array_values($video_ids);
+        $vid_ids = array_values($vid_ids);
+        if (empty($video_ids) && empty($vid_ids)) {
+            return;
+        }
+
+        $aclCondition = method_exists($this, 'getAllowedAclCondition')
+            ? $this->getAllowedAclCondition('', 'acl_id')
+            : 'acl_id = 0';
+
+        $localById = [];
+        if (!empty($video_ids)) {
+            $video_model = Load::model('mod_video');
+            $video_model->where_id($video_ids)
+                ->addWhere("status = 'y'")
+                ->addWhere($aclCondition)
+                ->gR();
+            if ($video_model->getSize() > 0) {
+                foreach ($video_model->toArray() as $lRow) {
+                    $localId = (int) ($lRow['id'] ?? 0);
+                    if ($localId > 0 && in_array($localId, $video_ids, true)) {
+                        $localById[$localId] = $lRow;
+                    }
                 }
             }
         }
 
-        $results = [];
-
-        if (!empty($video_ids)) {
-            $video_model = Load::model('mod_video');
-            $video_model->where_id($video_ids)->gR();
-            if ($video_model->getSize() > 0) {
-                $results = array_merge($results, $video_model->toArray());
-            }
-        }
-
+        $embedById = [];
         if (!empty($vid_ids)) {
             $vid_model = Load::model('mod_video_embed');
-            $vid_model->select('id, name, original, duration, created_at, embed, content, description, image');
-            $vid_model->where_id($vid_ids)->where_status('y')->gR();
+            $vid_model->select('id, name, original, duration, created_at, embed, content, description, image, acl_id');
+            $vid_model->where_id($vid_ids)
+                ->addWhere("status = 'y'")
+                ->addWhere($aclCondition)
+                ->gR();
             if ($vid_model->getSize() > 0) {
-                $rawRows = $vid_model->toArray();
-                $seenEmbedKeys = [];
-                foreach ($rawRows as $vRow) {
-                    $enriched = VideoEmbedProviderService::enrichVideoRowForFrontend($vRow, (string) ($this->site['lang'] ?? 'en'));
+                $siteLang = (string) ($this->site['lang'] ?? 'en');
+                $baseImgUrl = (string) ($this->site['iaddress'] ?? '');
+                foreach ($vid_model->toArray() as $vRow) {
+                    $embedId = (int) ($vRow['id'] ?? 0);
+                    if ($embedId <= 0 || !in_array($embedId, $vid_ids, true)) {
+                        continue;
+                    }
+                    $enriched = VideoEmbedProviderService::enrichVideoRowForFrontend($vRow, $siteLang);
                     if (!empty($enriched['image'])) {
                         $imgName = basename((string) $enriched['image']);
                         $fullPosterFile = root_dir . 'static' . DS . 'mod_video_embed' . DS . $imgName;
                         $thumbPosterFile = root_dir . 'static' . DS . 'mod_video_embed' . DS . 'thumb' . DS . $imgName;
-                        $baseImgUrl = (string) ($this->site['iaddress'] ?? '');
                         if (is_file($fullPosterFile)) {
                             $enriched['hero_poster_url'] = $baseImgUrl . 'mod_video_embed/' . $imgName;
                         } elseif (is_file($thumbPosterFile)) {
                             $enriched['hero_poster_url'] = $baseImgUrl . 'mod_video_embed/thumb/' . $imgName;
                         }
                     }
-                    $dedupeKey = '';
-                    if (!empty($enriched['provider']) && !empty($enriched['provider_video_id'])) {
-                        $dedupeKey = $enriched['provider'] . ':' . $enriched['provider_video_id'];
-                    } elseif (!empty($enriched['original'])) {
-                        $dedupeKey = 'orig:' . trim((string) $enriched['original']);
-                    } elseif (!empty($enriched['embed'])) {
-                        $dedupeKey = 'embed:' . trim((string) $enriched['embed']);
-                    } else {
-                        $dedupeKey = 'id:' . (int) ($enriched['id'] ?? 0);
-                    }
-                    if (isset($seenEmbedKeys[$dedupeKey])) {
-                        continue;
-                    }
-                    $seenEmbedKeys[$dedupeKey] = true;
-                    $results[] = $enriched;
+                    $embedById[$embedId] = $enriched;
                 }
+            }
+        }
+
+        $results = [];
+        $seenLocalIds = [];
+        $seenEmbedKeys = [];
+        foreach ($orderedRefs as $ref) {
+            $refId = $ref['id'];
+            if ($ref['type'] === 'video') {
+                if (!isset($localById[$refId]) || isset($seenLocalIds[$refId])) {
+                    continue;
+                }
+                $seenLocalIds[$refId] = true;
+                $results[] = $localById[$refId];
+            } else {
+                if (!isset($embedById[$refId])) {
+                    continue;
+                }
+                $enriched = $embedById[$refId];
+                if (!empty($enriched['provider']) && !empty($enriched['provider_video_id'])) {
+                    $dedupeKey = $enriched['provider'] . ':' . $enriched['provider_video_id'];
+                } elseif (!empty($enriched['original'])) {
+                    $dedupeKey = 'orig:' . trim((string) $enriched['original']);
+                } elseif (!empty($enriched['embed'])) {
+                    $dedupeKey = 'embed:' . trim((string) $enriched['embed']);
+                } else {
+                    $dedupeKey = 'id:' . (int) ($enriched['id'] ?? 0);
+                }
+                if (isset($seenEmbedKeys[$dedupeKey])) {
+                    continue;
+                }
+                $seenEmbedKeys[$dedupeKey] = true;
+                $results[] = $enriched;
             }
         }
 

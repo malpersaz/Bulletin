@@ -45,6 +45,10 @@
             if (!/[?&]autoplay=1/.test(finalSrc)) {
                 finalSrc += (finalSrc.includes('?') ? '&' : '?') + 'autoplay=1';
             }
+        } else if (provider === 'facebook') {
+            if (!/[?&]autoplay=(true|1)/i.test(finalSrc)) {
+                finalSrc += (finalSrc.includes('?') ? '&' : '?') + 'autoplay=true';
+            }
         }
 
         const iframe = document.createElement('iframe');
@@ -53,6 +57,12 @@
         iframe.title = title;
         iframe.setAttribute('loading', 'lazy');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        if (provider === 'x' || provider === 'facebook') {
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation');
+        }
+        if (provider === 'x') {
+            iframe.setAttribute('scrolling', 'no');
+        }
         iframe.setAttribute('allowfullscreen', 'true');
         iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
 
@@ -88,12 +98,20 @@
         });
     }
 
+    const ALLOWED_X_ORIGINS = [
+        'https://platform.twitter.com',
+        'https://syndication.twitter.com',
+        'https://platform.x.com'
+    ];
+
     // Auto-resize listener for X (Twitter) embedded tweet frames
     window.addEventListener('message', function (event) {
-        if (!event.data) return;
+        if (!event.data || ALLOWED_X_ORIGINS.indexOf(event.origin) === -1) {
+            return;
+        }
         let data = event.data;
 
-        if (typeof data === 'string' && data.startsWith('{') && data.includes('twttr.')) {
+        if (typeof data === 'string' && data.startsWith('{') && data.includes('resize')) {
             try {
                 data = JSON.parse(data);
             } catch (err) {
@@ -101,9 +119,10 @@
             }
         }
 
-        if (data && data['method'] === 'twttr.private.resize' && Array.isArray(data.params) && data.params[0]) {
-            const height = parseInt(data.params[0].height, 10);
-            if (height > 100) {
+        const payload = (data && typeof data === 'object' && data['twttr.embed']) ? data['twttr.embed'] : data;
+        if (payload && payload.method === 'twttr.private.resize' && Array.isArray(payload.params) && payload.params[0]) {
+            const height = parseInt(payload.params[0].height, 10);
+            if (height >= 180 && height <= 4000) {
                 const iframes = document.querySelectorAll('.video-embed-stage--x iframe');
                 iframes.forEach(function (frame) {
                     if (frame.contentWindow === event.source) {

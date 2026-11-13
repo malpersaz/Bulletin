@@ -8,7 +8,8 @@
 	{% if ctx_get('gallery') is not empty %}
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}-20261113g">
 	{% endif %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}-20261113v3">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/social-post.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
@@ -530,9 +531,10 @@
 
 						{% set has_primary_inline = inline_primary_media_html|trim is not empty %}
 						{% set has_secondary_inline = inline_secondary_videos_html|trim is not empty %}
+						{% set prose_html = d.rendered_content is defined ? d.rendered_content : d.content %}
 						<div class="detail-body news-body">
-							{% if (has_primary_inline or has_secondary_inline) and '</p>' in d.content %}
-								{% set body_parts = d.content|split('</p>') %}
+							{% if (has_primary_inline or has_secondary_inline) and '</p>' in prose_html %}
+								{% set body_parts = prose_html|split('</p>') %}
 								{% set primary_inserted = not has_primary_inline %}
 								{% set secondary_inserted = not has_secondary_inline %}
 								{% set bq_depth = 0 %}
@@ -558,7 +560,7 @@
 									{{ inline_secondary_videos_html|raw }}
 								{% endif %}
 							{% else %}
-								{{ d.content|raw }}
+								{{ prose_html|raw }}
 								{{ inline_primary_media_html|raw }}
 								{{ inline_secondary_videos_html|raw }}
 							{% endif %}
@@ -800,5 +802,5 @@
 {% endblock %}
 
 {% block js_custom %}
-	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}" defer></script>
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/video-embed.js?v={{ site.version }}-20261113v2" defer></script>
 {% endblock %}

@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'En cliquant sur lecture, vous vous connectez à X (Twitter) et chargez des médias externes.',
         'external_media_notice_youtube' => 'En cliquant sur lecture, vous vous connectez à YouTube et chargez des médias externes.',
         'source_attribution' => 'Source',
+        'load_facebook_video' => 'Lire la vidéo Facebook',
+        'view_on_facebook' => 'Voir sur Facebook',
+        'external_media_notice_facebook' => 'Cliquer sur lecture établit une connexion directe avec Facebook pour charger le média externe.',
         'latest_videos' => [
             'title' => 'Vidéos',
             'all_items' => 'Toutes les Vidéos',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'Videos',
             2 => 'Toutes les videos',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'Publication Sociale',
+        'view_on_x' => 'Voir sur X',
+        'view_on_facebook' => 'Voir sur Facebook',
+        'view_on_instagram' => 'Voir sur Instagram',
+        'view_original_post' => 'Voir la publication d\'origine',
+        'source_label' => 'Source',
+        'related_posts' => 'Publications sociales associées',
     ],
     'mod_pictures' => [
         'title' => 'Galerie Photo',

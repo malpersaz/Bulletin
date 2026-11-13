@@ -181,6 +181,8 @@ class NewsManager {
                 window.filesSelected?.();
             } else if (action === 'open-faq') {
                 window.faqSelected?.();
+            } else if (action === 'open-social-posts') {
+                window.socialPostsSelected?.();
             } else if (action === 'edit-content') {
                 window.editSelected?.();
             } else if (action === 'delete-content') {
@@ -912,7 +914,7 @@ class NewsManager {
         const ids = [
             'toolbarStatus', 'toolbarDeck', 'toolbarSlider', 'toolbarHomepage',
             'toolbarVideo', 'toolbarGallery', 'toolbarFiles',
-            'toolbarFaq', 'toolbarEdit', 'toolbarDelete'
+            'toolbarFaq', 'toolbarSocialPost', 'toolbarEdit', 'toolbarDelete'
         ];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
@@ -1305,6 +1307,13 @@ window.faqSelected = function () {
     }
 };
 
+window.socialPostsSelected = function () {
+    const mgr = window.newsManager || window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        window.SocialPostPicker?.openForListRecord('mod_news', mgr.selectedContentId);
+    }
+};
+
 window.filesSelected = function () {
     const mgr = window.newsManager || window.contentManager;
     if (mgr && mgr.selectedContentId) {
@@ -1401,6 +1410,10 @@ window.handleContextAction = function (action) {
                 window.location.href = faqUrl;
             }
             return;
+        case 'social_post':
+            closeContextMenu();
+            window.SocialPostPicker?.openForListRecord('mod_news', id);
+            return;
         case 'delete':
             Swal.fire({
                 title: getNewsLang().confirm_delete,
@@ -1469,6 +1482,11 @@ window.handleContextAction = function (action) {
 };
 
 window.openMediaRelationPicker = function(contentId, type) {
+    if (type === 'social_posts' || type === 'social_post') {
+        window.SocialPostPicker?.openForListRecord('mod_news', contentId);
+        return;
+    }
+
     if (type !== 'files' && type !== 'video' && type !== 'gallery') {
         return;
     }
@@ -2457,7 +2475,7 @@ function initNewsQualityMeters() {
         const metricH2 = meter.querySelector('[data-metric="h2"]');
 
         const updateStats = (htmlContent) => {
-            const rawHtml = htmlContent || '';
+            const rawHtml = (htmlContent || '').replace(/\[socialpost:\d+\]/gi, '');
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = rawHtml;
             const plainText = (tempDiv.textContent || tempDiv.innerText || '').trim();

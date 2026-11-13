@@ -408,6 +408,7 @@ $lang['mod_news'] = [
         'delete_success' => 'Nûçe hat jêbirin!',
         'add_video' => 'Vîdeo Lêke',
         'add_file' => 'Pelan Lêke',
+        'social_post' => 'پۆستی کۆمەڵایەتی',
     ],
 
         'show_on_homepage' => 'نیشاندان لە پەڕەی سەرەکیدا',
@@ -434,6 +435,7 @@ $lang['mod_news'] = [
         'gallery' => 'Galeriya Heyî Hilbijêre',
         'file' => 'Peleke heyî hilbijêre',
         'video' => 'Vîdeoya Heyî Hilbijêre',
+        'social_post' => 'بەڕێوەبردنی پۆستە کۆمەڵایەتییەکان',
     ],
 
     // === Latest News ===

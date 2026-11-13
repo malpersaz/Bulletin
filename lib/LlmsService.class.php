@@ -530,7 +530,8 @@ class LlmsService
 
     private function cleanSingleLine(string $str): string
     {
-        $clean = strip_tags($str);
+        $clean = SocialPostProviderService::stripTokens($str);
+        $clean = strip_tags($clean);
         $clean = html_entity_decode($clean, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $clean = preg_replace('/\s+/', ' ', $clean);
         return trim($clean);
@@ -538,7 +539,7 @@ class LlmsService
 
     private function htmlToCleanMarkdown(string $html): string
     {
-        $text = $html;
+        $text = SocialPostProviderService::stripTokens($html);
         $text = preg_replace('/<h1[^>]*>(.*?)<\/h1>/si', "# $1\n\n", $text);
         $text = preg_replace('/<h2[^>]*>(.*?)<\/h2>/si', "## $1\n\n", $text);
         $text = preg_replace('/<h3[^>]*>(.*?)<\/h3>/si', "### $1\n\n", $text);

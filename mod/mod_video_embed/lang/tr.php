@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Kodu Göster/Gizle',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Bağlantı / Embed',
         'tombstone_error' => 'Bu gönderi artık mevcut değil veya gizli.',
         'no_video_in_post' => 'Bu gönderide video veya medya bulunamadı.',
@@ -138,6 +139,7 @@ $lang['mod_video_embed'] = [
         'length' => '%s En Kısa %s En Uzun %s Karakterden Oluşabilir',
         'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
         'unsupported_emoji' => '%s alanında emoji veya desteklenmeyen karakter kullanılamaz.',
+        'err_no_video_use_social_post' => 'Bu sosyal medya gönderisi video içermiyor. Bunun yerine Sosyal Medya Gönderileri bölümünden ekleyin.',
     ],
     'context_menu' => [
         'title' => 'İşlemler',

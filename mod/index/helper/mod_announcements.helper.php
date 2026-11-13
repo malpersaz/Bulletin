@@ -47,7 +47,8 @@ class mod_announcements_helper extends indexBase
             }
 
 
-            $this->tema->ctx_set('d', $announcement->toArray());
+            $annData = $this->enrichRowWithSocialPosts('mod_announcements', (int) $announcement->id, $announcement->toArray());
+            $this->tema->ctx_set('d', $annData);
             if (isset($announcement->gallery_id) && $announcement->gallery_id != 0) {
                 $this->_exact_gallery($announcement->gallery_id);
             } else {

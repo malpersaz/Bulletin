@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `mod_socialmedia_post` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang` varchar(11) NOT NULL,
+  `provider` enum('x','facebook','instagram') NOT NULL,
+  `media_type` varchar(16) NOT NULL DEFAULT 'post',
+  `post_id` varchar(128) NOT NULL,
+  `url` varchar(500) NOT NULL,
+  `embed_html` text NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `handle` varchar(64) NOT NULL DEFAULT '',
+  `content` text,
+  `image` varchar(255) DEFAULT NULL,
+  `status` enum('y','n') NOT NULL DEFAULT 'y',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL,
+  `acl_id` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_provider_post` (`provider`, `post_id`, `lang`),
+  KEY `idx_social_post_lang` (`lang`),
+  KEY `idx_social_post_user` (`user_id`),
+  KEY `idx_social_post_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

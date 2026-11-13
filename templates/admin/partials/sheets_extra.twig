@@ -71,6 +71,13 @@
             <span class="context-action-label">{{ wizard_lang.context_menu.faq|default('FAQ') }}</span>
         </div>
 
+        <div class="context-action-item" id="contextActionSocialPost" data-action="context-action" data-context-type="social_post">
+            <div class="context-icon icon-social-post">
+                <i class="bi bi-share"></i>
+            </div>
+            <span class="context-action-label">{% if wizard_lang.context_menu is defined and wizard_lang.context_menu.social_post is defined %}{{ wizard_lang.context_menu.social_post }}{% endif %}</span>
+        </div>
+
         <div class="context-divider"></div>
 
         <!-- Dynamic Status Action (filled by JS) -->

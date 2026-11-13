@@ -194,6 +194,12 @@
         </button>
     {% endif %}
 
+    {% if session.permissions.mod_socialmedia_post.list is defined or session.permissions.mod_news.edit is defined %}
+        <button id="toolbarSocialPost" class="toolbar-item is-disabled" data-action="open-social-posts" title="{{ lang.mod_news.context_menu.social_post }}" aria-label="{{ lang.mod_news.context_menu.social_post }}">
+            <i class="bi bi-share"></i>
+        </button>
+    {% endif %}
+
     {% if session.permissions.mod_news.edit is defined %}
         <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_news.context_menu.edit }}" aria-label="{{ lang.mod_news.context_menu.edit }}">
             <i class="bi bi-pencil-fill"></i>

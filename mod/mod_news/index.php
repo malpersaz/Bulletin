@@ -11,6 +11,7 @@ class mod_news_mod extends BaseModuleController
     protected $has_gallery = true;
     protected $has_files = true;
     protected $has_faq = true;
+    protected $has_social_posts = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -180,8 +181,10 @@ class mod_news_mod extends BaseModuleController
         $showOnHomepage = Req::Post_Safe('show_on_homepage');
         $model->show_on_homepage = in_array($showOnHomepage, ['y', 'n'], true) ? $showOnHomepage : 'y';
 
-        // Handle serialization of video references
-        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        // Preserve existing video bindings when edit form omits the video field
+        if (Req::is_Post('video')) {
+            $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        }
 
         $model->user_id = $this->session->get('id');
 
@@ -204,8 +207,10 @@ class mod_news_mod extends BaseModuleController
             $model->show_on_homepage = in_array($showOnHomepage, ['y', 'n'], true) ? $showOnHomepage : 'y';
         }
 
-        // Handle serialization of video references
-        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        // Preserve existing video bindings when edit form omits the video field
+        if (Req::is_Post('video')) {
+            $model->video = $this->serializeVideos(Req::Post_Safe('video'));
+        }
 
         return $this->cleanNewsTextEntities($model);
     }

@@ -62,7 +62,7 @@ python3 .agents/skills/kevkolin/scripts/source_catalog.py --scan-today [--catego
    - Rûdaw Türkçe (`rudaw.net/turkish`, `rudaw.net/english`)
    - Kurdistan24 Türkçe (`kurdistan24.net/tr`, `kurdistan24.net/en`)
    - 964media (`964media.com`), Shafaq News (`shafaq.com`)
-   - Bianet (`bianet.org`), Mezopotamya Ajansı (`mezopotamyaajansi44.com`)
+   - Bianet (`bianet.org`), Mezopotamya Ajansı (`mezopotamyaajansi45.com`)
    - Official KRG Portals (`gov.krd`, `presidency.gov.krd`)
 3. **International & National Sources by Quotas**:
    - **Turkey (3)**: Anadolu Ajansı (AA), T24, Gazete Duvar.

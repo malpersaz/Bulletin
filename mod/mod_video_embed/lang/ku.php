@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Koda Xav',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Lînk / Embed',
         'tombstone_error' => 'Ev parvekirin êdî nayê dîtin an taybet e.',
         'no_video_in_post' => 'Di vê parvekirinê de vîdyo nehat dîtin.',
@@ -99,6 +100,7 @@ $lang['mod_video_embed'] = [
         'length' => 'Qada %s divê di navbera %s û %s tîpan de be!',
         'inarray' => 'Nirxa qada %s nederbasdar e!',
         'unsupported_emoji' => 'Di qada %s de emoji an karakterên nayên piştgirîkirin nayên qebûlkirin.',
+        'err_no_video_use_social_post' => 'Di vê şandeya civakî de vîdyo tune ye. Ji beşa Şandeyên Medyaya Civakî lêke.',
     ],
     'context_menu' => [
         'title' => 'Kirar',

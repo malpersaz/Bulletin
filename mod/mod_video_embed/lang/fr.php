@@ -33,6 +33,7 @@ $lang['mod_video_embed'] = [
         'toggle_raw_code' => 'Basculer le code',
         'provider_youtube' => 'YouTube',
         'provider_x' => 'X (Twitter)',
+        'provider_facebook' => 'Facebook',
         'provider_custom' => 'Lien / Intégration',
         'tombstone_error' => 'Cette publication n\'est plus disponible ou est privée.',
         'no_video_in_post' => 'Aucune vidéo trouvée dans cette publication.',
@@ -153,6 +154,7 @@ $lang['mod_video_embed'] = [
         'length' => '%s doit contenir entre %s et %s caractères',
         'inarray' => 'Le champ %s ne peut prendre que les valeurs \' %s \'',
         'unsupported_emoji' => 'Les émojis ou caractères non supportés ne sont pas autorisés dans le champ %s.',
+        'err_no_video_use_social_post' => 'Cette publication sociale ne contient pas de vidéo. Ajoutez-la dans Publications Sociales.',
     ],
     'context_menu' => [
         'title' => 'Actions',

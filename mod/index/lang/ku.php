@@ -200,6 +200,9 @@ $lang['index'] = [
         'external_media_notice_x' => 'Tikandina lêdanê dê rasterast bi X (Twitter) ve were girêdan û medyaya derve bar bike.',
         'external_media_notice_youtube' => 'Tikandina lêdanê dê rasterast bi YouTube ve were girêdan û medyaya derve bar bike.',
         'source_attribution' => 'Çavkanî',
+        'load_facebook_video' => 'Vîdyoya Facebookê Bileyze',
+        'view_on_facebook' => 'Li ser Facebookê bibîne',
+        'external_media_notice_facebook' => 'Dema lêxistinê bitikînî, girêdan bi pêşkêşkerên Facebookê re çêdibe û medya tê barkirin.',
         'latest_videos' => [
             'title' => 'Vîdyo',
             'all_items' => 'Hemû Vîdyo',
@@ -207,6 +210,15 @@ $lang['index'] = [
             1 => 'Vîdyo',
             2 => 'Hemû Vîdyo',
         ],
+    ],
+    'mod_socialmedia_post' => [
+        'title' => 'Şandeya Medyaya Civakî',
+        'view_on_x' => 'Li ser X bibîne',
+        'view_on_facebook' => 'Li ser Facebookê bibîne',
+        'view_on_instagram' => 'Li ser Instagramê bibîne',
+        'view_original_post' => 'Şandeya Resen Bibîne',
+        'source_label' => 'Çavkanî',
+        'related_posts' => 'Şandeyên Medyaya Civakî yên Têkildar',
     ],
     'mod_pictures' => [
         'title' => 'Galeriya Wêneyan',
