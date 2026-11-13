@@ -115,22 +115,21 @@ class VideoManager {
 
     createLoadMoreButton() {
         this.loadMoreBtn = document.createElement('button');
-        this.loadMoreBtn.className = 'm3-btn-outlined';
-        this.loadMoreBtn.style.cssText = 'display:none; margin: 20px auto; width: fit-content; cursor:pointer;';
+        this.loadMoreBtn.className = 'm3-btn-outlined video-load-more-btn';
 
         let btnText = 'Load More';
         if (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.grid && VIDEO_LANG.grid.load_more) {
             btnText = VIDEO_LANG.grid.load_more;
         }
-        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle video-btn-icon"></i>${btnText}`;
 
         if (this.container && this.loader) {
             this.container.parentNode.insertBefore(this.loadMoreBtn, this.loader);
         }
 
-        this.loadMoreBtn.onclick = () => {
+        this.loadMoreBtn.addEventListener('click', () => {
             this.loadData();
-        };
+        });
     }
 
     async loadData(reset = false) {
@@ -139,7 +138,7 @@ class VideoManager {
         this.isLoading = true;
         if (this.loadMoreBtn) {
             this.loadMoreBtn.disabled = true;
-            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right:8px;"></span>...`;
+            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm video-btn-icon" role="status" aria-hidden="true"></span>...`;
         }
 
         if (reset) {
@@ -148,11 +147,11 @@ class VideoManager {
             this.hasMore = true;
             this.draw = 1;
             this.selectedInHeroSlider = false;
-            this.emptyState.style.display = 'none';
-            this.loader.style.display = 'flex';
-            if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
+            this.emptyState.classList.add('d-none');
+            this.loader.classList.remove('d-none');
+            if (this.loadMoreBtn) this.loadMoreBtn.classList.remove('is-visible');
         } else {
-            this.loader.style.display = 'flex';
+            this.loader.classList.remove('d-none');
         }
 
         const formData = new FormData(document.getElementById('filterForm'));
@@ -174,27 +173,27 @@ class VideoManager {
 
             if (this.start >= data.recordsFiltered) {
                 this.hasMore = false;
-                this.loader.style.display = 'none';
+                this.loader.classList.add('d-none');
             }
 
             if (data.recordsFiltered === 0) {
-                this.emptyState.style.display = 'flex';
+                this.emptyState.classList.remove('d-none');
             }
 
         } catch (error) {
             console.error('Data Load Error:', error);
         } finally {
             this.isLoading = false;
-            this.loader.style.display = 'none';
+            this.loader.classList.add('d-none');
 
             if (this.loadMoreBtn) {
-                this.loadMoreBtn.style.display = (this.hasMore) ? 'block' : 'none';
+                this.loadMoreBtn.classList.toggle('is-visible', Boolean(this.hasMore));
                 this.loadMoreBtn.disabled = false;
                 let btnText = 'Load More';
                 if (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.grid && VIDEO_LANG.grid.load_more) {
                     btnText = VIDEO_LANG.grid.load_more;
                 }
-                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle video-btn-icon"></i>${btnText}`;
             }
         }
     }
@@ -239,12 +238,10 @@ class VideoManager {
             const statusVal = isPublished ? 'y' : 'n';
 
             // Status Logic
-            let statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.draft : "Draft";
-            let statusColor = "#FFAB00";
-            if (isPublished) {
-                statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.active : "Active";
-                statusColor = "var(--md-sys-color-primary)";
-            }
+            const statusText = isPublished
+                ? ((typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.active : 'Active')
+                : ((typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.draft : 'Draft');
+            const statusChipClass = isPublished ? 'status-active' : 'status-draft';
 
             // Card Element
             const card = document.createElement('div');
@@ -252,42 +249,59 @@ class VideoManager {
             card.dataset.id = id;
             card.dataset.status = statusVal;
             card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
-            card.onclick = () => window.videoManager.selectVideo(id, card);
+            card.addEventListener('click', () => window.videoManager.selectVideo(id, card));
 
             card.innerHTML = `
                 <div class="card-content-layout">
                     <!-- Thumbnail -->
-                    <div class="card-thumbnail" 
-                         onclick="event.stopPropagation(); window.videoManager.processImageUpload('${id}', ${imgSrc ? 'true' : 'false'})"
-                         style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; position:relative; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
-                        ${!imgSrc ? '<i class="bi bi-youtube" style="font-size: 24px; color: #FF0000;"></i>' : ''}
-                        ${duration ? `<span style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:white; font-size:10px; padding:1px 6px; border-radius:4px; font-weight:600;">${duration}</span>` : ''}
+                    <div class="card-thumbnail video-card-thumb">
+                        ${!imgSrc ? '<i class="bi bi-youtube video-card-thumb-placeholder"></i>' : ''}
+                        ${duration ? `<span class="video-card-duration-badge">${duration}</span>` : ''}
                     </div>
                     
                     <div class="card-body-col">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div class="video-card-header-row">
                              <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
-                                    <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
+                                <div class="meta-row video-card-meta-top">
+                                    <span class="chip video-chip hero-slider-badge${inHeroSlider ? '' : ' is-hidden'}">
                                         <i class="bi bi-stars"></i> ${safeSliderBadge}
                                     </span>
-                                    <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${statusText}</span>
+                                    <span class="chip video-chip ${statusChipClass}">${statusText}</span>
                                 </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
+                                <h3 class="video-card-title">${titleText}</h3>
                              </div>
-                             <button class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" onclick="event.stopPropagation(); window.videoManager.openActionSheet('${id}', '${titleText.replace(/'/g, "\\\'")}', '${statusVal}')">
+                             <button type="button" class="m3-icon-btn video-card-menu-btn">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
 
-                        <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${lang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${date}</span>
-                             ${duration ? `<span style="margin-left: auto; display:flex; align-items:center; gap:4px;"><i class="bi bi-clock" style="font-size:11px;"></i> ${duration}</span>` : ''}
+                        <div class="meta-row video-card-meta-bottom">
+                             <span class="video-meta-item"><i class="bi bi-translate video-meta-icon"></i> ${lang}</span>
+                             <span class="video-meta-item video-meta-date"><i class="bi bi-calendar3 video-meta-icon"></i> ${date}</span>
+                             ${duration ? `<span class="video-meta-item video-meta-duration"><i class="bi bi-clock video-meta-icon"></i> ${duration}</span>` : ''}
                         </div>
                     </div>
                 </div>
             `;
+
+            const thumbEl = card.querySelector('.video-card-thumb');
+            if (thumbEl) {
+                if (imgSrc) {
+                    thumbEl.style.backgroundImage = `url('${imgSrc}')`;
+                }
+                thumbEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.videoManager.processImageUpload(id, Boolean(imgSrc));
+                });
+            }
+
+            const menuBtn = card.querySelector('.video-card-menu-btn');
+            if (menuBtn) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.videoManager.openActionSheet(id, titleText, statusVal);
+                });
+            }
 
             fragment.appendChild(card);
         });
@@ -469,7 +483,7 @@ class VideoManager {
         const badge = card.querySelector('.hero-slider-badge');
 
         if (badge) {
-            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+            badge.classList.toggle('is-hidden', !inHeroSlider);
         }
     }
 

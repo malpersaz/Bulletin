@@ -72,6 +72,7 @@ DEV_TERMS = {
     "kb", "mb", "gb", "tb", "fps", "hd", "sd",
     "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini", "idempotency", "prefs", "bio",
     "modality", "modalities", "vimeo", "mailto", "telehealth", "og", "tiktok", "tik", "tok",
+    "hmac", "ifttt", "aggregator", "aggregators", "pubsubhubbub", "websub", "superfeedr",
     "unhtmlentities", "temizle", "hsc", "cdata", "aylar", "kontrol",
     "tema", "secenek", "resimgetir", "ust", "arsiv", "yil", "fullmanset", "anket", "oyver", "kat"
 }

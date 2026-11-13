@@ -11,7 +11,7 @@
 
 {% block styles %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_user_modules.css?v=1.5">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_user_modules.css?v=1.7">
 {% endblock %}
 
 {% block content %}
@@ -27,17 +27,20 @@
             {% endif %}
             <div class="panel-module-grid">
                 {% for module in category.modules %}
-                    <div class="panel-module-card" data-search="{{ module.search }}">
-                        <a class="panel-module-main" href="{{ module.links[0].url }}">
+                    <div class="panel-module-card" data-search="{{ module.search }}" data-title-search="{{ module.title_search }}">
+                        <a class="panel-module-main" href="{{ module.links[0].url }}" data-default-url="{{ module.links[0].url }}">
                             <span class="panel-module-icon"><i class="bi {{ module.icon }}"></i></span>
-                            <span class="panel-module-title">{{ module.title }}</span>
+                            <span class="panel-module-title-wrap">
+                                <span class="panel-module-title" data-default-title="{{ module.title }}">{{ module.title }}</span>
+                                <span class="panel-module-context" hidden></span>
+                            </span>
                         </a>
                         <div class="panel-module-links">
                             {% for link in module.links %}
                                 {% if link.action is defined %}
-                                    <button type="button" class="panel-module-link" data-action="{{ link.action }}">{{ link.label }}</button>
+                                    <button type="button" class="panel-module-link" data-action="{{ link.action }}" data-link-search="{{ link.search }}">{{ link.label }}</button>
                                 {% else %}
-                                    <a href="{{ link.url }}" class="panel-module-link">{{ link.label }}</a>
+                                    <a href="{{ link.url }}" class="panel-module-link" data-link-search="{{ link.search }}">{{ link.label }}</a>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -73,5 +76,5 @@
 
 {% block scripts %}
     {{ parent() }}
-    <script src="{{ site.address }}templates/admin/assets/js/mod_user_modules.js?v=1.6"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_user_modules.js?v=1.9"></script>
 {% endblock %}

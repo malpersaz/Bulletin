@@ -18,7 +18,7 @@
 {% set can_show_tools = show_tools|default(true) and target_mod is not empty and target_id is not empty %}
 {% set can_show_share = show_share|default(true) %}
 
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version }}-20261113b">
 
 <div class="share-toolbar-wrapper d-print-none {{ share_wrap_class|default('') }}">
     {% if can_show_share %}
@@ -36,42 +36,11 @@
                 <i class="bi bi-share"></i>
             </button>
 
-            <div class="share-buttons-list d-flex gap-2 flex-wrap">
-                {# Facebook #}
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-facebook" aria-label="Facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook">
-                    <i class="bi bi-facebook"></i>
-                </a>
-
-                {# X (Twitter) #}
-                <a href="https://twitter.com/intent/tweet?text={{ target_title|url_encode }}&url={{ target_url }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)">
-                    <i class="bi bi-twitter-x"></i>
-                </a>
-
-                {# WhatsApp #}
-                <a href="https://api.whatsapp.com/send?text={{ target_title|url_encode }}%0A{{ target_url }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp">
-                    <i class="bi bi-whatsapp"></i>
-                </a>
-
-                {# TikTok share #}
-                <button type="button" class="social-share-btn btn-tiktok border-0" aria-label="TikTok" data-bs-toggle="tooltip" data-bs-placement="top" title="TikTok" data-share-network="tiktok" data-share-title="{{ target_title|escape('html_attr') }}" data-share-url="{{ target_url }}" data-copied-text="{{ lang.index.link_copied }}">
-                    <i class="bi bi-tiktok"></i>
-                </button>
-
-                {# LinkedIn #}
-                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ target_url }}&title={{ target_title|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn">
-                    <i class="bi bi-linkedin"></i>
-                </a>
-
-                {# Email #}
-                <a href="mailto:?subject={{ target_title|url_encode }}&body={{ target_url }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email">
-                    <i class="bi bi-envelope"></i>
-                </a>
-
-                {# Copy Link #}
-                <button type="button" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link }}" data-copy-url="{{ target_url }}" data-copied-text="{{ lang.index.link_copied }}" data-original-text="{{ lang.index.copy_link }}">
-                    <i class="bi bi-link-45deg fs-5"></i>
-                </button>
-            </div>
+            {% include 'partials/_share_items.twig' with {
+                'target_url': target_url,
+                'target_title': target_title,
+                'list_class': 'd-flex gap-2 flex-wrap'
+            } %}
         </div>
         {% endif %}
 
@@ -96,4 +65,4 @@
     </div>
 </div>
 
-<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version }}"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version }}-20261113b"></script>

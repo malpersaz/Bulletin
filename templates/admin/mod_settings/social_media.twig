@@ -11,7 +11,7 @@
 {% block headline %}{{ lang.mod_settings.sections.social_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/social_media.css?v=2.0">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/social_media.css?v=2.9">
 {% endblock %}
 
 {% block content %}
@@ -78,6 +78,60 @@
         </div>
     </section>
 
+    <!-- Dedicated RSS Social Bridge Card (v1.0.67 Zero-Cost Hub) -->
+    <section class="social-bridge-card">
+        <div class="social-bridge-header">
+            <div class="social-bridge-icon">
+                <i class="bi bi-broadcast-pin"></i>
+            </div>
+            <div class="social-bridge-intro">
+                <div class="social-bridge-badge-row">
+                    <h4 class="social-bridge-title">{{ lang.mod_settings.social_bridge_title }}</h4>
+                    <span class="social-bridge-status-badge">
+                        <i class="bi bi-check-circle-fill"></i> {{ lang.mod_settings.websub_active }}
+                    </span>
+                </div>
+                <p class="social-bridge-desc">{{ lang.mod_settings.social_bridge_desc }}</p>
+            </div>
+        </div>
+
+        <div class="social-bridge-disclaimer">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>{{ lang.mod_settings.social_disclaimer }}</span>
+        </div>
+
+        <div class="social-bridge-feeds-list">
+            <div class="social-bridge-feed-row">
+                <div class="social-bridge-feed-info">
+                    <span class="social-bridge-feed-label">{{ lang.mod_settings.rss_social_url }} ({{ site.lang|upper }})</span>
+                    <span class="social-bridge-feed-url" id="feedSocialUrl">{{ site.address }}{{ site.lang }}/rss/social.xml</span>
+                </div>
+                <button type="button" class="social-bridge-copy-btn" data-copy-target="#feedSocialUrl" title="{{ lang.mod_settings.copy_feed_url }}">
+                    <i class="bi bi-clipboard"></i>
+                    <span>{{ lang.mod_settings.copy_feed_url }}</span>
+                </button>
+            </div>
+
+            <div class="social-bridge-feed-row">
+                <div class="social-bridge-feed-info">
+                    <span class="social-bridge-feed-label">{{ lang.mod_settings.rss_feed_url }} ({{ site.lang|upper }})</span>
+                    <span class="social-bridge-feed-url" id="feedStandardUrl">{{ site.address }}{{ site.lang }}/rss.xml</span>
+                </div>
+                <button type="button" class="social-bridge-copy-btn" data-copy-target="#feedStandardUrl" title="{{ lang.mod_settings.copy_feed_url }}">
+                    <i class="bi bi-clipboard"></i>
+                    <span>{{ lang.mod_settings.copy_feed_url }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="social-bridge-recipes-trigger">
+            <button type="button" class="social-bridge-guide-btn" id="openSetupGuideBtn">
+                <i class="bi bi-journal-bookmark"></i>
+                <span>{{ lang.mod_settings.setup_guide_btn }}</span>
+            </button>
+        </div>
+    </section>
+
     <!-- Social Media Cards List -->
     <div class="social-cards-list" id="socialCardsList">
         {% if social_items is defined and social_items is not empty %}
@@ -115,15 +169,19 @@
 
                     <div class="social-url-container">
                         {% if item.url and item.url|trim is not empty %}
-                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="social-url-box" title="{{ item.url }}">
-                                <div class="social-url-text-wrap">
-                                    <i class="bi bi-link-45deg social-url-icon"></i>
-                                    <span class="social-url-text">{{ item.url }}</span>
+                            <div class="social-url-box-wrap">
+                                <div class="social-url-box social-url-editable" data-action="click-edit" title="{{ lang.mod_settings.button.edit }}">
+                                    <div class="social-url-text-wrap">
+                                        <i class="bi bi-link-45deg social-url-icon"></i>
+                                        <span class="social-url-text">{{ item.url }}</span>
+                                    </div>
                                 </div>
-                                <i class="bi bi-box-arrow-up-right social-url-external"></i>
-                            </a>
+                                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="social-url-external-btn" title="{{ lang.mod_settings.external_link_title }}" aria-label="{{ lang.mod_settings.external_link_title }}">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                            </div>
                         {% else %}
-                            <div class="social-url-empty">
+                            <div class="social-url-empty social-url-editable" data-action="click-edit" title="{{ lang.mod_settings.button.edit }}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span>{{ lang.mod_settings.no_url_configured }}</span>
                             </div>
@@ -141,12 +199,17 @@
                             </button>
                         </div>
                         <div class="social-card-actions-right">
-                            <button type="button" class="social-action-btn btn-edit" title="{{ lang.mod_settings.button.edit }}">
-                                <i class="bi bi-pencil-square"></i>
-                                <span>{{ lang.mod_settings.button.edit }}</span>
+                            <button type="button" class="social-action-btn btn-api" data-action="open-api-modal" title="{{ lang.mod_settings.btn_api }}" aria-label="{{ lang.mod_settings.btn_api }}">
+                                <i class="bi bi-code-slash"></i>
+                                <span>{{ lang.mod_settings.btn_api }}</span>
                             </button>
-                            <button type="button" class="social-action-btn icon-only btn-delete" title="{{ lang.mod_settings.delete }}" aria-label="{{ lang.mod_settings.delete }}">
-                                <i class="bi bi-trash3"></i>
+                            <button type="button" class="social-action-btn btn-buffer" data-action="open-buffer-modal" title="{{ lang.mod_settings.btn_buffer }}" aria-label="{{ lang.mod_settings.btn_buffer }}">
+                                <i class="bi bi-layers"></i>
+                                <span>{{ lang.mod_settings.btn_buffer }}</span>
+                            </button>
+                            <button type="button" class="social-action-btn btn-ifttt" data-action="open-ifttt-modal" title="{{ lang.mod_settings.btn_ifttt }}" aria-label="{{ lang.mod_settings.btn_ifttt }}">
+                                <i class="bi bi-arrow-repeat"></i>
+                                <span>{{ lang.mod_settings.btn_ifttt }}</span>
                             </button>
                         </div>
                     </div>
@@ -176,9 +239,6 @@
         <div class="social-modal-notch"></div>
         <div class="social-modal-header">
             <h4 class="social-modal-title" id="socialModalTitle">{{ lang.mod_settings.add_social }}</h4>
-            <button type="button" class="social-modal-close" data-action="close-modal" aria-label="{{ lang.mod_settings.button.close }}">
-                <i class="bi bi-x-lg"></i>
-            </button>
         </div>
         <form id="socialItemForm" class="social-modal-form">
             <input type="hidden" id="social_item_id" name="id" value="0">
@@ -281,6 +341,168 @@
         </form>
     </div>
 </div>
+
+<!-- Modal Bottom-Sheet for Direct API Configuration -->
+<div class="social-modal-backdrop" id="socialApiModal" role="dialog" aria-modal="true" aria-labelledby="socialApiModalTitle">
+    <div class="social-modal-sheet">
+        <div class="social-modal-notch"></div>
+        <div class="social-modal-header">
+            <h4 class="social-modal-title" id="socialApiModalTitle">{{ lang.mod_settings.api_modal_title }}</h4>
+        </div>
+        <div class="social-modal-body">
+            <div class="social-modal-callout">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>{{ lang.mod_settings.social_disclaimer }}</span>
+            </div>
+
+            <!-- Platform Highlight Card -->
+            <div class="social-api-platform-card">
+                <div class="social-api-platform-avatar" id="apiPlatformAvatar">
+                    <i class="bi bi-link-45deg" id="apiPlatformIcon"></i>
+                </div>
+                <div class="social-api-platform-info">
+                    <div class="social-api-platform-label">{{ lang.mod_settings.api_platform_mode }}</div>
+                    <h5 class="social-api-platform-name" id="apiPlatformName">Social</h5>
+                </div>
+                <span class="social-api-bridge-badge">
+                    <i class="bi bi-broadcast"></i> RSS Bridge
+                </span>
+            </div>
+
+            <div class="social-form-group">
+                <label for="apiIntegrationMode" class="social-form-label">{{ lang.mod_settings.api_access_mode }}</label>
+                <div class="social-select-wrapper">
+                    <select class="social-form-input social-select" id="apiIntegrationMode">
+                        <option value="rss_bridge" selected>{{ lang.mod_settings.api_mode_rss_bridge }}</option>
+                        <option value="api">{{ lang.mod_settings.api_mode_direct }}</option>
+                        <option value="link">{{ lang.mod_settings.api_mode_link_only }}</option>
+                    </select>
+                    <i class="bi bi-chevron-down social-select-chevron"></i>
+                </div>
+            </div>
+
+            <div class="social-api-info-box">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <p>{{ lang.mod_settings.api_bridge_info }}</p>
+            </div>
+        </div>
+        <div class="social-modal-footer">
+            <button type="button" class="social-btn social-btn-primary" data-action="close-modal">
+                <i class="bi bi-check-lg"></i>
+                <span>{{ lang.mod_settings.button.confirm }}</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bottom-Sheet for Buffer Setup -->
+<div class="social-modal-backdrop" id="socialBufferModal" role="dialog" aria-modal="true" aria-labelledby="socialBufferModalTitle">
+    <div class="social-modal-sheet">
+        <div class="social-modal-notch"></div>
+        <div class="social-modal-header">
+            <h4 class="social-modal-title" id="socialBufferModalTitle">{{ lang.mod_settings.buffer_modal_title }}</h4>
+        </div>
+        <div class="social-modal-body">
+            <div class="social-modal-callout">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>{{ lang.mod_settings.social_disclaimer }}</span>
+            </div>
+            <div class="social-recipe-steps">
+                <div class="social-step-item">
+                    <span class="social-step-num">1</span>
+                    <span class="social-step-text">{{ lang.mod_settings.buffer_step_1 }}</span>
+                </div>
+                <div class="social-step-item">
+                    <span class="social-step-num">2</span>
+                    <span class="social-step-text">{{ lang.mod_settings.buffer_step_2 }}</span>
+                </div>
+                <div class="social-step-item">
+                    <span class="social-step-num">3</span>
+                    <span class="social-step-text">{{ lang.mod_settings.feed_url_to_paste }} <code>{{ site.address }}{{ site.lang }}/rss/social.xml</code></span>
+                </div>
+            </div>
+        </div>
+        <div class="social-modal-footer">
+            <button type="button" class="social-btn social-btn-primary" data-action="close-modal">
+                <i class="bi bi-check-lg"></i>
+                <span>{{ lang.mod_settings.button.confirm }}</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bottom-Sheet for IFTTT Setup -->
+<div class="social-modal-backdrop" id="socialIftttModal" role="dialog" aria-modal="true" aria-labelledby="socialIftttModalTitle">
+    <div class="social-modal-sheet">
+        <div class="social-modal-notch"></div>
+        <div class="social-modal-header">
+            <h4 class="social-modal-title" id="socialIftttModalTitle">{{ lang.mod_settings.ifttt_modal_title }}</h4>
+        </div>
+        <div class="social-modal-body">
+            <div class="social-modal-callout">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span>{{ lang.mod_settings.ifttt_callout }}</span>
+            </div>
+            <div class="social-recipe-steps">
+                <div class="social-step-item">
+                    <span class="social-step-num">1</span>
+                    <span class="social-step-text">{{ lang.mod_settings.ifttt_step_1 }}</span>
+                </div>
+                <div class="social-step-item">
+                    <span class="social-step-num">2</span>
+                    <span class="social-step-text">{{ lang.mod_settings.ifttt_step_2 }}</span>
+                </div>
+                <div class="social-step-item">
+                    <span class="social-step-num">3</span>
+                    <span class="social-step-text">{{ lang.mod_settings.feed_url_to_paste }} <code>{{ site.address }}{{ site.lang }}/rss/social.xml</code></span>
+                </div>
+                <div class="social-step-item">
+                    <span class="social-step-num">4</span>
+                    <span class="social-step-text">{{ lang.mod_settings.ifttt_step_3 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="social-modal-footer">
+            <button type="button" class="social-btn social-btn-primary" data-action="close-modal">
+                <i class="bi bi-check-lg"></i>
+                <span>{{ lang.mod_settings.button.confirm }}</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bottom-Sheet for General Automation Recipes -->
+<div class="social-modal-backdrop" id="socialRecipesModal" role="dialog" aria-modal="true" aria-labelledby="socialRecipesModalTitle">
+    <div class="social-modal-sheet">
+        <div class="social-modal-notch"></div>
+        <div class="social-modal-header">
+            <h4 class="social-modal-title" id="socialRecipesModalTitle">{{ lang.mod_settings.setup_guide_title }}</h4>
+        </div>
+        <div class="social-modal-body">
+            <div class="social-modal-callout">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>{{ lang.mod_settings.social_disclaimer }}</span>
+            </div>
+            <div class="social-recipe-card">
+                <h5><i class="bi bi-layers"></i> Buffer Free Tier</h5>
+                <p>{{ lang.mod_settings.setup_guide_buffer }}</p>
+            </div>
+            <div class="social-recipe-card">
+                <h5><i class="bi bi-diagram-3"></i> Make.com / n8n</h5>
+                <p>{{ lang.mod_settings.setup_guide_make }}</p>
+            </div>
+            <div class="social-recipe-card">
+                <h5><i class="bi bi-arrow-repeat"></i> IFTTT Webhook</h5>
+                <p>Ingests RSS feed updates via WebSub and auto-posts tweets with rich card previews.</p>
+            </div>
+        </div>
+        <div class="social-modal-footer">
+            <button type="button" class="social-btn social-btn-primary" data-action="close-modal">
+                {{ lang.mod_settings.button.confirm }}
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block fixed_bottom %}
@@ -297,5 +519,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/social_media.js?v=2.0"></script>
+<script src="{{ site.address }}templates/admin/assets/js/social_media.js?v=2.9"></script>
 {% endblock %}

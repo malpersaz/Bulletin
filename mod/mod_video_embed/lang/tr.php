@@ -36,6 +36,7 @@ $lang['mod_video_embed'] = [
         'provider_custom' => 'Bağlantı / Embed',
         'tombstone_error' => 'Bu gönderi artık mevcut değil veya gizli.',
         'no_video_in_post' => 'Bu gönderide video veya medya bulunamadı.',
+        'image_alt_fallback' => 'Video Görseli',
     ],
     'wizard' => [
         'step' => [

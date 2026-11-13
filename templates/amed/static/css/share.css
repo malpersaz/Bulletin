@@ -105,7 +105,14 @@
 .btn-copy { color: #495057; border-color: rgba(73, 80, 87, 0.25); }
 .btn-copy:hover { background-color: #495057; box-shadow: 0 4px 12px rgba(73, 80, 87, 0.3); }
 
-/* Right Action Tools (Squircle / Rounded Square, Distinct Shape & Role) */
+.social-share-btn.is-copied {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.35);
+}
+
+/* Right Action Tools (Rounded Square, Distinct Shape and Role) */
 .tool-action-btn {
     width: 38px;
     height: 38px;
@@ -202,5 +209,234 @@
         min-height: 40px;
         font-size: 1.05rem;
         border-radius: 10px;
+    }
+}
+
+/* ==========================================================================
+   Share Popover Floating Icon Tray
+   ========================================================================== */
+
+.social-share {
+    position: relative;
+    z-index: 30;
+}
+
+.detail-share-inline {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+}
+
+.share-popover-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.share-trigger-btn {
+    color: var(--bs-body-color, #212529);
+}
+
+.news-byline-tools .share-trigger-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background-color: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.news-byline-tools .share-trigger-btn:hover,
+.news-byline-tools .share-trigger-btn[aria-expanded="true"] {
+    transform: none;
+    background-color: #0f172a;
+    border-color: #0f172a !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
+.share-trigger-btn:hover,
+.share-trigger-btn[aria-expanded="true"] {
+    background-color: var(--detail-accent, #0f766e);
+    color: #ffffff !important;
+    border-color: var(--detail-accent, #0f766e) !important;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+}
+
+.share-popover-menu {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    left: 0;
+    right: auto;
+    z-index: 1060;
+    padding: 0.4rem;
+    background-color: rgba(255, 255, 255, 0.98);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(15, 23, 42, 0.09);
+    border-radius: 0.875rem;
+    box-shadow: 0 18px 38px -8px rgba(15, 23, 42, 0.16),
+                0 4px 12px -2px rgba(15, 23, 42, 0.06);
+    width: max-content;
+    max-width: calc(100vw - 2.5rem);
+}
+
+.share-popover-menu[hidden] {
+    display: none !important;
+}
+
+.share-popover-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+    animation: sharePopoverIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.share-popover-icons .social-share-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 0.625rem;
+    background-color: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    font-size: 0.95rem;
+}
+
+.share-popover-icons .btn-facebook:hover { background-color: #1877f2; }
+.share-popover-icons .btn-twitter:hover { background-color: #000000; }
+.share-popover-icons .btn-whatsapp:hover { background-color: #25d366; }
+.share-popover-icons .btn-tiktok:hover { background-color: #000000; }
+.share-popover-icons .btn-linkedin:hover { background-color: #0a66c2; }
+.share-popover-icons .btn-email:hover { background-color: #ea4335; }
+.share-popover-icons .btn-copy:hover { background-color: #334155; }
+
+@keyframes sharePopoverIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.share-container.justify-content-center .share-popover-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+
+@media (min-width: 768px) {
+    .detail-tools .share-popover-menu {
+        left: auto;
+        right: -0.25rem;
+    }
+
+    .detail-tools .share-popover-menu::before {
+        content: "";
+        position: absolute;
+        top: -5px;
+        right: 15px;
+        width: 9px;
+        height: 9px;
+        background-color: #ffffff;
+        border-top: 1px solid rgba(15, 23, 42, 0.09);
+        border-left: 1px solid rgba(15, 23, 42, 0.09);
+        transform: rotate(45deg);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .detail-tools {
+        position: relative;
+        z-index: 30;
+    }
+
+    .detail-tools .share-popover-wrapper {
+        position: static;
+    }
+
+    .detail-tools .share-popover-menu {
+        left: 0;
+        right: auto;
+        max-width: calc(100vw - 3rem);
+        border-radius: 0.875rem;
+    }
+
+    .detail-tools .share-popover-icons {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 420px) {
+    .share-popover-icons .social-share-btn {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        font-size: 0.9rem;
+    }
+}
+
+[data-bs-theme="dark"] .share-popover-menu,
+.theme-dark .share-popover-menu {
+    background-color: rgba(26, 30, 36, 0.96);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 38px -8px rgba(0, 0, 0, 0.55);
+}
+
+@media (min-width: 768px) {
+    [data-bs-theme="dark"] .detail-tools .share-popover-menu::before,
+    .theme-dark .detail-tools .share-popover-menu::before {
+        background-color: #1a1e24;
+        border-top-color: rgba(255, 255, 255, 0.14);
+        border-left-color: rgba(255, 255, 255, 0.14);
+    }
+}
+
+[data-bs-theme="dark"] .share-popover-icons .social-share-btn,
+.theme-dark .share-popover-icons .social-share-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.09);
+}
+
+[data-bs-theme="dark"] .news-byline-tools .share-trigger-btn,
+.theme-dark .news-byline-tools .share-trigger-btn {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .news-byline-tools .share-trigger-btn:hover,
+[data-bs-theme="dark"] .news-byline-tools .share-trigger-btn[aria-expanded="true"],
+.theme-dark .news-byline-tools .share-trigger-btn:hover,
+.theme-dark .news-byline-tools .share-trigger-btn[aria-expanded="true"] {
+    background-color: #38bdf8;
+    border-color: #38bdf8 !important;
+    color: #0f172a !important;
+}
+
+[dir="rtl"] .share-popover-menu {
+    left: auto;
+    right: 0;
+}
+
+@media (min-width: 768px) {
+    [dir="rtl"] .detail-tools .share-popover-menu {
+        left: -0.25rem;
+        right: auto;
+    }
+
+    [dir="rtl"] .detail-tools .share-popover-menu::before {
+        left: 15px;
+        right: auto;
     }
 }

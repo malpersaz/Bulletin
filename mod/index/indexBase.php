@@ -256,8 +256,35 @@ abstract class indexBase
             $vid_model->where_id($vid_ids)->where_status('y')->gR();
             if ($vid_model->getSize() > 0) {
                 $rawRows = $vid_model->toArray();
+                $seenEmbedKeys = [];
                 foreach ($rawRows as $vRow) {
-                    $results[] = VideoEmbedProviderService::enrichVideoRowForFrontend($vRow);
+                    $enriched = VideoEmbedProviderService::enrichVideoRowForFrontend($vRow, (string) ($this->site['lang'] ?? 'en'));
+                    if (!empty($enriched['image'])) {
+                        $imgName = basename((string) $enriched['image']);
+                        $fullPosterFile = root_dir . 'static' . DS . 'mod_video_embed' . DS . $imgName;
+                        $thumbPosterFile = root_dir . 'static' . DS . 'mod_video_embed' . DS . 'thumb' . DS . $imgName;
+                        $baseImgUrl = (string) ($this->site['iaddress'] ?? '');
+                        if (is_file($fullPosterFile)) {
+                            $enriched['hero_poster_url'] = $baseImgUrl . 'mod_video_embed/' . $imgName;
+                        } elseif (is_file($thumbPosterFile)) {
+                            $enriched['hero_poster_url'] = $baseImgUrl . 'mod_video_embed/thumb/' . $imgName;
+                        }
+                    }
+                    $dedupeKey = '';
+                    if (!empty($enriched['provider']) && !empty($enriched['provider_video_id'])) {
+                        $dedupeKey = $enriched['provider'] . ':' . $enriched['provider_video_id'];
+                    } elseif (!empty($enriched['original'])) {
+                        $dedupeKey = 'orig:' . trim((string) $enriched['original']);
+                    } elseif (!empty($enriched['embed'])) {
+                        $dedupeKey = 'embed:' . trim((string) $enriched['embed']);
+                    } else {
+                        $dedupeKey = 'id:' . (int) ($enriched['id'] ?? 0);
+                    }
+                    if (isset($seenEmbedKeys[$dedupeKey])) {
+                        continue;
+                    }
+                    $seenEmbedKeys[$dedupeKey] = true;
+                    $results[] = $enriched;
                 }
             }
         }
@@ -562,12 +589,19 @@ abstract class indexBase
         }
 
         $rawUpdatedAt = (string) ($row['updated_at'] ?? '');
+        $row['is_updated_last_24h'] = false;
         if (!empty($rawUpdatedAt) && $rawUpdatedAt !== $rawCreatedAt) {
             $uts = strtotime($rawUpdatedAt);
-            if ($uts !== false && $uts > 0) {
+            if ($uts !== false && $uts > 0 && ($ts === false || $uts > $ts)) {
                 $updateClockPart = date('H:i', $uts);
                 $updateDatePart = date('d.m.Y', $uts);
                 $row['formatted_updated_datetime'] = $updateDatePart . ' ' . $updateClockPart;
+
+                $updateDiffSeconds = time() - $uts;
+                if ($updateDiffSeconds < 0 && $updateDiffSeconds >= -300) {
+                    $updateDiffSeconds = 0;
+                }
+                $row['is_updated_last_24h'] = ($updateDiffSeconds >= 0 && $updateDiffSeconds < 86400);
             } else {
                 $row['formatted_updated_datetime'] = '';
             }

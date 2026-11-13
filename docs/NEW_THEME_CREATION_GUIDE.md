@@ -96,7 +96,6 @@ At minimum, audit and preserve coverage for:
 - `mod_user/*`
 - `partials/_cookie_consent.twig`
 - `partials/_popup.twig`
-- `partials/mod_gallery.twig`
 - `partials/share.twig`
 
 If the active repository gains or loses modules, regenerate this inventory before implementation.

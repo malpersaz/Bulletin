@@ -1,130 +1,227 @@
-ul.pictures {
-	margin: 0 auto;
-	width: 500px;
-	position: relative;
-}
-
-ul.pictures li {
-	background-color: #F9F9F9;
-	border: 1px solid #EEEEEE;
-	list-style: none;
-	margin: 6px;
-	padding: 6px 9px;
-	position: relative;
-	cursor: n-resize;
-
-	text-shadow: 1px 1px 0 white;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-	border-radius: 6px;
-}
-
-ul.pictures li:hover {
-	border-color: #9be0f9;
-	/* CSS3 glow effect: */
-	-moz-box-shadow: 0 0 5px #A6E5FD;
-	-webkit-box-shadow: 0 0 5px #A6E5FD;
-	box-shadow: 0 0 5px #A6E5FD;
-}
-
-.resim .text {
-	color: #777777;
-	font-size: 1.4em;
-}
-
-/* The edit and delete buttons */
-.resim .actions {
-	position: absolute;
-	right: 7px;
-	top: 6px;
-}
-
-.resim .actions a {
-	display: block;
-	width: 16px;
-	height: 16px;
+/* News Detail Gallery (Google News 16:9 Standard) */
+.news-gallery {
+	margin: 16px 0 24px;
+	border: 1px solid var(--news-detail-border, #e5e7eb);
+	border-radius: 8px;
 	overflow: hidden;
-	float: left;
-	text-indent: -9999px;
-	margin: 3px;
+	background: #111315;
 }
 
-.resim .actions a.edit {
-	/* background:
-		url('../../../base_static/image/edit.png') no-repeat center center; */
+.news-gallery .gallery-stage {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	background: #0b0c0e;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.resim .actions a.delete {
-	/* background:
-		url('../../../base_static/image/delete.png') no-repeat center center; */
+.news-gallery .gallery-figure {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	position: relative;
 }
 
-.resim .actions a.tamboy {
-	/* background:
-		url('../../../base_static/image/tamboy.png') no-repeat center center; */
+.news-gallery .gallery-main-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	cursor: zoom-in;
+	transition: opacity 0.2s ease;
 }
 
-.resim input {
-	border: 1px solid #CCCCCC;
-	color: #666666;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 0.725em;
-	padding: 3px 4px;
-	width: 300px;
-	background-color: #ffffd3;
-}
-
-.editresim {
-	display: inline;
-	font-size: 0.6em;
-	padding-left: 9px;
-}
-
-.editresim a {
-	font-weight: bold;
-}
-
-a.discardChanges {
-	color: #C00 !important;
-}
-
-a.saveChanges {
-	color: #4DB209 !important;
-}
-
-.ui-button,
-.ui-dialog-titlebar {
-	font-size: 0.72em !important;
-}
-
-#dialog-confirm {
-	display: none;
-	font-size: 0.9em;
-	padding: 1em 1em 0;
-}
-
-
-
-
-
-
-
-
-ul.pictures a,
-ul.pictures a:visited,
-.resim a,
-.resim a:visited {
-	color: #0196e3;
-	text-decoration: none;
-	outline: none;
-}
-
-ul.pictures a:hover,
-.resim a:hover {
-	text-decoration: underline;
-}
-
-ul.pictures a img,
-.resim a img {
+.news-gallery .gallery-nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
 	border: none;
+	background: rgba(0, 0, 0, 0.55);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.news-gallery .gallery-nav:hover {
+	background: rgba(0, 0, 0, 0.85);
+}
+
+.news-gallery .gallery-prev {
+	left: 12px;
+}
+
+.news-gallery .gallery-next {
+	right: 12px;
+}
+
+.news-gallery .gallery-zoom-btn {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	width: 36px;
+	height: 36px;
+	border-radius: 4px;
+	border: none;
+	background: rgba(0, 0, 0, 0.55);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.news-gallery .gallery-zoom-btn:hover {
+	background: rgba(0, 0, 0, 0.85);
+}
+
+.news-gallery .gallery-counter {
+	position: absolute;
+	bottom: 12px;
+	right: 12px;
+	background: rgba(0, 0, 0, 0.65);
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 999px;
+}
+
+.news-gallery .gallery-caption-bar {
+	background: #181a1d;
+	color: #e5e7eb;
+	padding: 12px 16px;
+	font-size: 14px;
+	border-top: 1px solid #2a2e33;
+}
+
+.news-gallery .gallery-caption-text {
+	margin: 0;
+}
+
+.news-gallery .gallery-thumbs {
+	display: flex;
+	gap: 8px;
+	padding: 10px 12px;
+	background: #111315;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.news-gallery .thumb-item {
+	flex: 0 0 96px;
+	height: 54px;
+	border: 2px solid transparent;
+	border-radius: 4px;
+	overflow: hidden;
+	cursor: pointer;
+	opacity: 0.55;
+	background: none;
+	padding: 0;
+	transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.news-gallery .thumb-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.news-gallery .thumb-item:hover {
+	opacity: 0.85;
+}
+
+.news-gallery .thumb-item.is-active {
+	opacity: 1;
+	border-color: #b91c1c;
+}
+
+/* News Gallery Lightbox */
+.news-gallery-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 1060;
+	background: rgba(0, 0, 0, 0.92);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.news-gallery-lightbox[hidden] {
+	display: none;
+}
+
+.news-gallery-lightbox .lightbox-content {
+	max-width: 90vw;
+	max-height: 85vh;
+	text-align: center;
+}
+
+.news-gallery-lightbox .lightbox-content img {
+	max-width: 100%;
+	max-height: 75vh;
+	object-fit: contain;
+	border-radius: 4px;
+}
+
+.news-gallery-lightbox .lightbox-caption {
+	color: #e5e7eb;
+	font-size: 14px;
+	margin-top: 12px;
+}
+
+.news-gallery-lightbox .lightbox-close {
+	position: absolute;
+	top: 16px;
+	right: 24px;
+	background: none;
+	border: none;
+	color: #ffffff;
+	font-size: 36px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.news-gallery-lightbox .lightbox-nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(255, 255, 255, 0.12);
+	border: none;
+	color: #ffffff;
+	font-size: 24px;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.news-gallery-lightbox .lightbox-prev {
+	left: 20px;
+}
+
+.news-gallery-lightbox .lightbox-next {
+	right: 20px;
+}
+
+@media (max-width: 640px) {
+	.news-gallery .gallery-nav {
+		width: 34px;
+		height: 34px;
+	}
+
+	.news-gallery .thumb-item {
+		flex: 0 0 80px;
+		height: 45px;
+	}
 }

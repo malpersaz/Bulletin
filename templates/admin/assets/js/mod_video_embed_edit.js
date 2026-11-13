@@ -135,20 +135,27 @@ function initVideoEmbedForm() {
     function updateSeoPreview() {
         if (!seoPreviewInput || !nameInput) return;
         const slug = formatVideoSlug(nameInput.value);
-        seoPreviewInput.value = `${siteAddress}video/${videoId}-${slug}`;
+        const idPart = (!videoId || videoId === '{id}') ? '' : `${videoId}-`;
+        seoPreviewInput.value = `${siteAddress}video/${idPart}${slug}`;
     }
 
     /**
-     * Update Live Embed Preview
+     * Update Live Embed Preview without destroying the spinner overlay
      */
     function updateEmbedPreview() {
         if (!embedPreview || !embedInput) return;
         const raw = (embedInput.value || '').trim();
-        if (raw) {
-            embedPreview.innerHTML = raw;
+        const spinnerEl = embedPreview.querySelector('.embed-fetch-spinner');
+        const spinnerHtml = spinnerEl
+            ? spinnerEl.outerHTML
+            : '<div class="embed-fetch-spinner" aria-hidden="true"><span class="embed-spinner-ring"></span></div>';
+
+        const isHtmlEmbed = /<(?:iframe|blockquote|video|embed|object)\b/i.test(raw);
+        if (raw && isHtmlEmbed) {
+            embedPreview.innerHTML = spinnerHtml + raw;
             embedPreview.classList.add('has-content');
         } else {
-            embedPreview.innerHTML = `
+            embedPreview.innerHTML = spinnerHtml + `
                 <div class="embed-placeholder">
                     <i class="bi bi-play-circle embed-placeholder-icon"></i>
                     <span class="embed-placeholder-text">${i18n.previewText}</span>
@@ -156,6 +163,26 @@ function initVideoEmbedForm() {
             `;
             embedPreview.classList.remove('has-content');
         }
+    }
+
+    /**
+     * Parse YouTube start time (?t=10, ?t=1m30s, ?start=10) into integer seconds
+     */
+    function parseYouTubeStartSeconds(raw) {
+        const match = (raw || '').match(/[?&#](?:t|start)=([0-9hms]+)/i);
+        if (!match) return 0;
+        const token = match[1].toLowerCase();
+        if (/^\d+$/.test(token)) {
+            return parseInt(token, 10);
+        }
+        let total = 0;
+        const h = token.match(/(\d+)h/);
+        const m = token.match(/(\d+)m/);
+        const s = token.match(/(\d+)s/);
+        if (h) total += parseInt(h[1], 10) * 3600;
+        if (m) total += parseInt(m[1], 10) * 60;
+        if (s) total += parseInt(s[1], 10);
+        return total;
     }
 
     /**
@@ -183,29 +210,39 @@ function initVideoEmbedForm() {
                     id: statusId,
                     cacheKey: 'x_' + statusId,
                     handle: handle,
+                    startSeconds: 0,
                     canonicalUrl: 'https://x.com/' + (handle || 'i') + '/status/' + statusId
                 };
             }
         }
 
         // YouTube
+        const startSeconds = parseYouTubeStartSeconds(raw);
+        const buildYouTubeInfo = (ytId) => ({
+            provider: 'youtube',
+            id: ytId,
+            cacheKey: 'yt_' + ytId + (startSeconds > 0 ? '_t' + startSeconds : ''),
+            startSeconds: startSeconds,
+            canonicalUrl: 'https://www.youtube.com/watch?v=' + ytId + (startSeconds > 0 ? '&t=' + startSeconds + 's' : '')
+        });
+
         const embedMatch = raw.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/i);
-        if (embedMatch) return { provider: 'youtube', id: embedMatch[1], cacheKey: 'yt_' + embedMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + embedMatch[1] };
+        if (embedMatch) return buildYouTubeInfo(embedMatch[1]);
 
         const shortsMatch = raw.match(/youtube(?:-nocookie)?\.com\/shorts\/([A-Za-z0-9_-]{11})/i);
-        if (shortsMatch) return { provider: 'youtube', id: shortsMatch[1], cacheKey: 'yt_' + shortsMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + shortsMatch[1] };
+        if (shortsMatch) return buildYouTubeInfo(shortsMatch[1]);
 
         const liveMatch = raw.match(/youtube(?:-nocookie)?\.com\/live\/([A-Za-z0-9_-]{11})/i);
-        if (liveMatch) return { provider: 'youtube', id: liveMatch[1], cacheKey: 'yt_' + liveMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + liveMatch[1] };
+        if (liveMatch) return buildYouTubeInfo(liveMatch[1]);
 
         const shortUrlMatch = raw.match(/youtu\.be\/([A-Za-z0-9_-]{11})/i);
-        if (shortUrlMatch) return { provider: 'youtube', id: shortUrlMatch[1], cacheKey: 'yt_' + shortUrlMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + shortUrlMatch[1] };
+        if (shortUrlMatch) return buildYouTubeInfo(shortUrlMatch[1]);
 
         const watchMatch = raw.match(/[?&]v=([A-Za-z0-9_-]{11})/i);
-        if (watchMatch) return { provider: 'youtube', id: watchMatch[1], cacheKey: 'yt_' + watchMatch[1], canonicalUrl: 'https://www.youtube.com/watch?v=' + watchMatch[1] };
+        if (watchMatch) return buildYouTubeInfo(watchMatch[1]);
 
         if (/^[A-Za-z0-9_-]{11}$/.test(raw)) {
-            return { provider: 'youtube', id: raw, cacheKey: 'yt_' + raw, canonicalUrl: 'https://www.youtube.com/watch?v=' + raw };
+            return buildYouTubeInfo(raw);
         }
 
         return null;
@@ -313,9 +350,10 @@ function initVideoEmbedForm() {
     /**
      * Automatic YouTube Metadata Fetch Execution
      */
-    async function triggerAutoFetchMetadata(videoId, sourceInputVal) {
-        if (!videoId || isFetchingAutofill) return;
-        if (videoId === lastFetchedVideoId) return;
+    async function triggerAutoFetchMetadata(sourceInfo, sourceInputVal) {
+        const cacheKey = typeof sourceInfo === 'string' ? sourceInfo : (sourceInfo?.cacheKey || '');
+        if (!cacheKey || isFetchingAutofill) return;
+        if (cacheKey === lastFetchedVideoId) return;
 
         if (autofillAbortController) {
             autofillAbortController.abort();
@@ -327,10 +365,13 @@ function initVideoEmbedForm() {
         try {
             const embedVal = embedInput ? embedInput.value.trim() : '';
             const originalVal = originalInput ? originalInput.value.trim() : '';
+            const fallbackOriginal = (typeof sourceInfo === 'object' && sourceInfo?.canonicalUrl)
+                ? sourceInfo.canonicalUrl
+                : (sourceInputVal || '');
 
             const fd = new FormData();
             fd.append('embed', embedVal || sourceInputVal || '');
-            fd.append('original', originalVal || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : ''));
+            fd.append('original', originalVal || fallbackOriginal);
 
             const response = await fetch(`${siteAddress}mod_video_embed/autofill_metadata`, {
                 method: 'POST',
@@ -341,24 +382,38 @@ function initVideoEmbedForm() {
             const res = await response.json();
 
             if (res.status === 'success' && res.data) {
-                lastFetchedVideoId = videoId;
+                lastFetchedVideoId = cacheKey;
                 const data = res.data;
                 const populatedElements = [];
+                const startSeconds = (typeof sourceInfo === 'object' && sourceInfo?.startSeconds) ? sourceInfo.startSeconds : 0;
 
                 if (data.name && nameInput) {
                     nameInput.value = stripUnsupportedEmoji(data.name);
                     populatedElements.push(nameInput);
                 }
                 if (data.original && originalInput) {
-                    originalInput.value = stripUnsupportedEmoji(data.original);
+                    let resolvedOriginal = stripUnsupportedEmoji(data.original);
+                    if (startSeconds > 0 && !/[?&]t=\d+/i.test(resolvedOriginal)) {
+                        resolvedOriginal += (resolvedOriginal.includes('?') ? '&' : '?') + `t=${startSeconds}s`;
+                    }
+                    originalInput.value = resolvedOriginal;
                     populatedElements.push(originalInput);
                 }
                 if (data.duration && durationInput) {
                     durationInput.value = stripUnsupportedEmoji(data.duration);
                     populatedElements.push(durationInput);
                 }
-                if (data.embed && embedInput && embedInput.value.trim() !== data.embed.trim()) {
-                    embedInput.value = data.embed;
+                if (data.embed && embedInput) {
+                    let resolvedEmbed = data.embed.replace(/\s*;?\s*web-share\b/gi, '');
+                    if (startSeconds > 0 && !/(?:[?&]|&amp;)start=\d+/i.test(resolvedEmbed)) {
+                        resolvedEmbed = resolvedEmbed.replace(
+                            /(src=["']https:\/\/www\.youtube(?:-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}[^"']*)(["'])/i,
+                            (m, prefix, quote) => `${prefix}${prefix.includes('?') ? '&' : '?'}start=${startSeconds}${quote}`
+                        );
+                    }
+                    if (embedInput.value.trim() !== resolvedEmbed.trim()) {
+                        embedInput.value = resolvedEmbed;
+                    }
                 }
                 if (data.content && contentInput) {
                     contentInput.value = stripUnsupportedEmoji(data.content);
@@ -445,7 +500,7 @@ function initVideoEmbedForm() {
             if (detected.cacheKey !== lastFetchedVideoId) {
                 const delay = (e && e.type === 'paste') ? 80 : 350;
                 embedInputDebounceTimer = setTimeout(() => {
-                    triggerAutoFetchMetadata(detected.cacheKey, rawVal);
+                    triggerAutoFetchMetadata(detected, rawVal);
                 }, delay);
             }
         } else {
@@ -513,7 +568,7 @@ function initVideoEmbedForm() {
                 updateProviderBadge(detected);
                 if (embedInputDebounceTimer) clearTimeout(embedInputDebounceTimer);
                 embedInputDebounceTimer = setTimeout(() => {
-                    triggerAutoFetchMetadata(detected.cacheKey, rawVal);
+                    triggerAutoFetchMetadata(detected, rawVal);
                 }, 350);
             }
         });
@@ -790,10 +845,10 @@ function initVideoEmbedForm() {
             }
 
             if (res.status === 'success') {
-                if (window.AFModalEngine && typeof window.AFModalEngine.showToast === 'function') {
-                    window.AFModalEngine.showToast(res.message || i18n.success, 'success');
-                } else if (typeof showSnackbar === 'function') {
+                if (typeof showSnackbar === 'function') {
                     showSnackbar(res.message || i18n.success, 'success');
+                } else if (window.AFModalEngine && typeof window.AFModalEngine.showToast === 'function') {
+                    window.AFModalEngine.showToast(res.message || i18n.success, 'success');
                 }
                 const newId = res.id || null;
                 const prefVideoId = newId ? `vid:${newId}` : null;

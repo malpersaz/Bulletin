@@ -799,6 +799,185 @@ class index_mod extends indexBase
         exit;
     }
 
+    /**
+     * Dedicated Social Syndication RSS Feed
+     * Tailored for external bridges (Buffer, IFTTT, Make, n8n) and social cards.
+     * Features 1280x720 OpenGraph crops, explicit hashtag categories, clean descriptions, and WebSub hub links.
+     */
+    public function rssSocial()
+    {
+        if (!$this->guardFeatureOr404('news.feed')) {
+            return;
+        }
+
+        header("content-type: text/xml; charset=utf-8");
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
+        $news = Load::model('mod_news.newses');
+        $news->where_status_and_lang('y', $this->site['lang']);
+        $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere($this->getPublishedDateCondition(''));
+        $news->addWhere("category_id IN ({$allowedCatList})");
+        $news->order('created_at', 'DESC');
+        $news->select([
+            'id',
+            'name',
+            'title',
+            'summary',
+            'content',
+            'category_name',
+            'u_name',
+            'u_last_name',
+            'username',
+            'created_at',
+            'updated_at',
+            'seo',
+            'lang',
+            'image',
+        ]);
+        $news->limit(30);
+        $news->gR();
+
+        $newsArray = $news->getSize() != 0 ? $news->toArray() : [];
+        $lastBuildDate = date(DATE_RSS);
+        if (!empty($newsArray)) {
+            $newest = $newsArray[0];
+            $newestTs = !empty($newest['updated_at']) ? strtotime((string) $newest['updated_at']) : (!empty($newest['created_at']) ? strtotime((string) $newest['created_at']) : time());
+            if ($newestTs > 0) {
+                $lastBuildDate = date(DATE_RSS, $newestTs);
+            }
+        }
+
+        $channelTitle = !empty($this->site['title']) ? (string) $this->site['title'] : (string) ($this->site['site_name'] ?? 'Amed Bülten');
+        $socialChannelTitle = $channelTitle . ' - Social Feed';
+        $rssSelfUrl = Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/rss/social.xml');
+
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <channel>
+            <title>' . htmlspecialchars(html_entity_decode($socialChannelTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</title>
+            <link>' . Helper::sitemap_url($this->site['address'] . $this->site['lang'] . '/') . '</link>
+            <description>' . htmlspecialchars(html_entity_decode((string) ($this->site['description'] ?? 'Social Bridge Syndication Feed'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</description>
+            <language>' . htmlspecialchars((string) $this->site['lang'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</language>
+            <lastBuildDate>' . $lastBuildDate . '</lastBuildDate>
+            <atom:link href="' . $rssSelfUrl . '" rel="self" type="application/rss+xml" />
+            <atom:link href="https://pubsubhubbub.appspot.com/" rel="hub" />
+            <atom:link href="https://pubsubhubbub.superfeedr.com" rel="hub" />';
+
+        if (!empty($newsArray)) {
+            foreach ($newsArray as $o) {
+                $link = Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']);
+                $imageUrl = "";
+                $thumbUrl = "";
+                $imageMime = "image/jpeg";
+                $imageLength = 0;
+                if (!empty($o['image'])) {
+                    $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $o['image'];
+                    if (is_file($imageFile)) {
+                        $imageLength = (int) @filesize($imageFile);
+                        if ($imageLength > 0) {
+                            $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
+                            $thumbFile = root_dir . 'static' . DS . 'mod_news' . DS . 'thumb' . DS . $o['image'];
+                            if (is_file($thumbFile)) {
+                                $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
+                            } else {
+                                $thumbUrl = $imageUrl;
+                            }
+                            $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
+                            if ($ext === 'webp') {
+                                $imageMime = 'image/webp';
+                            } elseif ($ext === 'png') {
+                                $imageMime = 'image/png';
+                            } elseif ($ext === 'gif') {
+                                $imageMime = 'image/gif';
+                            }
+                        }
+                    }
+                }
+
+                $headline = !empty($o['name']) ? $o['name'] : (!empty($o['title']) ? $o['title'] : '');
+                $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+                $cleanSummary = trim(html_entity_decode(strip_tags((string) $o['summary']), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                $shortSummary = mb_substr($cleanSummary, 0, 400);
+                $shortSummaryCdata = str_replace(']]>', ']]]]><![CDATA[>', $shortSummary);
+
+                $uName = trim((string) ($o['u_name'] ?? ''));
+                $uLastName = trim((string) ($o['u_last_name'] ?? ''));
+                $username = trim((string) ($o['username'] ?? ''));
+                if ($uName !== '' && $username !== 'habermerkezi') {
+                    $authorName = trim($uName . ' ' . $uLastName);
+                } else {
+                    $authorName = $channelTitle;
+                }
+                $authorCdata = str_replace(']]>', ']]]]><![CDATA[>', html_entity_decode($authorName, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+                $categoryName = trim(html_entity_decode(strip_tags((string) ($o['category_name'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                $categoryCdata = str_replace(']]>', ']]]]><![CDATA[>', $categoryName);
+
+                // Build hashtags for social aggregators
+                $hashtagList = [];
+                if ($categoryName !== '') {
+                    $cleanCatTag = preg_replace('/[^\p{L}\p{N}_]+/u', '', $categoryName);
+                    if ($cleanCatTag !== '') {
+                        $hashtagList[] = '#' . $cleanCatTag;
+                    }
+                }
+                $siteBrandTag = preg_replace('/[^\p{L}\p{N}_]+/u', '', $channelTitle);
+                if ($siteBrandTag !== '') {
+                    $hashtagList[] = '#' . $siteBrandTag;
+                }
+
+                $rawBody = (string) ($o['content'] ?? '');
+                $sanitizedBody = preg_replace('#<(script|style|iframe|form|object|embed)\b[^>]*>.*?</\1>#is', '', $rawBody);
+                $sanitizedBody = strip_tags((string) $sanitizedBody, '<p><h2><h3><h4><blockquote><ul><ol><li><a><strong><b><em><i><figure><figcaption><img><br>');
+                $encodedParts = [];
+                if ($imageUrl !== '') {
+                    $encodedParts[] = '<figure><img src="' . $imageUrl . '" alt="' . $cleanHeadline . '" width="1280" height="720" /></figure>';
+                }
+                if ($cleanSummary !== '') {
+                    $encodedParts[] = '<p><strong>' . htmlspecialchars($cleanSummary, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</strong></p>';
+                }
+                if (trim($sanitizedBody) !== '') {
+                    $encodedParts[] = $sanitizedBody;
+                }
+                $fullEncodedHtml = str_replace(']]>', ']]]]><![CDATA[>', implode("\n", $encodedParts));
+
+                echo '
+            <item>
+                <title>' . $cleanHeadline . '</title>
+                <link>' . $link . '</link>
+                <guid isPermaLink="true">' . $link . '</guid>
+                <pubDate>' . date(DATE_RSS, strtotime((string) $o['created_at'])) . '</pubDate>
+                <dc:creator><![CDATA[' . $authorCdata . ']]></dc:creator>';
+                if ($categoryCdata !== '') {
+                    echo '
+                <category><![CDATA[' . $categoryCdata . ']]></category>';
+                }
+                foreach ($hashtagList as $tag) {
+                    echo '
+                <category><![CDATA[' . $tag . ']]></category>';
+                }
+                echo '
+                <description><![CDATA[' . ($thumbUrl ? '<img src="' . $thumbUrl . '" align="left" hspace="10" vspace="10" />' : '') . $shortSummaryCdata . ']]></description>
+                <content:encoded><![CDATA[' . $fullEncodedHtml . ']]></content:encoded>';
+                if ($imageUrl && $imageLength > 0) {
+                    echo '
+                <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="1280" height="720" />
+                <media:thumbnail url="' . $thumbUrl . '" />
+                <enclosure url="' . $imageUrl . '" type="' . $imageMime . '" length="' . $imageLength . '" />';
+                }
+                echo '
+            </item>';
+            }
+        }
+        echo '
+        </channel>
+        </rss>';
+        exit;
+    }
+
     public function sitemapIndex()
     {
         header("content-type: text/xml; charset=utf-8");

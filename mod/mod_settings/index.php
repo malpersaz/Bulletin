@@ -36,11 +36,61 @@ class mod_settings_mod extends indexMain
         $this->ensureAnimatedLogoColumns();
         $this->ensureSiteStatusColumns();
         $this->ensureLegalInfoColumns();
+        $this->ensureSocialIntegrationColumns();
         $this->ensureCookiesTable();
         $this->ensureWorkingHoursTable();
         $this->theme->lang($this->lang);
     }
 
+
+    private function ensureSocialIntegrationColumns()
+    {
+        if (!$this->db) {
+            return;
+        }
+
+        $table = 'mod_settings_social';
+        $safeTable = addslashes($table);
+        $adapter = (string) $this->db->getAdapterType();
+
+        $columns = [
+            'api_config' => 'TEXT DEFAULT NULL',
+            'integration_mode' => "ENUM('link', 'api', 'rss_bridge') NOT NULL DEFAULT 'link'",
+            'auto_post' => "ENUM('y', 'n') NOT NULL DEFAULT 'n'",
+        ];
+
+        foreach ($columns as $column => $definition) {
+            $safeColumn = addslashes($column);
+            $exists = false;
+            try {
+                if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+                    $rows = $this->db->toArray();
+                    if (is_array($rows)) {
+                        foreach ($rows as $row) {
+                            if (isset($row['name']) && $row['name'] === $column) {
+                                $exists = true;
+                                break;
+                            }
+                        }
+                    }
+                } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                    $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+                    $this->db->fetch_array($sql);
+                    $exists = ($this->db->getSize() !== 0);
+                } else {
+                    $this->db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+                    $exists = ($this->db->getSize() !== 0);
+                }
+
+                if (!$exists) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `" . $safeColumn . "` " . $definition;
+                    $this->db->query($sql);
+                }
+            } catch (Exception $e) {
+            }
+        }
+    }
 
     private function ensureStatsColumns()
     {
@@ -3146,6 +3196,23 @@ class mod_settings_mod extends indexMain
         }
         if (Req::post('is_active') !== null) {
             $social_model->is_active = $is_active;
+        }
+        if (Req::post('integration_mode') !== null) {
+            $mode = trim((string) Req::post('integration_mode'));
+            if (in_array($mode, ['link', 'api', 'rss_bridge'], true)) {
+                $social_model->integration_mode = $mode;
+            }
+        }
+        if (Req::post('auto_post') !== null) {
+            $social_model->auto_post = Req::post('auto_post') === 'y' ? 'y' : 'n';
+        }
+        if (Req::post('api_config') !== null) {
+            $apiData = Req::post('api_config');
+            if (is_array($apiData)) {
+                $social_model->api_config = json_encode($apiData, JSON_UNESCAPED_SLASHES);
+            } elseif (is_string($apiData)) {
+                $social_model->api_config = $apiData;
+            }
         }
 
         $result = $social_model->update('id');

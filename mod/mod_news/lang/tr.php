@@ -388,6 +388,7 @@ $lang['mod_news'] = [
         'unpublish' => 'Yayından Kaldır',
         'published_msg' => 'Yayınlandı',
         'unpublished_msg' => 'Yayından Kaldırıldı',
+        'faq' => 'SSS',
         'confirm' => 'Evet',
         'cancel' => 'Vazgeç',
         'edit_alert' => "DÜZENLEME MODU:\nID: %s\nBaşlık: %s",

@@ -98,6 +98,10 @@ function getNewsLang() {
             file: mod.picker?.file || ctx.files || 'Select Files',
             video: mod.picker?.video || ctx.video || 'Select Video'
         },
+        context_menu: {
+            title: mod.context_menu?.title || ctx.title || 'Actions',
+            video: mod.context_menu?.video || ctx.video || 'Video'
+        },
         loading: dt.loadingRecords || mod.grid?.loading || 'Loading...',
         grid: {
             load_more: mod.grid?.load_more || 'Load More'
@@ -181,6 +185,8 @@ class NewsManager {
                 window.editSelected?.();
             } else if (action === 'delete-content') {
                 window.deleteSelected?.();
+            } else if (action === 'clear-selection') {
+                this.clearSelection();
             }
         });
 
@@ -334,6 +340,7 @@ class NewsManager {
             const inHeroSlider = String(item[10] || '0') === '1';
             const inDeck = String(item[11] || '0') === '1';
             const inHomepage = !item[12] || String(item[12]) === '1' || String(item[12]) === 'y';
+            const hasVideo = Boolean(item[13] && String(item[13]).trim() !== '' && String(item[13]).trim() !== '0');
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = titleHtml;
@@ -397,8 +404,9 @@ class NewsManager {
                 <div class="meta-bottom-row">
                      <span class="meta-bottom-item"><i class="bi bi-translate"></i> ${safeLang}</span>
                      <span class="meta-bottom-item meta-date"><i class="bi bi-calendar3"></i> ${safeDate}</span>
-                     <span class="meta-bottom-item meta-category"><i class="bi bi-diagram-2"></i> ${safeCategoryName}</span>
+                     <span class="meta-bottom-item meta-category" title="${safeCategoryName}"><i class="bi bi-diagram-2"></i> <span class="meta-category-text">${safeCategoryName}</span></span>
                      <div class="card-state-indicators" aria-hidden="true">
+                         ${hasVideo ? `<span class="card-state-pill state-video is-active" title="${this.escapeHtml(getNewsLang().context_menu?.video || 'Video')}"><i class="bi bi-camera-video-fill"></i></span>` : ''}
                          <span class="card-state-pill state-status ${isPublished ? 'is-active' : 'is-passive'}" title="${statusTitle}">
                              <i class="bi ${isPublished ? 'bi-eye-fill' : 'bi-eye-slash'}"></i>
                          </span>

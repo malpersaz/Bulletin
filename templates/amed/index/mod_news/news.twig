@@ -3,18 +3,24 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version }}-20261113e">
+	<link rel="stylesheet" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version }}">
+	{% if ctx_get('gallery') is not empty %}
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}-20261113g">
+	{% endif %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/video-embed.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
-	{% include 'partials/_detail_scripts.twig' %}
+	<script src="{{ site.taddress }}base_static/js/lightbox-engine.js?v={{ site.version }}" defer></script>
+	{% if ctx_get('gallery') is not empty %}
+		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/news-gallery.js?v={{ site.version }}-20261113g" defer></script>
+	{% endif %}
 {% endblock %}
 
 {% set d = ctx_get('detail') ?: ctx_get('d') %}
 {% set categories = ctx_get('categories') %}
-{% set gallery = ctx_get('gallery') ?: ctx_get('res') %}
+{% set gallery = ctx_get('gallery') %}
 {% set subpages = ctx_get('subpages') ?: ctx_get('sub_pages') %}
 {% set newses = ctx_get('newses') %}
 {% set video = ctx_get('video') %}
@@ -244,7 +250,7 @@
 	</script>
     {% if video is not empty %}
         {% for v in video %}
-        {% set v_thumb = v.poster_url|default(v.image is defined and v.image is not empty ? (site.iaddress ~ 'mod_video_embed/thumb/' ~ v.image) : (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg')) %}
+        {% set v_thumb = v.hero_poster_url|default(v.poster_url|default(v.image is defined and v.image is not empty ? (site.iaddress ~ 'mod_video_embed/' ~ v.image) : (site.address ~ 'tools/videoResim/mod_news/' ~ d.id ~ '/' ~ v.id ~ '/show.jpg'))) %}
         <script type="application/ld+json">
             {
               "@context": "https://schema.org",
@@ -334,6 +340,59 @@
 							</span>
 						</div>
 						<h1 class="detail-title news-detail-title">{{ d.name }}</h1>
+					</div>
+
+					<div>
+						{% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
+							<div class="detail-lead news-detail-lead">
+								<p class="mb-0">
+									{{ d.summary }}
+								</p>
+							</div>
+						{% endif %}
+
+						{% set has_main_image = d.image is defined and d.image is not empty and d.image != '#' %}
+						{% set hero_video = null %}
+						{% set remaining_videos = video|default([]) %}
+						{% if video is not empty %}
+							{% set first_vid = video|first %}
+							{% set first_vid_is_embed = first_vid.embed is defined and first_vid.embed is not empty %}
+							{% set first_vid_is_x = (first_vid.is_x is defined and first_vid.is_x) or (first_vid.provider|default('') == 'x') %}
+							{% set first_vid_is_non_16x9 = (first_vid.is_vertical is defined and first_vid.is_vertical) or (first_vid.aspect_ratio|default('16:9') != '16:9') %}
+							{% if not first_vid_is_embed or (not first_vid_is_x and not first_vid_is_non_16x9) %}
+								{% set hero_video = first_vid %}
+								{% set remaining_videos = video|slice(1) %}
+							{% endif %}
+						{% endif %}
+
+						{% if hero_video is not null %}
+							<div id="mod_video" class="detail-hero detail-hero--video">
+								{% if hero_video.embed is defined and hero_video.embed is not empty %}
+									{% include 'partials/_video_embed_player.twig' with {'video': hero_video, 'is_hero': true} %}
+								{% else %}
+									<figure class="video-embed-figure video-embed-figure--hero">
+										<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ hero_video.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ hero_video.name }}">
+											<div class="video-poster ratio ratio-16x9 overflow-hidden position-relative">
+												<img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ hero_video.id }}/show.jpg" alt="{{ hero_video.name }}" width="1280" height="720" fetchpriority="high" class="w-100 h-100 object-fit-cover">
+												<i class="bi bi-play-circle-fill play-icon"></i>
+											</div>
+										</a>
+										{% if hero_video.name is defined and hero_video.name is not empty %}
+											<figcaption class="video-embed-caption video-embed-caption--hero">{{ hero_video.name }}</figcaption>
+										{% endif %}
+									</figure>
+								{% endif %}
+							</div>
+						{% elseif has_main_image %}
+							<figure class="detail-hero">
+								<a href="{{ site.iaddress }}mod_news/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="news-main-image" aria-label="{{ (d.image_alt|default(d.name))|escape('html_attr') }}">
+									<img src="{{ site.iaddress }}mod_news/{{ d.image }}" width="1280" height="720" fetchpriority="high" class="detail-hero-image" alt="{{ d.image_alt|default(d.name) }}" title="{{ d.name }}">
+								</a>
+								{% if d.image_credit is defined and d.image_credit is not empty %}
+									<figcaption class="news-hero-caption">{{ d.image_credit }}</figcaption>
+								{% endif %}
+							</figure>
+						{% endif %}
 
 						<div class="detail-meta-bar news-byline-bar">
 							<div class="news-byline-author">
@@ -346,8 +405,8 @@
 									<img src="{{ site.iaddress }}mod_user/thumb/{{ d.user_image }}"
 									     alt="{{ author_full_name }}"
 									     class="news-byline-avatar"
-									     width="56"
-									     height="56">
+									     width="44"
+									     height="44">
 								{% else %}
 									<div class="news-byline-avatar news-byline-avatar-initials" aria-hidden="true">
 										{{ author_initials }}
@@ -368,73 +427,192 @@
 										{% else %}
 											<span class="news-byline-name">{{ author_full_name }}</span>
 										{% endif %}
-										{% if has_news_category %}
-											<a href="{{ site.saddress }}newses/{{ d.category_seo }}" class="news-byline-role text-decoration-none">{{ d.categoryname }}</a>
-										{% endif %}
 									</div>
 									<div class="news-byline-dates">
 										<span class="news-byline-date-item">
-											<i class="bi bi-calendar3"></i>
-											<span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('c') }}">{{ d.formatted_datetime is defined and d.formatted_datetime is not empty ? d.formatted_datetime : d.created_at|date('d.m.Y') }}</time></span>
+											<span class="news-byline-date-label">{{ lang.index.publish_date }}:</span>
+											<time datetime="{{ d.created_at|date('c') }}">{{ d.formatted_datetime is defined and d.formatted_datetime is not empty ? d.formatted_datetime : d.created_at|date('d.m.Y') }}</time>
 										</span>
 										{% if d.updated_at is not empty and (d.updated_at|date('U')) > (d.created_at|date('U')) %}
-											<span class="news-byline-date-item">
-												<i class="bi bi-pencil-square"></i>
-												<span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('c') }}">{{ d.formatted_updated_datetime is defined and d.formatted_updated_datetime is not empty ? d.formatted_updated_datetime : d.updated_at|date('d.m.Y') }}</time></span>
+											{% set update_age_seconds = ('now'|date('U')) - (d.updated_at|date('U')) %}
+											{% set is_recent_update = d.is_updated_last_24h is defined ? d.is_updated_last_24h : (update_age_seconds >= -300 and update_age_seconds < 86400) %}
+											<span class="news-byline-date-item{{ is_recent_update ? ' news-byline-date-item--breaking' : '' }}">
+												{% if is_recent_update %}<span class="news-byline-live-dot" aria-hidden="true"></span>{% endif %}
+												<span class="news-byline-date-label">{{ lang.index.updated_date }}:</span>
+												<time datetime="{{ d.updated_at|date('c') }}">{{ d.formatted_updated_datetime is defined and d.formatted_updated_datetime is not empty ? d.formatted_updated_datetime : d.updated_at|date('d.m.Y') }}</time>
 											</span>
 										{% endif %}
 									</div>
 								</div>
 							</div>
 
-							<div class="detail-tools news-byline-tools">
-								<a href="{{ site.saddress }}tools/saveText/mod_news/{{ d.id }}" rel="nofollow noindex" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery.save_txt }}" aria-label="{{ lang.index.mod_gallery.save_txt }}">
-									<i class="bi bi-file-text"></i>
+							<div class="detail-tools news-byline-tools" role="toolbar" aria-label="{{ lang.index.share }}">
+								<a href="{{ site.saddress }}tools/saveText/mod_news/{{ d.id }}" rel="nofollow noindex" class="news-tool-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.save_txt }}" aria-label="{{ lang.index.mod_gallery.save_txt }}">
+									<i class="bi bi-file-text" aria-hidden="true"></i>
 								</a>
 								{% if files %}
 									{% for file_item in files %}
 										{% set file_display_name = file_item.filename is defined and file_item.filename is not empty ? file_item.filename : file_item.original_name %}
-										<a href="{{ site.saddress }}tools/saveFile/mod_news/{{ d.id }}/{{ file_item.id }}" rel="nofollow noindex" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}" aria-label="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}">
-											<i class="bi bi-download"></i>
+										<a href="{{ site.saddress }}tools/saveFile/mod_news/{{ d.id }}/{{ file_item.id }}" rel="nofollow noindex" class="news-tool-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}" aria-label="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}">
+											<i class="bi bi-download" aria-hidden="true"></i>
 										</a>
 									{% endfor %}
 								{% endif %}
-								<button type="button" data-action="print" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery.print }}" aria-label="{{ lang.index.mod_gallery.print }}">
-									<i class="bi bi-printer"></i>
+								<button type="button" data-action="print" class="news-tool-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.print }}" aria-label="{{ lang.index.mod_gallery.print }}">
+									<i class="bi bi-printer" aria-hidden="true"></i>
 								</button>
+								<span class="news-byline-tools-divider" aria-hidden="true"></span>
+								{% include 'partials/share.twig' with {
+									'share_wrap_class': 'detail-share-inline',
+									'share_container_class': 'justify-content-end',
+									'share_url_path': 'news',
+									'show_share_text': false
+								} %}
 							</div>
 						</div>
-					</div>
 
-					<div>
-						{% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
-							<div class="detail-lead news-detail-lead">
-								<p class="mb-0">
-									{{ d.summary }}
-								</p>
-							</div>
-						{% endif %}
+						{% set inline_primary_media_html %}
+							{% if hero_video is not null and has_main_image %}
+								<figure class="news-inline-image">
+									<a href="{{ site.iaddress }}mod_news/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="news-main-image" aria-label="{{ (d.image_alt|default(d.name))|escape('html_attr') }}">
+										<img src="{{ site.iaddress }}mod_news/{{ d.image }}" width="1280" height="720" loading="lazy" decoding="async" class="news-inline-image-el" alt="{{ d.image_alt|default(d.name) }}" title="{{ d.name }}">
+									</a>
+									{% if d.image_credit is defined and d.image_credit is not empty %}
+										<figcaption class="news-hero-caption">{{ d.image_credit }}</figcaption>
+									{% endif %}
+								</figure>
+							{% elseif hero_video is null and remaining_videos is not empty %}
+								<div id="mod_video" class="news-inline-video">
+									{% for v in remaining_videos %}
+										{% if v.embed is defined and v.embed is not empty %}
+											{% include 'partials/_video_embed_player.twig' with {'video': v} %}
+										{% else %}
+											<figure class="video-embed-figure">
+												<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
+													<div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
+														<img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
+														<i class="bi bi-play-circle-fill play-icon"></i>
+													</div>
+												</a>
+												{% if v.name is defined and v.name is not empty %}
+													<figcaption class="video-embed-caption">{{ v.name }}</figcaption>
+												{% endif %}
+											</figure>
+										{% endif %}
+									{% endfor %}
+								</div>
+							{% endif %}
+						{% endset %}
 
-						{% if d.image is defined and d.image is not empty and d.image != '#' %}
-							<figure class="detail-hero">
-								<a href="{{ site.iaddress }}mod_news/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="news-main-image" aria-label="{{ (d.image_alt|default(d.name))|escape('html_attr') }}">
-									<img src="{{ site.iaddress }}mod_news/{{ d.image }}" width="1280" height="720" fetchpriority="high" class="detail-hero-image" alt="{{ d.image_alt|default(d.name) }}" title="{{ d.name }}">
-								</a>
-								{% if d.image_credit is defined and d.image_credit is not empty %}
-									<figcaption class="news-hero-caption">{{ d.image_credit }}</figcaption>
-								{% endif %}
-							</figure>
-						{% endif %}
+						{% set inline_secondary_videos_html %}
+							{% if hero_video is not null and remaining_videos is not empty %}
+								<div class="news-inline-video">
+									{% for v in remaining_videos %}
+										{% if v.embed is defined and v.embed is not empty %}
+											{% include 'partials/_video_embed_player.twig' with {'video': v} %}
+										{% else %}
+											<figure class="video-embed-figure">
+												<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
+													<div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
+														<img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
+														<i class="bi bi-play-circle-fill play-icon"></i>
+													</div>
+												</a>
+												{% if v.name is defined and v.name is not empty %}
+													<figcaption class="video-embed-caption">{{ v.name }}</figcaption>
+												{% endif %}
+											</figure>
+										{% endif %}
+									{% endfor %}
+								</div>
+							{% endif %}
+						{% endset %}
 
-						{% include 'partials/share.twig' with {
-							'share_wrap_class': 'detail-share-quiet mb-4',
-							'share_container_class': 'justify-content-start',
-							'share_url_path': 'news',
-							'show_share_text': false
-						} %}
-
+						{% set has_primary_inline = inline_primary_media_html|trim is not empty %}
+						{% set has_secondary_inline = inline_secondary_videos_html|trim is not empty %}
 						<div class="detail-body news-body">
-							{{ d.content|raw }}
+							{% if (has_primary_inline or has_secondary_inline) and '</p>' in d.content %}
+								{% set body_parts = d.content|split('</p>') %}
+								{% set primary_inserted = not has_primary_inline %}
+								{% set secondary_inserted = not has_secondary_inline %}
+								{% set bq_depth = 0 %}
+								{% for part in body_parts %}
+									{% set open_bq = (part|lower|split('<blockquote')|length) - 1 %}
+									{% set close_bq = (part|lower|split('</blockquote>')|length) - 1 %}
+									{% set bq_depth = bq_depth + open_bq - close_bq %}
+									{{ part|raw }}{% if not loop.last %}</p>{% endif %}
+									{% if not loop.last and bq_depth <= 0 %}
+										{% if loop.index >= 2 and not primary_inserted %}
+											{{ inline_primary_media_html|raw }}
+											{% set primary_inserted = true %}
+										{% elseif loop.index >= 4 and primary_inserted and not secondary_inserted %}
+											{{ inline_secondary_videos_html|raw }}
+											{% set secondary_inserted = true %}
+										{% endif %}
+									{% endif %}
+								{% endfor %}
+								{% if not primary_inserted %}
+									{{ inline_primary_media_html|raw }}
+								{% endif %}
+								{% if not secondary_inserted %}
+									{{ inline_secondary_videos_html|raw }}
+								{% endif %}
+							{% else %}
+								{{ d.content|raw }}
+								{{ inline_primary_media_html|raw }}
+								{{ inline_secondary_videos_html|raw }}
+							{% endif %}
+
+							{% if gallery is not empty %}
+								{% set first_image = gallery|first %}
+								{% set first_img_mod = first_image.mod_name ?: 'mod_news' %}
+								<section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
+									<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_news.gallery_title }}</h2>
+									<div class="news-gallery" aria-label="{{ lang.index.mod_news.gallery_title }}">
+										<div class="gallery-stage">
+											<button type="button" class="gallery-nav gallery-prev" aria-label="{{ lang.index.mod_news.gallery_prev }}">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+											</button>
+
+											<figure class="gallery-figure">
+												<img id="news-gallery-main-img" src="{{ site.iaddress }}mod_gallery/{{ first_img_mod }}/original/{{ first_image.url }}" alt="{{ first_image.name|default(d.name)|escape('html_attr') }}" width="1200" height="675" class="gallery-main-img">
+												<button type="button" class="gallery-zoom-btn" aria-label="{{ lang.index.enlarge_image }}">
+													<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+												</button>
+											</figure>
+
+											<button type="button" class="gallery-nav gallery-next" aria-label="{{ lang.index.mod_news.gallery_next }}">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+											</button>
+
+											<div class="gallery-counter" id="news-gallery-counter">1 / {{ gallery|length }}</div>
+										</div>
+
+										<div class="gallery-caption-bar" id="news-gallery-caption-bar" {% if first_image.name is empty %}hidden{% endif %}>
+											<p id="news-gallery-caption" class="gallery-caption-text">{{ first_image.name }}</p>
+										</div>
+
+										<div class="gallery-thumbs" role="tablist" aria-label="{{ lang.index.mod_news.gallery_title }}">
+											{% for image in gallery %}
+												{% set img_mod = image.mod_name ?: 'mod_news' %}
+												<button type="button" class="thumb-item {% if loop.first %}is-active{% endif %}" data-index="{{ loop.index0 }}" data-src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image.url }}" data-caption="{{ image.name|escape('html_attr') }}" role="tab" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+													<img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image.url }}" alt="{{ image.name|default(d.name)|escape('html_attr') }}" loading="lazy">
+												</button>
+											{% endfor %}
+										</div>
+									</div>
+								</section>
+
+								<div id="news-gallery-lightbox" class="news-gallery-lightbox" hidden aria-modal="true" role="dialog" aria-label="{{ lang.index.mod_news.gallery_title }}">
+									<button type="button" class="lightbox-close" aria-label="{{ lang.index.mod_news.gallery_close }}">&times;</button>
+									<button type="button" class="lightbox-nav lightbox-prev" aria-label="{{ lang.index.mod_news.gallery_prev }}">&#10094;</button>
+									<div class="lightbox-content">
+										<img id="news-lightbox-img" src="" alt="">
+										<p id="news-lightbox-caption" class="lightbox-caption"></p>
+									</div>
+									<button type="button" class="lightbox-nav lightbox-next" aria-label="{{ lang.index.mod_news.gallery_next }}">&#10095;</button>
+								</div>
+							{% endif %}
 						</div>
 
 						{% include 'partials/share_toolbar.twig' with {
@@ -443,52 +621,6 @@
 							'item_id': d.id,
 							'has_gallery': gallery is defined and gallery is not empty
 						} %}
-
-						{% if video is not empty %}
-							<section id="mod_video" class="detail-section" aria-labelledby="video-title">
-								<h2 id="video-title" class="detail-section-heading h4"><i class="bi bi-play-btn"></i>{{ lang.index.mod_video_embed.title }}</h2>
-								<div class="row">
-									{% for v in video %}
-										<div class="col-12 mb-4">
-											{% if v.embed is defined and v.embed is not empty %}
-												{% include 'partials/_video_embed_player.twig' with {'video': v} %}
-											{% else %}
-												<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
-													<div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
-														<img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
-														<i class="bi bi-play-circle-fill play-icon"></i>
-													</div>
-												</a>
-												<p class="fw-bold mt-3 text-center">{{ v.name }}</p>
-											{% endif %}
-										</div>
-									{% endfor %}
-								</div>
-							</section>
-						{% endif %}
-
-						{% if gallery is not empty %}
-							<section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
-								<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_pictures.title }}</h2>
-								<div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
-									{% for image in gallery %}
-										{% set img_mod = image.mod_name ?: 'mod_news' %}
-										<div class="col-6 col-md-4 mb-3">
-											<div class="detail-gallery-card">
-												<a href="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image.url }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ image.name|escape('html_attr') }}" aria-label="{{ lang.index.enlarge_image }}: {{ image.name|escape('html_attr') }}">
-													<img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image.url }}" class="card-img-top" alt="{{ image.name|escape('html_attr') }}" loading="lazy">
-												</a>
-												{% if image.name %}
-													<div class="card-body p-2 text-center">
-														<p class="card-text small text-muted text-truncate mb-0">{{ image.name }}</p>
-													</div>
-												{% endif %}
-											</div>
-										</div>
-									{% endfor %}
-								</div>
-							</section>
-						{% endif %}
 
 						{% if files is not empty %}
 							<section class="detail-section" id="news-attachments" aria-labelledby="files-title">

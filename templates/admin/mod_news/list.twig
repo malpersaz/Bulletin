@@ -10,7 +10,7 @@
 {% block headline %}{{ lang.mod_news.list }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v={{ site.version }}.6">
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v={{ site.version }}.7">
 {% endblock %}
 
 {% block content %}
@@ -189,7 +189,7 @@
     {% endif %}
 
     {% if session.permissions.mod_news.faq is defined or session.permissions.mod_news.edit is defined %}
-        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_faq.module_title }}" aria-label="{{ lang.mod_faq.module_title }}">
+        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_news.context_menu.faq }}" aria-label="{{ lang.mod_news.context_menu.faq }}">
             <i class="bi bi-patch-question-fill"></i>
         </button>
     {% endif %}
@@ -205,6 +205,10 @@
             <i class="bi bi-trash3-fill"></i>
         </button>
     {% endif %}
+
+    <button type="button" id="toolbarClose" class="toolbar-item toolbar-close-btn" data-action="clear-selection" title="{{ lang.mod_news.button.cancel }}" aria-label="{{ lang.mod_news.button.cancel }}">
+        <i class="bi bi-x-lg"></i>
+    </button>
 </div>
 
 {% if session.permissions.mod_news.add is defined %}
@@ -216,5 +220,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/templates/admin/assets/js/mod_news.js?v={{ site.version }}.6"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v={{ site.version }}.7"></script>
 {% endblock %}

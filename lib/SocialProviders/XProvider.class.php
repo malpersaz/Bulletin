@@ -231,6 +231,20 @@ class XProvider implements SocialProviderInterface
             ];
         }
 
+        // Handle Payment Required / Credit Depleted (HTTP 402)
+        if ($httpCode === 402) {
+            return [
+                'success' => false,
+                'status' => 'failed',
+                'post_id' => null,
+                'post_url' => null,
+                'container_id' => null,
+                'error_code' => 'CREDITS_DEPLETED_USE_RSS_BRIDGE',
+                'error_message' => 'X API credits depleted (HTTP 402). Switch to RSS Bridge mode (Buffer/IFTTT/Make) to publish at zero cost.',
+                'is_transient' => false,
+            ];
+        }
+
         // Handle Rate Limits (HTTP 429)
         if ($httpCode === 429) {
             $retryAfter = 900;

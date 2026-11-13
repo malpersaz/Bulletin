@@ -227,6 +227,7 @@ class mod_news_mod extends BaseModuleController
 
         if (($model->status ?? 'n') === 'y') {
             NewsSocialShareService::enqueueForNews((int) $model->id, (array) $socialChannels, $customCaption);
+            WebSubService::pingForArticle((string) ($model->lang ?? ''));
         }
 
         return $model;
@@ -249,8 +250,10 @@ class mod_news_mod extends BaseModuleController
 
         if (($model->status ?? 'n') === 'y') {
             NewsSocialShareService::enqueueForNews((int) $id, (array) $socialChannels, $customCaption);
+            WebSubService::pingForArticle((string) ($model->lang ?? ''));
         } else {
             NewsSocialShareService::cancelJobsForNews((int) $id);
+            WebSubService::pingForArticle((string) ($model->lang ?? ''));
         }
 
         return $model;
@@ -260,6 +263,7 @@ class mod_news_mod extends BaseModuleController
     {
         require_once lib_dir . 'NewsSocialShareService.class.php';
         NewsSocialShareService::cancelJobsForNews((int) $id);
+        WebSubService::pingForArticle((string) ($this->site['lang'] ?? ''));
         return true;
     }
 
@@ -306,7 +310,7 @@ class mod_news_mod extends BaseModuleController
         $i->order($order, $sort);
 
         $wheres = [];
-        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+        if (Req::is_Post('search') && is_array(Req::Post_Safe('search')) && count(Req::Post_Safe('search')) > 0) {
             foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
@@ -314,7 +318,7 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+        if (Req::is_Post('search_radio') && is_array(Req::Post_Safe('search_radio')) && count(Req::Post_Safe('search_radio')) > 0) {
             foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
@@ -322,7 +326,7 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+        if (Req::is_Post('search_created_at') && is_array(Req::Post_Safe('search_created_at')) && count(Req::Post_Safe('search_created_at')) > 0) {
             foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
@@ -790,8 +794,10 @@ class mod_news_mod extends BaseModuleController
                 require_once lib_dir . 'NewsSocialShareService.class.php';
                 if ($newVal === 'y') {
                     NewsSocialShareService::enqueueForNews($id);
+                    WebSubService::pingForArticle((string) ($record['lang'] ?? ''));
                 } else {
                     NewsSocialShareService::cancelJobsForNews($id);
+                    WebSubService::pingForArticle((string) ($record['lang'] ?? ''));
                 }
                 $response['new_status'] = $newVal;
                 $response['is_published'] = ($newVal === 'y');
@@ -861,6 +867,7 @@ class mod_news_mod extends BaseModuleController
             } elseif ($query > 0) {
                 NewsSocialShareService::enqueueForNews((int) $query);
             }
+            WebSubService::pingForArticle((string) ($this->site['lang'] ?? ''));
             $this->echoSuccessResponse();
             return;
         }
@@ -879,6 +886,7 @@ class mod_news_mod extends BaseModuleController
             } elseif ($query > 0) {
                 NewsSocialShareService::cancelJobsForNews((int) $query);
             }
+            WebSubService::pingForArticle((string) ($this->site['lang'] ?? ''));
             $this->echoSuccessResponse();
             return;
         }

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haber Galerisi Önerisi - Mem Ararat Konseri</title>
+    <link rel="stylesheet" href="gallery-proposal.css">
+</head>
+<body>
+
+<main class="article-container">
+    <header class="article-header">
+        <span class="article-category">KÜLTÜR &amp; SANAT</span>
+        <h1 class="article-title">Mem Ararat İstanbul'da sahne aldı: "Dostlarla bir ateş yaktık"</h1>
+        <p class="article-meta">13 Kasım 2026 • Fotoğraflar: Haber Merkezi</p>
+    </header>
+
+    <section class="news-gallery" aria-label="Haber Fotoğraf Galerisi">
+        <div class="gallery-stage">
+            <button type="button" class="gallery-nav gallery-prev" aria-label="Önceki fotoğraf">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+
+            <figure class="gallery-figure">
+                <img id="gallery-main-img" src="https://picsum.photos/id/1015/1200/750" alt="Mem Ararat İstanbul konserinden genel görünüm" class="gallery-main-img">
+                <button type="button" class="gallery-zoom-btn" aria-label="Tam ekran görüntüle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                </button>
+            </figure>
+
+            <button type="button" class="gallery-nav gallery-next" aria-label="Sonraki fotoğraf">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+
+            <div class="gallery-counter" id="gallery-counter">1 / 5</div>
+        </div>
+
+        <div class="gallery-caption-bar">
+            <p id="gallery-caption" class="gallery-caption-text">Mem Ararat İstanbul konserinden genel görünüm. Binlerce dinleyici şarkılara hep bir ağızdan eşlik etti.</p>
+        </div>
+
+        <div class="gallery-thumbs" role="tablist" aria-label="Galeri küçük resimleri">
+            <button type="button" class="thumb-item is-active" data-index="0" data-src="https://picsum.photos/id/1015/1200/750" data-caption="Mem Ararat İstanbul konserinden genel görünüm. Binlerce dinleyici şarkılara hep bir ağızdan eşlik etti." role="tab" aria-selected="true">
+                <img src="https://picsum.photos/id/1015/200/130" alt="Konser genel görünüm">
+            </button>
+            <button type="button" class="thumb-item" data-index="1" data-src="https://picsum.photos/id/1016/1200/750" data-caption="Sahne ışıklandırması ve akustik performans dinleyicilerden büyük alkış aldı." role="tab" aria-selected="false">
+                <img src="https://picsum.photos/id/1016/200/130" alt="Sahne ışıklandırması">
+            </button>
+            <button type="button" class="thumb-item" data-index="2" data-src="https://picsum.photos/id/1018/1200/750" data-caption="Sanatçı konser arasında dinleyicilere teşekkür konuşması yaptı." role="tab" aria-selected="false">
+                <img src="https://picsum.photos/id/1018/200/130" alt="Teşekkür konuşması">
+            </button>
+            <button type="button" class="thumb-item" data-index="3" data-src="https://picsum.photos/id/1019/1200/750" data-caption="Gecenin ilerleyen saatlerinde sevilen türküler seslendirildi." role="tab" aria-selected="false">
+                <img src="https://picsum.photos/id/1019/200/130" alt="Türküler">
+            </button>
+            <button type="button" class="thumb-item" data-index="4" data-src="https://picsum.photos/id/1025/1200/750" data-caption="Konser finalinde dinleyiciler ayakta alkışladı." role="tab" aria-selected="false">
+                <img src="https://picsum.photos/id/1025/200/130" alt="Konser finali">
+            </button>
+        </div>
+    </section>
+
+    <div class="article-body">
+        <p>İstanbul'da düzenlenen konserde sanatçı Mem Ararat, sevilen eserlerini binlerce hayranıyla birlikte seslendirdi. Gece boyunca süren yoğun ilgi ve samimi atmosfer dikkat çekti.</p>
+    </div>
+</main>
+
+<div id="gallery-lightbox" class="lightbox" hidden aria-modal="true" role="dialog" aria-label="Tam ekran fotoğraf görüntüleyici">
+    <button type="button" class="lightbox-close" aria-label="Kapat">&times;</button>
+    <button type="button" class="lightbox-nav lightbox-prev" aria-label="Önceki fotoğraf">&#10094;</button>
+    <div class="lightbox-content">
+        <img id="lightbox-img" src="" alt="">
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+    </div>
+    <button type="button" class="lightbox-nav lightbox-next" aria-label="Sonraki fotoğraf">&#10095;</button>
+</div>
+
+<script src="gallery-proposal.js"></script>
+</body>
+</html>

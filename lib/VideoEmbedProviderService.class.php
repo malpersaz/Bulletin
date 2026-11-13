@@ -75,11 +75,17 @@ class VideoEmbedProviderService
         // 2. YouTube patterns
         $youtubeId = self::extractYouTubeId($raw);
         if ($youtubeId !== null) {
+            $startSeconds = self::extractYouTubeStartSeconds($raw);
+            $canonical = 'https://www.youtube.com/watch?v=' . $youtubeId;
+            if ($startSeconds > 0) {
+                $canonical .= '&t=' . $startSeconds . 's';
+            }
             return [
                 'provider' => 'youtube',
                 'id' => $youtubeId,
-                'canonical_url' => 'https://www.youtube.com/watch?v=' . $youtubeId,
+                'canonical_url' => $canonical,
                 'handle' => null,
+                'start' => $startSeconds,
             ];
         }
 
@@ -131,6 +137,33 @@ class VideoEmbedProviderService
         }
 
         return null;
+    }
+
+    /**
+     * Extracts YouTube start timestamp in seconds from ?t= or ?start= parameters.
+     * Supports numeric seconds (10, 10s) and HMS format (1h2m3s, 2m30s).
+     */
+    public static function extractYouTubeStartSeconds(?string $input): int
+    {
+        if ($input === null || trim($input) === '') {
+            return 0;
+        }
+
+        $raw = html_entity_decode(trim($input), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if (preg_match('/[?&#](?:t|start)=([0-9hms]+)/i', $raw, $m)) {
+            $val = strtolower(trim($m[1]));
+            if (ctype_digit($val)) {
+                return max(0, (int) $val);
+            }
+            if (preg_match('/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/', $val, $hms)) {
+                $h = isset($hms[1]) && $hms[1] !== '' ? (int) $hms[1] : 0;
+                $min = isset($hms[2]) && $hms[2] !== '' ? (int) $hms[2] : 0;
+                $sec = isset($hms[3]) && $hms[3] !== '' ? (int) $hms[3] : 0;
+                return max(0, ($h * 3600) + ($min * 60) + $sec);
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -452,9 +485,17 @@ class VideoEmbedProviderService
             }
         }
 
-        // 4. Fallback thumbnail candidate URLs
+        // 4. Upgrade oEmbed thumbnail to high resolution when available, or resolve fallback thumbnail
         if ($metadata['thumbnail_url'] === '') {
             foreach (['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'] as $res) {
+                $candidate = 'https://i.ytimg.com/vi/' . $videoId . '/' . $res . '.jpg';
+                if (self::remoteImageExists($candidate)) {
+                    $metadata['thumbnail_url'] = $candidate;
+                    break;
+                }
+            }
+        } elseif ($metadata['source'] === 'youtube_oembed') {
+            foreach (['maxresdefault', 'sddefault'] as $res) {
                 $candidate = 'https://i.ytimg.com/vi/' . $videoId . '/' . $res . '.jpg';
                 if (self::remoteImageExists($candidate)) {
                     $metadata['thumbnail_url'] = $candidate;
@@ -535,8 +576,12 @@ class VideoEmbedProviderService
                 return '<iframe class="video-embed-frame video-embed-frame--x" width="550" height="620" src="' . $src . '" data-provider="x" data-status-id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '" data-aspect-ratio="' . $aspectRatio . '" title="' . $title . '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
 
             case 'youtube':
+                $start = isset($opts['start']) ? max(0, (int) $opts['start']) : 0;
                 $src = 'https://www.youtube-nocookie.com/embed/' . rawurlencode($id) . '?rel=0';
-                return '<iframe class="video-embed-frame video-embed-frame--youtube" width="560" height="315" src="' . $src . '" data-provider="youtube" data-video-id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '" data-aspect-ratio="16:9" title="' . $title . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>';
+                if ($start > 0) {
+                    $src .= '&amp;start=' . $start;
+                }
+                return '<iframe class="video-embed-frame video-embed-frame--youtube" width="560" height="315" src="' . $src . '" data-provider="youtube" data-video-id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '" data-aspect-ratio="16:9" title="' . $title . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>';
 
             case 'vimeo':
                 $src = 'https://player.vimeo.com/video/' . rawurlencode($id);
@@ -552,8 +597,19 @@ class VideoEmbedProviderService
      */
     public static function sanitizeOrRebuildEmbed(string $embedInput, ?string $originalUrl = null, array $opts = []): string
     {
-        $detected = self::detectProvider($embedInput) ?? (self::detectProvider($originalUrl));
+        $detectedEmbed = self::detectProvider($embedInput);
+        $detectedOriginal = self::detectProvider($originalUrl);
+        $detected = $detectedEmbed ?? $detectedOriginal;
         if ($detected !== null) {
+            if ($detected['provider'] === 'youtube' && empty($opts['start'])) {
+                $start = (int) ($detectedEmbed['start'] ?? 0);
+                if ($start <= 0) {
+                    $start = (int) ($detectedOriginal['start'] ?? 0);
+                }
+                if ($start > 0) {
+                    $opts['start'] = $start;
+                }
+            }
             return self::buildEmbedHtml($detected['provider'], $detected['id'], $opts);
         }
 

@@ -388,6 +388,7 @@ $lang['mod_news'] = [
         'unpublish' => 'Neweşîne',
         'published_msg' => 'Hat Weşandin',
         'unpublished_msg' => 'Ji Weşanê Hat Rakirin',
+        'faq' => 'Pirsên Pir tên Pirsîn',
         'confirm' => 'Erê',
         'cancel' => 'Betal',
         'edit_alert' => "MODA SERERASTKIRINÊ:\nID: %s\nSernav: %s",

@@ -2,7 +2,7 @@
  * Amed Framework
  * Social Media Admin JavaScript (MD3 Phone-First Architecture)
  * templates/admin/assets/js/social_media.js
- * Version: 2.0
+ * Version: 2.5
  */
 
 (function () {
@@ -26,7 +26,8 @@
         // Localized Strings
         const strings = {
             addTitle: page.dataset.addTitle || 'Add New Link',
-            editTitle: page.dataset.editTitle || 'Edit Link',
+            editTitle: page.dataset.editTitle || 'Edit',
+            deleteTitle: page.dataset.deleteTitle || 'Delete',
             deleteConfirm: page.dataset.deleteConfirm || 'Are you sure you want to delete this social media link?',
             deleteBtn: page.dataset.deleteBtn || 'Delete',
             cancelBtn: page.dataset.cancelBtn || 'Cancel',
@@ -63,6 +64,14 @@
         const openAddBtn = document.getElementById('openAddSocialBtn');
         const emptyAddBtn = document.getElementById('emptyAddBtn');
         const finalBarAddBtn = document.getElementById('finalBarAddBtn');
+
+        // Move all modal elements to root wrapper so they escape .app-scroll-frame stacking context
+        const rootContainer = document.querySelector('.mobile-wrapper') || document.querySelector('.phone-simulator') || document.body;
+        document.querySelectorAll('.social-modal-backdrop').forEach(modal => {
+            if (modal.parentElement !== rootContainer) {
+                rootContainer.appendChild(modal);
+            }
+        });
 
         let currentFilter = 'all';
         let currentSearch = '';
@@ -274,13 +283,14 @@
             const urlContainer = document.createElement('div');
             urlContainer.className = 'social-url-container';
 
+            const urlWrap = document.createElement('div');
+            urlWrap.className = 'social-url-box-wrap';
+
             if (item.url && item.url.trim() !== '') {
-                const urlLink = document.createElement('a');
-                urlLink.className = 'social-url-box';
-                urlLink.href = sanitizeUrl(item.url);
-                urlLink.target = '_blank';
-                urlLink.rel = 'noopener noreferrer';
-                urlLink.title = item.url;
+                const urlBox = document.createElement('div');
+                urlBox.className = 'social-url-box social-url-editable';
+                urlBox.setAttribute('data-action', 'click-edit');
+                urlBox.setAttribute('title', strings.editTitle);
 
                 const textWrap = document.createElement('div');
                 textWrap.className = 'social-url-text-wrap';
@@ -294,16 +304,23 @@
 
                 textWrap.appendChild(linkIcon);
                 textWrap.appendChild(textSpan);
+                urlBox.appendChild(textWrap);
+                urlWrap.appendChild(urlBox);
 
-                const externalIcon = document.createElement('i');
-                externalIcon.className = 'bi bi-box-arrow-up-right social-url-external';
-
-                urlLink.appendChild(textWrap);
-                urlLink.appendChild(externalIcon);
-                urlContainer.appendChild(urlLink);
+                const extBtn = document.createElement('a');
+                extBtn.href = sanitizeUrl(item.url);
+                extBtn.target = '_blank';
+                extBtn.rel = 'noopener noreferrer';
+                extBtn.className = 'social-url-external-btn';
+                extBtn.setAttribute('title', 'Visit Profile');
+                extBtn.setAttribute('aria-label', 'Visit Profile');
+                extBtn.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>';
+                urlWrap.appendChild(extBtn);
             } else {
                 const emptyBox = document.createElement('div');
-                emptyBox.className = 'social-url-empty';
+                emptyBox.className = 'social-url-empty social-url-editable';
+                emptyBox.setAttribute('data-action', 'click-edit');
+                emptyBox.setAttribute('title', strings.editTitle);
 
                 const warnIcon = document.createElement('i');
                 warnIcon.className = 'bi bi-exclamation-circle';
@@ -313,8 +330,9 @@
 
                 emptyBox.appendChild(warnIcon);
                 emptyBox.appendChild(warnText);
-                urlContainer.appendChild(emptyBox);
+                urlWrap.appendChild(emptyBox);
             }
+            urlContainer.appendChild(urlWrap);
 
             // Bottom Row: Actions
             const bottomRow = document.createElement('div');
@@ -348,21 +366,33 @@
             const actionsRight = document.createElement('div');
             actionsRight.className = 'social-card-actions-right';
 
-            const editBtn = document.createElement('button');
-            editBtn.type = 'button';
-            editBtn.className = 'social-action-btn btn-edit';
-            editBtn.title = strings.editTitle;
-            editBtn.innerHTML = '<i class="bi bi-pencil-square"></i> <span>' + escapeHtml(strings.editTitle) + '</span>';
+            const apiBtn = document.createElement('button');
+            apiBtn.type = 'button';
+            apiBtn.className = 'social-action-btn btn-api';
+            apiBtn.setAttribute('data-action', 'open-api-modal');
+            apiBtn.setAttribute('title', 'API');
+            apiBtn.setAttribute('aria-label', 'API');
+            apiBtn.innerHTML = '<i class="bi bi-code-slash"></i> <span>API</span>';
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.type = 'button';
-            deleteBtn.className = 'social-action-btn icon-only btn-delete';
-            deleteBtn.title = strings.deleteBtn;
-            deleteBtn.setAttribute('aria-label', strings.deleteBtn);
-            deleteBtn.innerHTML = '<i class="bi bi-trash3"></i>';
+            const bufferBtn = document.createElement('button');
+            bufferBtn.type = 'button';
+            bufferBtn.className = 'social-action-btn btn-buffer';
+            bufferBtn.setAttribute('data-action', 'open-buffer-modal');
+            bufferBtn.setAttribute('title', 'Buffer');
+            bufferBtn.setAttribute('aria-label', 'Buffer');
+            bufferBtn.innerHTML = '<i class="bi bi-layers"></i> <span>Buffer</span>';
 
-            actionsRight.appendChild(editBtn);
-            actionsRight.appendChild(deleteBtn);
+            const iftttBtn = document.createElement('button');
+            iftttBtn.type = 'button';
+            iftttBtn.className = 'social-action-btn btn-ifttt';
+            iftttBtn.setAttribute('data-action', 'open-ifttt-modal');
+            iftttBtn.setAttribute('title', 'IFTTT');
+            iftttBtn.setAttribute('aria-label', 'IFTTT');
+            iftttBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> <span>IFTTT</span>';
+
+            actionsRight.appendChild(apiBtn);
+            actionsRight.appendChild(bufferBtn);
+            actionsRight.appendChild(iftttBtn);
 
             bottomRow.appendChild(reorderGroup);
             bottomRow.appendChild(actionsRight);
@@ -372,7 +402,23 @@
             card.appendChild(bottomRow);
 
             // Wire Card Events
-            // 1. Status Toggle
+            const editableUrl = card.querySelector('.social-url-editable');
+            if (editableUrl) {
+                editableUrl.addEventListener('click', () => {
+                    openEditModal({
+                        id: card.dataset.id,
+                        platform: card.dataset.platform,
+                        url: card.dataset.url,
+                        icon_class: card.dataset.icon,
+                        is_active: card.dataset.active
+                    });
+                });
+            }
+
+            apiBtn.addEventListener('click', () => openApiModal(card));
+            bufferBtn.addEventListener('click', () => openBufferModal(card));
+            iftttBtn.addEventListener('click', () => openIftttModal(card));
+
             switchInput.addEventListener('change', async function () {
                 const newActive = this.checked ? 'y' : 'n';
                 const body = new URLSearchParams();
@@ -408,65 +454,6 @@
                 }
             });
 
-            // 2. Edit Button
-            editBtn.addEventListener('click', () => {
-                openEditModal({
-                    id: card.dataset.id,
-                    platform: card.dataset.platform,
-                    url: card.dataset.url,
-                    icon_class: card.dataset.icon,
-                    is_active: card.dataset.active
-                });
-            });
-
-            // 3. Delete Button
-            deleteBtn.addEventListener('click', async () => {
-                let confirmed = false;
-                if (typeof Swal !== 'undefined') {
-                    const res = await Swal.fire({
-                        title: strings.deleteBtn,
-                        text: strings.deleteConfirm,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: strings.deleteBtn,
-                        cancelButtonText: strings.cancelBtn,
-                        confirmButtonColor: '#dc2626'
-                    });
-                    confirmed = res.isConfirmed;
-                } else {
-                    confirmed = window.confirm(strings.deleteConfirm);
-                }
-
-                if (!confirmed) return;
-
-                const body = new URLSearchParams();
-                body.set('id', item.id);
-
-                try {
-                    const res = await fetch(deleteUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-                        body: body.toString()
-                    });
-                    const payload = await res.json();
-                    if (payload && payload.status === 'success') {
-                        card.style.transform = 'scale(0.9)';
-                        card.style.opacity = '0';
-                        setTimeout(() => {
-                            card.remove();
-                            updateStatsAndVisibility();
-                            saveReorder();
-                        }, 200);
-                        showToast(payload.message || 'Deleted successfully', 'success');
-                    } else {
-                        showToast(payload.message || 'Delete failed', 'error');
-                    }
-                } catch (err) {
-                    showToast('Connection error', 'error');
-                }
-            });
-
-            // 4. Reorder Up
             upBtn.addEventListener('click', () => {
                 const prev = card.previousElementSibling;
                 if (prev && prev.classList.contains('social-card')) {
@@ -476,7 +463,6 @@
                 }
             });
 
-            // 5. Reorder Down
             downBtn.addEventListener('click', () => {
                 const next = card.nextElementSibling;
                 if (next && next.classList.contains('social-card')) {
@@ -565,7 +551,6 @@
             activeInput.checked = (data.is_active === 'y');
             updateIconPreview(data.icon_class || brandIcons[(data.platform || '').toLowerCase()] || '');
 
-            // Highlight matching preset chip if any
             presetChips.forEach(chip => {
                 if (chip.dataset.platform === (data.platform || '').toLowerCase()) {
                     chip.classList.add('active');
@@ -582,147 +567,250 @@
             if (modalBackdrop) {
                 modalBackdrop.classList.remove('open');
             }
+            const otherModals = document.querySelectorAll('.social-modal-backdrop');
+            otherModals.forEach(m => m.classList.remove('open'));
         }
 
+        function openApiModal(card) {
+            const apiModal = document.getElementById('socialApiModal');
+            if (!apiModal) return;
+            const platform = card.dataset.platform || 'Social';
+            const cleanPlatform = platform.toLowerCase();
+            const iconClass = card.dataset.icon || brandIcons[cleanPlatform] || 'bi bi-link-45deg';
+
+            const nameElem = document.getElementById('apiPlatformName');
+            if (nameElem) nameElem.textContent = platform;
+
+            const iconElem = document.getElementById('apiPlatformIcon');
+            if (iconElem) iconElem.className = iconClass;
+
+            const avatarElem = document.getElementById('apiPlatformAvatar');
+            if (avatarElem) avatarElem.setAttribute('data-brand', cleanPlatform);
+
+            apiModal.classList.add('open');
+        }
+
+        function openBufferModal(card) {
+            const bufferModal = document.getElementById('socialBufferModal');
+            if (!bufferModal) return;
+            bufferModal.classList.add('open');
+        }
+
+        function openIftttModal(card) {
+            const iftttModal = document.getElementById('socialIftttModal');
+            if (!iftttModal) return;
+            iftttModal.classList.add('open');
+        }
+
+        // Setup Guide & Recipe Modal Trigger
+        const openSetupGuideBtn = document.getElementById('openSetupGuideBtn');
+        if (openSetupGuideBtn) {
+            openSetupGuideBtn.addEventListener('click', () => {
+                const recipesModal = document.getElementById('socialRecipesModal');
+                if (recipesModal) {
+                    recipesModal.classList.add('open');
+                }
+            });
+        }
+
+        // Copy Feed URL to Clipboard with rich feedback
+        const copyFeedButtons = document.querySelectorAll('.social-bridge-copy-btn');
+        copyFeedButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const targetSelector = this.dataset.copyTarget;
+                const targetElem = document.querySelector(targetSelector);
+                if (targetElem) {
+                    const text = targetElem.textContent.trim();
+                    const originalHtml = this.innerHTML;
+                    const successFeedback = () => {
+                        this.innerHTML = '<i class="bi bi-check2"></i> <span>Kopyalandı!</span>';
+                        this.style.background = '#dcfce7';
+                        this.style.color = '#15803d';
+                        showToast('Feed URL kopyalandı!', 'success');
+                        setTimeout(() => {
+                            this.innerHTML = originalHtml;
+                            this.style.background = '';
+                            this.style.color = '';
+                        }, 2000);
+                    };
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(successFeedback).catch(() => {
+                            showToast(text, 'success');
+                        });
+                    } else {
+                        showToast(text, 'success');
+                    }
+                }
+            });
+        });
+
+        // Close modal when clicking backdrop or close button
+        document.addEventListener('click', e => {
+            if (e.target.matches('[data-action="close-modal"]') || e.target.closest('[data-action="close-modal"]')) {
+                closeModal();
+            }
+            if (e.target.classList.contains('social-modal-backdrop')) {
+                closeModal();
+            }
+        });
+
+        // Icon Preview Updater
         function updateIconPreview(cls) {
             if (!iconPreview) return;
-            const finalClass = cls || 'bi bi-link-45deg';
-            iconPreview.className = finalClass;
+            iconPreview.className = cls || 'bi bi-link-45deg';
         }
 
-        // Modal Form Submit
+        if (iconInput) {
+            iconInput.addEventListener('input', e => {
+                updateIconPreview(e.target.value.trim());
+            });
+        }
+
+        // Preset platform chips in modal
+        presetChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                presetChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+
+                const platform = chip.dataset.platform;
+                const icon = chip.dataset.icon;
+                const prefix = chip.dataset.prefix || 'https://';
+
+                if (platformInput) {
+                    platformInput.value = chip.querySelector('span') ? chip.querySelector('span').textContent.trim() : platform;
+                }
+                if (iconInput) {
+                    iconInput.value = icon || '';
+                    updateIconPreview(icon || '');
+                }
+                if (urlInput) {
+                    if (!urlInput.value || urlInput.value === 'https://' || urlInput.value.includes('instagram.com') || urlInput.value.includes('x.com') || urlInput.value.includes('facebook.com')) {
+                        urlInput.value = prefix;
+                    }
+                    urlInput.focus();
+                }
+            });
+        });
+
+        // Form Submit for Add/Edit
         if (modalForm) {
-            modalForm.addEventListener('submit', async function (e) {
+            modalForm.addEventListener('submit', async e => {
                 e.preventDefault();
-                if (!saveBtn) return;
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> <span>' + escapeHtml(strings.loadingText) + '</span>';
+                }
 
-                const origHtml = saveBtn.innerHTML;
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="width:14px; height:14px; border-width:2px; margin-right:6px;"></span> ' + escapeHtml(strings.loadingText);
-
-                const body = new URLSearchParams();
-                body.set('id', itemIdInput.value);
-                body.set('platform', platformInput.value.trim());
-                body.set('url', urlInput.value.trim());
-                body.set('icon_class', iconInput.value.trim());
-                body.set('is_active', activeInput.checked ? 'y' : 'n');
+                const formData = new FormData(modalForm);
+                if (!formData.get('is_active')) {
+                    formData.set('is_active', 'n');
+                }
 
                 try {
                     const res = await fetch(saveUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-                        body: body.toString()
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData
                     });
                     const payload = await res.json();
                     if (payload && payload.status === 'success') {
                         closeModal();
                         showToast(payload.message || 'Saved successfully', 'success');
-                        await loadItems();
+                        loadItems();
                     } else {
-                        showToast(payload.message || 'Save failed', 'error');
+                        throw new Error(payload.message || 'Error saving item');
                     }
                 } catch (err) {
-                    showToast('Connection error', 'error');
+                    showToast(err.message || 'Failed to save', 'error');
                 } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = origHtml;
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<i class="bi bi-check-lg"></i> <span>' + escapeHtml(strings.saveBtn) + '</span>';
+                    }
                 }
             });
         }
-
-        // Preset Chips Interaction
-        presetChips.forEach(chip => {
-            chip.addEventListener('click', function () {
-                presetChips.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-
-                const plat = this.dataset.platform || '';
-                const icon = this.dataset.icon || '';
-                const prefix = this.dataset.prefix || '';
-
-                platformInput.value = plat.charAt(0).toUpperCase() + plat.slice(1);
-                iconInput.value = icon;
-                if (!urlInput.value || urlInput.value === 'https://') {
-                    urlInput.value = prefix;
-                }
-                updateIconPreview(icon);
-                urlInput.focus();
-            });
-        });
-
-        // Platform & Icon Input typing interaction
-        if (platformInput) {
-            platformInput.addEventListener('input', function () {
-                const val = this.value.trim().toLowerCase();
-                const matchedIcon = brandIcons[val] || iconInput.value || 'bi bi-link-45deg';
-                updateIconPreview(matchedIcon);
-            });
-        }
-
-        if (iconInput) {
-            iconInput.addEventListener('input', function () {
-                updateIconPreview(this.value.trim());
-            });
-        }
-
-        // Close Modal Triggers
-        document.querySelectorAll('[data-action="close-modal"]').forEach(btn => {
-            btn.addEventListener('click', closeModal);
-        });
-
-        if (modalBackdrop) {
-            modalBackdrop.addEventListener('click', function (e) {
-                if (e.target === modalBackdrop) {
-                    closeModal();
-                }
-            });
-        }
-
-        // Escape Key Closes Modal
-        window.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && modalBackdrop && modalBackdrop.classList.contains('open')) {
-                closeModal();
-            }
-        });
 
         // Add Button Triggers
         if (openAddBtn) openAddBtn.addEventListener('click', openAddModal);
         if (emptyAddBtn) emptyAddBtn.addEventListener('click', openAddModal);
         if (finalBarAddBtn) finalBarAddBtn.addEventListener('click', openAddModal);
 
-        // Filter Pills
+        // Filter Pills Trigger
         statPills.forEach(pill => {
-            pill.addEventListener('click', function () {
+            pill.addEventListener('click', () => {
                 statPills.forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                currentFilter = this.dataset.filter || 'all';
+                pill.classList.add('active');
+                currentFilter = pill.dataset.filter || 'all';
                 updateStatsAndVisibility();
             });
         });
 
-        // Search Input
+        // Search Input Trigger
         if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                currentSearch = this.value.trim().toLowerCase();
+            searchInput.addEventListener('input', e => {
+                currentSearch = e.target.value.trim().toLowerCase();
                 if (searchClearBtn) {
-                    if (currentSearch) {
-                        searchClearBtn.classList.remove('is-hidden');
-                    } else {
-                        searchClearBtn.classList.add('is-hidden');
-                    }
+                    searchClearBtn.classList.toggle('is-hidden', !currentSearch);
                 }
                 updateStatsAndVisibility();
             });
         }
 
         if (searchClearBtn) {
-            searchClearBtn.addEventListener('click', function () {
+            searchClearBtn.addEventListener('click', () => {
                 if (searchInput) {
                     searchInput.value = '';
                     currentSearch = '';
                     searchClearBtn.classList.add('is-hidden');
-                    searchInput.focus();
                     updateStatsAndVisibility();
+                    searchInput.focus();
+                }
+            });
+        }
+
+        // Delegated click handler on card container for foolproof modal triggers
+        if (listContainer) {
+            listContainer.addEventListener('click', e => {
+                const apiBtn = e.target.closest('.btn-api, [data-action="open-api-modal"]');
+                if (apiBtn) {
+                    e.preventDefault();
+                    const card = apiBtn.closest('.social-card');
+                    if (card) openApiModal(card);
+                    return;
+                }
+
+                const bufferBtn = e.target.closest('.btn-buffer, [data-action="open-buffer-modal"]');
+                if (bufferBtn) {
+                    e.preventDefault();
+                    const card = bufferBtn.closest('.social-card');
+                    if (card) openBufferModal(card);
+                    return;
+                }
+
+                const iftttBtn = e.target.closest('.btn-ifttt, [data-action="open-ifttt-modal"]');
+                if (iftttBtn) {
+                    e.preventDefault();
+                    const card = iftttBtn.closest('.social-card');
+                    if (card) openIftttModal(card);
+                    return;
+                }
+
+                const editableUrl = e.target.closest('.social-url-editable');
+                if (editableUrl) {
+                    e.preventDefault();
+                    const card = editableUrl.closest('.social-card');
+                    if (card) {
+                        openEditModal({
+                            id: card.dataset.id,
+                            platform: card.dataset.platform,
+                            url: card.dataset.url,
+                            icon_class: card.dataset.icon,
+                            is_active: card.dataset.active
+                        });
+                    }
+                    return;
                 }
             });
         }
@@ -730,15 +818,16 @@
         // Check if cards already exist from server side rendering
         const initialCards = listContainer ? listContainer.querySelectorAll('.social-card') : [];
         if (initialCards.length > 0) {
-            // Cards rendered by server: wire their events directly
             initialCards.forEach((card, index) => {
                 const switchInput = card.querySelector('.social-switch input');
-                const editBtn = card.querySelector('.btn-edit');
-                const deleteBtn = card.querySelector('.btn-delete');
+                const apiBtn = card.querySelector('.btn-api');
+                const bufferBtn = card.querySelector('.btn-buffer');
+                const iftttBtn = card.querySelector('.btn-ifttt');
                 const upBtn = card.querySelector('.reorder-up');
                 const downBtn = card.querySelector('.reorder-down');
                 const id = parseInt(card.dataset.id, 10);
                 const statusTag = card.querySelector('.social-status-tag');
+                const editableUrl = card.querySelector('.social-url-editable');
 
                 if (switchInput) {
                     switchInput.addEventListener('change', async function () {
@@ -781,8 +870,9 @@
                     });
                 }
 
-                if (editBtn) {
-                    editBtn.addEventListener('click', () => {
+                // Click on URL box opens edit modal
+                if (editableUrl) {
+                    editableUrl.addEventListener('click', () => {
                         openEditModal({
                             id: card.dataset.id,
                             platform: card.dataset.platform,
@@ -793,52 +883,16 @@
                     });
                 }
 
-                if (deleteBtn) {
-                    deleteBtn.addEventListener('click', async () => {
-                        let confirmed = false;
-                        if (typeof Swal !== 'undefined') {
-                            const res = await Swal.fire({
-                                title: strings.deleteBtn,
-                                text: strings.deleteConfirm,
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: strings.deleteBtn,
-                                cancelButtonText: strings.cancelBtn,
-                                confirmButtonColor: '#dc2626'
-                            });
-                            confirmed = res.isConfirmed;
-                        } else {
-                            confirmed = window.confirm(strings.deleteConfirm);
-                        }
+                if (apiBtn) {
+                    apiBtn.addEventListener('click', () => openApiModal(card));
+                }
 
-                        if (!confirmed) return;
+                if (bufferBtn) {
+                    bufferBtn.addEventListener('click', () => openBufferModal(card));
+                }
 
-                        const body = new URLSearchParams();
-                        body.set('id', id);
-
-                        try {
-                            const res = await fetch(deleteUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-                                body: body.toString()
-                            });
-                            const payload = await res.json();
-                            if (payload && payload.status === 'success') {
-                                card.style.transform = 'scale(0.9)';
-                                card.style.opacity = '0';
-                                setTimeout(() => {
-                                    card.remove();
-                                    updateStatsAndVisibility();
-                                    saveReorder();
-                                }, 200);
-                                showToast(payload.message || 'Deleted successfully', 'success');
-                            } else {
-                                showToast(payload.message || 'Delete failed', 'error');
-                            }
-                        } catch (err) {
-                            showToast('Connection error', 'error');
-                        }
-                    });
+                if (iftttBtn) {
+                    iftttBtn.addEventListener('click', () => openIftttModal(card));
                 }
 
                 if (upBtn) {
@@ -866,7 +920,6 @@
 
             updateStatsAndVisibility();
         } else {
-            // Fetch via AJAX if not rendered on server
             loadItems();
         }
     }

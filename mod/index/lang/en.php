@@ -131,9 +131,9 @@ $lang['index'] = [
     'site_logo_alt' => 'Site logo',
     'producer_logo_alt' => 'AKM Software logo',
     'map_available_soon' => 'Map Available Soon',
-    'publish_date' => 'Publish Date',
+    'publish_date' => 'Published',
     'category_label' => 'Category',
-    'updated_date' => 'Updated Date',
+    'updated_date' => 'Updated',
     'min_read' => 'min read',
     'minute' => 'min',
     'enlarge_image' => 'Enlarge image',
@@ -291,17 +291,6 @@ $lang['index']['mod_gallery'] = [
     '6' => 'Full Screen View'
 ];
 
-# colorbox plugin
-$lang['index']['colorbox'] = [
-    '1' => 'Showing {current} of {total} images.',
-    '2' => 'Back',
-    '3' => 'Next',
-    '4' => 'Close',
-    '5' => 'Start Slideshow',
-    '6' => 'Stop Slideshow'
-];
-
-
 # menu
 $lang['index']['menu'] = [
     'home' => 'Homepage',
@@ -439,6 +428,10 @@ $lang['index']['mod_news'] = [
     'title_format' => '%s ',
     'all_news' => 'All News',
     'related_news' => 'Related News',
+    'gallery_title' => 'Photo Gallery',
+    'gallery_prev' => 'Previous photo',
+    'gallery_next' => 'Next photo',
+    'gallery_close' => 'Close gallery',
     'keywords' => 'news,information,latest news',
     'no_content_found' => 'No news found in this category!',
     'bio_title' => 'Instagram Bio Link',

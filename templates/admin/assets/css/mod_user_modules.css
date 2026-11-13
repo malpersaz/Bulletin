@@ -82,10 +82,33 @@
     font-size: 18px;
 }
 
+.panel-module-title-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.panel-module-context {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.75;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.panel-module-context[hidden] {
+    display: none !important;
+}
+
 .panel-module-links {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 14px;
+}
+
+.panel-module-links[hidden] {
+    display: none !important;
 }
 
 .panel-module-link {
@@ -97,6 +120,10 @@
     padding: 8px 0;
     display: inline-flex;
     align-items: center;
+}
+
+.panel-module-link[hidden] {
+    display: none !important;
 }
 
 button.panel-module-link {

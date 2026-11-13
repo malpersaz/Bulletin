@@ -1644,45 +1644,73 @@ class mod_user_mod extends indexMain
         }
 
         $cleanModule = str_replace('mod_', '', $module);
-        $searchParts = [
+        $titleSearchParts = [
             $title,
             $module,
             $cleanModule,
             str_replace('_', ' ', $cleanModule),
         ];
-        foreach ($usableLinks as $link) {
-            $searchParts[] = $link['label'];
-        }
         foreach ($extraKeywords as $keyword) {
             if (!empty($keyword)) {
-                $searchParts[] = $keyword;
+                $titleSearchParts[] = $keyword;
             }
         }
+
+        $allSearchParts = $titleSearchParts;
+        foreach ($usableLinks as &$link) {
+            if (!isset($link['search'])) {
+                $link['search'] = $this->_panel_search($link['label']);
+            }
+            $allSearchParts[] = $link['label'];
+            if (!empty($link['search'])) {
+                $allSearchParts[] = $link['search'];
+            }
+        }
+        unset($link);
 
         return [
             'title' => $title,
             'icon' => $icon,
             'links' => $usableLinks,
-            'search' => $this->_panel_search(implode(' ', $searchParts)),
+            'title_search' => $this->_panel_search(implode(' ', $titleSearchParts)),
+            'search' => $this->_panel_search(implode(' ', $allSearchParts)),
         ];
     }
 
-    private function _panel_link($module, $permAction, $label, $url)
+    private function _panel_link($module, $permAction, $label, $url, array $extraKeywords = [])
     {
         if (Role::hasPermission($module, $permAction) !== TRUE) {
             return null;
         }
 
-        return ['label' => $label, 'url' => $url];
+        $search = $label;
+        if (!empty($extraKeywords)) {
+            $search .= ' ' . implode(' ', $extraKeywords);
+        }
+
+        return [
+            'label' => $label,
+            'url' => $url,
+            'search' => $this->_panel_search($search),
+        ];
     }
 
-    private function _panel_action($module, $permAction, $label, $modalAction)
+    private function _panel_action($module, $permAction, $label, $modalAction, array $extraKeywords = [])
     {
         if (Role::hasPermission($module, $permAction) !== TRUE) {
             return null;
         }
 
-        return ['label' => $label, 'action' => $modalAction];
+        $search = $label;
+        if (!empty($extraKeywords)) {
+            $search .= ' ' . implode(' ', $extraKeywords);
+        }
+
+        return [
+            'label' => $label,
+            'action' => $modalAction,
+            'search' => $this->_panel_search($search),
+        ];
     }
 
     private function _panel_search(string $text): string
@@ -1847,19 +1875,21 @@ class mod_user_mod extends indexMain
                         'title' => $pm_lang['mod_user_pm']['inbox_link_label'],
                         'icon' => 'bi bi-envelope-paper',
                         'links' => array_values(array_filter([
-                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['inbox_title'], $base . 'mod_user_pm/inbox'),
-                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['sent_title'], $base . 'mod_user_pm/sent'),
-                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['new_message_action'], $base . 'mod_user_pm/send'),
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['inbox_title'], $base . 'mod_user_pm/inbox', ['gelen', 'kutu', 'inbox']),
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['sent_title'], $base . 'mod_user_pm/sent', ['giden', 'sent']),
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['new_message_action'], $base . 'mod_user_pm/send', ['yeni', 'gonder', 'new', 'send']),
                         ])),
+                        'title_search' => $this->_panel_search($pm_lang['mod_user_pm']['inbox_link_label'] . ' ' . $pm_lang['mod_user_pm']['message_label'] . ' pm message messages mesaj mesajlar peyem inbox sent'),
                         'search' => $this->_panel_search($pm_lang['mod_user_pm']['inbox_link_label'] . ' ' . $pm_lang['mod_user_pm']['inbox_title'] . ' ' . $pm_lang['mod_user_pm']['sent_title'] . ' ' . $pm_lang['mod_user_pm']['new_message_action'] . ' ' . $pm_lang['mod_user_pm']['message_label'] . ' pm message messages mesaj mesajlar peyem inbox sent'),
                     ],
                     [
                         'title' => $management['profile'],
                         'icon' => 'bi bi-person-circle',
                         'links' => [
-                            ['label' => $management['edit_profile_menu'], 'url' => $base . 'mod_user/info'],
-                            ['label' => $management['change_password_menu'], 'url' => $base . 'mod_user/change_password'],
+                            ['label' => $management['edit_profile_menu'], 'url' => $base . 'mod_user/info', 'search' => $this->_panel_search($management['edit_profile_menu'] . ' profil duzenle')],
+                            ['label' => $management['change_password_menu'], 'url' => $base . 'mod_user/change_password', 'search' => $this->_panel_search($management['change_password_menu'] . ' password sifre şifre sirte şîrte')],
                         ],
+                        'title_search' => $this->_panel_search($management['profile'] . ' profile profil account hesap hesab'),
                         'search' => $this->_panel_search($management['profile'] . ' ' . $management['edit_profile_menu'] . ' ' . $management['change_password_menu'] . ' profile profil account hesap hesab password sifre şifre sirte şîrte'),
                     ],
                 ]),
@@ -1869,18 +1899,18 @@ class mod_user_mod extends indexMain
                 'icon' => 'bi bi-gear-fill',
                 'modules' => array_filter([
                     $mod('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'bi bi-sliders', [
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['site_profile_title'], $base . 'mod_settings/edit'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['legal_info_title'], $base . 'mod_settings/legal_info'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['cookie_policy_title'], $base . 'mod_settings/cookie_policy'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['working_hours_title'] ?? 'Working Hours & Closures', $base . 'mod_settings/working_hours'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', $base . 'mod_settings/affiliations'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['social'], $base . 'mod_settings/social_media'),
-                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['google_settings'], $base . 'mod_settings/google_settings'),
-                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_status_menu_title'], 'open-site-status'),
-                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['stats_title'], 'open-stats'),
-                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'open-site-settings-menu'),
-                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['theme_management_title'], 'open-theme-management'),
-                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['logo_icon_management_title'], 'open-logo-icon-management'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['site_profile_title'], $base . 'mod_settings/edit', ['kunye', 'künye', 'site kunyesi', 'site künyesi']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['legal_info_title'], $base . 'mod_settings/legal_info', ['yasal', 'yasal bilgiler', 'kvkk', 'legal', 'yasayi']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['cookie_policy_title'], $base . 'mod_settings/cookie_policy', ['cerez', 'çerez', 'cookie', 'cookies', 'cerez politikasi', 'çerez politikası']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['working_hours_title'] ?? 'Working Hours & Closures', $base . 'mod_settings/working_hours', ['saat', 'calisma saatleri', 'çalışma saatleri', 'tatil', 'tatiller', 'mesai']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', $base . 'mod_settings/affiliations', ['kurum', 'baglanti', 'bağlantılı kurumlar', 'is birlikleri', 'iş birlikleri', 'affiliations', 'partner']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['social'], $base . 'mod_settings/social_media', ['sosyal', 'social', 'medya', 'medyaya civaki', 'x', 'twitter', 'facebook', 'instagram', 'youtube', 'linkedin', 'share', 'hesap', 'hesaplar']),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['google_settings'], $base . 'mod_settings/google_settings', ['google', 'google hizmetleri', 'analytics', 'search console', 'recaptcha', 'tag manager']),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_status_menu_title'], 'open-site-status', ['durum', 'site durumu', 'status', 'bakim', 'bakım']),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['stats_title'], 'open-stats', ['istatistik', 'istatistikler', 'stats', 'analytics']),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'open-site-settings-menu', ['site ayarlari', 'site ayarları']),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['theme_management_title'], 'open-theme-management', ['tema', 'tema yonetimi', 'tema yönetimi', 'theme', 'skin']),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['logo_icon_management_title'], 'open-logo-icon-management', ['logo', 'ikon', 'icon', 'favicon']),
                     ], ['settings', 'ayar', 'ayarlar', 'sawek', 'konfigurasyon', 'config', 'site']),
                     $mod('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', 'bi bi-building-check', [
                         $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'mod_settings/affiliations'),

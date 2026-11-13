@@ -273,6 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'select-picker-add':
                 if (typeof handleSelectPickerAdd === 'function') handleSelectPickerAdd();
                 break;
+            case 'select-picker-manage':
+                if (typeof handleSelectPickerManage === 'function') handleSelectPickerManage();
+                break;
             case 'modal-push': {
                 const url = target.getAttribute('data-url');
                 if (url && window.AFModalEngine && typeof window.AFModalEngine.push === 'function') {

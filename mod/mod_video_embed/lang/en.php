@@ -36,6 +36,7 @@ $lang['mod_video_embed'] = [
         'provider_custom' => 'Link / Embed',
         'tombstone_error' => 'This post is no longer available or is private.',
         'no_video_in_post' => 'No video or media was found in this post.',
+        'image_alt_fallback' => 'Video Image',
     ],
     'ajax' => [
         'saving' => 'Saving...',

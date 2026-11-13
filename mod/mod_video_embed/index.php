@@ -92,8 +92,12 @@ class mod_video_embed_mod extends BaseModuleController
         $this->theme->tpl('mod_video_embed/add');
         $this->theme->set('site', $this->site);
         $this->theme->set('is_ajax', $this->_isAjaxRequest() || (isset($_GET['ajax']) && (string)$_GET['ajax'] === '1'));
-        $targetModule = Req::is_Get('target_module') ? Req::Get_Safe('target_module') : '';
-        $targetId = Req::is_Get('target_id') ? intval(Req::Get_Safe('target_id')) : 0;
+        $targetModule = Req::is_Post('target_module')
+            ? Req::Post_Safe('target_module')
+            : (Req::is_Get('target_module') ? Req::Get_Safe('target_module') : '');
+        $targetId = Req::is_Post('target_id')
+            ? intval(Req::Post_Safe('target_id'))
+            : (Req::is_Get('target_id') ? intval(Req::Get_Safe('target_id')) : 0);
         $this->theme->set('target_module', $targetModule);
         $this->theme->set('target_id', $targetId);
         $this->db->fetch_array("SELECT * FROM `lang` WHERE status='y' ORDER BY is_default DESC, seo ASC");
@@ -245,7 +249,12 @@ class mod_video_embed_mod extends BaseModuleController
                 'title' => $safeTitle,
                 'aspect_ratio' => $metadata['aspect_ratio'] ?? '16:9',
                 'lang' => $this->site['lang'] ?? 'tr',
+                'start' => (int) ($detected['start'] ?? 0),
             ]);
+
+            $originalUrl = ($provider === 'youtube' && !empty($detected['start']))
+                ? $detected['canonical_url']
+                : ($metadata['canonical_url'] ?? $detected['canonical_url']);
 
             $this->_jsonResponse([
                 'status' => 'success',
@@ -264,7 +273,7 @@ class mod_video_embed_mod extends BaseModuleController
                     'content' => $content,
                     'duration' => $metadata['duration'] ?? ($provider === 'x' ? '00:00' : ''),
                     'keywords' => $this->_makeKeywordString($safeTitle),
-                    'original' => $metadata['canonical_url'] ?? $detected['canonical_url'],
+                    'original' => $originalUrl,
                     'embed' => $embedCode,
                     'image' => $imageFile,
                     'image_url' => $imageUrl,
@@ -464,8 +473,43 @@ class mod_video_embed_mod extends BaseModuleController
                 }
             }
 
-            if ($this->mod_video_embed_model->save(TRUE)) {
+            $existingVideoId = 0;
+            $checkLang = (string)$this->mod_video_embed_model->lang;
+            $checkOriginal = trim((string)$this->mod_video_embed_model->original);
+            $checkEmbed = trim((string)$this->mod_video_embed_model->embed);
+
+            if ($checkOriginal !== '' || $checkEmbed !== '') {
+                $dupModel = Load::model('mod_video_embed');
+                $dupModel->select('id')->where_lang($checkLang);
+                if ($checkOriginal !== '') {
+                    $dupModel->where_original($checkOriginal);
+                } else {
+                    $dupModel->where_embed($checkEmbed);
+                }
+                $dupModel->order('id', 'ASC')->gRo();
+                if ($dupModel->getSize() > 0) {
+                    $dupModel->sync();
+                    $existingVideoId = (int)$dupModel->id;
+                }
+            }
+
+            $savedOrReused = false;
+            $newId = 0;
+            if ($existingVideoId > 0) {
+                $newId = $existingVideoId;
+                $savedOrReused = true;
+                if (isset($image->url)) {
+                    $image->_rollback();
+                }
+                if ($autofillImage !== '') {
+                    $this->_deleteVideoImageArtifacts($autofillImage);
+                }
+            } elseif ($this->mod_video_embed_model->save(TRUE)) {
                 $newId = (int)$this->mod_video_embed_model->insert_id();
+                $savedOrReused = true;
+            }
+
+            if ($savedOrReused) {
 
                 // Automatically attach newly created embedded video to target content if requested.
                 $targetModule = Req::is_Post('target_module') ? Req::Post_Safe('target_module') : (Req::is_Get('target_module') ? Req::Get_Safe('target_module') : null);
@@ -487,9 +531,10 @@ class mod_video_embed_mod extends BaseModuleController
                             if (!in_array($valToAttach, $existed, true)) {
                                 $existed[] = $valToAttach;
                             }
-                            $targetModel->video = serialize(array_values(array_unique($existed)));
-                            $targetModel->id = $targetId;
-                            if ($targetModel->update('id')) {
+                            $updateTarget = Load::model($targetModule);
+                            $updateTarget->id = $targetId;
+                            $updateTarget->video = serialize(array_values(array_unique($existed)));
+                            if ($updateTarget->update('id')) {
                                 $attached = true;
                             }
                         }
@@ -532,7 +577,7 @@ class mod_video_embed_mod extends BaseModuleController
     }
 
     // Handle edit form submission.
-    protected function _edit($id = NULL)
+    protected function _edit($id = null, $existingRecord = null)
     {
         $isAjax = $this->_isAjaxRequest();
         $autofillImage = Req::Post_Safe('autofill_image');
@@ -760,7 +805,7 @@ class mod_video_embed_mod extends BaseModuleController
 
         $wheres = [];
 
-        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+        if (Req::is_Post('search') && is_array(Req::Post_Safe('search')) && count(Req::Post_Safe('search')) > 0) {
             foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
@@ -768,14 +813,14 @@ class mod_video_embed_mod extends BaseModuleController
             }
         }
 
-        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+        if (Req::is_Post('search_radio') && is_array(Req::Post_Safe('search_radio')) && count(Req::Post_Safe('search_radio')) > 0) {
             foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
             }
         }
-        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+        if (Req::is_Post('search_created_at') && is_array(Req::Post_Safe('search_created_at')) && count(Req::Post_Safe('search_created_at')) > 0) {
             foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
@@ -876,6 +921,9 @@ class mod_video_embed_mod extends BaseModuleController
                     $last .= '<button data-action="file" data-id="' . $content['id'] . '" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_video_embed']['button']['file'] . ' </button>';
                 }
+                $statusBadge = isset($status_list[$content['status']])
+                    ? '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>'
+                    : '<span class="label label-default">' . htmlspecialchars((string) ($content['status'] ?? ''), ENT_QUOTES, 'UTF-8') . '</span>';
                 $data[] = [
                     '<input type="checkbox" name="id[]" value="'. $content['id'] .'">',
                     $content['id'],
@@ -884,7 +932,7 @@ class mod_video_embed_mod extends BaseModuleController
                     $content['duration'],
                     $content['lang'],
                     $content['created_at'],
-                    '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>',
+                    $statusBadge,
                     $last,
                     $content['slider']
                 ];
@@ -1185,6 +1233,14 @@ class mod_video_embed_mod extends BaseModuleController
 
         if ($metadata['thumbnail_url'] === '') {
             foreach ($this->_youtubeThumbnailCandidates($videoId) as $candidateUrl) {
+                if ($this->_remoteImageExists($candidateUrl)) {
+                    $metadata['thumbnail_url'] = $candidateUrl;
+                    break;
+                }
+            }
+        } elseif (($metadata['source'] ?? '') === 'youtube_oembed') {
+            foreach (['maxresdefault', 'sddefault'] as $res) {
+                $candidateUrl = 'https://i.ytimg.com/vi/' . $videoId . '/' . $res . '.jpg';
                 if ($this->_remoteImageExists($candidateUrl)) {
                     $metadata['thumbnail_url'] = $candidateUrl;
                     break;

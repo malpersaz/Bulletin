@@ -56,6 +56,8 @@ $url['cookie-policy/'] = 'index/cookie_policy';
 
 // Sitemaps
 $url['rss.xml'] = 'index/rss';
+$url['rss/social.xml'] = 'index/rssSocial';
+$url['rss-social.xml'] = 'index/rssSocial';
 $url['seo'] = 'mod_seo/index';
 $url['seo/settings'] = 'mod_seo/settings';
 $url['sitemap.xml'] = 'index/sitemapIndex';

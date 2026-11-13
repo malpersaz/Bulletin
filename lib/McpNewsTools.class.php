@@ -976,6 +976,9 @@ class McpNewsTools extends McpCrudToolsBase
 
         if ($model->status === 'y') {
             $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'update');
+            require_once lib_dir . 'NewsSocialShareService.class.php';
+            NewsSocialShareService::enqueueForNews((int) $model->id);
+            WebSubService::pingForArticle((string) $model->lang);
         }
 
         return [
@@ -1169,8 +1172,17 @@ class McpNewsTools extends McpCrudToolsBase
 
         if ($model->status === 'y') {
             $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'update');
+            require_once lib_dir . 'NewsSocialShareService.class.php';
+            NewsSocialShareService::enqueueForNews((int) $model->id);
+            WebSubService::pingForArticle((string) $model->lang);
         } elseif ($model->status === 'n') {
             $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'delete');
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        NewsSocialShareService::cancelJobsForNews((int) $id);
+        WebSubService::pingForArticle((string) $model->lang);
+            require_once lib_dir . 'NewsSocialShareService.class.php';
+            NewsSocialShareService::cancelJobsForNews((int) $model->id);
+            WebSubService::pingForArticle((string) $model->lang);
         }
 
         return [
@@ -1201,6 +1213,9 @@ class McpNewsTools extends McpCrudToolsBase
         }
 
         $this->notifyGoogleIndexing((string) $model->lang . '/news/' . (string) $model->seo, 'delete');
+        require_once lib_dir . 'NewsSocialShareService.class.php';
+        NewsSocialShareService::cancelJobsForNews((int) $id);
+        WebSubService::pingForArticle((string) $model->lang);
 
         $model->delete();
 

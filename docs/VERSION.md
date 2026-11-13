@@ -1,6 +1,45 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.67] - 2026-11-13
+- **Zero-Cost Automated Social Sharing via Enhanced RSS Bridge & WebSub Push (`docs/plan/x-rss-zero-cost-social-bridge-v1.0.67.md`)**:
+  - **Dedicated Social Syndication RSS Engine (`mod/index/index.php`, `config/url.config.php`)**:
+    - Created high-performance syndication endpoint (`GET /{lang}/rss/social.xml` and `GET /{lang}/rss-social.xml`) tailored for external automation bridges (Buffer, IFTTT, Make, n8n, self-hosted webhooks).
+    - Enriched RSS items with 16:9 1280x720 media elements (`<media:content>`, `<media:thumbnail>`, `<enclosure>`), clean HTML bodies with sanitized markup, plain-text summary descriptions with thumbnail embeds, and contextual `#Hashtag` `<category>` elements derived from article taxonomy and publisher branding.
+    - Added standard WebSub / PubSubHubbub hub discovery links (`pubsubhubbub.appspot.com`, `pubsubhubbub.superfeedr.com`) and RFC 3986 canonical permalinks.
+  - **Real-Time WebSub Hub Notification Service (`lib/WebSubService.class.php`, `config/autoload.config.php`)**:
+    - Implemented standalone `WebSubService` dispatching instant asynchronous HTTP POST publish pings to public hubs whenever articles are published, edited, approved, unpublished, or deleted.
+    - Added persistent file-based cooldown rate-limiter (`data/indexing_state.json`) with a 60-second threshold per feed URL to prevent upstream throttling during batch news imports.
+    - Registered `WebSubService` in `config/autoload.config.php` and integrated real-time ping dispatches into `mod_news` lifecycle hooks (creation, update, quick status toggle, batch publish/unpublish) and `McpNewsTools` MCP actions.
+  - **Admin Social Integration Hub & RSS Bridge Modes (`mod/mod_settings/`, `templates/admin/mod_settings/`)**:
+    - Extended `mod_settings_social` schema with `api_config`, `integration_mode` (`link`, `api`, `rss_bridge`), and `auto_post` columns with automatic self-healing schema migration (`ensureSocialIntegrationColumns()`).
+    - Modernized social settings admin view (`templates/admin/mod_settings/social_media.twig`) with tabbed bridge cockpit, copyable localized RSS URLs, real-time WebSub hub status badges, step-by-step external bridge automation guides, and account mode toggles adhering strictly to the phone-only mobile contract.
+    - Achieved 100% dictionary key parity across all 11 admin languages (`ar`, `ckb`, `de`, `en`, `fa`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`).
+    - Handled X (Twitter) API v2 HTTP 402 payment required responses gracefully in `XProvider`, guiding publishers toward the zero-cost RSS Bridge mode.
+- **Admin Panel Navigation, Search UX & Deep Search Relevance (`mod/mod_user/`, `templates/admin/mod_user/`)**:
+    - Enhanced admin module launcher (`mod/mod_user/index.php`) with granular link search keywords across settings, legal pages, cookie policies, affiliations, social networks, and Google configurations.
+    - Restructured module cards in `templates/admin/mod_user/panel.twig` with contextual search hits (`.panel-module-context`), dynamic card reparenting, and search-driven direct sub-link navigation in `mod_user_modules.js`.
+- **`mod_video_embed` UX & YouTube Timestamp Support (`lib/VideoEmbedProviderService.class.php`, `mod/mod_video_embed/`)**:
+    - Added deterministic YouTube start timestamp extraction (`extractYouTubeStartSeconds`) supporting integer seconds (`t=120`, `start=120s`) and HMS format (`1h2m3s`), propagating `&start=X` parameters to clean `youtube-nocookie.com` embed iframes.
+    - Aligned `mod_video_embed_mod::_edit` signature with `BaseModuleController` contract (`$id = null, $existingRecord = null`).
+    - Modernized Add and Edit video embed templates with phone-first cards, accessible button sizing, image alt fallbacks across `en`, `ku`, `tr`, and safe Datatable status badge rendering.
+- **`mod_news` Admin Polish & Defensiveness (`mod/mod_news/`, `templates/admin/mod_news/`)**:
+    - Guarded array types on POST search filters (`search`, `search_radio`, `search_created_at`) across `mod_news` and `mod_video_embed` controllers, preventing PHP 8 type errors on malformed payloads.
+    - Refined mobile list layout in `templates/admin/assets/css/mod_news.css`: elevated breadcrumb tap targets (min 44px), flexible category badges, video state indicator pill styling (`.card-state-pill.state-video.is-active`), and prevented FAB overlap with floating action toolbar.
+- **Public News Detail, Gallery Lightbox & Video Embed Hero (`templates/amed/`)**:
+  - **Colorbox Removal & Native News Gallery (`templates/amed/static/js/news-gallery.js`, `templates/amed/static/css/gallery.css`, `templates/amed/index/mod_news/news.twig`)**:
+    - Removed legacy `colorbox` plugin assets (`templates/base_static/js/colorbox/*`) and `templates/amed/partials/mod_gallery.twig`, replacing them with a modern, dependency-free native gallery and lightbox (`news-gallery.js`) on `news.twig`.
+  - **Hero Video Embed Player (`templates/amed/partials/_video_embed_player.twig`, `templates/amed/static/css/video-embed.css`)**:
+    - Added `is_hero` mode supporting high-resolution hero poster images (`hero_poster_url`), YouTube provider detection, and dedicated hero figure/caption styling.
+  - **Unified Popover Social Share UI (`templates/amed/partials/share.twig`, `share_toolbar.twig`, `_share_items.twig`, `share.css`, `share.js`)**:
+    - Refactored public share controls into a shared `_share_items.twig` partial with an accessible popover trigger (`share-trigger-btn`) and updated `share.js` / `share.css` interactions; cleaned up redundant share markup across `announcement.twig`, `event.twig`, `page.twig`, and `publication.twig`.
+- **Admin Sheet & Modal Layering (`templates/admin/assets/js/script.js`, `modals/modal_user_menu.js`, `partials/sheets_extra.twig`)**:
+  - Reparented bottom sheets (`openSheet`, `openContextMenu`, `openLangSheet`) into `#modal-dynamic-dialog` when open so sheets render above native `<dialog>` top-layer modals.
+  - Wired `select-picker-manage` action in `modal_user_menu.js`.
+- **Documentation & Plan Maintenance (`docs/plan/`)**:
+  - Cleaned up completed historical plans (v1.0.61–v1.0.65) and archived active roadmap plans in `docs/plan/`.
+
+
 ## [v1.0.66] - 2026-11-12
 - **`mod_news` Admin URL Routing Hardening & CLI Account Operations**:
   - **`mod_news` Form Data ID Resolution (`mod/mod_news/index.php`)**:

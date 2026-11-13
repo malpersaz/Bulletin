@@ -385,6 +385,15 @@ function openSheet() {
     const sheet = document.getElementById('sheet-menu');
     const overlay = document.getElementById('sheet-overlay');
     if (sheet && overlay) {
+        const dynamicDialog = document.getElementById('modal-dynamic-dialog');
+        if (dynamicDialog && dynamicDialog.open) {
+            dynamicDialog.appendChild(overlay);
+            dynamicDialog.appendChild(sheet);
+        } else if (sheet.parentElement !== document.body) {
+            document.body.appendChild(overlay);
+            document.body.appendChild(sheet);
+        }
+
         sheet.classList.add('active');
         overlay.classList.add('active');
     }
@@ -636,6 +645,15 @@ function openContextMenu(id, title, isPublished, hiddenActions = []) {
     }
 
     if (sheet && overlay) {
+        const dynamicDialog = document.getElementById('modal-dynamic-dialog');
+        if (dynamicDialog && dynamicDialog.open) {
+            dynamicDialog.appendChild(overlay);
+            dynamicDialog.appendChild(sheet);
+        } else if (sheet.parentElement !== document.body) {
+            document.body.appendChild(overlay);
+            document.body.appendChild(sheet);
+        }
+
         sheet.classList.add('active');
         overlay.classList.add('active');
         navigator.vibrate?.(10);
@@ -3599,6 +3617,15 @@ function openLangSheet() {
     renderLangList();
 
     if (sheet && overlay) {
+        const dynamicDialog = document.getElementById('modal-dynamic-dialog');
+        if (dynamicDialog && dynamicDialog.open) {
+            dynamicDialog.appendChild(overlay);
+            dynamicDialog.appendChild(sheet);
+        } else if (sheet.parentElement !== document.body) {
+            document.body.appendChild(overlay);
+            document.body.appendChild(sheet);
+        }
+
         sheet.classList.add('active');
         overlay.classList.add('active');
         overlay.style.display = 'block';

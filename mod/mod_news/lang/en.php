@@ -388,6 +388,7 @@ $lang['mod_news'] = [
         'unpublish' => 'Unpublish',
         'published_msg' => 'Published',
         'unpublished_msg' => 'Unpublished',
+        'faq' => 'FAQ',
         'confirm' => 'Yes',
         'cancel' => 'Cancel',
         'edit_alert' => "EDIT MODE:\nID: %s\nTitle: %s",

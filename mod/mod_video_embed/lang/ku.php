@@ -36,6 +36,7 @@ $lang['mod_video_embed'] = [
         'provider_custom' => 'Lînk / Embed',
         'tombstone_error' => 'Ev parvekirin êdî nayê dîtin an taybet e.',
         'no_video_in_post' => 'Di vê parvekirinê de vîdyo nehat dîtin.',
+        'image_alt_fallback' => 'Wêneyê Vîdyoyê',
     ],
     'message' => [
         'success' => [

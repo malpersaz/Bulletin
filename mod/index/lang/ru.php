@@ -131,9 +131,9 @@ $lang['index'] = [
     'site_logo_alt' => 'Логотип сайта',
     'producer_logo_alt' => 'Логотип AKM Software',
     'map_available_soon' => 'Карта скоро будет доступна',
-    'publish_date' => 'Дата публикации',
+    'publish_date' => 'Опубликовано',
     'category_label' => 'Категория',
-    'updated_date' => 'Дата обновления',
+    'updated_date' => 'Обновлено',
     'min_read' => 'мин чтения',
     'minute' => 'мин',
     'enlarge_image' => 'Увеличить изображение',
@@ -288,16 +288,6 @@ $lang['index']['mod_gallery'] = [
     '6' => 'Полноэкранный режим'
 ];
 
-# colorbox plugin
-$lang['index']['colorbox'] = [
-    '1' => 'Изображение {current} из {total}.',
-    '2' => 'Назад',
-    '3' => 'Далее',
-    '4' => 'Закрыть',
-    '5' => 'Запустить слайд-шоу',
-    '6' => 'Остановить слайд-шоу'
-];
-
 # menu
 $lang['index']['menu'] = [
     'home' => 'Главная',
@@ -436,6 +426,10 @@ $lang['index']['mod_news'] = [
     'title_format' => '%s ',
     'all_news' => 'Все новости',
     'related_news' => 'Связанные новости',
+    'gallery_title' => 'Фотогалерея',
+    'gallery_prev' => 'Предыдущее фото',
+    'gallery_next' => 'Следующее фото',
+    'gallery_close' => 'Закрыть галерею',
     'keywords' => 'новости,информация,последние новости',
     'no_content_found' => 'В этой категории новостей не найдено!',
     'bio_title' => 'Ссылка в био Instagram',

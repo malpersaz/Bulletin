@@ -32,7 +32,8 @@ $autoload['libfile'] = array(
     'GoogleIndexingService',
     'VideoEmbedProviderService',
     'AIService',
-    'LlmsService'
+    'LlmsService',
+    'WebSubService'
 );
 // Libraries to run automatically
 $autoload['lib'] = array();
