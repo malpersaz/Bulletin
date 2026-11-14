@@ -286,10 +286,34 @@ abstract class indexBase
     }
 
     /**
+     * Ensures a 1200x630 JPEG companion image exists for social crawlers (WhatsApp/Meta/X)
+     * and populates og_image_url, og_image_mime, og_image_width, and og_image_height on the detail row.
+     */
+    public function enrichRowWithOpenGraphImage(string $modName, array $row): array
+    {
+        $imageField = trim((string) ($row['image'] ?? ''));
+        if ($imageField === '' || $imageField === '#' || !class_exists('ImageService')) {
+            return $row;
+        }
+
+        $imageBaseUrl = (string) ($this->site['iaddress'] ?? '');
+        $ogMeta = ImageService::ensureOpenGraphJpeg($modName, $imageField, $imageBaseUrl);
+        if (is_array($ogMeta) && !empty($ogMeta['url'])) {
+            $row['og_image_url'] = (string) $ogMeta['url'];
+            $row['og_image_mime'] = (string) ($ogMeta['mime'] ?? 'image/jpeg');
+            $row['og_image_width'] = (int) ($ogMeta['width'] ?? ImageService::OG_IMAGE_WIDTH);
+            $row['og_image_height'] = (int) ($ogMeta['height'] ?? ImageService::OG_IMAGE_HEIGHT);
+        }
+
+        return $row;
+    }
+
+    /**
      * Populates rendered_content with inline social figures while stripping tokens from content.
      */
     public function enrichRowWithSocialPosts(string $modName, int $vid, array $row): array
     {
+        $row = $this->enrichRowWithOpenGraphImage($modName, $row);
         $boundRows = $this->_mod_socialmedia_post($modName, $vid);
         $uiLabels = is_array($this->lang['index']['mod_socialmedia_post'] ?? null)
             ? $this->lang['index']['mod_socialmedia_post']

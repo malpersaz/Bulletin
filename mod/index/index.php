@@ -708,33 +708,11 @@ class index_mod extends indexBase
         if (!empty($newsArray)) {
             foreach ($newsArray as $o) {
                 $link = Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']);
-                $imageUrl = "";
-                $thumbUrl = "";
-                $imageMime = "image/jpeg";
-                $imageLength = 0;
-                if (!empty($o['image'])) {
-                    $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $o['image'];
-                    if (is_file($imageFile)) {
-                        $imageLength = (int) @filesize($imageFile);
-                        if ($imageLength > 0) {
-                            $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
-                            $thumbFile = root_dir . 'static' . DS . 'mod_news' . DS . 'thumb' . DS . $o['image'];
-                            if (is_file($thumbFile)) {
-                                $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
-                            } else {
-                                $thumbUrl = $imageUrl;
-                            }
-                            $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
-                            if ($ext === 'webp') {
-                                $imageMime = 'image/webp';
-                            } elseif ($ext === 'png') {
-                                $imageMime = 'image/png';
-                            } elseif ($ext === 'gif') {
-                                $imageMime = 'image/gif';
-                            }
-                        }
-                    }
-                }
+                $media = $this->resolveRssItemMedia($o['image'] ?? '', false);
+                $imageUrl = $media['url'];
+                $thumbUrl = $media['thumb_url'];
+                $imageMime = $media['mime'];
+                $imageLength = $media['length'];
 
                 $headline = !empty($o['name']) ? $o['name'] : (!empty($o['title']) ? $o['title'] : '');
                 $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
@@ -869,33 +847,13 @@ class index_mod extends indexBase
         if (!empty($newsArray)) {
             foreach ($newsArray as $o) {
                 $link = Helper::sitemap_url($this->site['address'] . $o['lang'] . '/news/' . $o['seo']);
-                $imageUrl = "";
-                $thumbUrl = "";
-                $imageMime = "image/jpeg";
-                $imageLength = 0;
-                if (!empty($o['image'])) {
-                    $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $o['image'];
-                    if (is_file($imageFile)) {
-                        $imageLength = (int) @filesize($imageFile);
-                        if ($imageLength > 0) {
-                            $imageUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $o['image']);
-                            $thumbFile = root_dir . 'static' . DS . 'mod_news' . DS . 'thumb' . DS . $o['image'];
-                            if (is_file($thumbFile)) {
-                                $thumbUrl = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $o['image']);
-                            } else {
-                                $thumbUrl = $imageUrl;
-                            }
-                            $ext = strtolower((string) pathinfo((string) $o['image'], PATHINFO_EXTENSION));
-                            if ($ext === 'webp') {
-                                $imageMime = 'image/webp';
-                            } elseif ($ext === 'png') {
-                                $imageMime = 'image/png';
-                            } elseif ($ext === 'gif') {
-                                $imageMime = 'image/gif';
-                            }
-                        }
-                    }
-                }
+                $media = $this->resolveRssItemMedia($o['image'] ?? '', true);
+                $imageUrl = $media['url'];
+                $thumbUrl = $media['thumb_url'];
+                $imageMime = $media['mime'];
+                $imageLength = $media['length'];
+                $imageWidth = $media['width'];
+                $imageHeight = $media['height'];
 
                 $headline = !empty($o['name']) ? $o['name'] : (!empty($o['title']) ? $o['title'] : '');
                 $cleanHeadline = htmlspecialchars(html_entity_decode(strip_tags((string) $headline), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
@@ -934,7 +892,7 @@ class index_mod extends indexBase
                 $sanitizedBody = strip_tags((string) $sanitizedBody, '<p><h2><h3><h4><blockquote><ul><ol><li><a><strong><b><em><i><figure><figcaption><img><br>');
                 $encodedParts = [];
                 if ($imageUrl !== '') {
-                    $encodedParts[] = '<figure><img src="' . $imageUrl . '" alt="' . $cleanHeadline . '" width="1280" height="720" /></figure>';
+                    $encodedParts[] = '<figure><img src="' . $imageUrl . '" alt="' . $cleanHeadline . '" width="' . $imageWidth . '" height="' . $imageHeight . '" /></figure>';
                 }
                 if ($cleanSummary !== '') {
                     $encodedParts[] = '<p><strong>' . htmlspecialchars($cleanSummary, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</strong></p>';
@@ -964,7 +922,7 @@ class index_mod extends indexBase
                 <content:encoded><![CDATA[' . $fullEncodedHtml . ']]></content:encoded>';
                 if ($imageUrl && $imageLength > 0) {
                     echo '
-                <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="1280" height="720" />
+                <media:content url="' . $imageUrl . '" medium="image" type="' . $imageMime . '" width="' . $imageWidth . '" height="' . $imageHeight . '" />
                 <media:thumbnail url="' . $thumbUrl . '" />
                 <enclosure url="' . $imageUrl . '" type="' . $imageMime . '" length="' . $imageLength . '" />';
                 }
@@ -976,6 +934,67 @@ class index_mod extends indexBase
         </channel>
         </rss>';
         exit;
+    }
+
+    /**
+     * Resolves public image, thumbnail, MIME type, byte length, and dimensions for RSS items.
+     */
+    private function resolveRssItemMedia(string $imageName, bool $preferOgJpeg = false): array
+    {
+        $media = [
+            'url' => '',
+            'thumb_url' => '',
+            'mime' => 'image/jpeg',
+            'length' => 0,
+            'width' => 1280,
+            'height' => 720,
+        ];
+
+        $imageName = trim($imageName);
+        if ($imageName === '') {
+            return $media;
+        }
+
+        $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $imageName;
+        if (!is_file($imageFile)) {
+            return $media;
+        }
+
+        $length = (int) @filesize($imageFile);
+        if ($length <= 0) {
+            return $media;
+        }
+
+        $media['url'] = Helper::sitemap_url($this->site['iaddress'] . 'mod_news/' . $imageName);
+        $thumbFile = root_dir . 'static' . DS . 'mod_news' . DS . 'thumb' . DS . $imageName;
+        $media['thumb_url'] = is_file($thumbFile)
+            ? Helper::sitemap_url($this->site['iaddress'] . 'mod_news/thumb/' . $imageName)
+            : $media['url'];
+
+        $ext = strtolower((string) pathinfo($imageName, PATHINFO_EXTENSION));
+        $mimeMap = [
+            'webp' => 'image/webp',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+        ];
+        $media['mime'] = $mimeMap[$ext] ?? 'image/jpeg';
+        $media['length'] = $length;
+
+        if ($preferOgJpeg && class_exists('ImageService')) {
+            $ogMeta = ImageService::ensureOpenGraphJpeg('mod_news', $imageName, (string) $this->site['iaddress']);
+            if (is_array($ogMeta) && !empty($ogMeta['url']) && is_file((string) ($ogMeta['path'] ?? ''))) {
+                $ogSize = (int) @filesize((string) $ogMeta['path']);
+                if ($ogSize > 0) {
+                    $media['url'] = (string) $ogMeta['url'];
+                    $media['mime'] = 'image/jpeg';
+                    $media['length'] = $ogSize;
+                    $media['width'] = (int) ($ogMeta['width'] ?? ImageService::OG_IMAGE_WIDTH);
+                    $media['height'] = (int) ($ogMeta['height'] ?? ImageService::OG_IMAGE_HEIGHT);
+                }
+            }
+        }
+
+        return $media;
     }
 
     public function sitemapIndex()

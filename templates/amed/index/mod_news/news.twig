@@ -36,17 +36,23 @@
 {% set author_full_name = (d.u_name is defined and d.u_name is not empty) ? (d.u_name ~ ' ' ~ (d.u_last_name ?? ''))|trim : site.title %}
 {% set author_initials = (d.u_name is defined and d.u_name is not empty) ? ((d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper) : (site.title|default('R')|slice(0, 2)|upper) %}
 
-{% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
-{% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
-{% set news_share_ext = news_share_image|split('?')|first|split('.')|last|lower %}
-{% set news_share_mime = news_share_ext == 'png' ? 'image/png' : (news_share_ext == 'webp' ? 'image/webp' : (news_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+{% set canonical_news_url = (site.saddress ~ 'news/' ~ d.seo)|sitemap_url %}
+{% set news_meta_desc = (d.description ?: (d.summary ?: site.description))|striptags|trim|slice(0, 200) %}
+{% set news_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+{% set fallback_news_image = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image)|sitemap_url : news_logo_asset %}
+{% set fallback_news_ext = fallback_news_image|split('?')|first|split('.')|last|lower %}
+{% set fallback_news_mime = fallback_news_ext == 'png' ? 'image/png' : (fallback_news_ext == 'webp' ? 'image/webp' : (fallback_news_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+{% set news_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_news_image %}
+{% set news_share_mime = d.og_image_mime is defined and d.og_image_mime is not empty ? d.og_image_mime : fallback_news_mime %}
+{% set news_share_width = d.og_image_width is defined and d.og_image_width ? d.og_image_width : (d.image is not empty ? 1280 : 300) %}
+{% set news_share_height = d.og_image_height is defined and d.og_image_height ? d.og_image_height : (d.image is not empty ? 720 : 300) %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.saddress }}news/{{ d.seo }}"/>
+	<link rel="canonical" href="{{ canonical_news_url }}"/>
 {% endblock %}
 {% block hreflang %}
-	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}news/{{ d.seo }}"/>
-	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}news/{{ d.seo }}"/>
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ canonical_news_url }}"/>
+	<link rel="alternate" hreflang="x-default" href="{{ canonical_news_url }}"/>
 {% endblock %}
 
 {% block title %}
@@ -54,7 +60,7 @@
 {% endblock %}
 
 {% block description %}
-	<meta name="description" content="{{ d.description }}">
+	<meta name="description" content="{{ news_meta_desc }}">
 {% endblock %}
 
 {% block keywords %}
@@ -70,20 +76,17 @@
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
-	<meta property="og:url" content="{{ site.saddress }}news/{{ d.seo }}">
+	<meta property="og:url" content="{{ canonical_news_url }}">
 	<meta property="og:title" content="{{ d.title|default(d.name) }}">
-	<meta property="og:description" content="{{ d.description|striptags|slice(0, 200) }}">
+	<meta property="og:description" content="{{ news_meta_desc }}">
 	{% if news_share_image is not empty %}
 		<meta property="og:image" content="{{ news_share_image }}">
-		<meta property="og:image:secure_url" content="{{ news_share_image }}">
-		<meta property="og:image:type" content="{{ news_share_mime }}">
-		{% if d.image is not empty %}
-			<meta property="og:image:width" content="1280">
-			<meta property="og:image:height" content="720">
-		{% else %}
-			<meta property="og:image:width" content="300">
-			<meta property="og:image:height" content="300">
+		{% if news_share_image starts with 'https://' %}
+			<meta property="og:image:secure_url" content="{{ news_share_image }}">
 		{% endif %}
+		<meta property="og:image:type" content="{{ news_share_mime }}">
+		<meta property="og:image:width" content="{{ news_share_width }}">
+		<meta property="og:image:height" content="{{ news_share_height }}">
 		<meta property="og:image:alt" content="{{ (d.image_alt|default(d.name))|escape('html_attr') }}">
 		<link rel="image_src" href="{{ news_share_image }}">
 	{% endif %}
@@ -105,9 +108,9 @@
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:url" content="{{ site.saddress }}news/{{ d.seo }}">
+	<meta name="twitter:url" content="{{ canonical_news_url }}">
 	<meta name="twitter:title" content="{{ d.title|default(d.name) }}">
-	<meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
+	<meta name="twitter:description" content="{{ news_meta_desc }}">
 	{% if news_share_image is not empty %}
 		<meta name="twitter:image" content="{{ news_share_image }}">
 		<meta name="twitter:image:alt" content="{{ (d.image_alt|default(d.name))|escape('html_attr') }}">
@@ -115,7 +118,7 @@
 {% endblock %}
 
 {% block schema %}
-	{% set article_img_url = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image) : news_logo_asset %}
+	{% set article_img_url = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image)|sitemap_url : news_logo_asset %}
 	{% set article_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
 	{% set article_updated_ts = d.updated_at ? d.updated_at|date('U') : article_created_ts %}
 	{% if article_updated_ts < article_created_ts %}{% set article_updated_ts = article_created_ts %}{% endif %}
@@ -131,7 +134,7 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": "NewsArticle",
-		  "@id": {{ (site.saddress ~ 'news/' ~ d.seo ~ '#article')|json_ld|raw }},
+		  "@id": {{ (canonical_news_url ~ '#article')|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
 		    "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},
@@ -140,9 +143,9 @@
 		  },
 		  "mainEntityOfPage": {
 		    "@type": "WebPage",
-		    "@id": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }}
+		    "@id": {{ canonical_news_url|json_ld|raw }}
 		  },
-		  "url": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }},
+		  "url": {{ canonical_news_url|json_ld|raw }},
 		  "headline": {{ d.name|json_ld|raw }},
 		  {% if d.summary is defined and d.summary|striptags|trim is not empty %}"alternativeHeadline": {{ d.summary|striptags|trim|json_ld|raw }},{% endif %}
 		  "speakable": {
@@ -167,7 +170,7 @@
 		    {% if d.image is not empty %}
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|json_ld|raw }},
+		      "url": {{ (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|sitemap_url|json_ld|raw }},
 		      "width": 1280,
 		      "height": 720,
 		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
@@ -175,7 +178,7 @@
 		    },
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|json_ld|raw }},
+		      "url": {{ (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|sitemap_url|json_ld|raw }},
 		      "width": 1200,
 		      "height": 900,
 		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
@@ -183,7 +186,7 @@
 		    },
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|json_ld|raw }},
+		      "url": {{ (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|sitemap_url|json_ld|raw }},
 		      "width": 1200,
 		      "height": 1200,
 		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
@@ -294,7 +297,7 @@
 		      "@type": "ListItem",
 		      "position": {{ has_news_category ? 4 : 3 }},
 		      "name": {{ d.name|json_ld|raw }},
-		      "item": {{ (site.saddress ~ 'news/' ~ d.seo)|json_ld|raw }}
+		      "item": {{ canonical_news_url|json_ld|raw }}
 		    }
 		  ]
 		}

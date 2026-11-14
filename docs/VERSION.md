@@ -1,6 +1,22 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.69] - 2026-11-14
+### Added
+- **Centralized Open Graph 1200x630 JPEG Pipeline (`lib/ImageService.class.php`, `mod/index/indexBase.php`)**: Added `ImageService::ensureOpenGraphJpeg()` and `ImageService::deleteOpenGraphJpeg()` supporting both GD and Imagick drivers with white-background alpha flattening and adaptive progressive JPEG encoding (`<= 280 KB`) under `static/<module>/og/<base>.jpg` for WhatsApp, Meta, and X crawler compatibility, paired with `indexBase::enrichRowWithOpenGraphImage()` for automatic lazy self-healing on existing articles and media records.
+- **`sitemap_url` Twig Filter (`lib/TwigLibs.class.php`)**: Registered the `|sitemap_url` filter wrapping `Helper::sitemap_url()` for idempotent RFC 3986 path percent-encoding without modifying Wikipedia-style non-ASCII database slugs.
+
+### Changed
+- **Eager Open Graph JPEG Lifecycle (`mod/image/index.php`, `lib/SocialStoryCardGenerator.class.php`, `mod/index/index.php`, `mod/index/helper/mod_video_embed.helper.php`)**: Wired automatic OG JPEG creation on raster upload (`_resize`) and cleanup on deletion (`_delete_files`) across both Admin Panel and MCP uploads, added GD fallback delegation in `SocialStoryCardGenerator::generateOpenGraphImage()`, extracted a unified `resolveRssItemMedia()` helper preferring OG JPEGs in `rssSocial()`, and enriched video detail rows (`mod_video_embed` / `mod_video`).
+- **RFC 3986 Canonical, Hreflang & Open Graph Serialization (`templates/amed/`)**: Updated detail templates (`news.twig`, `publication.twig`, `event.twig`, `announcement.twig`, `page.twig`, `video.twig`) and listing templates (`newses.twig`, `publications.twig`, `author.twig`, `events.twig`, `gallery.twig`, `videos.twig`) to output RFC 3986 percent-encoded `canonical`, `hreflang`, `og:url`, and `twitter:url` metadata while preferring 1200x630 `d.og_image_url` JPEGs.
+
+### Fixed
+- **WhatsApp & Social Link Previews on Non-ASCII Turkish/Kurdish URLs**: Resolved missing photo, title, and description previews caused by unencoded UTF-8 characters in `og:url`/`canonical` and `.webp` `og:image` targets on articles such as `Diyarbakır_Sur_hafızası_paneli`.
+- **Share Bar & Copy Link URL Preservation (`templates/amed/partials/_share_items.twig`, `share.twig`, `share_toolbar.twig`, `templates/amed/static/js/share.js`)**: Replaced `decodeURI()` in `share.js` with `toShareableUrl()` (`new URL(..., origin).href`) so copied and shared links retain RFC 3986 percent-encoding instead of breaking at non-ASCII characters in WhatsApp, and properly encoded `api.whatsapp.com/send`, Facebook, X, LinkedIn, and `mailto:` share query parameters.
+- **Open Graph `og:image:secure_url` & Description Fallbacks**: Restricted `og:image:secure_url` strictly to `https://` image URLs (preventing invalid tags on local HTTP environments) and added fallback chains (`d.description ?: (d.summary ?: site.description)`).
+
+---
+
 ## [v1.0.68] - 2026-11-13
 ### Added
 - **Native Social Media Posts Module (`mod_socialmedia_post`) & Bridge Registry (`mod_socialmedia_post_mod`)**: Introduced full CRUD controllers (`mod/mod_socialmedia_post/index.php`, `mod/mod_socialmedia_post_mod/index.php`), ORM models, installer schemas (`mod_socialmedia_post`, `mod_socialmedia_post_link`, `mod_socialmedia_post_mod`), ACL roles/permissions, and 11 complete locale packs (`ku`, `tr`, `en`, `ckb`, `zza`, `ar`, `de`, `fr`, `sv`, `ru`, `fa`).

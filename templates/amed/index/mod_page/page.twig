@@ -38,20 +38,25 @@
 {% endfor %}
 {% endif %}
 {% set has_sidebar = (sidebar_nav_count > 0) %}
+{% set canonical_page_url = (site.saddress ~ 'page/' ~ d.seo)|sitemap_url %}
 {% set raw_page_title = d.title is defined and d.title is not empty ? d.title : d.name %}
 {% set page_meta_title = raw_page_title|replace({' | Amed Bülten': '', ' - Amed Bülten': '', ' – Amed Bülten': '', ' — Amed Bülten': ''})|trim %}
-{% set page_meta_description = d.description is defined and d.description is not empty ? d.description : (d.summary is defined and d.summary is not empty ? d.summary : site.description) %}
-{% set page_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
-{% set page_share_image = d.image is not empty ? site.iaddress ~ 'mod_page/' ~ d.image : page_logo_asset %}
-{% set page_share_ext = page_share_image|split('?')|first|split('.')|last|lower %}
-{% set page_share_mime = page_share_ext == 'png' ? 'image/png' : (page_share_ext == 'webp' ? 'image/webp' : (page_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+{% set page_meta_description = (d.description is defined and d.description is not empty ? d.description : (d.summary is defined and d.summary is not empty ? d.summary : site.description))|striptags|trim|slice(0, 200) %}
+{% set page_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+{% set fallback_page_image = d.image is not empty ? (site.iaddress ~ 'mod_page/' ~ d.image)|sitemap_url : page_logo_asset %}
+{% set fallback_page_ext = fallback_page_image|split('?')|first|split('.')|last|lower %}
+{% set fallback_page_mime = fallback_page_ext == 'png' ? 'image/png' : (fallback_page_ext == 'webp' ? 'image/webp' : (fallback_page_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+{% set page_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_page_image %}
+{% set page_share_mime = d.og_image_mime is defined and d.og_image_mime is not empty ? d.og_image_mime : fallback_page_mime %}
+{% set page_share_width = d.og_image_width is defined and d.og_image_width ? d.og_image_width : (d.image is not empty ? 1200 : 300) %}
+{% set page_share_height = d.og_image_height is defined and d.og_image_height ? d.og_image_height : (d.image is not empty ? 630 : 300) %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.saddress }}page/{{ d.seo }}"/>
+	<link rel="canonical" href="{{ canonical_page_url }}"/>
 {% endblock %}
 {% block hreflang %}
-	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}page/{{ d.seo }}"/>
-	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}page/{{ d.seo }}"/>
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ canonical_page_url }}"/>
+	<link rel="alternate" hreflang="x-default" href="{{ canonical_page_url }}"/>
 {% endblock %}
 
 {% block title %}
@@ -69,20 +74,17 @@
 {% block meta_tags %}
 	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<meta property="og:type" content="website">
-	<meta property="og:url" content="{{ site.saddress }}page/{{ d.seo }}">
+	<meta property="og:url" content="{{ canonical_page_url }}">
 	<meta property="og:title" content="{{ page_meta_title }}">
-	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	<meta property="og:description" content="{{ page_meta_description }}">
 	{% if page_share_image is not empty %}
 		<meta property="og:image" content="{{ page_share_image }}">
-		<meta property="og:image:secure_url" content="{{ page_share_image }}">
-		<meta property="og:image:type" content="{{ page_share_mime }}">
-		{% if d.image is not empty %}
-			<meta property="og:image:width" content="1200">
-			<meta property="og:image:height" content="630">
-		{% else %}
-			<meta property="og:image:width" content="300">
-			<meta property="og:image:height" content="300">
+		{% if page_share_image starts with 'https://' %}
+			<meta property="og:image:secure_url" content="{{ page_share_image }}">
 		{% endif %}
+		<meta property="og:image:type" content="{{ page_share_mime }}">
+		<meta property="og:image:width" content="{{ page_share_width }}">
+		<meta property="og:image:height" content="{{ page_share_height }}">
 		<meta property="og:image:alt" content="{{ page_meta_title }}">
 		<link rel="image_src" href="{{ page_share_image }}">
 	{% endif %}
@@ -98,9 +100,9 @@
 	<meta property="og:locale" content="{{ og_locale }}">
 
 	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:url" content="{{ site.saddress }}page/{{ d.seo }}">
+	<meta name="twitter:url" content="{{ canonical_page_url }}">
 	<meta name="twitter:title" content="{{ page_meta_title }}">
-	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	<meta name="twitter:description" content="{{ page_meta_description }}">
 	{% if page_share_image is not empty %}
 		<meta name="twitter:image" content="{{ page_share_image }}">
 	{% endif %}
@@ -112,8 +114,8 @@
 		  "@context": "https://schema.org",
 		  "@type": "AboutPage",
 		  "name": {{ d.name|json_ld|raw }},
-		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_ld|raw }},
-		  "url": {{ (site.saddress ~ 'page/' ~ d.seo)|json_ld|raw }},
+		  "description": {{ page_meta_description|json_ld|raw }},
+		  "url": {{ canonical_page_url|json_ld|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
 		    "@id": {{ (site.saddress ~ '#website')|json_ld|raw }},

@@ -46,7 +46,9 @@ class mod_video_embed_helper extends indexBase
 
             $this->_update_view_count('mod_video_embed', $video->id);
 
-            $this->tema->ctx_set('d', $this->normalizeVideoRow($video->toArray()));
+            $videoRow = $this->normalizeVideoRow($video->toArray());
+            $videoRow = $this->enrichRowWithOpenGraphImage('mod_video_embed', $videoRow);
+            $this->tema->ctx_set('d', $videoRow);
             if (isset($video->gallery_id) && $video->gallery_id != 0) {
                 $this->_exact_gallery($video->gallery_id);
             } else {
@@ -99,6 +101,7 @@ class mod_video_embed_helper extends indexBase
                     'image' => $localVideo->image
                 ];
 
+                $d = $this->enrichRowWithOpenGraphImage('mod_video', $d);
                 $this->tema->ctx_set('d', $d);
                 $this->tema->ctx_set('gallery', []);
                 $this->tema->ctx_set('attachment', []);

@@ -2,9 +2,17 @@
 
 {% set d = ctx_get('d') %}
 {% set categories = ctx_get('categories') %}
-{% set video_url = site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo) %}
-{% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
-{% set video_image = (d.image is defined and d.image is not empty) ? site.iaddress ~ 'mod_video_embed/' ~ d.image : video_logo_asset %}
+{% set video_url = (site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo))|sitemap_url %}
+{% set video_meta_desc = (d.summary ?: (d.content ?: (d.description ?: (d.name ?: site.description))))|striptags|trim|slice(0, 200) %}
+{% set video_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+{% set video_image = (d.image is defined and d.image is not empty) ? ((d.is_local|default(false) ? site.iaddress ~ 'mod_video/image/' ~ d.image : site.iaddress ~ 'mod_video_embed/' ~ d.image)|sitemap_url) : video_logo_asset %}
+{% set fallback_video_share_image = d.poster_url is defined and d.poster_url is not empty ? d.poster_url|sitemap_url : video_image %}
+{% set fallback_video_ext = fallback_video_share_image|split('?')|first|split('.')|last|lower %}
+{% set fallback_video_mime = fallback_video_ext == 'png' ? 'image/png' : (fallback_video_ext == 'webp' ? 'image/webp' : (fallback_video_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+{% set video_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_video_share_image %}
+{% set video_share_mime = d.og_image_mime is defined and d.og_image_mime is not empty ? d.og_image_mime : fallback_video_mime %}
+{% set video_share_width = d.og_image_width is defined and d.og_image_width ? d.og_image_width : null %}
+{% set video_share_height = d.og_image_height is defined and d.og_image_height ? d.og_image_height : null %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ video_url }}">
@@ -24,7 +32,7 @@
 {% endblock %}
 
 {% block description %}
-    <meta name="description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
+    <meta name="description" content="{{ video_meta_desc }}">
 {% endblock %}
 
 {% block meta_tags %}
@@ -32,13 +40,26 @@
     <meta property="og:type" content="video.other">
     <meta property="og:url" content="{{ video_url }}">
     <meta property="og:title" content="{{ d.name }} - {{ site.title }}">
-    <meta property="og:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
-    <meta property="og:image" content="{{ d.poster_url|default(video_image) }}">
+    <meta property="og:description" content="{{ video_meta_desc }}">
+    {% if video_share_image is not empty %}
+        <meta property="og:image" content="{{ video_share_image }}">
+        {% if video_share_image starts with 'https://' %}
+            <meta property="og:image:secure_url" content="{{ video_share_image }}">
+        {% endif %}
+        <meta property="og:image:type" content="{{ video_share_mime }}">
+        {% if video_share_width and video_share_height %}
+            <meta property="og:image:width" content="{{ video_share_width }}">
+            <meta property="og:image:height" content="{{ video_share_height }}">
+        {% endif %}
+    {% endif %}
     <meta property="og:site_name" content="{{ site.title }}">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ video_url }}">
     <meta name="twitter:title" content="{{ d.name }} - {{ site.title }}">
-    <meta name="twitter:description" content="{{ (d.summary ?: (d.content ?: d.name))|striptags|slice(0, 200) }}">
-    <meta name="twitter:image" content="{{ d.poster_url|default(video_image) }}">
+    <meta name="twitter:description" content="{{ video_meta_desc }}">
+    {% if video_share_image is not empty %}
+        <meta name="twitter:image" content="{{ video_share_image }}">
+    {% endif %}
 {% endblock %}
 
 {% block schema %}
@@ -80,7 +101,7 @@
       "@type": "VideoObject",
       "name": {{ d.name|json_ld|raw }},
       "description": {{ (d.summary ?: (d.description ?: (d.content ?: d.name)))|striptags|slice(0, 300)|json_ld|raw }},
-      "thumbnailUrl": [{{ (d.poster_url|default(video_image))|json_ld|raw }}],
+      "thumbnailUrl": [{{ video_share_image|json_ld|raw }}],
       "uploadDate": {{ (d.created_at ? d.created_at|date('c') : 'now'|date('c'))|json_ld|raw }},
       {% if d.schema_duration is defined and d.schema_duration is not empty %}
       "duration": {{ d.schema_duration|json_ld|raw }},

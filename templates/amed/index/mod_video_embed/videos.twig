@@ -9,8 +9,8 @@
 
 {% set is_filtered = category_seo is not empty and category_seo != 'all' %}
 {% set current_page_title = is_filtered ? categoryname : lang.index.mod_video_embed.1 %}
-{% set page_canonical = site.saddress ~ 'videos' ~ (is_filtered ? '/' ~ category_seo : '') ~ (current_page is defined and current_page > 1 ? '/' ~ current_page : '') %}
-{% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set page_canonical = (site.saddress ~ 'videos' ~ (is_filtered ? '/' ~ category_seo : '') ~ (current_page is defined and current_page > 1 ? '/' ~ current_page : ''))|sitemap_url %}
+{% set video_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ page_canonical }}">

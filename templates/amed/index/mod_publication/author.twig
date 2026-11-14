@@ -13,7 +13,8 @@
 {% if author_name == '' %}{% set author_name = username %}{% endif %}
 {% set author_initials = ((author.u_name is not empty ? author.u_name|slice(0, 1) : username|slice(0, 1)) ~ (author.u_last_name is not empty ? author.u_last_name|slice(0, 1) : ''))|upper %}
 {% set tab_query = active_tab == 'news' ? '?tab=news' : '' %}
-{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') ~ tab_query %}
+{% set author_url = (site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') ~ tab_query)|sitemap_url %}
+{% set canonical_author_url = (site.saddress ~ 'author/' ~ username)|sitemap_url %}
 {% set author_description = (author.about is defined and author.about is not empty ? author.about|striptags|trim : '') %}
 {% if author_description == '' and d is defined and d.description is defined and d.description is not empty %}
     {% set author_description = d.description|striptags|trim %}
@@ -21,17 +22,17 @@
 {% if author_description == '' %}
     {% set author_description = site.description %}
 {% endif %}
-{% set author_share_image = site.iaddress ~ 'mod_settings/logo.png' %}
+{% set author_share_image = (site.iaddress ~ 'mod_settings/logo.png')|sitemap_url %}
 {% if author.user_image is defined and author.user_image is not empty %}
-    {% set author_share_image = site.iaddress ~ 'mod_user/' ~ author.user_image %}
+    {% set author_share_image = (site.iaddress ~ 'mod_user/' ~ author.user_image)|sitemap_url %}
 {% endif %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}" />
+    <link rel="canonical" href="{{ author_url }}" />
 {% endblock %}
 {% block hreflang %}
-    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}"/>
-    <link rel="alternate" hreflang="x-default" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}"/>
+    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ author_url }}"/>
+    <link rel="alternate" hreflang="x-default" href="{{ author_url }}"/>
 {% endblock %}
 
 {% block title %}
@@ -48,7 +49,9 @@
     <meta property="og:title" content="{{ author_name }} - {{ site.title }}">
     <meta property="og:description" content="{{ author_description }}">
     <meta property="og:image" content="{{ author_share_image }}">
-    <meta property="og:image:secure_url" content="{{ author_share_image }}">
+    {% if author_share_image starts with 'https://' %}
+        <meta property="og:image:secure_url" content="{{ author_share_image }}">
+    {% endif %}
     <meta property="og:site_name" content="{{ site.title }}">
     {% set og_locale = site.lang %}
     {% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
@@ -72,7 +75,6 @@
 {% endblock %}
 
 {% block schema %}
-    {% set canonical_author_url = site.saddress ~ 'author/' ~ username %}
     {% set author_same_as = [] %}
     {% set raw_author_socials = ctx_get('author_social_links') %}
     {% if raw_author_socials is not empty %}

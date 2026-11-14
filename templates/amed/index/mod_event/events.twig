@@ -12,14 +12,16 @@
 
 {% set page_title = active_category ? active_category.name : lang.index.mod_event.all_events %}
 {% set is_filtered = active_category is defined and active_category is not empty %}
-{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set event_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+{% set current_canonical_url = (site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') ~ (page > 1 ? '/' ~ page : ''))|sitemap_url %}
+{% set category_canonical_url = (site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : ''))|sitemap_url %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if page > 1 %}/{{ page }}{% endif %}">
+    <link rel="canonical" href="{{ current_canonical_url }}">
 {% endblock %}
 {% block hreflang %}
-    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if page > 1 %}/{{ page }}{% endif %}"/>
-    <link rel="alternate" hreflang="x-default" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if page > 1 %}/{{ page }}{% endif %}"/>
+    <link rel="alternate" hreflang="{{ site.lang }}" href="{{ current_canonical_url }}"/>
+    <link rel="alternate" hreflang="x-default" href="{{ current_canonical_url }}"/>
 {% endblock %}
 
 {% block title %}
@@ -33,12 +35,13 @@
 {% block meta_tags %}
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}">
+    <meta property="og:url" content="{{ category_canonical_url }}">
     <meta property="og:title" content="{{ page_title }} - {{ site.title }}">
     <meta property="og:description" content="{{ page_title }} - {{ site.description }}">
     <meta property="og:image" content="{{ event_logo_asset }}">
     <meta property="og:site_name" content="{{ site.title }}">
     <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="{{ category_canonical_url }}">
     <meta name="twitter:title" content="{{ page_title }} - {{ site.title }}">
     <meta name="twitter:description" content="{{ page_title }} - {{ site.description }}">
     <meta name="twitter:image" content="{{ event_logo_asset }}">
@@ -49,7 +52,6 @@
 {% endblock %}
 
 {% block schema %}
-    {% set current_canonical_url = site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') ~ (page > 1 ? '/' ~ page : '') %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

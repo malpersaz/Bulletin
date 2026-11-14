@@ -2,7 +2,7 @@
 
 /**
  * Social Story Card Generator (9:16 Vertical Instagram Story & High-Res OpenGraph)
- * Uses native Imagick to render 1080x1920 sRGB JPEGs with safe zones and localized typography.
+ * Uses native Imagick to render 1080x1920 sRGB JPEG images with safe zones and localized typography.
  */
 class SocialStoryCardGenerator
 {
@@ -338,11 +338,11 @@ class SocialStoryCardGenerator
             $ctaX = (int) ((self::STORY_WIDTH - $ctaPillWidth) / 2);
             $ctaY = 1460;
 
-            $pillBg = new \ImagickDraw();
-            $pillBg->setFillColor(new \ImagickPixel('#FFFFFF'));
-            $pillBg->roundRectangle($ctaX, $ctaY, $ctaX + $ctaPillWidth, $ctaY + $ctaPillHeight, 42, 42);
-            $canvas->drawImage($pillBg);
-            $pillBg->destroy();
+            $pillBackground = new \ImagickDraw();
+            $pillBackground->setFillColor(new \ImagickPixel('#FFFFFF'));
+            $pillBackground->roundRectangle($ctaX, $ctaY, $ctaX + $ctaPillWidth, $ctaY + $ctaPillHeight, 42, 42);
+            $canvas->drawImage($pillBackground);
+            $pillBackground->destroy();
 
             $pillText = new \ImagickDraw();
             $pillText->setFont($boldFont);
@@ -389,7 +389,18 @@ class SocialStoryCardGenerator
      */
     public static function generateOpenGraphImage(?string $imageField): ?string
     {
-        if (empty($imageField) || !extension_loaded('imagick')) {
+        if (empty($imageField)) {
+            return null;
+        }
+
+        if (class_exists('ImageService')) {
+            $ogMeta = ImageService::ensureOpenGraphJpeg('mod_news', $imageField);
+            if (is_array($ogMeta) && !empty($ogMeta['path']) && is_file($ogMeta['path'])) {
+                return (string) $ogMeta['path'];
+            }
+        }
+
+        if (!extension_loaded('imagick')) {
             return null;
         }
 

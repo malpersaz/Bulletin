@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version }}-20261113b">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version }}">
 
-{% set target_url = share_url is defined and share_url ? share_url : (d.seo is defined and d.seo ? site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo : site.saddress) %}
+{% set target_url = (share_url is defined and share_url ? share_url : (d.seo is defined and d.seo ? site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo : site.saddress))|sitemap_url %}
 {% set target_title = share_title is defined and share_title ? share_title : (d.name|default(d.title|default(site.name))) %}
 
 <div class="social-share d-print-none {{ share_wrap_class|default('my-3') }}">
@@ -26,4 +26,4 @@
     </div>
 </div>
 
-<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version }}-20261113b"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version }}"></script>

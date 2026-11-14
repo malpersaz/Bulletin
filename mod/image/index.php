@@ -189,6 +189,10 @@ class image_mod extends indexMain
             }
         }
 
+        if (class_exists('ImageService') && in_array($this->mod, ImageService::OG_ENABLED_MODULES, true)) {
+            ImageService::ensureOpenGraphJpeg((string) $this->mod, (string) $url);
+        }
+
         $this->url = $url;
         return true;
     }
@@ -241,6 +245,9 @@ class image_mod extends indexMain
                 $this->error = 'File could not be deleted: ' . $this->outputfile;
                 return false;
             }
+        }
+        if (class_exists('ImageService')) {
+            ImageService::deleteOpenGraphJpeg((string) $this->mod, (string) $this->url);
         }
         return true;
     }

@@ -44,6 +44,7 @@
 {% set rkat = ctx_get('rkat') %}
 {% set keto = ctx_get('keto') %}
 {% set gallery = ctx_get('gallery') ?: ctx_get('res') %}
+{% set gallery_canonical_url = (site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : ''))|sitemap_url %}
 
 {% block title %}
 	<title>
@@ -56,11 +57,11 @@
 {% endblock %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
+	<link rel="canonical" href="{{ gallery_canonical_url }}"/>
 {% endblock %}
 {% block hreflang %}
-	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
-	<link rel="alternate" hreflang="x-default" href="{{ site.saddress }}gallery{% if d.seo is not empty %}/{{ d.seo }}{% endif %}"/>
+	<link rel="alternate" hreflang="{{ site.lang }}" href="{{ gallery_canonical_url }}"/>
+	<link rel="alternate" hreflang="x-default" href="{{ gallery_canonical_url }}"/>
 {% endblock %}
 
 {% block description %}
@@ -74,9 +75,8 @@
 {% block meta_tags %}
 	{% set gallery_page_title = d.name is not empty ? (d.name ~ ' - ' ~ lang.index.mod_pictures.title) : lang.index.mod_pictures.title %}
 	{% set gallery_page_desc = d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description) %}
-	{% set gallery_canonical_url = site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : '') %}
-	{% set gallery_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
-	{% set gallery_share_img = (gallery is defined and gallery is not empty and gallery|first.url is defined) ? site.iaddress ~ 'mod_gallery/mod_imagecategories/original/' ~ (gallery|first.url) : gallery_logo_asset %}
+	{% set gallery_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+	{% set gallery_share_img = ((gallery is defined and gallery is not empty and gallery|first.url is defined) ? site.iaddress ~ 'mod_gallery/mod_imagecategories/original/' ~ (gallery|first.url) : gallery_logo_asset)|sitemap_url %}
 	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ gallery_canonical_url }}">
@@ -85,13 +85,14 @@
 	<meta property="og:image" content="{{ gallery_share_img }}">
 	<meta property="og:site_name" content="{{ site.title }}">
 	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:url" content="{{ gallery_canonical_url }}">
 	<meta name="twitter:title" content="{{ gallery_page_title }} - {{ site.title }}">
 	<meta name="twitter:description" content="{{ gallery_page_desc|striptags|slice(0, 200) }}">
 	<meta name="twitter:image" content="{{ gallery_share_img }}">
 {% endblock %}
 
 {% block schema %}
-	{% set current_gallery_url = site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : '') %}
+	{% set current_gallery_url = gallery_canonical_url %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",

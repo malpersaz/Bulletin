@@ -7,8 +7,25 @@
  * @author Refactored for better maintainability
  */
 
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
+
 class ImageService
 {
+    public const OG_IMAGE_WIDTH = 1200;
+    public const OG_IMAGE_HEIGHT = 630;
+    public const OG_MAX_BYTES = 280000;
+    public const OG_ENABLED_MODULES = [
+        'mod_news',
+        'mod_publication',
+        'mod_event',
+        'mod_announcements',
+        'mod_page',
+        'mod_video_embed',
+        'mod_video',
+    ];
+
     private $last_error = '';
     private $uploaded_url = '';
     
@@ -249,5 +266,184 @@ class ImageService
         // Construct image path based on module structure
         $site = Registry::get('site_config');
         return $site['iaddress'] . $module_name . $size . $image_url;
+    }
+
+    /**
+     * Resolves or generates a 1200x630 companion JPEG for social crawlers (WhatsApp/Meta/X).
+     *
+     * @param string $moduleName Module directory under static/ (e.g., mod_news)
+     * @param string|null $imageField Stored image filename
+     * @param string $imageBaseUrl Base static asset URL (site.iaddress)
+     * @return array<string, int|string>|null Metadata array or null when unavailable
+     */
+    public static function ensureOpenGraphJpeg(string $moduleName, ?string $imageField, string $imageBaseUrl = ''): ?array
+    {
+        $cleanModule = preg_replace('/[^a-z0-9_]/i', '', $moduleName) ?? '';
+        $cleanFile = self::extractRasterFilename($imageField);
+        if ($cleanModule === '' || $cleanFile === '') {
+            return null;
+        }
+
+        $baseRoot = defined('root_dir') ? rtrim((string) root_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : dirname(__DIR__) . DIRECTORY_SEPARATOR;
+        $sourcePath = self::resolveOpenGraphSourcePath($baseRoot, $cleanModule, $cleanFile);
+        if ($sourcePath === null) {
+            return null;
+        }
+
+        $ogDir = $baseRoot . 'static' . DIRECTORY_SEPARATOR . $cleanModule . DIRECTORY_SEPARATOR . 'og' . DIRECTORY_SEPARATOR;
+        $baseName = (string) pathinfo($cleanFile, PATHINFO_FILENAME);
+        if ($baseName === '') {
+            return null;
+        }
+
+        $ogFile = $baseName . '.jpg';
+        $outputPath = $ogDir . $ogFile;
+        $meta = self::buildOpenGraphMeta($cleanModule, $ogFile, $outputPath, $imageBaseUrl);
+
+        if (is_file($outputPath)) {
+            $existingSize = (int) @filesize($outputPath);
+            $sourceModifiedTime = (int) @filemtime($sourcePath);
+            $ogModifiedTime = (int) @filemtime($outputPath);
+            if ($existingSize > 0 && $existingSize <= (self::OG_MAX_BYTES + 15000) && $ogModifiedTime >= $sourceModifiedTime) {
+                return $meta;
+            }
+        }
+
+        if (!is_dir($ogDir)) {
+            @mkdir($ogDir, 0775, true);
+            @chmod($ogDir, 0775);
+        }
+        if (!is_dir($ogDir) || !is_writable($ogDir)) {
+            return null;
+        }
+
+        $bytes = self::encodeOpenGraphCanvas($sourcePath);
+        if ($bytes === null || $bytes === '') {
+            return null;
+        }
+
+        $tmpPath = $ogDir . '.' . $ogFile . '.' . uniqid('', true) . '.tmp';
+        if (@file_put_contents($tmpPath, $bytes) === false) {
+            @unlink($tmpPath);
+            return null;
+        }
+        @chmod($tmpPath, 0664);
+        if (!@rename($tmpPath, $outputPath)) {
+            @unlink($tmpPath);
+            return null;
+        }
+
+        return $meta;
+    }
+
+    /**
+     * Deletes the generated 1200x630 Open Graph companion JPEG when a source image is removed.
+     */
+    public static function deleteOpenGraphJpeg(string $moduleName, ?string $imageField): void
+    {
+        $cleanModule = preg_replace('/[^a-z0-9_]/i', '', $moduleName) ?? '';
+        $cleanFile = basename(trim((string) $imageField));
+        if ($cleanModule === '' || $cleanFile === '') {
+            return;
+        }
+
+        $baseName = (string) pathinfo($cleanFile, PATHINFO_FILENAME);
+        if ($baseName === '') {
+            return;
+        }
+
+        $baseRoot = defined('root_dir') ? rtrim((string) root_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : dirname(__DIR__) . DIRECTORY_SEPARATOR;
+        $ogPath = $baseRoot . 'static' . DIRECTORY_SEPARATOR . $cleanModule . DIRECTORY_SEPARATOR . 'og' . DIRECTORY_SEPARATOR . $baseName . '.jpg';
+        if (is_file($ogPath)) {
+            @unlink($ogPath);
+        }
+    }
+
+    private static function extractRasterFilename(?string $imageField): string
+    {
+        $rawField = trim((string) $imageField);
+        if ($rawField === '' || $rawField === '#') {
+            return '';
+        }
+
+        $pathOnly = parse_url($rawField, PHP_URL_PATH);
+        $cleanFile = basename($pathOnly !== false && $pathOnly !== null ? $pathOnly : $rawField);
+        $ext = strtolower((string) pathinfo($cleanFile, PATHINFO_EXTENSION));
+        if ($cleanFile === '' || in_array($ext, ['svg', 'ico'], true)) {
+            return '';
+        }
+
+        return $cleanFile;
+    }
+
+    private static function resolveOpenGraphSourcePath(string $baseRoot, string $cleanModule, string $cleanFile): ?string
+    {
+        $primary = $baseRoot . 'static' . DIRECTORY_SEPARATOR . $cleanModule . DIRECTORY_SEPARATOR . $cleanFile;
+        if (is_file($primary) && (int) @filesize($primary) > 0) {
+            return $primary;
+        }
+
+        if ($cleanModule === 'mod_video') {
+            $localVideoPoster = $baseRoot . 'static' . DIRECTORY_SEPARATOR . 'mod_video' . DIRECTORY_SEPARATOR . 'image' . DIRECTORY_SEPARATOR . $cleanFile;
+            if (is_file($localVideoPoster) && (int) @filesize($localVideoPoster) > 0) {
+                return $localVideoPoster;
+            }
+        }
+
+        return null;
+    }
+
+    private static function buildOpenGraphMeta(string $cleanModule, string $ogFile, string $outputPath, string $imageBaseUrl): array
+    {
+        $relPath = $cleanModule . '/og/' . $ogFile;
+        $publicUrl = $imageBaseUrl !== '' ? rtrim($imageBaseUrl, '/') . '/' . $relPath : '';
+        if ($publicUrl !== '' && class_exists('Helper')) {
+            $publicUrl = Helper::sitemap_url($publicUrl);
+        }
+
+        return [
+            'path' => $outputPath,
+            'file' => $ogFile,
+            'relative_path' => $relPath,
+            'url' => $publicUrl,
+            'mime' => 'image/jpeg',
+            'width' => self::OG_IMAGE_WIDTH,
+            'height' => self::OG_IMAGE_HEIGHT,
+        ];
+    }
+
+    private static function encodeOpenGraphCanvas(string $sourcePath): ?string
+    {
+        if (extension_loaded('gd')) {
+            $driver = new GdDriver();
+        } elseif (extension_loaded('imagick')) {
+            $driver = new ImagickDriver();
+        } else {
+            return null;
+        }
+
+        try {
+            $manager = new ImageManager($driver);
+            $img = $manager->read($sourcePath);
+            $img->cover(self::OG_IMAGE_WIDTH, self::OG_IMAGE_HEIGHT);
+
+            // Flatten alpha channels against opaque white so PNG/WebP transparency never renders black in JPEG
+            $canvas = $manager->create(self::OG_IMAGE_WIDTH, self::OG_IMAGE_HEIGHT)->fill('ffffff');
+            $canvas->place($img);
+
+            $encoded = null;
+            foreach ([82, 74, 66, 58, 50] as $quality) {
+                $candidate = $canvas->toJpeg(quality: $quality, progressive: true, strip: true);
+                $encoded = $candidate;
+                if ($candidate->size() <= self::OG_MAX_BYTES) {
+                    break;
+                }
+            }
+
+            return $encoded !== null ? $encoded->toString() : null;
+        } catch (\Throwable $e) {
+            error_log('ImageService::ensureOpenGraphJpeg Error: ' . $e->getMessage());
+            return null;
+        }
     }
 }
