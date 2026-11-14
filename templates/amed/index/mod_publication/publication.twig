@@ -19,13 +19,13 @@
 {% set faqs = ctx_get('faqs') ?: ctx_get('faq') %}
 {% set faq_lang = ctx_get('faq_lang') %}
 
-{% set canonical_publication_url = (site.saddress ~ 'publication/' ~ d.seo)|sitemap_url %}
+{% set canonical_publication_url = site.saddress ~ 'publication/' ~ d.seo %}
 {% set publication_meta_desc = (d.description ?: (d.summary ?: site.description))|striptags|trim|slice(0, 200) %}
-{% set publication_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
+{% set publication_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% if d.image is defined and d.image is not empty %}
-    {% set fallback_publication_image = (site.iaddress ~ 'mod_publication/' ~ d.image)|sitemap_url %}
+    {% set fallback_publication_image = site.iaddress ~ 'mod_publication/' ~ d.image %}
 {% elseif d.user_image is defined and d.user_image is not empty %}
-    {% set fallback_publication_image = (site.iaddress ~ 'mod_user/' ~ d.user_image)|sitemap_url %}
+    {% set fallback_publication_image = site.iaddress ~ 'mod_user/' ~ d.user_image %}
 {% else %}
     {% set fallback_publication_image = publication_logo_asset %}
 {% endif %}

@@ -11,7 +11,7 @@
       - has_gallery: bool (whether to show download all images)
       - share_wrap_class: string (optional wrapper class)
 #}
-{% set target_url = (share_url|default(d.seo ? (site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo) : (site.canonical_url|default(site.saddress))))|sitemap_url %}
+{% set target_url = share_url|default(d.seo ? (site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo) : (site.canonical_url|default(site.saddress))) %}
 {% set target_title = share_title|default(d.name|default(d.title|default(site.name))) %}
 {% set target_mod = mod_name|default('') %}
 {% set target_id = item_id|default(d.id|default(null)) %}

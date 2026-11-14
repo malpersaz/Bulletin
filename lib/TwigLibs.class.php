@@ -125,13 +125,7 @@ class TwigLibs extends AbstractExtension
             new TwigFilter('base64_encode', [$this, 'base64Encode']),
             new TwigFilter('time_ago', [$this, 'timeAgoFilter']),
             new TwigFilter('json_ld', [$this, 'jsonLinkedDataFilter']),
-            new TwigFilter('sitemap_url', [$this, 'sitemapUrlFilter']),
         ];
-    }
-
-    public function sitemapUrlFilter($url): string
-    {
-        return Helper::sitemap_url((string) $url);
     }
 
     public function jsonLinkedDataFilter($value): string

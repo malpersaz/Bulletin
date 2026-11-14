@@ -88,7 +88,7 @@ class TestF28TwigHeroFigureJsonld(E2ETestCase):
             }
             $cacheProp->setValue(null, [
                 'http://localhost:8080/tr/|tr' => [
-                    'license' => 'http://localhost:8080/tr/page/Kullan%C4%B1m_Ko%C5%9Fullar%C4%B1',
+                    'license' => 'http://localhost:8080/tr/page/Kullanım_Koşulları',
                     'acquire' => 'http://localhost:8080/tr/legal',
                 ],
             ]);
@@ -137,6 +137,8 @@ class TestF28TwigHeroFigureJsonld(E2ETestCase):
         self.assertEqual(prefixed["image_schema_credit_text"], "Fotoğraf: The Jerusalem Post")
         self.assertEqual(prefixed["image_schema_copyright_notice"], "© 2026 The Jerusalem Post")
         self.assertTrue(prefixed["image_schema_license_url"].startswith("http://localhost:8080/tr/"))
+        self.assertNotIn("%C4%B1", prefixed["image_schema_license_url"])
+        self.assertNotIn("%C5%9F", prefixed["image_schema_license_url"])
         self.assertEqual(prefixed["image_schema_acquire_license_url"], "http://localhost:8080/tr/legal")
 
         bare = data["bare"]
@@ -152,6 +154,87 @@ class TestF28TwigHeroFigureJsonld(E2ETestCase):
             self.assertNotIn("Temsîlî", row["image_schema_creator_name"])
 
         self.assertEqual(data["empty"]["image_schema_credit_text"], "Amed Bülten")
+
+    def test_f28_human_readable_utf8_url_contract(self) -> None:
+        """Public templates avoid |sitemap_url while share.js restores decodeURI and keeps popover UI."""
+        repo_root = Path(__file__).resolve().parents[3]
+        templates_dir = repo_root / "templates" / "amed"
+        for twig_file in templates_dir.rglob("*.twig"):
+            content = twig_file.read_text(encoding="utf-8")
+            self.assertNotIn(
+                "|sitemap_url",
+                content,
+                f"{twig_file.relative_to(repo_root)} must preserve native UTF-8 URLs without |sitemap_url",
+            )
+
+        share_js = (templates_dir / "static" / "js" / "share.js").read_text(encoding="utf-8")
+        self.assertIn("function toCleanReadableUrl(", share_js)
+        self.assertIn("decodeURI(rawUrl)", share_js)
+        self.assertNotIn("toShareableUrl", share_js)
+        self.assertIn(".share-popover-wrapper", share_js)
+        self.assertIn(".share-trigger-btn", share_js)
+        self.assertIn(".share-popover-menu", share_js)
+        self.assertIn("showCopySuccessFeedback", share_js)
+
+    def test_f28_share_partial_renders_clean_utf8_without_double_encoding(self) -> None:
+        """share.twig preserves the popover UI, emits UTF-8 data-copy-url, and avoids %25 double encoding."""
+        php_code = """<?php
+        require_once 'init.php';
+        require_once 'lib/TwigLibs.class.php';
+
+        $loader = new \\Twig\\Loader\\FilesystemLoader('templates/amed');
+        $twig = new \\Twig\\Environment($loader);
+        $twigRef = new ReflectionClass('TwigLibs');
+        $twig->addExtension($twigRef->newInstanceWithoutConstructor());
+
+        echo $twig->render('partials/share.twig', [
+            'site' => [
+                'taddress' => 'https://assets.amedbulten.com/',
+                'app_template' => 'amed',
+                'version' => '1.0.71',
+                'saddress' => 'https://amedbulten.com/tr/',
+                'name' => 'Amed Bülten',
+            ],
+            'lang' => [
+                'index' => [
+                    'share' => 'Paylaş',
+                    'copy_link' => 'Bağlantıyı Kopyala',
+                    'link_copied' => 'Bağlantı Kopyalandı!',
+                ],
+            ],
+            'share_url_path' => 'news',
+            'd' => [
+                'seo' => 'türkiyenin_spor_yazarları_tam_kadro_diyarbakırdalar',
+                'name' => 'Türkiye’nin spor yazarları tam kadro Diyarbakır’dalar!',
+            ],
+        ]);
+        """
+        if self.php.is_docker_available():
+            res = self.run_cli(["docker", "exec", "-i", "bulletin_app", "php"], input_data=php_code)
+        else:
+            res = self.run_php([], input_data=php_code)
+
+        self.assertExitCode(res, 0)
+        html = res.stdout
+        self.assertIn('class="share-container share-popover-wrapper', html)
+        self.assertIn('class="share-popover-menu"', html)
+        self.assertIn(
+            'data-copy-url="https://amedbulten.com/tr/news/türkiyenin_spor_yazarları_tam_kadro_diyarbakırdalar"',
+            html,
+        )
+        self.assertIn(
+            'data-share-url="https://amedbulten.com/tr/news/türkiyenin_spor_yazarları_tam_kadro_diyarbakırdalar"',
+            html,
+        )
+        self.assertIn(
+            'https://api.whatsapp.com/send?text=T%C3%BCrkiye%E2%80%99nin%20spor%20yazarlar%C4%B1%20tam%20kadro%20Diyarbak%C4%B1r%E2%80%99dalar%21%0Ahttps://amedbulten.com/tr/news/türkiyenin_spor_yazarları_tam_kadro_diyarbakırdalar',
+            html,
+        )
+        self.assertIn(
+            'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Famedbulten.com%2Ftr%2Fnews%2Ft%C3%BCrkiyenin',
+            html,
+        )
+        self.assertNotIn("%25", html)
 
     def test_f28_code_separation_compliance(self) -> None:
         """news.twig has zero inline styles and zero inline event handlers per AGENTS.md Rule 1."""

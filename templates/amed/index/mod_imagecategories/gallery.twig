@@ -44,7 +44,7 @@
 {% set rkat = ctx_get('rkat') %}
 {% set keto = ctx_get('keto') %}
 {% set gallery = ctx_get('gallery') ?: ctx_get('res') %}
-{% set gallery_canonical_url = (site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : ''))|sitemap_url %}
+{% set gallery_canonical_url = site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : '') %}
 
 {% block title %}
 	<title>
@@ -75,8 +75,8 @@
 {% block meta_tags %}
 	{% set gallery_page_title = d.name is not empty ? (d.name ~ ' - ' ~ lang.index.mod_pictures.title) : lang.index.mod_pictures.title %}
 	{% set gallery_page_desc = d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description) %}
-	{% set gallery_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-	{% set gallery_share_img = ((gallery is defined and gallery is not empty and gallery|first.url is defined) ? site.iaddress ~ 'mod_gallery/mod_imagecategories/original/' ~ (gallery|first.url) : gallery_logo_asset)|sitemap_url %}
+	{% set gallery_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+	{% set gallery_share_img = (gallery is defined and gallery is not empty and gallery|first.url is defined) ? site.iaddress ~ 'mod_gallery/mod_imagecategories/original/' ~ (gallery|first.url) : gallery_logo_asset %}
 	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ gallery_canonical_url }}">

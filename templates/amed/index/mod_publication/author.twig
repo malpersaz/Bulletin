@@ -13,8 +13,8 @@
 {% if author_name == '' %}{% set author_name = username %}{% endif %}
 {% set author_initials = ((author.u_name is not empty ? author.u_name|slice(0, 1) : username|slice(0, 1)) ~ (author.u_last_name is not empty ? author.u_last_name|slice(0, 1) : ''))|upper %}
 {% set tab_query = active_tab == 'news' ? '?tab=news' : '' %}
-{% set author_url = (site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') ~ tab_query)|sitemap_url %}
-{% set canonical_author_url = (site.saddress ~ 'author/' ~ username)|sitemap_url %}
+{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') ~ tab_query %}
+{% set canonical_author_url = site.saddress ~ 'author/' ~ username %}
 {% set author_description = (author.about is defined and author.about is not empty ? author.about|striptags|trim : '') %}
 {% if author_description == '' and d is defined and d.description is defined and d.description is not empty %}
     {% set author_description = d.description|striptags|trim %}
@@ -22,9 +22,9 @@
 {% if author_description == '' %}
     {% set author_description = site.description %}
 {% endif %}
-{% set author_share_image = (site.iaddress ~ 'mod_settings/logo.png')|sitemap_url %}
+{% set author_share_image = site.iaddress ~ 'mod_settings/logo.png' %}
 {% if author.user_image is defined and author.user_image is not empty %}
-    {% set author_share_image = (site.iaddress ~ 'mod_user/' ~ author.user_image)|sitemap_url %}
+    {% set author_share_image = site.iaddress ~ 'mod_user/' ~ author.user_image %}
 {% endif %}
 
 {% block canonical %}

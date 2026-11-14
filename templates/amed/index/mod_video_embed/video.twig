@@ -2,11 +2,11 @@
 
 {% set d = ctx_get('d') %}
 {% set categories = ctx_get('categories') %}
-{% set video_url = (site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo))|sitemap_url %}
+{% set video_url = site.saddress ~ 'video/' ~ d.id ~ '-' ~ (d.name|legacy_seo) %}
 {% set video_meta_desc = (d.summary ?: (d.content ?: (d.description ?: (d.name ?: site.description))))|striptags|trim|slice(0, 200) %}
-{% set video_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-{% set video_image = (d.image is defined and d.image is not empty) ? ((d.is_local|default(false) ? site.iaddress ~ 'mod_video/image/' ~ d.image : site.iaddress ~ 'mod_video_embed/' ~ d.image)|sitemap_url) : video_logo_asset %}
-{% set fallback_video_share_image = d.poster_url is defined and d.poster_url is not empty ? d.poster_url|sitemap_url : video_image %}
+{% set video_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set video_image = (d.image is defined and d.image is not empty) ? (d.is_local|default(false) ? site.iaddress ~ 'mod_video/image/' ~ d.image : site.iaddress ~ 'mod_video_embed/' ~ d.image) : video_logo_asset %}
+{% set fallback_video_share_image = d.poster_url is defined and d.poster_url is not empty ? d.poster_url : video_image %}
 {% set fallback_video_ext = fallback_video_share_image|split('?')|first|split('.')|last|lower %}
 {% set fallback_video_mime = fallback_video_ext == 'png' ? 'image/png' : (fallback_video_ext == 'webp' ? 'image/webp' : (fallback_video_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 {% set video_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_video_share_image %}

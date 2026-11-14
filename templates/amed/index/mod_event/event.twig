@@ -21,10 +21,10 @@
 {% set related_events = ctx_get('related_events') %}
 {% set related_news = ctx_get('related_news') %}
 
-{% set canonical_event_url = (site.saddress ~ 'event/' ~ d.seo)|sitemap_url %}
+{% set canonical_event_url = site.saddress ~ 'event/' ~ d.seo %}
 {% set event_meta_desc = (d.summary ?: (d.description ?: site.description))|striptags|trim|slice(0, 200) %}
-{% set event_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-{% set fallback_event_image = d.image is not empty ? (site.iaddress ~ 'mod_event/' ~ d.image)|sitemap_url : event_logo_asset %}
+{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set fallback_event_image = d.image is not empty ? (site.iaddress ~ 'mod_event/' ~ d.image) : event_logo_asset %}
 {% set fallback_event_ext = fallback_event_image|split('?')|first|split('.')|last|lower %}
 {% set fallback_event_mime = fallback_event_ext == 'png' ? 'image/png' : (fallback_event_ext == 'webp' ? 'image/webp' : (fallback_event_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 {% set event_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_event_image %}

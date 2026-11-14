@@ -31,7 +31,7 @@ class mod_news_helper extends indexBase
             return self::$licenseUrlCache[$cacheKey];
         }
 
-        $legalUrl = Helper::sitemap_url($baseSiteUrl . 'legal');
+        $legalUrl = $baseSiteUrl . 'legal';
         $licenseUrl = $legalUrl;
 
         if ($lang === 'tr') {
@@ -43,7 +43,7 @@ class mod_news_helper extends indexBase
             if ($pageModel->getSize() !== 0) {
                 $pageModel->sync();
                 if (!empty($pageModel->seo)) {
-                    $licenseUrl = Helper::sitemap_url($baseSiteUrl . 'page/' . $pageModel->seo);
+                    $licenseUrl = $baseSiteUrl . 'page/' . $pageModel->seo;
                 }
             }
         }

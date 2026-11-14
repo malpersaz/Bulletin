@@ -12,9 +12,9 @@
 
 {% set page_title = active_category ? active_category.name : lang.index.mod_event.all_events %}
 {% set is_filtered = active_category is defined and active_category is not empty %}
-{% set event_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-{% set current_canonical_url = (site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') ~ (page > 1 ? '/' ~ page : ''))|sitemap_url %}
-{% set category_canonical_url = (site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : ''))|sitemap_url %}
+{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set current_canonical_url = site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') ~ (page > 1 ? '/' ~ page : '') %}
+{% set category_canonical_url = site.saddress ~ 'events' ~ (is_filtered ? '/' ~ active_category.seo : '') %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ current_canonical_url }}">

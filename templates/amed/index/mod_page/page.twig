@@ -38,12 +38,12 @@
 {% endfor %}
 {% endif %}
 {% set has_sidebar = (sidebar_nav_count > 0) %}
-{% set canonical_page_url = (site.saddress ~ 'page/' ~ d.seo)|sitemap_url %}
+{% set canonical_page_url = site.saddress ~ 'page/' ~ d.seo %}
 {% set raw_page_title = d.title is defined and d.title is not empty ? d.title : d.name %}
 {% set page_meta_title = raw_page_title|replace({' | Amed Bülten': '', ' - Amed Bülten': '', ' – Amed Bülten': '', ' — Amed Bülten': ''})|trim %}
 {% set page_meta_description = (d.description is defined and d.description is not empty ? d.description : (d.summary is defined and d.summary is not empty ? d.summary : site.description))|striptags|trim|slice(0, 200) %}
-{% set page_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-{% set fallback_page_image = d.image is not empty ? (site.iaddress ~ 'mod_page/' ~ d.image)|sitemap_url : page_logo_asset %}
+{% set page_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set fallback_page_image = d.image is not empty ? (site.iaddress ~ 'mod_page/' ~ d.image) : page_logo_asset %}
 {% set fallback_page_ext = fallback_page_image|split('?')|first|split('.')|last|lower %}
 {% set fallback_page_mime = fallback_page_ext == 'png' ? 'image/png' : (fallback_page_ext == 'webp' ? 'image/webp' : (fallback_page_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 {% set page_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_page_image %}

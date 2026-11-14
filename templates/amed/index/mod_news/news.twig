@@ -36,10 +36,10 @@
 {% set author_full_name = (d.u_name is defined and d.u_name is not empty) ? (d.u_name ~ ' ' ~ (d.u_last_name ?? ''))|trim : site.title %}
 {% set author_initials = (d.u_name is defined and d.u_name is not empty) ? ((d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper) : (site.title|default('R')|slice(0, 2)|upper) %}
 
-{% set canonical_news_url = (site.saddress ~ 'news/' ~ d.seo)|sitemap_url %}
+{% set canonical_news_url = site.saddress ~ 'news/' ~ d.seo %}
 {% set news_meta_desc = (d.description ?: (d.summary ?: site.description))|striptags|trim|slice(0, 200) %}
-{% set news_logo_asset = (site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png'))|sitemap_url %}
-{% set fallback_news_image = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image)|sitemap_url : news_logo_asset %}
+{% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set fallback_news_image = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image) : news_logo_asset %}
 {% set fallback_news_ext = fallback_news_image|split('?')|first|split('.')|last|lower %}
 {% set fallback_news_mime = fallback_news_ext == 'png' ? 'image/png' : (fallback_news_ext == 'webp' ? 'image/webp' : (fallback_news_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 {% set news_share_image = d.og_image_url is defined and d.og_image_url is not empty ? d.og_image_url : fallback_news_image %}
@@ -118,7 +118,7 @@
 {% endblock %}
 
 {% block schema %}
-	{% set article_img_url = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image)|sitemap_url : news_logo_asset %}
+	{% set article_img_url = d.image is not empty ? (site.iaddress ~ 'mod_news/' ~ d.image) : news_logo_asset %}
 	{% set article_created_ts = d.created_at ? d.created_at|date('U') : "now"|date('U') %}
 	{% set article_updated_ts = d.updated_at ? d.updated_at|date('U') : article_created_ts %}
 	{% if article_updated_ts < article_created_ts %}{% set article_updated_ts = article_created_ts %}{% endif %}
@@ -132,12 +132,12 @@
 	{% endif %}
 	{% set img_creator_name = d.image_schema_creator_name|default(site.title) %}
 	{% set img_copyright_notice = d.image_schema_copyright_notice|default('© ' ~ article_created_ts|date('Y') ~ ' ' ~ (site.owner_name|default(site.title))) %}
-	{% set img_license_url = d.image_schema_license_url|default((site.saddress ~ (site.lang == 'tr' ? 'page/Kullanım_Koşulları' : 'legal'))|sitemap_url) %}
-	{% set img_acquire_url = d.image_schema_acquire_license_url|default((site.saddress ~ 'legal')|sitemap_url) %}
+	{% set img_license_url = d.image_schema_license_url|default(site.saddress ~ (site.lang == 'tr' ? 'page/Kullanım_Koşulları' : 'legal')) %}
+	{% set img_acquire_url = d.image_schema_acquire_license_url|default(site.saddress ~ 'legal') %}
 	{% if d.image is not empty %}
-		{% set img_url_16x9 = (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|sitemap_url %}
-		{% set img_url_4x3 = (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|sitemap_url %}
-		{% set img_url_1x1 = (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|sitemap_url %}
+		{% set img_url_16x9 = d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image) %}
+		{% set img_url_4x3 = d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image) %}
+		{% set img_url_1x1 = d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image) %}
 	{% endif %}
 	<script type="application/ld+json">
 		{

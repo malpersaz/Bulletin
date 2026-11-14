@@ -1,6 +1,16 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.71] - 2026-11-14
+### Changed
+- **Human-Readable UTF-8 URL Restoration Across Public Templates & Share Flows (`templates/amed/`, `lib/TwigLibs.class.php`, `mod/index/helper/mod_news.helper.php`)**: Restored Amed Framework's signature Wikipedia-style native UTF-8 URL identity across HTML `<link rel="canonical">`, `hreflang`, `og:url`, `twitter:url`, JSON-LD (`@id`, `url`, `BreadcrumbList`, `ImageObject.license`), and client share flows, scoping `Helper::sitemap_url()` strictly to XML sitemaps/RSS feeds, HTTP `301/302 Location` redirects, and outbound REST API payloads while keeping the `v1.0.69` `1200x630` Open Graph JPEG pipeline and `v1.0.70` `ImageObject` licensing metadata intact.
+
+### Fixed
+- **Copy Link Percent-Encoding Regression & Double-Encoded Social Share Links (`templates/amed/static/js/share.js`, `templates/amed/partials/share.twig`, `templates/amed/partials/share_toolbar.twig`, `templates/amed/partials/_share_items.twig`)**: Restored `toCleanReadableUrl()` (`decodeURI`) in `share.js` and removed `|sitemap_url` / `encoded_url` double-encoding from share partials while preserving the `v1.0.67`/`v1.0.68` compact share popover UI design untouched.
+- **Tier 1 Regression Coverage (`tests/e2e/tier1/test_f28_twig_hero_figure_jsonld.py`)**: Updated `ImageObject.license` expectations to native UTF-8 and added automated checks enforcing zero `|sitemap_url` usage in `templates/amed/`, `toCleanReadableUrl` (`decodeURI`) presence in `share.js`, preserved `.share-popover-wrapper` UI markup, clean UTF-8 `data-copy-url` rendering, and zero `%25` double-encoding.
+
+---
+
 ## [v1.0.70] - 2026-11-14
 ### Added
 - **Image License & Attribution Schema Enrichment (`mod/index/helper/mod_news.helper.php`)**: Added `resolveImageLicenseUrls()` and `enrichImageSchemaMetadata()` with per-locale static URL caching (`$licenseUrlCache`), resolving RFC 3986 percent-encoded `license` (`/tr/page/Kullan%C4%B1m_Ko%C5%9Fullar%C4%B1` when published in Turkish, falling back to `/{lang}/legal`) and `acquireLicensePage` (`/{lang}/legal` across all 11 locales), while stripping localized credit prefixes (`Fotoğraf:`, `Wêne:`, etc.) and treating illustrative placeholders (`Temsili`, `Temsîlî`, `Arşiv`, `Illustrative`, `Archive`) as publisher attribution fallbacks.
