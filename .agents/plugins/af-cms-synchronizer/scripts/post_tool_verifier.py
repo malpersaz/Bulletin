@@ -1,99 +1,94 @@
 #!/usr/bin/env python3
-"""
-PostToolUse Hook for AF CMS Synchronizer (AF/Bulletin)
-Runs post-execution deterministic validation on modified files:
-1. Validates PHP syntax via `php -l` on modified .php files.
-2. Validates code separation via `tools/code_separation_guard.py`.
-3. Validates module boundary compliance via `tools/module_boundary_guard.py`.
-"""
+"""PostToolUse verifier for AF/Bulletin running php -l, boundary checks, and diff-scoped code separation."""
 
-import sys
+import argparse
+import datetime
 import json
 import os
-import subprocess
+import sys
 
-def find_repo_root():
-    curr = os.path.abspath(os.path.dirname(__file__))
-    while curr != os.path.dirname(curr):
-        if os.path.exists(os.path.join(curr, '.git')):
-            return curr
-        curr = os.path.dirname(curr)
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
 
-def get_modified_files(repo_root):
+import hook_utils
+
+
+def _log_diagnostics(repo_root, violations):
+    """Append hook diagnostics only when the repository logs/ directory already exists."""
+    logs_dir = os.path.join(repo_root, "logs")
+    if not os.path.isdir(logs_dir) or not violations:
+        return
+    log_file = os.path.join(logs_dir, "agent_hook_diagnostics.log")
+    timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     try:
-        res = subprocess.run(
-            ['git', 'status', '--porcelain'],
-            cwd=repo_root,
-            capture_output=True,
-            text=True,
-            check=False
-        )
-        files = []
-        if res.returncode == 0 and res.stdout:
-            for line in res.stdout.splitlines():
-                if len(line) > 3:
-                    files.append(line[3:].strip())
-        return files
-    except Exception:
-        return []
+        with open(log_file, "a", encoding="utf-8") as f:
+            for item in violations:
+                f.write(f"[{timestamp}] PostToolUse: {item}\n")
+    except OSError:
+        pass
 
-def main():
-    repo_root = find_repo_root()
-    modified_files = get_modified_files(repo_root)
 
-    # 1. Check PHP syntax for modified PHP files
-    for rel_path in modified_files:
-        if rel_path.endswith('.php'):
-            full_path = os.path.join(repo_root, rel_path)
-            if os.path.exists(full_path):
-                lint_res = subprocess.run(
-                    ['php', '-l', full_path],
-                    capture_output=True,
-                    text=True,
-                    check=False
-                )
-                if lint_res.returncode != 0:
-                    sys.stderr.write(f"PHP SYNTAX ERROR in {rel_path}:\n{lint_res.stderr or lint_res.stdout}\n")
-                    sys.exit(1)
+def _resolve_targets(payload, repo_root, cli_files, strict_mode):
+    """Resolve targeted repository files from CLI flags, toolCall args, or git status."""
+    status_entries = hook_utils.get_git_status_entries(repo_root)
+    status_map = {rel: xy for xy, rel in status_entries}
 
-    # 2. Check module boundary on modified files
-    boundary_tool = os.path.join(repo_root, 'tools', 'module_boundary_guard.py')
-    if os.path.exists(boundary_tool):
-        b_res = subprocess.run(
-            [sys.executable, boundary_tool],
-            cwd=repo_root,
-            capture_output=True,
-            text=True,
-            check=False
-        )
-        if b_res.returncode != 0:
-            sys.stderr.write(f"MODULE BOUNDARY VIOLATION:\n{b_res.stdout}\n")
-            sys.exit(1)
+    if cli_files:
+        targets = []
+        for raw_path in cli_files:
+            real_target = hook_utils.resolve_target_path(raw_path, payload, repo_root)
+            rel_posix = hook_utils.to_rel_posix(real_target, repo_root)
+            if rel_posix:
+                fallback = "??" if os.path.isfile(real_target) else ""
+                targets.append((status_map.get(rel_posix, fallback), rel_posix))
+        return targets
 
-    # 3. Check code separation on modified templates
-    sep_tool = os.path.join(repo_root, 'tools', 'code_separation_guard.py')
-    if os.path.exists(sep_tool):
-        target_templates = [
-            f for f in modified_files
-            if os.path.splitext(f)[1].lower() in ('.twig', '.html', '.php')
-            and not f.startswith(('docs/', 'tools/', '.agents/', 'tests/'))
-        ]
-        for t_file in target_templates:
-            full_t = os.path.join(repo_root, t_file)
-            if os.path.exists(full_t):
-                sep_res = subprocess.run(
-                    [sys.executable, sep_tool, "--path", t_file],
-                    cwd=repo_root,
-                    capture_output=True,
-                    text=True,
-                    check=False
-                )
-                if sep_res.returncode != 0:
-                    sys.stderr.write(f"CODE SEPARATION VIOLATION in {t_file}:\n{sep_res.stdout}\n")
-                    sys.exit(1)
+    tool_call = payload.get("toolCall") if isinstance(payload.get("toolCall"), dict) else {}
+    args = tool_call.get("args") if isinstance(tool_call.get("args"), dict) else {}
+    raw_target = hook_utils.extract_tool_target_path(args)
+    if raw_target:
+        real_target = hook_utils.resolve_target_path(raw_target, payload, repo_root)
+        rel_posix = hook_utils.to_rel_posix(real_target, repo_root)
+        if not rel_posix:
+            return []
+        fallback = "??" if os.path.isfile(real_target) else ""
+        return [(status_map.get(rel_posix, fallback), rel_posix)]
+
+    if strict_mode:
+        return status_entries
+
+    return []
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--files", nargs="*", default=[])
+    parsed, _ = parser.parse_known_args(argv)
+
+    payload = hook_utils.read_stdin_json()
+    if payload.get("error") and not parsed.strict:
+        print(json.dumps({}))
+        return 0
+
+    repo_root = hook_utils.find_repo_root(payload)
+    targets = _resolve_targets(payload, repo_root, parsed.files, parsed.strict)
+    if not targets:
+        print(json.dumps({}))
+        return 0
+
+    violations = hook_utils.verify_repo_targets(repo_root, targets)
+    if violations:
+        if parsed.strict:
+            for item in violations:
+                sys.stderr.write(item + "\n")
+            return 1
+        _log_diagnostics(repo_root, violations)
 
     print(json.dumps({}))
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

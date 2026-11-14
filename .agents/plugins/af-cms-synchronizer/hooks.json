@@ -2,7 +2,7 @@
   "af-cms-synchronizer-hooks": {
     "PreToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content|run_command",
+        "matcher": "write_file|edit_file|multi_replace_file_content|write_to_file|replace_file_content|run_command",
         "hooks": [
           {
             "type": "command",
@@ -14,7 +14,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content",
+        "matcher": "write_file|edit_file|multi_replace_file_content|write_to_file|replace_file_content",
         "hooks": [
           {
             "type": "command",

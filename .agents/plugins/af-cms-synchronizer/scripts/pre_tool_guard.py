@@ -1,127 +1,152 @@
 #!/usr/bin/env python3
-"""
-PreToolUse Hook for AF CMS Synchronizer (AF/Bulletin)
-Intercepts tool execution before it happens to deterministically prevent:
-1. Writing to or creating files in forbidden modules (commercial, assessment, or foreign modules).
-2. Violations of AGENTS.md Rule 2 (Strict Code Separation: inline CSS/JS).
-3. Dangerous cross-repo side effects.
-"""
+"""PreToolUse guard for AF/Bulletin enforcing workspace isolation, module boundaries, and code separation."""
 
-import sys
 import json
 import os
 import re
+import sys
 
-FORBIDDEN_MODULES = [
-    'mod_content',
-    'mod_content_category',
-    'mod_product',
-    'mod_product_category',
-    'mod_service',
-    'mod_service_category',
-    'mod_client',
-    'mod_reference',
-    'mod_project',
-    'mod_project_category',
-    'mod_appointment',
-    'mod_reservation',
-    'mod_hr',
-    'mod_organization_type',
-    'mod_test',
-    'mod_assessment',
-    'mod_category',
-    'mod_hero_slider',
-]
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
 
-# Patterns for inline code violations (AGENTS.md Rule 2)
-RE_STYLE_TAG = re.compile(r'<style\b[^>]*>', re.IGNORECASE)
-RE_INLINE_STYLE_ATTR = re.compile(r'\bstyle\s*=\s*["\'][^"\']*["\']', re.IGNORECASE)
-RE_INLINE_EVENT = re.compile(r'\bon[a-zA-Z]+\s*=\s*["\'][^"\']*["\']', re.IGNORECASE)
+import hook_utils
 
-def find_repo_root():
-    curr = os.path.abspath(os.path.dirname(__file__))
-    while curr != os.path.dirname(curr):
-        if os.path.exists(os.path.join(curr, '.git')):
-            return curr
-        curr = os.path.dirname(curr)
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
+RE_COMMIT_MESSAGE_FLAG = re.compile(
+    r"(?:^|\s)(?:-m|--message)(?:\s*=\s*|\s+)(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')"
+)
+RE_SIBLING_BUSINESS_SEGMENT = r"(?:AF[\\/]+Business|\.\.[\\/]+Business)"
+RE_CD_BUSINESS = re.compile(
+    rf"(?:^|[;&|()])\s*cd\s+[^\n;|&]*{RE_SIBLING_BUSINESS_SEGMENT}(?:[\\/\s;|&\"']|$)"
+)
+RE_GIT_C_MUTATE_BUSINESS = re.compile(
+    rf"\bgit\s+-C\s+[^\s;|&\"']*{RE_SIBLING_BUSINESS_SEGMENT}[^\n;|&]*\b"
+    r"(?:add|commit|push|pull|merge|rebase|cherry-pick|reset|checkout|switch|restore|clean|rm|mv|tag|apply|am|stash|init)\b"
+)
+RE_REDIRECT_BUSINESS = re.compile(
+    rf"(?:&>>?|1>>?|2>>?|>>?)\s*[\"']?[^\s;|&\"']*{RE_SIBLING_BUSINESS_SEGMENT}"
+)
+RE_FS_MUTATE_BUSINESS = re.compile(
+    rf"(?:^|[;&|()])\s*(?:env\s+|sudo\s+)?"
+    rf"(?:cp|mv|rm|rmdir|mkdir|touch|install|ln|chmod|chown|rsync|dd|tee|truncate)\b"
+    rf"[^\n;|&]*{RE_SIBLING_BUSINESS_SEGMENT}"
+)
+RE_INPLACE_EDIT_BUSINESS = re.compile(
+    rf"\b(?:sed|perl)\b[^\n;|&]*(?:\s-(?:[a-zA-Z]*i[a-zA-Z]*\b|-in-place\b))"
+    rf"[^\n;|&]*{RE_SIBLING_BUSINESS_SEGMENT}"
+)
+RE_PYTHON_WRITE_BUSINESS = re.compile(
+    rf"\b(?:python[23]?|php)\b[^\n;|&]*(?:"
+    rf"{RE_SIBLING_BUSINESS_SEGMENT}[^\n;|&]*(?:\bopen\(|\bfile_put_contents\b|\bfwrite\b|\bfopen\b|write_text|write_bytes|unlink|rmdir|rename|replace|shutil\.(?:copy|move|rmtree))"
+    rf"|"
+    rf"(?:\bopen\(|\bfile_put_contents\b|\bfwrite\b|\bfopen\b|write_text|write_bytes|unlink|rmdir|rename|shutil\.(?:copy|move|rmtree))[^\n;|&]*{RE_SIBLING_BUSINESS_SEGMENT}"
+    rf")"
+)
+RE_EXPLICIT_BUSINESS_PATH = re.compile(r"(?:^|[\\/])AF[\\/]Business(?:[\\/]|$)")
 
-ALLOWED_FOREIGN_NAMED_PATHS = {
-    'mod/index/helper/mod_hero_slider.helper.php',
-}
 
-def check_file_path(file_path):
-    norm_path = file_path.replace('\\', '/')
-    for allowed in ALLOWED_FOREIGN_NAMED_PATHS:
-        if norm_path.endswith(allowed):
-            return None
-    parts = norm_path.split('/')
-    base = os.path.basename(norm_path)
+def _deny(reason):
+    print(json.dumps({"decision": "deny", "reason": reason}))
+    return 0
 
-    # Check against forbidden modules
-    for mod in FORBIDDEN_MODULES:
-        if mod in parts:
-            return f"Target file '{file_path}' belongs to forbidden module '{mod}' in AF/Bulletin."
-        if mod in base and not base.endswith(('.md', '.py', '.json')):
-            return f"Target file '{file_path}' carries forbidden module token '{mod}' in AF/Bulletin."
-    return None
 
-def check_code_content(file_path, content):
-    ext = os.path.splitext(file_path)[1].lower()
-    if ext not in ('.twig', '.html', '.php'):
-        return None
+def _allow():
+    print(json.dumps({"decision": "allow"}))
+    return 0
 
-    # Check for <style> tags
-    if RE_STYLE_TAG.search(content):
-        return "Strict Code Separation Violation: Inline <style> tags are forbidden in templates and PHP files."
 
-    # Check for inline style attributes
-    if RE_INLINE_STYLE_ATTR.search(content):
-        return "Strict Code Separation Violation: Inline style='...' attributes are forbidden in templates and PHP files."
+def _strip_commit_messages(command):
+    """Remove commit message literals so prose mentioning AF/Business does not trigger command guards."""
+    return RE_COMMIT_MESSAGE_FLAG.sub(" -m <message>", command)
 
-    # Check for inline event handlers (onclick, onchange, etc.)
-    if RE_INLINE_EVENT.search(content):
-        return "Strict Code Separation Violation: Inline JavaScript event handlers (e.g. onclick=) are forbidden."
 
-    return None
+def check_file_tool(tool_name, args, payload, repo_root):
+    """Validate file-modifying tool calls against workspace, boundary, and code-separation rules."""
+    raw_target = hook_utils.extract_tool_target_path(args)
+    if not raw_target:
+        return ""
+
+    real_target = hook_utils.resolve_target_path(raw_target, payload, repo_root)
+    if RE_EXPLICIT_BUSINESS_PATH.search(real_target):
+        return (
+            f"WORKSPACE ISOLATION VIOLATION: Autonomous writes to sibling repository "
+            f"'AF/Business' are forbidden ('{raw_target}')."
+        )
+
+    allowed_roots = hook_utils.get_allowed_write_roots(payload, repo_root)
+    if not any(hook_utils.is_path_within(real_target, root) for root in allowed_roots):
+        return (
+            f"WORKSPACE ISOLATION VIOLATION: Target path '{raw_target}' resolves to "
+            f"'{real_target}', outside permitted AF/Bulletin workspace and artifact roots."
+        )
+
+    if not hook_utils.is_path_within(real_target, repo_root):
+        return ""
+
+    rel_posix = hook_utils.to_rel_posix(real_target, repo_root)
+    path_violation = hook_utils.check_forbidden_modules_in_path(rel_posix)
+    if path_violation:
+        return f"MODULE BOUNDARY VIOLATION: {path_violation}"
+
+    content = hook_utils.extract_written_content(tool_name, args)
+    content_violation = hook_utils.check_forbidden_modules_in_content(rel_posix, content)
+    if content_violation:
+        return f"MODULE BOUNDARY VIOLATION: {content_violation}"
+
+    sep_violations = hook_utils.find_code_separation_violations(rel_posix, content)
+    if sep_violations:
+        return (
+            "CODE SEPARATION VIOLATION (AGENTS.md Rule 1): "
+            + "; ".join(sep_violations)
+            + ". Move CSS/JS into external files under static/."
+        )
+
+    return ""
+
+
+def check_run_command(args):
+    """Block shell commands that enter or mutate the sibling AF/Business repository."""
+    if not isinstance(args, dict):
+        return ""
+    raw_cmd = args.get("CommandLine") or args.get("command") or ""
+    if not isinstance(raw_cmd, str) or not raw_cmd.strip():
+        return ""
+
+    cmd = _strip_commit_messages(raw_cmd)
+    for pattern in (
+        RE_CD_BUSINESS,
+        RE_GIT_C_MUTATE_BUSINESS,
+        RE_REDIRECT_BUSINESS,
+        RE_FS_MUTATE_BUSINESS,
+        RE_INPLACE_EDIT_BUSINESS,
+        RE_PYTHON_WRITE_BUSINESS,
+    ):
+        if pattern.search(cmd):
+            return (
+                "WORKSPACE ISOLATION VIOLATION: Shell command attempts to enter or "
+                "mutate sibling repository 'AF/Business'."
+            )
+    return ""
+
 
 def main():
-    try:
-        payload = json.load(sys.stdin)
-    except Exception as e:
-        print(json.dumps({"decision": "allow"}))
-        return
-
-    tool_call = payload.get("toolCall", {})
+    payload = hook_utils.read_stdin_json()
+    repo_root = hook_utils.find_repo_root(payload)
+    tool_call = payload.get("toolCall") if isinstance(payload.get("toolCall"), dict) else {}
     tool_name = tool_call.get("name", "")
-    args = tool_call.get("args", {})
+    args = tool_call.get("args") if isinstance(tool_call.get("args"), dict) else {}
 
-    # Intercept file write / replace tools
-    if tool_name in ("write_to_file", "replace_file_content"):
-        target_file = args.get("TargetFile", "")
-        if target_file:
-            # 1. Module boundary check
-            path_err = check_file_path(target_file)
-            if path_err:
-                print(json.dumps({
-                    "decision": "deny",
-                    "reason": f"SECURITY GATE BLOCK: {path_err}"
-                }))
-                return
+    if tool_name in hook_utils.FILE_MODIFICATION_TOOLS:
+        reason = check_file_tool(tool_name, args, payload, repo_root)
+        if reason:
+            return _deny(reason)
+    elif tool_name == "run_command":
+        reason = check_run_command(args)
+        if reason:
+            return _deny(reason)
 
-            # 2. Code separation check
-            content = args.get("CodeContent") or args.get("ReplacementContent") or ""
-            if content:
-                content_err = check_code_content(target_file, content)
-                if content_err:
-                    print(json.dumps({
-                        "decision": "deny",
-                        "reason": f"SECURITY GATE BLOCK: {content_err}"
-                    }))
-                    return
+    return _allow()
 
-    # Default: allow tool execution
-    print(json.dumps({"decision": "allow"}))
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -1,6 +1,27 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.72] - 2026-11-14
+### Added
+- **Antigravity v2.32 Hook & Manifest Parity (`WP1`)**:
+  - Added shared hook verification utilities in `.agents/plugins/af-cms-synchronizer/scripts/hook_utils.py` supporting both Antigravity v2.32 native tools (`write_file`, `edit_file`, `multi_replace_file_content`, `run_command`) and legacy IDE tool aliases (`write_to_file`, `replace_file_content`).
+  - Added high-contrast plugin icon `.agents/plugins/af-cms-synchronizer/assets/logo.svg` referenced in `plugin.json` (`version: 1.0.72`).
+  - Added Python `unittest` suite `tests/test_agent_hooks_v2.py` verifying hook schemas, cross-repo mutation blocks, zero false positives on PHP/Twig idioms, diff-scoped gating, bounded `Stop` retries, and portable plugin configurations.
+
+### Changed
+- **Plugin Manifests & Portable Configs**:
+  - Replaced machine-specific absolute path in `.agents/skills.json` with repository-relative `.agents/skills` (`exclude: ["_shared"]`).
+  - Updated `.agents/plugins.json` to the `entries` schema (`{"entries": [{"path": ".agents/plugins"}]}`).
+  - Updated `.agents/plugins/af-cms-synchronizer/plugin.json` to `1.0.72` with `logo` field and removed unsupported `keywords`.
+  - Updated `.agents/plugins/af-cms-synchronizer/hooks.json` matchers for all v2.32 and legacy file-modification tools plus `run_command`.
+- **False-Positive-Safe Lifecycle Hooks**:
+  - Hardened `pre_tool_guard.py` with component-safe workspace isolation (`os.path.commonpath`), PHP/Twig false-positive exclusions (`$style =`, `data-style`, `once=`, comments, async `<link onload=...>` preloads, external `<script src>`, JSON-LD), exempt repo/artifact dirs, and commit-message-safe `AF/Business` shell mutation detection.
+  - Updated `post_tool_verifier.py` to honor the `PostToolUse` `{}` JSON stdout contract in hook mode while preserving strict non-zero exit diagnostics under `--strict`.
+  - Hardened `stop_quality_gate.py` with `continuationActive` single-retry loop protection, immediate allow on non-`NO_TOOL_CALL` termination reasons (`USER_CANCELED`, `ERROR`, etc.), `-uall` porcelain parsing, `php -l`, module boundary checks, and diff-scoped code separation.
+- **Release Scoping**:
+  - Synchronized framework fallback version `$site['version'] = '1.0.72';` in `config/site.config.php` and recorded `WP2`–`WP5` deferral to `v1.0.73` in `docs/plan/antigravity-v2-32-agent-infrastructure-modernization-v1.0.72.md`.
+
+
 ## [v1.0.71] - 2026-11-14
 ### Changed
 - **Human-Readable UTF-8 URL Restoration Across Public Templates & Share Flows (`templates/amed/`, `lib/TwigLibs.class.php`, `mod/index/helper/mod_news.helper.php`)**: Restored Amed Framework's signature Wikipedia-style native UTF-8 URL identity across HTML `<link rel="canonical">`, `hreflang`, `og:url`, `twitter:url`, JSON-LD (`@id`, `url`, `BreadcrumbList`, `ImageObject.license`), and client share flows, scoping `Helper::sitemap_url()` strictly to XML sitemaps/RSS feeds, HTTP `301/302 Location` redirects, and outbound REST API payloads while keeping the `v1.0.69` `1200x630` Open Graph JPEG pipeline and `v1.0.70` `ImageObject` licensing metadata intact.

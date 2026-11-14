@@ -1,5 +1,7 @@
 {
-  "plugins": [
-    "./plugins/af-cms-synchronizer"
+  "entries": [
+    {
+      "path": ".agents/plugins"
+    }
   ]
 }

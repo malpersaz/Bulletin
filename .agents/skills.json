@@ -1,5 +1,8 @@
 {
   "entries": [
-    { "path": "/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills" }
+    {
+      "path": ".agents/skills",
+      "exclude": ["_shared"]
+    }
   ]
 }
