@@ -1,6 +1,16 @@
 # Amed Framework — Bulletin CMS Version History
 
 
+## [v1.0.70] - 2026-11-14
+### Added
+- **Image License & Attribution Schema Enrichment (`mod/index/helper/mod_news.helper.php`)**: Added `resolveImageLicenseUrls()` and `enrichImageSchemaMetadata()` with per-locale static URL caching (`$licenseUrlCache`), resolving RFC 3986 percent-encoded `license` (`/tr/page/Kullan%C4%B1m_Ko%C5%9Fullar%C4%B1` when published in Turkish, falling back to `/{lang}/legal`) and `acquireLicensePage` (`/{lang}/legal` across all 11 locales), while stripping localized credit prefixes (`Fotoğraf:`, `Wêne:`, etc.) and treating illustrative placeholders (`Temsili`, `Temsîlî`, `Arşiv`, `Illustrative`, `Archive`) as publisher attribution fallbacks.
+- **Tier 1 JSON-LD Image Metadata Regression Suite (`tests/e2e/tier1/test_f28_twig_hero_figure_jsonld.py`)**: Added automated assertions verifying `contentUrl`, `creator`, `copyrightNotice`, `license`, and `acquireLicensePage` across all three `NewsArticle.image` aspect variants alongside helper unit tests for third-party, prefixed, placeholder, and empty `image_credit` values.
+
+### Fixed
+- **Google Search Console `ImageObject` Image Metadata Warnings (`templates/amed/index/mod_news/news.twig`)**: Updated all three aspect-ratio `ImageObject` blocks (`16:9` 1280x720, `4:3` 1200x900, `1:1` 1200x1200) inside `NewsArticle.image` to emit `contentUrl`, `creator`, `creditText`, `copyrightNotice`, `license`, and `acquireLicensePage`, resolving all 4 Google Search Console "Image metadata" missing-field improvement issues while preserving clean `publisher.logo` and 300x300 fallback `ImageObject` definitions.
+
+---
+
 ## [v1.0.69] - 2026-11-14
 ### Added
 - **Centralized Open Graph 1200x630 JPEG Pipeline (`lib/ImageService.class.php`, `mod/index/indexBase.php`)**: Added `ImageService::ensureOpenGraphJpeg()` and `ImageService::deleteOpenGraphJpeg()` supporting both GD and Imagick drivers with white-background alpha flattening and adaptive progressive JPEG encoding (`<= 280 KB`) under `static/<module>/og/<base>.jpg` for WhatsApp, Meta, and X crawler compatibility, paired with `indexBase::enrichRowWithOpenGraphImage()` for automatic lazy self-healing on existing articles and media records.

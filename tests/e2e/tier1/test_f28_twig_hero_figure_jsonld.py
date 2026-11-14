@@ -10,6 +10,7 @@ Validates semantic HTML and JSON-LD schema in public news template:
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import re
 
@@ -65,6 +66,92 @@ class TestF28TwigHeroFigureJsonld(E2ETestCase):
         """JSON-LD schema includes ImageObject with caption and creditText properties."""
         self.assertIn('"caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}', self.twig_content)
         self.assertIn('"creditText": {{ d.image_credit|json_ld|raw }}', self.twig_content)
+
+    def test_f28_jsonld_image_object_google_license_metadata(self) -> None:
+        """All three NewsArticle ImageObjects emit contentUrl, creator, copyrightNotice, license, and acquireLicensePage."""
+        for prop in ('"contentUrl":', '"creator":', '"copyrightNotice":', '"license":', '"acquireLicensePage":'):
+            self.assertGreaterEqual(
+                self.twig_content.count(prop),
+                3,
+                f"news.twig must emit {prop} across all 3 ImageObject aspect variants",
+            )
+
+    def test_f28_helper_enriches_image_schema_metadata(self) -> None:
+        """mod_news_helper::enrichImageSchemaMetadata derives truthful creator, creditText, copyrightNotice, and license URLs."""
+        use_docker = self.php.is_docker_available()
+        seed_cache_block = ""
+        if not use_docker:
+            seed_cache_block = """
+            $cacheProp = $ref->getProperty('licenseUrlCache');
+            if (PHP_VERSION_ID < 80100) {
+                $cacheProp->setAccessible(true);
+            }
+            $cacheProp->setValue(null, [
+                'http://localhost:8080/tr/|tr' => [
+                    'license' => 'http://localhost:8080/tr/page/Kullan%C4%B1m_Ko%C5%9Fullar%C4%B1',
+                    'acquire' => 'http://localhost:8080/tr/legal',
+                ],
+            ]);
+            """
+
+        php_code = """<?php
+        require_once 'init.php';
+        require_once 'lib/Traits/PublicHelperTrait.php';
+        require_once 'mod/index/indexBase.php';
+        require_once 'mod/index/helper/mod_news.helper.php';
+
+        $ref = new ReflectionClass('mod_news_helper');
+        $helper = $ref->newInstanceWithoutConstructor();
+        $helper->site = [
+            'lang' => 'tr',
+            'saddress' => 'http://localhost:8080/tr/',
+            'title' => 'Amed Bülten',
+            'owner_name' => 'Amed Bülten',
+        ];
+        __SEED_CACHE__
+        $method = $ref->getMethod('enrichImageSchemaMetadata');
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
+
+        $cases = [
+            'prefixed' => $method->invoke($helper, ['created_at' => '2026-11-13 11:39:13', 'image_credit' => 'Fotoğraf: The Jerusalem Post']),
+            'bare' => $method->invoke($helper, ['created_at' => '2026-11-14 12:19:11', 'image_credit' => 'Reuters']),
+            'temsili' => $method->invoke($helper, ['created_at' => '2026-11-14 10:00:00', 'image_credit' => 'Fotoğraf: Temsili']),
+            'temsili_ku' => $method->invoke($helper, ['created_at' => '2026-11-14 10:00:00', 'image_credit' => 'Wêne: Temsîlî']),
+            'empty' => $method->invoke($helper, ['created_at' => '2026-11-14 10:00:00', 'image_credit' => '']),
+        ];
+        echo json_encode($cases, JSON_UNESCAPED_UNICODE);
+        """.replace("__SEED_CACHE__", seed_cache_block)
+
+        if use_docker:
+            res = self.run_cli(["docker", "exec", "-i", "bulletin_app", "php"], input_data=php_code)
+        else:
+            res = self.run_php([], input_data=php_code)
+
+        self.assertExitCode(res, 0)
+        data = json.loads(res.stdout.strip().splitlines()[-1])
+
+        prefixed = data["prefixed"]
+        self.assertEqual(prefixed["image_schema_creator_name"], "The Jerusalem Post")
+        self.assertEqual(prefixed["image_schema_credit_text"], "Fotoğraf: The Jerusalem Post")
+        self.assertEqual(prefixed["image_schema_copyright_notice"], "© 2026 The Jerusalem Post")
+        self.assertTrue(prefixed["image_schema_license_url"].startswith("http://localhost:8080/tr/"))
+        self.assertEqual(prefixed["image_schema_acquire_license_url"], "http://localhost:8080/tr/legal")
+
+        bare = data["bare"]
+        self.assertEqual(bare["image_schema_creator_name"], "Reuters")
+        self.assertEqual(bare["image_schema_credit_text"], "Reuters")
+        self.assertEqual(bare["image_schema_copyright_notice"], "© 2026 Reuters")
+
+        for fallback_key in ("temsili", "temsili_ku", "empty"):
+            row = data[fallback_key]
+            self.assertEqual(row["image_schema_creator_name"], "Amed Bülten")
+            self.assertEqual(row["image_schema_copyright_notice"], "© 2026 Amed Bülten")
+            self.assertNotIn("Temsili", row["image_schema_creator_name"])
+            self.assertNotIn("Temsîlî", row["image_schema_creator_name"])
+
+        self.assertEqual(data["empty"]["image_schema_credit_text"], "Amed Bülten")
 
     def test_f28_code_separation_compliance(self) -> None:
         """news.twig has zero inline styles and zero inline event handlers per AGENTS.md Rule 1."""

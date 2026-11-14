@@ -130,6 +130,15 @@
 			{% endif %}
 		{% endfor %}
 	{% endif %}
+	{% set img_creator_name = d.image_schema_creator_name|default(site.title) %}
+	{% set img_copyright_notice = d.image_schema_copyright_notice|default('© ' ~ article_created_ts|date('Y') ~ ' ' ~ (site.owner_name|default(site.title))) %}
+	{% set img_license_url = d.image_schema_license_url|default((site.saddress ~ (site.lang == 'tr' ? 'page/Kullanım_Koşulları' : 'legal'))|sitemap_url) %}
+	{% set img_acquire_url = d.image_schema_acquire_license_url|default((site.saddress ~ 'legal')|sitemap_url) %}
+	{% if d.image is not empty %}
+		{% set img_url_16x9 = (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|sitemap_url %}
+		{% set img_url_4x3 = (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|sitemap_url %}
+		{% set img_url_1x1 = (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|sitemap_url %}
+	{% endif %}
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
@@ -170,27 +179,51 @@
 		    {% if d.image is not empty %}
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_16x9|default(site.iaddress ~ 'mod_news/' ~ d.image))|sitemap_url|json_ld|raw }},
+		      "url": {{ img_url_16x9|json_ld|raw }},
+		      "contentUrl": {{ img_url_16x9|json_ld|raw }},
 		      "width": 1280,
 		      "height": 720,
-		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
-		      "creditText": {{ d.image_credit|json_ld|raw }}{% endif %}
+		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }},
+		      {% if d.image_credit is defined and d.image_credit is not empty %}"creditText": {{ d.image_credit|json_ld|raw }},{% else %}"creditText": {{ (d.image_schema_credit_text|default(site.title))|json_ld|raw }},{% endif %}
+		      "creator": {
+		        "@type": "Organization",
+		        "name": {{ img_creator_name|json_ld|raw }}
+		      },
+		      "copyrightNotice": {{ img_copyright_notice|json_ld|raw }},
+		      "license": {{ img_license_url|json_ld|raw }},
+		      "acquireLicensePage": {{ img_acquire_url|json_ld|raw }}
 		    },
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_4x3|default(site.iaddress ~ 'mod_news/4x3/' ~ d.image))|sitemap_url|json_ld|raw }},
+		      "url": {{ img_url_4x3|json_ld|raw }},
+		      "contentUrl": {{ img_url_4x3|json_ld|raw }},
 		      "width": 1200,
 		      "height": 900,
-		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
-		      "creditText": {{ d.image_credit|json_ld|raw }}{% endif %}
+		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }},
+		      {% if d.image_credit is defined and d.image_credit is not empty %}"creditText": {{ d.image_credit|json_ld|raw }},{% else %}"creditText": {{ (d.image_schema_credit_text|default(site.title))|json_ld|raw }},{% endif %}
+		      "creator": {
+		        "@type": "Organization",
+		        "name": {{ img_creator_name|json_ld|raw }}
+		      },
+		      "copyrightNotice": {{ img_copyright_notice|json_ld|raw }},
+		      "license": {{ img_license_url|json_ld|raw }},
+		      "acquireLicensePage": {{ img_acquire_url|json_ld|raw }}
 		    },
 		    {
 		      "@type": "ImageObject",
-		      "url": {{ (d.image_1x1|default(site.iaddress ~ 'mod_news/1x1/' ~ d.image))|sitemap_url|json_ld|raw }},
+		      "url": {{ img_url_1x1|json_ld|raw }},
+		      "contentUrl": {{ img_url_1x1|json_ld|raw }},
 		      "width": 1200,
 		      "height": 1200,
-		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }}{% if d.image_credit is defined and d.image_credit is not empty %},
-		      "creditText": {{ d.image_credit|json_ld|raw }}{% endif %}
+		      "caption": {{ (d.image_alt|default(d.name))|json_ld|raw }},
+		      {% if d.image_credit is defined and d.image_credit is not empty %}"creditText": {{ d.image_credit|json_ld|raw }},{% else %}"creditText": {{ (d.image_schema_credit_text|default(site.title))|json_ld|raw }},{% endif %}
+		      "creator": {
+		        "@type": "Organization",
+		        "name": {{ img_creator_name|json_ld|raw }}
+		      },
+		      "copyrightNotice": {{ img_copyright_notice|json_ld|raw }},
+		      "license": {{ img_license_url|json_ld|raw }},
+		      "acquireLicensePage": {{ img_acquire_url|json_ld|raw }}
 		    }
 		    {% else %}
 		    {

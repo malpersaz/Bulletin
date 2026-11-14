@@ -9,6 +9,7 @@ class mod_news_helper extends indexBase
     }
 
     private static array $imageFileCache = [];
+    private static array $licenseUrlCache = [];
 
     private function _checkImageExists(string $path): bool
     {
@@ -16,6 +17,88 @@ class mod_news_helper extends indexBase
             self::$imageFileCache[$path] = (file_exists($path) && is_file($path));
         }
         return self::$imageFileCache[$path];
+    }
+
+    /**
+     * Resolves canonical license and acquireLicensePage URLs for ImageObject schema metadata.
+     */
+    private function resolveImageLicenseUrls(): array
+    {
+        $lang = (string) ($this->site['lang'] ?? 'tr');
+        $baseSiteUrl = rtrim((string) ($this->site['saddress'] ?? ''), '/') . '/';
+        $cacheKey = $baseSiteUrl . '|' . $lang;
+        if (isset(self::$licenseUrlCache[$cacheKey])) {
+            return self::$licenseUrlCache[$cacheKey];
+        }
+
+        $legalUrl = Helper::sitemap_url($baseSiteUrl . 'legal');
+        $licenseUrl = $legalUrl;
+
+        if ($lang === 'tr') {
+            $pageModel = Load::model('mod_page');
+            $pageModel->flush();
+            $pageModel->where_seo_and_status_and_root_and_lang('Kullanım_Koşulları', 'y', 'n', $lang);
+            $pageModel->limit(1);
+            $pageModel->gRo();
+            if ($pageModel->getSize() !== 0) {
+                $pageModel->sync();
+                if (!empty($pageModel->seo)) {
+                    $licenseUrl = Helper::sitemap_url($baseSiteUrl . 'page/' . $pageModel->seo);
+                }
+            }
+        }
+
+        self::$licenseUrlCache[$cacheKey] = [
+            'license' => $licenseUrl,
+            'acquire' => $legalUrl,
+        ];
+
+        return self::$licenseUrlCache[$cacheKey];
+    }
+
+    /**
+     * Enriches news detail row with Google ImageObject license and attribution metadata.
+     */
+    private function enrichImageSchemaMetadata(array $newsData): array
+    {
+        $publisherName = trim((string) ($this->site['title'] ?? ''));
+        if ($publisherName === '') {
+            $publisherName = 'Amed Bulten';
+        }
+        $ownerName = trim((string) ($this->site['owner_name'] ?? ''));
+        $defaultCopyrightOwner = ($ownerName !== '') ? $ownerName : $publisherName;
+
+        $createdTimestamp = !empty($newsData['created_at']) ? strtotime((string) $newsData['created_at']) : false;
+        $copyrightYear = ($createdTimestamp !== false && $createdTimestamp > 0)
+            ? date('Y', $createdTimestamp)
+            : date('Y');
+
+        $rawCredit = trim((string) ($newsData['image_credit'] ?? ''));
+        $creatorName = $publisherName;
+        $copyrightOwner = $defaultCopyrightOwner;
+
+        if ($rawCredit !== '') {
+            $candidateName = $rawCredit;
+            if (!preg_match('~^https?://~i', $candidateName) && preg_match('/^[^:]{2,25}:\s*(.+)$/u', $candidateName, $matches)) {
+                $candidateName = trim((string) $matches[1]);
+            }
+
+            $isPlaceholder = (bool) preg_match('/^(?:tems[i\x{00EE}]l[i\x{00EE}]|illustrative|archive|ar\x{015F}[i\x{00EE}]v)$/iu', $candidateName);
+            if ($candidateName !== '' && !$isPlaceholder) {
+                $creatorName = $candidateName;
+                $copyrightOwner = $candidateName;
+            }
+        }
+
+        $licenseUrls = $this->resolveImageLicenseUrls();
+
+        $newsData['image_schema_creator_name'] = $creatorName;
+        $newsData['image_schema_credit_text'] = ($rawCredit !== '') ? $rawCredit : $publisherName;
+        $newsData['image_schema_copyright_notice'] = '© ' . $copyrightYear . ' ' . $copyrightOwner;
+        $newsData['image_schema_license_url'] = $licenseUrls['license'];
+        $newsData['image_schema_acquire_license_url'] = $licenseUrls['acquire'];
+
+        return $newsData;
     }
 
     private function _cleanText(?string $value): string
@@ -268,6 +351,8 @@ class mod_news_helper extends indexBase
                     // only intercepts non-DB throwables. The query must match mod_user_social's schema.
                 }
             }
+
+            $news_data = $this->enrichImageSchemaMetadata($news_data);
 
             $this->theme->ctx_set('d', $news_data);
             $this->theme->ctx_set('detail', $news_data);
